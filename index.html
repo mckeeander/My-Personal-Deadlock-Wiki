@@ -55,8 +55,8 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .abh{display:flex;gap:10px;align-items:center}
 .abh img{width:44px;height:44px;object-fit:contain;flex:none}
 .abh h3{margin:0;flex:1;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
-.srow .pi{height:1.1em;width:1.1em;margin-right:8px;vertical-align:-.2em}
-.wc b .pi{height:.9em;width:.9em;vertical-align:-.1em}
+.si{height:1.25em;width:1.25em;flex:none;color:var(--c,var(--weapon))}
+.wc b .si{height:1em;width:1em;vertical-align:-.15em;margin-right:4px;color:var(--weapon)}
 .pi{height:1.15em;width:1.15em;object-fit:contain;vertical-align:-.22em;margin-right:4px}
 .stat b .pi{height:1em;width:1em;vertical-align:-.12em}
 .ic{height:1.1em;width:1.1em;vertical-align:-.2em;margin-right:3px}
@@ -135,8 +135,10 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .sblk{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:10px 12px}
 .sblk.vit{--c:var(--vital)}.sblk.wep{--c:var(--weapon)}.sblk.spi{--c:var(--spirit)}
 .sblk h4{margin:0 0 4px;font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
-.srow{display:flex;gap:8px;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
-.srow span{flex:1;color:var(--dim)}
+.srow{display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-items:center;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
+.srow .l{text-align:right;color:var(--dim)}
+.srow .v{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.srow .v b{font-size:15px}
 .bon{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:12px}
 .bon summary{cursor:pointer;color:var(--gold);font-size:14px}
 .bg{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:8px}
@@ -175,7 +177,7 @@ details.notes li{margin-bottom:4px}
 .rc span{flex:1;min-width:0}.rc em{font-style:normal;color:var(--dim);font-size:11px;margin-left:6px}
 .rc .cost{font-size:13px}
 .ihd{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:14px 0 2px}
-.srow em{font-style:normal;color:var(--vital);font-size:12px;text-align:right}
+.srow em{font-style:normal;color:var(--vital);font-size:12px}
 </style>
 </head>
 <body>
@@ -629,8 +631,8 @@ function weaponCard(h) {
   if (!w || !w.weapon_info) return "";
   var i = w.weapon_info, pel = i.bullets || 1, up = h.standard_level_up_upgrades || {};
   var shots = i.shots_per_second || (i.cycle_time ? 1 / i.cycle_time : 0);
-  var WIC = { "Bullet damage": "damage_bullet_color", "Damage per pellet": "damage_bullet_color", "Damage per shot": "damage_bullet_color", "Fire rate": "fire_rate", "Ammo": "ammo_clip_size", "Reload": "ammo_reload", "Pellets per second": "fire_rate", "Headshot bonus": "damage_crit" };
-  function wc(v, l) { return '<div class="wc"><b>' + sIcon(WIC[l]) + esc(v) + "</b><i>" + esc(l) + "</i></div>"; }
+  var WIC = { "Bullet damage": "dmg", "Damage per pellet": "dmg", "Damage per shot": "dmg", "Fire rate": "bps", "Ammo": "ammo", "Reload": "reload", "Pellets per second": "bps", "Headshot bonus": "crit", "Bullet speed": "vel" };
+  function wc(v, l) { return '<div class="wc"><b>' + siIcon(WIC[l]) + esc(v) + "</b><i>" + esc(l) + "</i></div>"; }
   var attrs = (((h.shop_stat_display || {}).weapon_stats_display || {}).weapon_attributes || []).map(function (a) {
     return '<span class="chip">' + esc(String(a).replace(/^EWeaponAttribute_/, "").replace(/([a-z])([A-Z])/g, "$1 $2")) + "</span>";
   }).join("");
@@ -645,7 +647,7 @@ function weaponCard(h) {
   if (pel > 1 && i.bullets_per_second) g += wc(fmtNum(i.bullets_per_second) + "/s", "Pellets per second");
   if ((i.burst_shot_count || 1) > 1) g += wc("×" + i.burst_shot_count, "Burst");
   if (i.crit_bonus_start > 1) g += wc("+" + fmtNum((i.crit_bonus_start - 1) * 100) + "%", "Headshot bonus");
-  if (i.bullet_speed) g += wc(fmtNum(i.bullet_speed / 39.37) + " m/s", "Bullet speed");
+  if (i.bullet_speed) g += wc(fmtNum(Math.round(i.bullet_speed / 39.37)) + " m/s", "Bullet speed");
   if (i.shoot_move_speed_percent != null && i.shoot_move_speed_percent !== 1) g += wc(fmtNum(i.shoot_move_speed_percent * 100) + "%", "Move speed firing");
   if (i.can_zoom && i.zoom_fov) g += wc(fmtNum(i.zoom_fov) + "°", "Zoom FOV");
   var fo = "";
@@ -660,33 +662,67 @@ function weaponCard(h) {
       "<div><b>" + (i.damage_per_magazine ? fmtNum(i.damage_per_magazine) : "–") + "</b><i>Per magazine</i></div></div>" : "") +
     '<div class="wg">' + g + "</div>" + fo + boon + "</section>";
 }
-var ICONBASE = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/";
-function sIcon(n) { return n ? pIcon(ICONBASE + n + ".svg") : ""; }
-// the game's own property icons, matched to the hero stat rows
-var SICON = { "Health": "health", "Health regen": "heal", "Out-of-combat regen": "heal", "Bullet resist": "armor_bullet_color", "Spirit resist": "armor_spirit_color",
-  "Move speed": "move_speed", "Sprint speed": "move_speed", "Crouch speed": "move_speed", "Stamina": "move_stamina_recharge", "Ground dash": "move_speed", "Air dash": "move_speed",
-  "Bullet damage": "damage_bullet_color", "Light melee": "melee", "Heavy melee": "melee", "Reload speed": "ammo_reload", "Spirit power": "spirit" };
+// Hand-drawn stat icons (the game's own files can't be recoloured from another site), tinted by section
+var SI = {
+  health: '<path fill="currentColor" stroke="none" d="M12 21S3.6 15.8 2.4 10.4C1.6 6.9 3.7 4 6.8 4c2 0 3.7 1.1 5.2 3.1C13.5 5.1 15.2 4 17.2 4c3.1 0 5.2 2.9 4.4 6.400C20.4 15.8 12 21 12 21z"/>',
+  regen: '<circle cx="12" cy="12" r="9"/><path d="M12 7.500v9M7.5 12h9"/>',
+  boot: '<path fill="currentColor" stroke="none" d="M6 3h6.500v8.500l6.5 3.200c.600.3 1 .900 1 1.600V20H4.500V6c0-1.7.700-3 1.5-3z"/>',
+  sprint: '<path fill="currentColor" stroke="none" d="M9 3h6v8l6 3v6H8z"/><path d="M2 8h4.500M1 12.500h5M2 17h4.5"/>',
+  stamina: '<circle cx="12" cy="12" r="9"/><path fill="currentColor" stroke="none" d="M13.5 5.500L7.5 13h4l-1 5.5 6-7.500h-4z"/>',
+  dash: '<path d="M4 5.500l6.5 6.500L4 18.500M12.5 5.500l6.5 6.5-6.5 6.5"/>',
+  dmg: '<path fill="currentColor" stroke="none" d="M12 21S3.6 15.8 2.4 10.400C1.6 6.9 3.7 4 6.8 4c2 0 3.7 1.1 5.2 3.100C13.5 5.1 15.2 4 17.2 4c3.1 0 5.2 2.9 4.4 6.400C20.4 15.8 12 21 12 21z"/><path stroke="var(--panel)" stroke-width="1.8" d="M2 10.500h20M2 14h20"/>',
+  dps: '<path d="M3 20l6-8 4 4 8-11"/><path d="M15 5h6v6"/>',
+  ammo: '<path fill="currentColor" stroke="none" d="M4.5 10c0-1.5.700-2.5 1.5-2.500S7.5 8.5 7.5 10v9h-3zM10.5 10c0-1.5.700-2.5 1.5-2.500s1.5 1 1.5 2.500v9h-3zM16.5 10c0-1.5.700-2.5 1.5-2.500s1.5 1 1.5 2.500v9h-3z"/>',
+  bps: '<path d="M3 7h13M3 12h17M3 17h13"/><path d="M16 4.500l4 2.5-4 2.500M20 9.500l3 2.5-3 2.5"/>',
+  reload: '<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 3.500v4.500h-4.5"/>',
+  vel: '<path d="M4 20L19 5"/><path d="M10 5h9v9"/><path d="M4 14l-1 4 4-1"/>',
+  fist: '<path fill="currentColor" stroke="none" d="M5.5 10.500h13v4.500a5 5 0 0 1-5 5h-3a5 5 0 0 1-5-5z"/><path stroke-width="3" d="M8 9V6.500M12 8.500V5.500M16 9V6.5"/>',
+  star: '<path fill="currentColor" fill-opacity=".25" d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.100L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+  crit: '<circle cx="12" cy="12" r="8"/><path d="M12 2v6M12 16v6M2 12h6M16 12h6"/>',
+  hourglass: '<path d="M6 3h12M6 21h12M7.5 3c0 5 4.5 6 4.5 9s-4.5 4-4.5 9M16.5 3c0 5-4.5 6-4.5 9s4.5 4 4.5 9"/>',
+  shield: '<path d="M12 3l7.5 3v5.500c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.500V6z"/>'
+};
+function siIcon(n) {
+  return n && SI[n] ? '<svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + SI[n] + "</svg>" : "";
+}
+var SICON = { "Health": "health", "Health regen": "regen", "Out-of-combat regen": "regen", "Crit reduction": "crit", "Bullet resist": "shield", "Spirit resist": "shield",
+  "Move speed": "boot", "Sprint speed": "sprint", "Crouch speed": "boot", "Dash speed": "dash", "Stamina": "stamina", "Stamina cooldown": "hourglass", "Ground dash": "dash", "Air dash": "dash",
+  "Damage per second": "dps", "Bullet damage": "dmg", "Ammo": "ammo", "Bullets per sec": "bps", "Reload time": "reload", "Bullet velocity": "vel", "Light melee": "fist", "Heavy melee": "fist", "Reload speed": "reload",
+  "Spirit power": "star" };
 function statBlock(h) {
   var s = h.starting_stats || {}, up = h.standard_level_up_upgrades || {};
   function v(k) { return s[k] && s[k].value != null ? s[k].value : null; }
-  function row(l, val, extra) { return '<div class="srow"><span>' + sIcon(SICON[l]) + esc(l) + "</span><b>" + esc(val) + "</b>" + (extra ? "<em>" + esc(extra) + "</em>" : "") + "</div>"; }
-  function boon(k) { var n = Number(up[k]); return n > 0 ? "+" + fmtNum(n) + " / boon" : ""; }
+  // wiki layout: label right-aligned to the centre line, icon + value left-aligned from it
+  function row(l, val, extra) {
+    return '<div class="srow"><span class="l">' + esc(l) + '</span><span class="v">' + siIcon(SICON[l]) + (val !== "" ? "<b>" + esc(val) + "</b>" : "") + (extra ? "<em>" + esc(extra) + "</em>" : "") + "</span></div>";
+  }
+  function boon(k, mult) { var n = Number(up[k]) * (mult || 1); return n > 0 ? "+" + fmtNum(n) + " / boon" : ""; }
   var vit = "", wep = "", spi = "";
+  var w = state.byClass[(h.items || {}).weapon_primary], wi = (w && w.weapon_info) || {};
   if (v("max_health") != null) vit += row("Health", fmtNum(v("max_health")), boon("MODIFIER_VALUE_BASE_HEALTH_FROM_LEVEL"));
   if (v("base_health_regen") != null) vit += row("Health regen", fmtNum(v("base_health_regen")) + "/s");
   if (v("ooc_health_regen")) vit += row("Out-of-combat regen", fmtNum(v("ooc_health_regen")) + "/s");
+  if (v("crit_damage_received_scale") != null && v("crit_damage_received_scale") !== 1) vit += row("Crit reduction", fmtNum((1 - v("crit_damage_received_scale")) * 100) + "%");
   if (Number(up.MODIFIER_VALUE_BULLET_ARMOR_DAMAGE_RESIST) > 0) vit += row("Bullet resist", "", boon("MODIFIER_VALUE_BULLET_ARMOR_DAMAGE_RESIST"));
   if (Number(up.MODIFIER_VALUE_TECH_RESIST) > 0) vit += row("Spirit resist", "", boon("MODIFIER_VALUE_TECH_RESIST"));
   if (v("max_move_speed") != null) vit += row("Move speed", fmtNum(v("max_move_speed")) + " m/s");
   if (v("sprint_speed") != null) vit += row("Sprint speed", "+" + fmtNum(v("sprint_speed")) + " m/s");
   if (v("crouch_speed") != null) vit += row("Crouch speed", fmtNum(v("crouch_speed")) + " m/s");
+  if (v("ground_dash_distance_in_meters") && v("ground_dash_duration")) vit += row("Dash speed", fmtNum(Math.round(v("ground_dash_distance_in_meters") / v("ground_dash_duration") * 10) / 10) + " m/s");
   if (v("stamina") != null) vit += row("Stamina", fmtNum(v("stamina")));
+  if (v("stamina_regen_per_second")) vit += row("Stamina cooldown", fmtNum(1 / v("stamina_regen_per_second")) + "s");
   if (v("ground_dash_distance_in_meters")) vit += row("Ground dash", fmtNum(v("ground_dash_distance_in_meters")) + "m", fmtNum(v("ground_dash_duration")) + "s");
   if (v("air_dash_distance_in_meters")) vit += row("Air dash", fmtNum(v("air_dash_distance_in_meters")) + "m", fmtNum(v("air_dash_duration")) + "s");
-  var w = state.byClass[(h.items || {}).weapon_primary], wi = (w && w.weapon_info) || {};
-  if (wi.bullet_damage != null) wep += row("Bullet damage", fmtNum(wi.bullet_damage) + ((wi.bullets || 1) > 1 ? " ×" + wi.bullets : ""), boon("MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL"));
-  if (v("light_melee_damage") != null) wep += row("Light melee", fmtNum(v("light_melee_damage")), boon("MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL"));
-  if (v("heavy_melee_damage") != null) wep += row("Heavy melee", fmtNum(v("heavy_melee_damage")));
+  var pel = wi.bullets || 1, bps = wi.bullets_per_second || wi.shots_per_second;
+  if (wi.damage_per_second) wep += row("Damage per second", fmtNum(Math.round(wi.damage_per_second * 10) / 10));
+  if (wi.bullet_damage != null) wep += row("Bullet damage", fmtNum(wi.bullet_damage) + (pel > 1 ? " ×" + pel : ""), boon("MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL"));
+  if (wi.clip_size != null) wep += row("Ammo", fmtNum(wi.clip_size));
+  if (bps) wep += row("Bullets per sec", fmtNum(bps));
+  if (wi.reload_duration != null) wep += row("Reload time", fmtNum(wi.reload_duration) + "s");
+  if (wi.bullet_speed) wep += row("Bullet velocity", fmtNum(Math.round(wi.bullet_speed / 39.37)) + " m/s");
+  var lm = v("light_melee_damage"), hm = v("heavy_melee_damage");
+  if (lm != null) wep += row("Light melee", fmtNum(lm), boon("MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL"));
+  if (hm != null) wep += row("Heavy melee", fmtNum(hm), lm ? boon("MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL", hm / lm) : ""); // heavy scales in the same ratio as its base
   if (v("reload_speed") != null && v("reload_speed") !== 1) wep += row("Reload speed", "×" + fmtNum(v("reload_speed")));
   spi += row("Spirit power", fmtNum(v("tech_power") || 0), boon("MODIFIER_VALUE_TECH_POWER"));
   var sc = h.scaling_stats || {};
