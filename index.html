@@ -107,7 +107,7 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 .dm{color:var(--dim);font-style:italic}
 .ia{height:1.15em;width:auto;vertical-align:-.2em;margin-right:3px}
 .blk{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:12px 0 4px}
-.sec{font-family:var(--disp);color:var(--gold);font-size:15px;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.sec{font-family:var(--disp);color:var(--gold);font-size:15px;letter-spacing:.08em;text-transform:uppercase;margin:36px 0 12px;padding-bottom:5px;border-bottom:1px solid var(--line)}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .tag{background:#3b2230;color:#f0b8b0;border-radius:4px;padding:3px 8px;font-size:12px;letter-spacing:.04em}
 details.lore{margin:4px 0 6px;color:var(--dim);font-size:14px;line-height:1.45}
@@ -200,6 +200,9 @@ details.notes li{margin-bottom:4px}
 .nfig figcaption{font-size:12px;color:var(--dim);margin-top:4px}
 .chip .pi{filter:brightness(0) invert(1);opacity:.85}
 .minor .fl{color:var(--fg);font-weight:600}
+.chip[data-tip]{position:relative;cursor:pointer}
+.chip.tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:0;background:#000;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:12px;white-space:nowrap;z-index:5}
+.chips .g:last-child .chip.tip::after{left:auto;right:0}
 </style>
 </head>
 <body>
@@ -550,7 +553,7 @@ function chipsHtml(it) {
   // icon + number, like the wiki; the long-press title carries the name
   function chip(key, glyph, text, title) {
     var ic = P[key] && P[key].icon ? pIcon(P[key].icon) : "";
-    return '<span class="chip" title="' + esc(title) + '">' + (ic || glyph + " ") + esc(text) + "</span>";
+    return '<span class="chip" data-tip="' + esc(title) + '">' + (ic || glyph + " ") + esc(text) + "</span>";
   }
   [["AbilityDuration", "⏳", "Duration"], ["AbilityCastRange", "↔", "Range"]].forEach(function (g) {
     var p = effP(it, g[0]); seen[g[0]] = 1;
@@ -562,7 +565,7 @@ function chipsHtml(it) {
     if (rp && !isDisabled(rp) && parseFloat(rp.value) > 0) left += chip("Radius", "◎", fmtVal(rp), "Radius");
   }
   var extra = (it.tooltip_details && it.tooltip_details.additional_header_properties) || [];
-  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" title="' + esc(r.l) + '">' + (pIcon(r.icon) || "• ") + esc(r.v) + "</span>"; });
+  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" data-tip="' + esc(r.l) + '">' + (pIcon(r.icon) || "• ") + esc(r.v) + "</span>"; });
   var ch = effP(it, "AbilityCharges"), nch = ch && !isDisabled(ch) ? parseFloat(ch.value) : 0;
   if (nch > 1 && !L.AbilityCharges) {
     right += chip("AbilityCharges", "⚡", String(nch), "Charges");
@@ -791,9 +794,9 @@ function renderHero(cn) {
   var tags = (h.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("");
   var cxn = Math.max(0, Math.min(3, Number(h.complexity) || 0)), dots = "";
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
-  tags = (h.hero_type ? '<span class="tag role">' + esc(roleLabel(h)) + "</span>" : "") + (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "") + tags;
+  var tagsA = (h.hero_type ? '<span class="tag role">' + esc(roleLabel(h)) + "</span>" : "") + (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
   var html = '<button class="back" id="back">' + (state.from === "search" ? "‹ Search results" : "‹ All heroes") + '</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div><h1>' + esc(h.name) + "</h1>" +
-    (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
+    (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   if (lore) html += '<details class="lore"><summary>Lore</summary>' + rich(lore).replace(/(<br>)+/g, "<br><br>") + "</details>";
   html += '<div class="sec">Stats</div>' + statBlock(h);
   var wc = weaponCard(h);
@@ -874,6 +877,16 @@ function recipeRow(cn, depth, flat) {
   if (!flat && depth < 3) (c.component_items || []).forEach(function (x) { html += recipeRow(x, depth + 1); });
   return html;
 }
+// everything an item upgrades into, nested: Grit > Guardian Ward > Indomitable
+function intoTree(cn, depth, seen) {
+  var html = "";
+  ((state.into || {})[cn] || []).forEach(function (x) {
+    if (seen[x] || depth > 3) return;
+    var s2 = {}; for (var k in seen) s2[k] = 1; s2[x] = 1;
+    html += recipeRow(x, depth, true) + intoTree(x, depth + 1, s2);
+  });
+  return html;
+}
 function itemSheet(cn, fromBack) {
   var it = state.byClass[cn]; if (!it) return;
   HERO_NAME = ""; CTX = null;
@@ -889,7 +902,7 @@ function itemSheet(cn, fromBack) {
     (it.item_tier ? '<span class="pill2">Tier ' + esc(it.item_tier) + "</span>" : "") + (kind ? '<span class="pill2">' + kind + "</span>" : "") + "</div>" +
     (topDesc ? '<div class="desc">' + topDesc + "</div>" : "") + secs +
     (comps.length ? '<div class="ihd">Builds from</div>' + comps.map(function (c) { return recipeRow(c, 0); }).join("") : "") +
-    (into.length ? '<div class="ihd">Builds into</div>' + into.map(function (c) { return recipeRow(c, 0, true); }).join("") : "") +
+    (into.length ? '<div class="ihd">Builds into</div>' + intoTree(cn, 0, (function () { var o = {}; o[cn] = 1; return o; })()) : "") +
     '<button class="ibtn" id="close" style="width:100%;margin-top:14px">Close</button>';
   $("sheetin").innerHTML = html; $("sheet").hidden = false;
   $("sheetin").scrollTop = 0;
@@ -1015,7 +1028,17 @@ $("sbtn").onclick = function () {
   state.tab = "search"; state.hero = null; state.from = null; setTabsUI(null); renderSearch(); window.scrollTo(0, 0);
   var i = $("sq"); if (i) i.focus();
 };
+var TIPT = null;
+function tapTip(e) { // touch screens have no hover, so a tap on a chip names it for a moment
+  var ch = e.target.closest ? e.target.closest(".chip[data-tip]") : null;
+  Array.prototype.forEach.call(document.querySelectorAll(".chip.tip"), function (x) { if (x !== ch) x.classList.remove("tip"); });
+  if (!ch) return false;
+  ch.classList.toggle("tip"); clearTimeout(TIPT);
+  TIPT = setTimeout(function () { ch.classList.remove("tip"); }, 2800);
+  return true;
+}
 $("main").addEventListener("click", function (e) {
+  if (tapTip(e)) return;
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
   if (sr) { openResult(sr); return; }
   var sf = e.target.closest ? e.target.closest(".sf[data-f]") : null;
