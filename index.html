@@ -52,7 +52,25 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .desc{font-size:15px;line-height:1.45;margin:8px 0}
 .desc b,.desc .hl{color:#fff;font-weight:700}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:10px 0}
-.stat{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center}
+.stat{position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center}
+.sc{position:absolute;top:-9px;right:-3px;font-style:normal;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:600;border:1px solid;white-space:nowrap}
+.sc.sp{background:#3b2d55;color:var(--spirit)}
+.sc.wp{background:#3d2a14;color:var(--weapon)}
+.sc.bn{background:#1f3320;color:var(--vital)}
+.hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.hc{position:relative;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel2);aspect-ratio:3/4}
+.hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hc span{position:absolute;left:0;right:0;bottom:0;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
+.trow{display:flex;gap:8px;margin-bottom:8px}
+.tc{flex:none;width:58px;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--disp);font-weight:700;font-size:14px;color:#fff;padding:4px 2px}
+.tc.weapon{background:#a8651a}.tc.vitality{background:#3d7d3c}.tc.spirit{background:#6b45a8}
+.tl{flex:1;min-width:0;display:flex;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px}
+.it2{width:50%;display:flex;align-items:center;gap:8px;padding:5px 4px;background:none;border:0;text-align:left;font-size:13px;line-height:1.15;border-radius:6px;min-width:0}
+.it2 img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:4px;background:var(--panel2)}
+.it2 em{font-style:normal;color:var(--gold);font-size:10px;letter-spacing:.06em;margin-left:4px}
+.chips{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;flex-wrap:wrap}
+.chips .g{display:flex;gap:6px;flex-wrap:wrap}
+.chips .g:last-child{margin-left:auto}
 .stat.big{border-color:var(--spirit);background:#2a2040}
 .stat b{display:block;font-size:20px}
 .stat i{font-style:normal;font-size:12px;color:var(--dim)}
@@ -73,7 +91,7 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 .link{color:var(--gold);background:none;border:0;padding:0;text-decoration:underline;font-size:12px}
 
 .hl{color:#fff;font-weight:700}
-.dm{color:var(--dim)}
+.dm{color:var(--dim);font-style:italic}
 .ia{height:1.15em;width:auto;vertical-align:-.2em;margin-right:3px}
 .blk{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:12px 0 4px}
 .sec{font-family:var(--disp);color:var(--gold);font-size:15px;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--line)}
@@ -193,13 +211,41 @@ function fmtVal(p) {
   return pre + (isNum ? fmtNum(raw) : raw) + (isNum ? unitFor(p) : "");
 }
 function propLabel(p, key) { return (p && (p.postvalue_label || p.label || p.display_name)) || prettify(key); }
+// What does this stat scale with? Only stats the game data marks as scaling get a badge.
+function scaleOf(p) {
+  var sf = (p && p.scale_function) || {}, rate = Number(sf.stat_scale), st = sf.specific_stat_scale_type || "", cn = sf.class_name || "", kind = "", sub = "";
+  if (!(rate > 0)) return { kind: "", rate: 0 };
+  if (st === "ETechPower") kind = "spirit";
+  else if (st === "EBaseWeaponDamageIncrease") kind = "weapon";
+  else if (st === "EWeaponPower") { kind = "weapon"; rate = 1 + rate / 100; } // stored as a percentage: 125 -> x2.25
+  else if (st === "EStatsCount" && cn === "scale_function_tech_damage") kind = "spirit"; // Rake
+  else if (st === "ELevelUpBoons") kind = "boons";
+  else if (st === "ELightMeleeDamage") { kind = "melee"; sub = "Light melee"; }
+  else if (st === "EHeavyMeleeDamage") { kind = "melee"; sub = "Heavy melee"; }
+  else if (!st) {
+    if (cn === "scale_function_tech_damage" || cn === "scale_function_healing_spirit_scale") kind = "spirit";
+    else if (cn === "scale_function_ability_weapon_damage") kind = "weapon";
+  }
+  if (cn === "scale_function_healing_boon_scale") kind = "boons";
+  return { kind: kind, rate: kind ? rate : 0, sub: sub };
+}
+function fmtRate(v) { var n = Number(v); return isNaN(n) ? String(v) : String(Math.round(n * 1000) / 1000); }
+function scaleBadge(r) {
+  if (!r || !r.kind) return "";
+  var n = fmtRate(r.rate);
+  if (r.kind === "spirit") return '<em class="sc sp">★ ×' + esc(n) + "</em>";
+  if (r.kind === "weapon") return '<em class="sc wp">Weapon ×' + esc(n) + "</em>";
+  if (r.kind === "melee") return '<em class="sc wp">' + esc(r.sub) + " ×" + esc(n) + "</em>";
+  return '<em class="sc bn">+' + esc(n) + "/boon</em>";
+}
 function propRec(it, key) {
   var p = (it.properties || {})[key];
   if (isDisabled(p)) return null;
   var n = parseFloat(p.value);
   if (!isNaN(n) && (n === 0 || (n < 0 && key === "AbilityCooldownBetweenCharge"))) return null; // inactive until an upgrade enables it
   var v = fmtVal(p);
-  return v == null ? null : { v: v, l: propLabel(p, key) };
+  var sk = scaleOf(p);
+  return v == null ? null : { v: v, l: propLabel(p, key), kind: sk.kind, rate: sk.rate, sub: sk.sub, tech: sk.kind === "spirit" || p.css_class === "tech_damage" };
 }
 
 /* ---------- data ---------- */
@@ -233,9 +279,9 @@ function statusLine() {
 function renderHeroes() {
   var q = state.q.toLowerCase();
   var list = state.heroes.filter(function (h) { return !q || String(h.name).toLowerCase().indexOf(q) >= 0; });
-  var html = '<input type="search" id="q" placeholder="Search heroes" value="' + esc(state.q) + '">' + statusLine() + '<div class="grid">';
+  var html = '<input type="search" id="q" placeholder="Search heroes" value="' + esc(state.q) + '">' + statusLine() + '<div class="hg">';
   list.forEach(function (h) {
-    html += '<button class="card" data-hero="' + esc(h.class_name) + '"><img loading="lazy" alt="" src="' + esc(heroImg(h)) + '"><span>' + esc(h.name) + "</span></button>";
+    html += '<button class="hc" data-hero="' + esc(h.class_name) + '"><img loading="lazy" alt="" src="' + esc(heroImg(h)) + '"><span>' + esc(h.name) + "</span></button>";
   });
   $("main").innerHTML = html + "</div>";
   bindCommon();
@@ -257,7 +303,10 @@ function statTiles(it) {
   });
   return { big: big, small: small };
 }
-function tile(v, l) { return '<div class="stat big"><b>' + esc(v) + "</b><i>" + esc(l) + "</i></div>"; }
+function tile(v, l, r) {
+  var badge = scaleBadge(r);
+  return '<div class="stat' + (r && r.tech ? " big" : "") + '">' + badge + "<b>" + esc(v) + "</b><i>" + esc(l) + "</i></div>";
+}
 // abilities use tooltip_details.info_sections
 function tooltipHtml(it) {
   var secs = it.tooltip_details && it.tooltip_details.info_sections, html = "";
@@ -273,38 +322,54 @@ function tooltipHtml(it) {
           return;
         }
         var key = pp.important_property || pp.property; if (!key) return;
-        var r = propRec(it, key); if (r) tiles += tile(r.v, r.l);
+        var r = propRec(it, key); if (r) tiles += tile(r.v, r.l, r);
       });
       if (tiles) html += (blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>";
     });
     var minor = "";
-    (sec.basic_properties || []).forEach(function (k) { var r = propRec(it, k); if (r) minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + "</span>"; });
+    (sec.basic_properties || []).forEach(function (k) { var r = propRec(it, k); if (r) minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; });
     if (minor) html += '<div class="minor">' + minor + "</div>";
   });
   return html;
 }
 function chipsHtml(it) {
-  var P = it.properties || {}, h = "";
-  [["AbilityDuration", "⏳"], ["AbilityCastRange", "↔"], ["AbilityCooldown", "⟳"]].forEach(function (g) {
-    var p = P[g[0]];
-    if (isDisabled(p) || Number(p.value) === 0) return;
-    h += '<span class="chip">' + g[1] + " " + esc(fmtVal(p)) + "</span>";
+  var P = it.properties || {}, left = "", right = "", seen = {};
+  function chip(g, text) { return '<span class="chip">' + g + " " + esc(text) + "</span>"; }
+  [["AbilityDuration", "⏳"], ["AbilityCastRange", "↔"]].forEach(function (g) {
+    var p = P[g[0]]; seen[g[0]] = 1;
+    if (isDisabled(p) || parseFloat(p.value) === 0) return;
+    left += chip(g[1], fmtVal(p));
   });
-  return h;
+  var extra = (it.tooltip_details && it.tooltip_details.additional_header_properties) || [];
+  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += chip("•", r.v + " " + r.l); });
+  var cd = P.AbilityCooldown;
+  if (!isDisabled(cd) && parseFloat(cd.value) !== 0) right = chip("⟳", fmtVal(cd));
+  if (!left && !right) return "";
+  return '<div class="chips"><div class="g">' + left + '</div><div class="g">' + right + "</div></div>";
 }
 function upgradeTexts(it) {
   var d = it.description && typeof it.description === "object" ? it.description : {}, ups = it.upgrades || [], out = [];
+  var KW = { ETechPower: "Spirit", EWeaponPower: "Weapon", ELevelUpBoons: "Boon" };
   for (var i = 0; i < 3; i++) {
-    var k = "t" + (i + 1) + "_desc";
-    if (d[k]) { out.push(rich(d[k])); continue; }
+    var k = "t" + (i + 1) + "_desc", scaleBits = [];
+    ((ups[i] && ups[i].property_upgrades) || []).forEach(function (pu) {
+      if (pu.upgrade_type !== "EAddToScale") return;
+      var pp = (it.properties || {})[pu.name] || {}, sk = scaleOf(pp), word = KW[pu.scale_stat_filter] || (sk.kind === "spirit" ? "Spirit" : sk.kind === "weapon" ? "Weapon" : sk.kind === "boons" ? "Boon" : "");
+      var bn = Number(pu.bonus);
+      if (pu.scale_stat_filter === "EWeaponPower") bn = bn / 100;
+      scaleBits.push(esc((bn >= 0 ? "+" : "") + fmtRate(bn) + " " + (word ? word + " " : "") + "scaling (" + propLabel(pp, pu.name) + ")"));
+    });
+    var extra = scaleBits.length ? '<br><span class="dm">' + scaleBits.join("<br>") + "</span>" : "";
+    if (d[k]) { out.push(rich(d[k]) + extra); continue; }
     if (ups[i] && ups[i].property_upgrades) {
       var bits = [];
       ups[i].property_upgrades.forEach(function (pu) {
+        if (pu.upgrade_type === "EAddToScale") return;
         var p = (it.properties || {})[pu.name] || {}, b = pu.bonus, n = Number(b);
         var sign = !isNaN(n) && n >= 0 && !/^[+-]/.test(String(b)) ? "+" : "";
         bits.push(esc(sign + fmtNum(b) + (isNaN(n) ? "" : unitFor(p)) + " " + propLabel(p, pu.name)));
       });
-      out.push(bits.join("<br>") || "—");
+      out.push((bits.join("<br>") || (scaleBits.length ? "" : "—")) + extra);
     } else out.push("—");
   }
   return out;
@@ -316,7 +381,7 @@ function upgradesHtml(it) {
 }
 function abilityCard(it) {
   return '<section class="ab"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
-    '<div class="chips">' + chipsHtml(it) + "</div>" +
+    chipsHtml(it) +
     '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc } : it.description)) + "</div>" +
     tooltipHtml(it) + upgradesHtml(it) + "</section>";
 }
@@ -364,12 +429,12 @@ function renderShop(slot) {
   var html = '<input type="search" id="q" placeholder="Search items" value="' + esc(state.q) + '">' + statusLine();
   Object.keys(tiers).sort(function (a, b) { return a - b; }).forEach(function (t) {
     var arr = tiers[t].sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
-    var cost = arr[0].cost ? " · " + Number(arr[0].cost).toLocaleString() : "";
-    html += '<div class="tier">Tier ' + esc(t) + "<small>" + esc(cost) + '</small></div><div class="itiles">';
+    var cost = arr[0].cost ? "$" + Number(arr[0].cost).toLocaleString() : "T" + t;
+    html += '<div class="trow"><div class="tc ' + slot + '">' + esc(cost) + '</div><div class="tl">';
     arr.forEach(function (it) {
-      html += '<button class="it' + (it.is_active_item ? " act" : "") + '" data-item="' + esc(it.class_name) + '"><img loading="lazy" alt="" src="' + esc(itemImg(it)) + '">' + esc(nameOf(it)) + "</button>";
+      html += '<button class="it2" data-item="' + esc(it.class_name) + '">' + imgTag(itemImg(it)) + "<div>" + esc(nameOf(it)) + (it.is_active_item ? "<em>ACTIVE</em>" : "") + "</div></button>";
     });
-    html += "</div>";
+    html += "</div></div>";
   });
   if (!Object.keys(tiers).length) html += '<p class="status">Nothing matched. If this stays empty, open “data check”.</p>';
   $("main").innerHTML = html;
@@ -379,7 +444,7 @@ function itemSheet(cn) {
   var it = state.byClass[cn]; if (!it) return;
   HERO_NAME = "";
   var t = statTiles(it), tiles = "", bonus = "";
-  t.big.forEach(function (x) { tiles += tile(x.v, x.l); });
+  t.big.forEach(function (x) { tiles += tile(x.v, x.l, x); });
   t.small.forEach(function (x) { bonus += '<span class="chip"><b>' + esc(x.v) + "</b> " + esc(x.l) + "</span>"; });
   var comps = (it.component_items || []).map(function (c) { return state.byClass[c] ? nameOf(state.byClass[c]) : c; });
   var html = '<div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + '</h3><span class="cost">' + (it.cost ? "$" + Number(it.cost).toLocaleString() : "") + "</span></div>" +
