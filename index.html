@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14111a">
+<title>Deadlock Codex</title>
+<style>
+:root{
+  --bg:#14111a; --panel:#1d1926; --panel2:#262031; --line:#3a3248;
+  --fg:#f1e9d8; --dim:#a69cb5; --gold:#e6b45a; --spirit:#b583f0; --weapon:#e8a24a; --vital:#6fc56d; --red:#e0584f;
+  --disp:"Cinzel","Trajan Pro",Georgia,serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);-webkit-text-size-adjust:100%}
+body{padding-bottom:env(safe-area-inset-bottom,0)}
+button{font:inherit;color:inherit;cursor:pointer}
+img{max-width:100%}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top,0) + 8px) 12px 8px}
+.bar{display:flex;gap:8px;align-items:center}
+.brand{font-family:var(--disp);font-size:18px;letter-spacing:.06em;flex:1}
+.ibtn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px}
+.tabs{display:flex;gap:6px;margin-top:8px}
+.tab{flex:1;padding:9px 4px;background:var(--panel);border:1px solid var(--line);border-bottom:3px solid var(--line);border-radius:8px 8px 0 0;font-size:14px}
+.tab.on{background:var(--panel2);border-bottom-color:var(--gold);font-weight:600}
+.tab[data-c=weapon].on{border-bottom-color:var(--weapon)} .tab[data-c=vitality].on{border-bottom-color:var(--vital)} .tab[data-c=spirit].on{border-bottom-color:var(--spirit)}
+main{padding:12px;max-width:760px;margin:0 auto}
+input[type=search]{width:100%;padding:11px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--fg);font-size:16px;margin-bottom:12px}
+.status{font-size:12px;color:var(--dim);margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:0;overflow:hidden;text-align:center}
+.card img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--panel2)}
+.card span{display:block;font-size:11px;padding:4px 2px;line-height:1.2;min-height:30px}
+.tier{margin:14px 0 6px;display:flex;align-items:baseline;gap:8px;font-family:var(--disp);color:var(--gold)}
+.tier small{font-family:var(--body);color:var(--dim);font-size:12px}
+.itiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
+.it{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 2px;text-align:center;font-size:11px;line-height:1.2}
+.it img{width:44px;height:44px;object-fit:contain;display:block;margin:0 auto 4px}
+.it.act::after{content:"ACTIVE";display:block;font-size:9px;color:var(--gold);letter-spacing:.08em;margin-top:2px}
+.back{background:none;border:0;color:var(--gold);padding:6px 0;font-size:15px}
+.hero-h{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.hero-h img{width:72px;aspect-ratio:3/4;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
+.sub{color:var(--dim);font-size:14px;line-height:1.4;margin:8px 0 14px}
+.ab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+.abh{display:flex;gap:10px;align-items:center}
+.abh img{width:44px;height:44px;object-fit:contain;flex:none}
+.abh h3{margin:0;flex:1;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chip{background:var(--panel2);border-radius:5px;padding:4px 8px;font-size:13px}
+.desc{font-size:15px;line-height:1.45;margin:8px 0}
+.desc b,.desc .hl{color:#fff;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:10px 0}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center}
+.stat.big{border-color:var(--spirit);background:#2a2040}
+.stat b{display:block;font-size:20px}
+.stat i{font-style:normal;font-size:12px;color:var(--dim)}
+.minor{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:6px;padding:8px;margin:6px 0}
+.minor b{color:var(--fg)}
+.ups{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.up{background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px;text-align:center}
+.up div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
+.up div:last-child{padding:8px 4px;line-height:1.3}
+.bonus{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.cost{color:var(--vital);font-weight:700}
+.pill{display:inline-block;font-size:11px;padding:2px 6px;border-radius:4px;background:var(--panel2);color:var(--dim);margin-left:6px}
+dialog,.sheet{position:fixed;inset:0;background:rgba(10,8,14,.78);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
+.sheet .in{background:var(--bg);width:100%;max-width:760px;max-height:88vh;overflow:auto;border-radius:14px 14px 0 0;padding:14px 14px calc(env(safe-area-inset-bottom,0) + 18px);border:1px solid var(--line)}
+.err{background:#3a1d1f;border:1px solid var(--red);padding:12px;border-radius:8px;font-size:14px;line-height:1.4}
+pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--panel);padding:8px;border-radius:6px;max-height:50vh;overflow:auto}
+.link{color:var(--gold);background:none;border:0;padding:0;text-decoration:underline;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand" id="brand">DEADLOCK CODEX</div>
+    <button class="ibtn" id="refresh" aria-label="Refresh data">⟳ Refresh</button>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-c="heroes">Heroes</button>
+    <button class="tab" data-c="weapon">Weapon</button>
+    <button class="tab" data-c="vitality">Vitality</button>
+    <button class="tab" data-c="spirit">Spirit</button>
+  </div>
+</header>
+<main id="main"></main>
+<div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
+
+<script>
+"use strict";
+var API = "https://assets.deadlock-api.com";
+var KEY = "dlcodex.v1";
+var MAX_AGE = 24 * 3600 * 1000;
+var state = { heroes: [], items: [], byClass: {}, fetchedAt: 0, tab: "heroes", q: "", hero: null };
+var $ = function (id) { return document.getElementById(id); };
+
+/* ---------- helpers ---------- */
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+// descriptions may contain simple markup; allow a tiny safe subset
+function rich(s) {
+  s = String(s == null ? "" : s);
+  s = esc(s);
+  s = s.replace(/&lt;(\/?)(b|i|strong|em|br)\s*\/?&gt;/gi, "<$1$2>");
+  s = s.replace(/&lt;span[^&]*&gt;/gi, '<span class="hl">').replace(/&lt;\/span&gt;/gi, "</span>");
+  s = s.replace(/&lt;[^&]*?&gt;/g, "");
+  return s.replace(/\n/g, "<br>");
+}
+function pick(o, keys) { for (var i = 0; i < keys.length; i++) { if (o && o[keys[i]]) return o[keys[i]]; } return ""; }
+function heroImg(h) { return pick(h.images, ["icon_hero_card", "icon_image_small", "selection_image", "icon_image_small_webp", "minimap_image"]) || pick(h, ["image"]); }
+function itemImg(it) { return pick(it, ["image_webp", "image"]) || ""; }
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ t: state.fetchedAt, h: state.heroes, i: state.items })); } catch (e) {} }
+function load() {
+  try { var d = JSON.parse(localStorage.getItem(KEY) || "null"); if (d && d.h && d.i) { state.heroes = d.h; state.items = d.i; state.fetchedAt = d.t || 0; index(); return true; } } catch (e) {}
+  return false;
+}
+function index() {
+  state.byClass = {};
+  state.items.forEach(function (it) { if (it.class_name) state.byClass[it.class_name] = it; });
+}
+function fmtVal(p) {
+  if (!p || p.value == null || p.value === "") return null;
+  var v = p.value, n = Number(v);
+  if (!isNaN(n)) v = Math.round(n * 100) / 100;
+  var pre = p.prefix || "", post = p.postfix || p.post_value_label || "";
+  return pre + v + post;
+}
+function propLabel(p, key) { return (p && (p.label || p.display_name)) || String(key).replace(/([A-Z])/g, " $1").trim(); }
+
+/* ---------- data ---------- */
+function getJson(path) {
+  return fetch(API + path, { cache: "no-store" }).then(function (r) {
+    if (!r.ok) throw new Error(path + " returned " + r.status);
+    return r.json();
+  });
+}
+function fetchAll() {
+  $("refresh").textContent = "…";
+  return Promise.all([getJson("/v2/heroes?only_active=true"), getJson("/v2/items")]).then(function (r) {
+    state.heroes = (Array.isArray(r[0]) ? r[0] : []).filter(function (h) { return !h.disabled && !h.in_development; });
+    state.items = Array.isArray(r[1]) ? r[1] : [];
+    state.heroes.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+    state.fetchedAt = Date.now(); index(); save();
+    return true;
+  }).finally(function () { $("refresh").textContent = "⟳ Refresh"; });
+}
+
+/* ---------- rendering ---------- */
+function statusLine() {
+  var d = state.fetchedAt ? new Date(state.fetchedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "never";
+  return '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + " heroes · " + state.items.length + ' entries · <button class="link" id="dbg">data check</button></p>';
+}
+function renderHeroes() {
+  var q = state.q.toLowerCase();
+  var list = state.heroes.filter(function (h) { return !q || String(h.name).toLowerCase().indexOf(q) >= 0; });
+  var html = '<input type="search" id="q" placeholder="Search heroes" value="' + esc(state.q) + '">' + statusLine() + '<div class="grid">';
+  list.forEach(function (h) {
+    html += '<button class="card" data-hero="' + esc(h.class_name) + '"><img loading="lazy" alt="" src="' + esc(heroImg(h)) + '"><span>' + esc(h.name) + "</span></button>";
+  });
+  $("main").innerHTML = html + "</div>";
+  bindCommon();
+}
+function abilitiesOf(h) {
+  var out = [], seen = {};
+  var src = h.items || {};
+  Object.keys(src).forEach(function (k) {
+    var cn = src[k];
+    if (typeof cn !== "string") return;
+    var it = state.byClass[cn];
+    if (it && it.type !== "weapon" && !seen[cn]) { seen[cn] = 1; out.push({ slot: k, item: it }); }
+  });
+  if (!out.length) { // fallback: items that name this hero
+    state.items.forEach(function (it) {
+      if (it.type === "ability" && (it.hero === h.id || (it.heroes || []).indexOf(h.id) >= 0 || (it.hero_class_name === h.class_name))) out.push({ slot: "", item: it });
+    });
+  }
+  out.sort(function (a, b) { return String(a.slot).localeCompare(String(b.slot)); });
+  return out;
+}
+function statTiles(it) {
+  var props = it.properties || {}, used = {}, big = [], small = [], minor = [];
+  function add(key, level) {
+    var p = props[key]; if (!p || used[key]) return;
+    var v = fmtVal(p); if (v == null) return;
+    if (p.disabled_value && String(p.disabled_value) === String(p.value)) return;
+    used[key] = 1;
+    var rec = { l: propLabel(p, key), v: v, scale: p.scale_function && p.scale_function.specific_stat_scale_type ? p.scale_function : null };
+    if (level === "big") big.push(rec); else small.push(rec);
+  }
+  (it.tooltip_sections || []).forEach(function (sec) {
+    (sec.section_attributes || []).forEach(function (a) {
+      (a.elevated_properties || []).forEach(function (k) { add(k, "big"); });
+      (a.important_properties || []).forEach(function (k) { add(k, "big"); });
+      (a.properties || []).forEach(function (k) { add(k, "small"); });
+    });
+  });
+  if (!big.length && !small.length) { Object.keys(props).forEach(function (k) { add(k, "small"); }); }
+  return { big: big, small: small };
+}
+function abilityCard(it) {
+  var cd = it.properties && it.properties.AbilityCooldown;
+  var dur = it.properties && it.properties.AbilityDuration;
+  var chips = "";
+  if (dur && fmtVal(dur)) chips += '<span class="chip">⏳ ' + esc(fmtVal(dur)) + "s</span>";
+  if (cd && fmtVal(cd)) chips += '<span class="chip">⟳ ' + esc(fmtVal(cd)) + "s</span>";
+  var t = statTiles(it), tiles = "", minor = "";
+  t.big.concat(t.small.filter(function (x) { return x.l !== "Cooldown" && x.l !== "Duration"; }).slice(0, 2)).forEach(function (x) { tiles += '<div class="stat big"><b>' + esc(x.v) + "</b><i>" + esc(x.l) + "</i></div>"; });
+  t.small.slice(2).forEach(function (x) { minor += "<span><b>" + esc(x.v) + "</b> " + esc(x.l) + "</span>"; });
+  return '<section class="ab"><div class="abh"><img alt="" src="' + esc(itemImg(it)) + '"><h3>' + esc(it.name) + "</h3>" + chips + "</div>" +
+    '<div class="desc">' + rich(it.description && typeof it.description === "object" ? (it.description.desc || it.description.active || it.description.passive || "") : it.description) + "</div>" +
+    (tiles ? '<div class="stats">' + tiles + "</div>" : "") + (minor ? '<div class="minor">' + minor + "</div>" : "") + upgradesHtml(it) + "</section>";
+}
+function upgradesHtml(it) {
+  var ups = it.upgrades || [];
+  if (!ups.length) return "";
+  var costs = ["1", "2", "5"], html = '<div class="ups">';
+  for (var i = 0; i < Math.min(3, ups.length); i++) {
+    var u = ups[i], bits = [];
+    (u.property_upgrades || []).forEach(function (pu) {
+      var p = (it.properties || {})[pu.name], lab = propLabel(p, pu.name), b = pu.bonus;
+      var sign = (typeof b === "number" || /^-?\d/.test(String(b))) && String(b).charAt(0) !== "-" ? "+" : "";
+      bits.push(esc(sign + b + (p && p.postfix ? p.postfix : "")) + " " + esc(lab));
+    });
+    if (u.description) bits.unshift(rich(u.description));
+    html += '<div class="up"><div>◆ ' + costs[i] + "</div><div>" + (bits.join("<br>") || "—") + "</div></div>";
+  }
+  return html + "</div>";
+}
+function renderHero(cn) {
+  var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
+  if (!h) { state.hero = null; return renderHeroes(); }
+  state.hero = cn;
+  var d = h.description && typeof h.description === "object" ? (h.description.role || h.description.playstyle || "") : (h.description || "");
+  var html = '<button class="back" id="back">‹ All heroes</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div><h1>' + esc(h.name) + "</h1></div></div>";
+  if (d) html += '<p class="sub">' + rich(d) + "</p>";
+  var abs = abilitiesOf(h);
+  if (!abs.length) html += '<div class="err">No abilities found for this hero. Open “data check” on the hero list to see what the API returned.</div>';
+  abs.forEach(function (a) { html += abilityCard(a.item); });
+  $("main").innerHTML = html;
+  $("back").onclick = function () { state.hero = null; render(); window.scrollTo(0, 0); };
+  window.scrollTo(0, 0);
+}
+function slotOf(it) { return String(it.item_slot_type || "").toLowerCase(); }
+function renderShop(slot) {
+  var q = state.q.toLowerCase();
+  var shop = state.items.filter(function (it) { return it.type === "upgrade" && slotOf(it) === slot && it.shopable !== false && !it.disabled; });
+  var tiers = {};
+  shop.forEach(function (it) {
+    if (q && String(it.name).toLowerCase().indexOf(q) < 0) return;
+    var t = it.item_tier || 0; (tiers[t] = tiers[t] || []).push(it);
+  });
+  var html = '<input type="search" id="q" placeholder="Search items" value="' + esc(state.q) + '">' + statusLine();
+  Object.keys(tiers).sort(function (a, b) { return a - b; }).forEach(function (t) {
+    var arr = tiers[t].sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+    var cost = arr[0].cost ? " · " + Number(arr[0].cost).toLocaleString() : "";
+    html += '<div class="tier">Tier ' + esc(t) + "<small>" + esc(cost) + '</small></div><div class="itiles">';
+    arr.forEach(function (it) {
+      html += '<button class="it' + (it.is_active_item ? " act" : "") + '" data-item="' + esc(it.class_name) + '"><img loading="lazy" alt="" src="' + esc(itemImg(it)) + '">' + esc(it.name) + "</button>";
+    });
+    html += "</div>";
+  });
+  if (!Object.keys(tiers).length) html += '<p class="status">Nothing matched. If this stays empty, open “data check”.</p>';
+  $("main").innerHTML = html;
+  bindCommon();
+}
+function itemSheet(cn) {
+  var it = state.byClass[cn]; if (!it) return;
+  var t = statTiles(it), tiles = "";
+  t.big.forEach(function (x) { tiles += '<div class="stat big"><b>' + esc(x.v) + "</b><i>" + esc(x.l) + "</i></div>"; });
+  var bonus = "";
+  t.small.forEach(function (x) { bonus += '<span class="chip"><b>' + esc(x.v) + "</b> " + esc(x.l) + "</span>"; });
+  var comps = (it.component_items || []).map(function (c) { return state.byClass[c] ? state.byClass[c].name : c; });
+  var d = it.description;
+  var dtxt = d && typeof d === "object" ? [d.passive, d.active, d.desc].filter(Boolean).join("<br><br>") : d;
+  var html = '<div class="abh"><img alt="" src="' + esc(itemImg(it)) + '"><h3>' + esc(it.name) + '</h3><span class="cost">' + (it.cost ? "$" + Number(it.cost).toLocaleString() : "") + "</span></div>" +
+    (comps.length ? '<p class="sub">Components: ' + esc(comps.join(", ")) + "</p>" : "") +
+    (bonus ? '<div class="bonus">' + bonus + "</div>" : "") + '<div class="desc">' + (d && typeof d === "object" ? dtxt.replace(/&/g, "&amp;") && rich(dtxt) : rich(dtxt)) + "</div>" +
+    (tiles ? '<div class="stats">' + tiles + "</div>" : "") +
+    '<button class="ibtn" id="close" style="width:100%;margin-top:10px">Close</button>';
+  $("sheetin").innerHTML = html; $("sheet").hidden = false;
+  $("close").onclick = closeSheet;
+}
+function closeSheet() { $("sheet").hidden = true; }
+function debugSheet() {
+  var h = state.heroes[0] || {}, it = state.items.filter(function (x) { return x.type === "ability"; })[0] || state.items[0] || {};
+  var types = {}; state.items.forEach(function (x) { types[x.type] = (types[x.type] || 0) + 1; });
+  var txt = "Heroes: " + state.heroes.length + "\nItems: " + state.items.length + "\nItem types: " + JSON.stringify(types) +
+    "\n\nHERO FIELDS: " + Object.keys(h).join(", ") + "\nHERO.items: " + JSON.stringify(h.items) +
+    "\n\nITEM FIELDS: " + Object.keys(it).join(", ") + "\n\nSAMPLE ITEM:\n" + JSON.stringify(it, null, 1).slice(0, 2500);
+  $("sheetin").innerHTML = "<h3>Data check</h3><pre>" + esc(txt) + '</pre><button class="ibtn" id="close" style="width:100%">Close</button>';
+  $("sheet").hidden = false; $("close").onclick = closeSheet;
+}
+function bindCommon() {
+  var q = $("q");
+  if (q) q.oninput = function () { state.q = q.value; var pos = q.selectionStart; render(); var n = $("q"); n.focus(); n.setSelectionRange(pos, pos); };
+  var d = $("dbg"); if (d) d.onclick = debugSheet;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-hero]"), function (b) { b.onclick = function () { renderHero(b.getAttribute("data-hero")); }; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-item]"), function (b) { b.onclick = function () { itemSheet(b.getAttribute("data-item")); }; });
+}
+function render() {
+  if (state.tab === "heroes") { state.hero ? renderHero(state.hero) : renderHeroes(); } else renderShop(state.tab);
+}
+function showError(e) {
+  $("main").innerHTML = '<div class="err"><b>Couldn’t load game data.</b><br>' + esc(e && e.message ? e.message : e) +
+    "<br><br>Check your connection and tap Refresh. If it keeps failing, the data service may be down or its address may have changed.</div>";
+}
+
+/* ---------- wiring ---------- */
+$("tabs").onclick = function (e) {
+  var b = e.target.closest(".tab"); if (!b) return;
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
+  state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; render(); window.scrollTo(0, 0);
+};
+$("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); };
+$("refresh").onclick = function () { fetchAll().then(render).catch(showError); };
+
+var had = load();
+if (had) render(); else $("main").innerHTML = '<p class="status">Loading game data…</p>';
+if (!had || Date.now() - state.fetchedAt > MAX_AGE) {
+  fetchAll().then(render).catch(function (e) { if (!had) showError(e); });
+}
+</script>
+</body>
+</html>
