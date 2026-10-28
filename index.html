@@ -100,6 +100,31 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 details.lore{margin:4px 0 6px;color:var(--dim);font-size:14px;line-height:1.45}
 details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bottom:6px}
 .stat.plain{border-color:var(--line);background:var(--panel2)}
+.stat.big.wpn{border-color:var(--weapon);background:#3a2814}
+.up{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
+.up.on{border-color:var(--spirit)}
+.up.on div:first-child{background:#6b45a8;color:#fff}
+.uphint{font-size:11px;color:var(--dim);margin:8px 0 0;text-align:center}
+.wpn{background:linear-gradient(160deg,#2e1f12,var(--panel) 60%);border:1px solid #6b4a22;border-radius:12px;padding:12px;margin-bottom:12px}
+.wh{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.wh img{width:64px;height:40px;object-fit:contain;flex:none}
+.wh h3{margin:0;flex:1;min-width:120px;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
+.wdps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0 8px}
+.wdps div{text-align:center;background:#3a2814;border:1px solid #6b4a22;border-radius:8px;padding:8px 2px}
+.wdps b{display:block;font-size:22px;color:var(--weapon)}
+.wdps i,.wc i{font-style:normal;font-size:11px;color:var(--dim)}
+.wg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.wc{background:var(--panel2);border-radius:6px;padding:8px 4px;text-align:center}
+.wc b{display:block;font-size:16px}
+.fo{margin-top:12px;font-size:13px;color:var(--dim);line-height:1.4}
+.fob{height:6px;border-radius:3px;margin:6px 0}
+.sgrid{display:grid;gap:8px}
+.sblk{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:10px 12px}
+.sblk.vit{--c:var(--vital)}.sblk.wep{--c:var(--weapon)}.sblk.spi{--c:var(--spirit)}
+.sblk h4{margin:0 0 4px;font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.srow{display:flex;gap:8px;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
+.srow span{flex:1;color:var(--dim)}
+.srow em{font-style:normal;color:var(--vital);font-size:12px;text-align:right}
 </style>
 </head>
 <body>
@@ -129,6 +154,8 @@ var $ = function (id) { return document.getElementById(id); };
 /* ---------- helpers ---------- */
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
 var HERO_NAME = "";
+var CTX = null;   // while drawing an ability card: {hero, mods, bullet}
+var SEL = {};     // chosen upgrade tier per ability (0-3)
 function prettify(k) {
   return String(k).replace(/^citadel_ability_|^citadel_weapon_|^ability_/, "").replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
 }
@@ -212,12 +239,11 @@ function fmtVal(p) {
 }
 function propLabel(p, key) { return (p && (p.postvalue_label || p.label || p.display_name)) || prettify(key); }
 // What does this stat scale with? Only stats the game data marks as scaling get a badge.
-function scaleOf(p) {
-  var sf = (p && p.scale_function) || {}, rate = Number(sf.stat_scale), st = sf.specific_stat_scale_type || "", cn = sf.class_name || "", kind = "", sub = "";
-  if (!(rate > 0)) return { kind: "", rate: 0 };
+function scaleOf(p, m) {
+  var sf = (p && p.scale_function) || {}, raw = Number(sf.stat_scale) || 0, st = sf.specific_stat_scale_type || "", cn = sf.class_name || "", kind = "", sub = "";
   if (st === "ETechPower") kind = "spirit";
   else if (st === "EBaseWeaponDamageIncrease") kind = "weapon";
-  else if (st === "EWeaponPower") { kind = "weapon"; rate = 1 + rate / 100; } // stored as a percentage: 125 -> x2.25
+  else if (st === "EWeaponPower") kind = "weapon";
   else if (st === "EStatsCount" && cn === "scale_function_tech_damage") kind = "spirit"; // Rake
   else if (st === "ELevelUpBoons") kind = "boons";
   else if (st === "ELightMeleeDamage") { kind = "melee"; sub = "Light melee"; }
@@ -227,7 +253,11 @@ function scaleOf(p) {
     else if (cn === "scale_function_ability_weapon_damage") kind = "weapon";
   }
   if (cn === "scale_function_healing_boon_scale") kind = "boons";
-  return { kind: kind, rate: kind ? rate : 0, sub: sub };
+  if (!kind) return { kind: "", rate: 0 };
+  var r = raw;
+  if (m) { r += m.addScale || 0; if (m.mulScale != null) r *= m.mulScale; }
+  if (!(r > 0)) return { kind: "", rate: 0 };
+  return { kind: kind, rate: st === "EWeaponPower" ? 1 + r / 100 : r, sub: sub }; // Carbine stores weapon scaling as a percentage
 }
 function fmtRate(v) { var n = Number(v); return isNaN(n) ? String(v) : String(Math.round(n * 1000) / 1000); }
 function scaleBadge(r) {
@@ -238,14 +268,50 @@ function scaleBadge(r) {
   if (r.kind === "melee") return '<em class="sc wp">' + esc(r.sub) + " ×" + esc(n) + "</em>";
   return '<em class="sc bn">+' + esc(n) + "/boon</em>";
 }
+// Turn the chosen upgrade tiers (cumulative) into per-property changes.
+function modsFor(it, sel) {
+  var m = {}, ups = it.upgrades || [];
+  for (var i = 0; i < sel && i < ups.length; i++) {
+    ((ups[i] && ups[i].property_upgrades) || []).forEach(function (pu) {
+      var b = parseFloat(pu.bonus); if (isNaN(b)) return;
+      var o = m[pu.name] = m[pu.name] || { add: 0, mul: 1, addScale: 0, mulScale: null };
+      var t = pu.upgrade_type;
+      if (t === "EAddToScale") o.addScale += b;
+      else if (t === "EMultiplyScale") o.mulScale = (o.mulScale == null ? 1 : o.mulScale) * b;
+      else if (t === "EMultiplyBase") return; // meaning unclear in the data; the upgrade text still shows it
+      else o.add += b;
+    });
+  }
+  return m;
+}
+// property with the chosen tiers applied to its value
+function effP(it, key) {
+  var p = (it.properties || {})[key]; if (!p) return p;
+  var m = CTX && CTX.mods ? CTX.mods[key] : null;
+  if (!m || (!m.add && m.mul === 1)) return p;
+  var raw = String(p.value), n = parseFloat(raw); if (isNaN(n)) return p;
+  var q = {}; for (var k in p) q[k] = p[k];
+  q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
+  return q;
+}
 function propRec(it, key) {
-  var p = (it.properties || {})[key];
+  var p0 = (it.properties || {})[key]; if (!p0) return null;
+  var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
   if (isDisabled(p)) return null;
-  var n = parseFloat(p.value);
-  if (!isNaN(n) && (n === 0 || (n < 0 && key === "AbilityCooldownBetweenCharge"))) return null; // inactive until an upgrade enables it
-  var v = fmtVal(p);
-  var sk = scaleOf(p);
-  return v == null ? null : { v: v, l: propLabel(p, key), kind: sk.kind, rate: sk.rate, sub: sk.sub, tech: sk.kind === "spirit" || p.css_class === "tech_damage" };
+  var sk = scaleOf(p0, m), shown = p, n = parseFloat(p.value), cn = (p0.scale_function || {}).class_name;
+  if (!isNaN(n) && CTX && CTX.hero) {
+    var nv = null;
+    if (sk.kind === "melee" && n === 0) { // pure melee scaling: the game shows hero melee damage x rate
+      var ss = CTX.hero.starting_stats || {}, mm = ss[/Heavy/.test(sk.sub) ? "heavy_melee_damage" : "light_melee_damage"];
+      if (mm && mm.value != null) nv = mm.value * sk.rate;
+    } else if (cn === "scale_function_kinetic_carbine_damage" && CTX.bullet && sk.kind === "weapon") nv = n * CTX.bullet * sk.rate;
+    if (nv != null) { shown = {}; for (var k in p) shown[k] = p[k]; shown.value = String(Math.round(nv * 10) / 10); }
+  }
+  var n2 = parseFloat(shown.value);
+  if (!isNaN(n2) && (n2 === 0 || (n2 < 0 && key === "AbilityCooldownBetweenCharge"))) return null; // inactive until an upgrade enables it
+  var v = fmtVal(shown);
+  var label = propLabel(p0, key), wpn = (sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label);
+  return v == null ? null : { v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage") };
 }
 
 /* ---------- data ---------- */
@@ -305,7 +371,7 @@ function statTiles(it) {
 }
 function tile(v, l, r) {
   var badge = scaleBadge(r);
-  return '<div class="stat' + (r && r.tech ? " big" : "") + '">' + badge + "<b>" + esc(v) + "</b><i>" + esc(l) + "</i></div>";
+  return '<div class="stat' + (r && r.wpn ? " big wpn" : r && r.tech ? " big" : "") + '">' + badge + "<b>" + esc(v) + "</b><i>" + esc(l) + "</i></div>";
 }
 // abilities use tooltip_details.info_sections
 function tooltipHtml(it) {
@@ -336,13 +402,13 @@ function chipsHtml(it) {
   var P = it.properties || {}, left = "", right = "", seen = {};
   function chip(g, text) { return '<span class="chip">' + g + " " + esc(text) + "</span>"; }
   [["AbilityDuration", "⏳"], ["AbilityCastRange", "↔"]].forEach(function (g) {
-    var p = P[g[0]]; seen[g[0]] = 1;
-    if (isDisabled(p) || parseFloat(p.value) === 0) return;
+    var p = effP(it, g[0]); seen[g[0]] = 1;
+    if (isDisabled(p) || !(parseFloat(p.value) > 0 || isNaN(parseFloat(p.value)))) return;
     left += chip(g[1], fmtVal(p));
   });
   var extra = (it.tooltip_details && it.tooltip_details.additional_header_properties) || [];
   extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += chip("•", r.v + " " + r.l); });
-  var cd = P.AbilityCooldown;
+  var cd = effP(it, "AbilityCooldown");
   if (!isDisabled(cd) && parseFloat(cd.value) !== 0) right = chip("⟳", fmtVal(cd));
   if (!left && !right) return "";
   return '<div class="chips"><div class="g">' + left + '</div><div class="g">' + right + "</div></div>";
@@ -374,45 +440,109 @@ function upgradeTexts(it) {
   }
   return out;
 }
-function upgradesHtml(it) {
+function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
-  for (var i = 0; i < 3; i++) html += '<div class="up"><div>◆ ' + costs[i] + "</div><div>" + t[i] + "</div></div>";
-  return html + "</div>";
+  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + t[i] + "</div></div>";
+  return html + '</div><div class="uphint">Tap a tier to see its stats on this card</div>';
 }
-function abilityCard(it) {
-  return '<section class="ab"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
-    chipsHtml(it) +
-    '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc } : it.description)) + "</div>" +
-    tooltipHtml(it) + upgradesHtml(it) + "</section>";
+function bulletOf(h) {
+  var w = h && state.byClass[(h.items || {}).weapon_primary];
+  return w && w.weapon_info ? Number(w.weapon_info.bullet_damage) || 0 : 0;
 }
+function abilityCard(it, h) {
+  var sel = SEL[it.class_name] || 0;
+  CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) };
+  try {
+    return '<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
+      chipsHtml(it) +
+      '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc } : it.description)) + "</div>" +
+      tooltipHtml(it) + upgradesHtml(it, sel) + "</section>";
+  } finally { CTX = null; }
+}
+function nice(k) { return prettify(String(k).replace(/^E(Weapon(Attribute)?_?)?/, "")).replace(/([a-z])([A-Z])/g, "$1 $2"); }
+function meters(u) { return fmtNum(u / 39.37) + "m"; }
 function weaponCard(h) {
   var w = state.byClass[(h.items || {}).weapon_primary];
   if (!w || !w.weapon_info) return "";
-  var i = w.weapon_info, n = i.bullets > 1 ? " ×" + i.bullets : "", rate = i.cycle_time ? 1 / i.cycle_time : 0, t = "";
-  if (i.bullet_damage != null) t += tile(fmtNum(i.bullet_damage) + n, "Damage per shot");
-  if (i.clip_size != null) t += tile(i.clip_size, "Ammo");
-  if (rate) t += tile(fmtNum(rate) + "/s", "Fire rate");
-  if (i.reload_duration != null) t += tile(fmtNum(i.reload_duration) + "s", "Reload");
-  var dps = (i.burst_shot_count || 1) <= 1 && rate && i.bullet_damage ? i.bullet_damage * (i.bullets || 1) * rate : 0;
-  return '<section class="ab"><div class="abh">' + imgTag(itemImg(w)) + "<h3>" + esc(nameOf(w)) + "</h3>" +
-    (h.gun_tag ? '<span class="chip">' + esc(h.gun_tag) + "</span>" : "") + '</div><div class="stats">' + t + "</div>" +
-    (dps ? '<div class="minor"><span><b>' + fmtNum(dps) + "</b> Damage per second (all pellets hit)</span></div>" : "") + "</section>";
+  var i = w.weapon_info, pel = i.bullets || 1, up = h.standard_level_up_upgrades || {};
+  var shots = i.shots_per_second || (i.cycle_time ? 1 / i.cycle_time : 0);
+  function wc(v, l) { return '<div class="wc"><b>' + esc(v) + "</b><i>" + esc(l) + "</i></div>"; }
+  var attrs = (((h.shop_stat_display || {}).weapon_stats_display || {}).weapon_attributes || []).map(function (a) {
+    return '<span class="chip">' + esc(String(a).replace(/^EWeaponAttribute_/, "").replace(/([a-z])([A-Z])/g, "$1 $2")) + "</span>";
+  }).join("");
+  if (!attrs && h.gun_tag) attrs = '<span class="chip">' + esc(h.gun_tag) + "</span>";
+  var dps = i.damage_per_second || (shots && i.bullet_damage ? i.bullet_damage * pel * shots : 0);
+  var g = "";
+  if (i.bullet_damage != null) g += wc(fmtNum(i.bullet_damage) + (pel > 1 ? " ×" + pel : ""), pel > 1 ? "Damage per pellet" : "Bullet damage");
+  if (pel > 1) g += wc(fmtNum(i.damage_per_shot || i.bullet_damage * pel), "Damage per shot");
+  if (shots) g += wc(fmtNum(shots) + "/s", "Fire rate");
+  if (i.clip_size != null) g += wc(i.clip_size, "Ammo");
+  if (i.reload_duration != null) g += wc(fmtNum(i.reload_duration) + "s", "Reload");
+  if (pel > 1 && i.bullets_per_second) g += wc(fmtNum(i.bullets_per_second) + "/s", "Pellets per second");
+  if ((i.burst_shot_count || 1) > 1) g += wc("×" + i.burst_shot_count, "Burst");
+  if (i.crit_bonus_start > 1) g += wc("+" + fmtNum((i.crit_bonus_start - 1) * 100) + "%", "Headshot bonus");
+  if (i.bullet_speed) g += wc(fmtNum(i.bullet_speed / 39.37) + " m/s", "Bullet speed");
+  if (i.shoot_move_speed_percent != null && i.shoot_move_speed_percent !== 1) g += wc(fmtNum(i.shoot_move_speed_percent * 100) + "%", "Move speed firing");
+  if (i.can_zoom && i.zoom_fov) g += wc(fmtNum(i.zoom_fov) + "°", "Zoom FOV");
+  var fo = "";
+  if (i.damage_falloff_start_range && i.damage_falloff_end_range) {
+    var pct = Math.round(i.damage_falloff_start_range / i.damage_falloff_end_range * 100);
+    fo = '<div class="fo">Damage falloff: full damage out to <b>' + meters(i.damage_falloff_start_range) + "</b>, down to <b>" + fmtNum((i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0) * 100) + "%</b> at <b>" + meters(i.damage_falloff_end_range) + '</b><div class="fob" style="background:linear-gradient(90deg,var(--weapon) 0%,var(--weapon) ' + pct + "%,#5a3a1a 100%)\"></div></div>";
+  }
+  var boon = Number(up.MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL) > 0 ? '<div class="fo">Bullet damage grows by <b>+' + fmtNum(up.MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL) + "</b> per boon.</div>" : "";
+  return '<section class="wpn"><div class="wh">' + imgTag(itemImg(w)) + "<h3>" + esc(nameOf(w)) + "</h3>" + attrs + "</div>" +
+    (dps ? '<div class="wdps"><div><b>' + fmtNum(dps) + "</b><i>Damage / sec</i></div>" +
+      '<div><b>' + (i.damage_per_second_with_reload ? fmtNum(i.damage_per_second_with_reload) : "–") + "</b><i>With reloads</i></div>" +
+      "<div><b>" + (i.damage_per_magazine ? fmtNum(i.damage_per_magazine) : "–") + "</b><i>Per magazine</i></div></div>" : "") +
+    '<div class="wg">' + g + "</div>" + fo + boon + "</section>";
+}
+function statBlock(h) {
+  var s = h.starting_stats || {}, up = h.standard_level_up_upgrades || {};
+  function v(k) { return s[k] && s[k].value != null ? s[k].value : null; }
+  function row(l, val, extra) { return '<div class="srow"><span>' + esc(l) + "</span><b>" + esc(val) + "</b>" + (extra ? "<em>" + esc(extra) + "</em>" : "") + "</div>"; }
+  function boon(k) { var n = Number(up[k]); return n > 0 ? "+" + fmtNum(n) + " / boon" : ""; }
+  var vit = "", wep = "", spi = "";
+  if (v("max_health") != null) vit += row("Health", fmtNum(v("max_health")), boon("MODIFIER_VALUE_BASE_HEALTH_FROM_LEVEL"));
+  if (v("base_health_regen") != null) vit += row("Health regen", fmtNum(v("base_health_regen")) + "/s");
+  if (v("ooc_health_regen")) vit += row("Out-of-combat regen", fmtNum(v("ooc_health_regen")) + "/s");
+  if (Number(up.MODIFIER_VALUE_BULLET_ARMOR_DAMAGE_RESIST) > 0) vit += row("Bullet resist", "", boon("MODIFIER_VALUE_BULLET_ARMOR_DAMAGE_RESIST"));
+  if (Number(up.MODIFIER_VALUE_TECH_RESIST) > 0) vit += row("Spirit resist", "", boon("MODIFIER_VALUE_TECH_RESIST"));
+  if (v("max_move_speed") != null) vit += row("Move speed", fmtNum(v("max_move_speed")) + " m/s");
+  if (v("sprint_speed") != null) vit += row("Sprint speed", "+" + fmtNum(v("sprint_speed")) + " m/s");
+  if (v("crouch_speed") != null) vit += row("Crouch speed", fmtNum(v("crouch_speed")) + " m/s");
+  if (v("stamina") != null) vit += row("Stamina", fmtNum(v("stamina")));
+  if (v("ground_dash_distance_in_meters")) vit += row("Ground dash", fmtNum(v("ground_dash_distance_in_meters")) + "m", fmtNum(v("ground_dash_duration")) + "s");
+  if (v("air_dash_distance_in_meters")) vit += row("Air dash", fmtNum(v("air_dash_distance_in_meters")) + "m", fmtNum(v("air_dash_duration")) + "s");
+  var w = state.byClass[(h.items || {}).weapon_primary], wi = (w && w.weapon_info) || {};
+  if (wi.bullet_damage != null) wep += row("Bullet damage", fmtNum(wi.bullet_damage) + ((wi.bullets || 1) > 1 ? " ×" + wi.bullets : ""), boon("MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL"));
+  if (v("light_melee_damage") != null) wep += row("Light melee", fmtNum(v("light_melee_damage")), boon("MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL"));
+  if (v("heavy_melee_damage") != null) wep += row("Heavy melee", fmtNum(v("heavy_melee_damage")));
+  if (v("reload_speed") != null && v("reload_speed") !== 1) wep += row("Reload speed", "×" + fmtNum(v("reload_speed")));
+  spi += row("Spirit power", fmtNum(v("tech_power") || 0), boon("MODIFIER_VALUE_TECH_POWER"));
+  var sc = h.scaling_stats || {};
+  Object.keys(sc).forEach(function (k) {
+    var o = sc[k] || {}, who = o.scaling_stat === "ETechPower" ? "spirit" : o.scaling_stat === "EWeaponPower" ? "weapon" : nice(o.scaling_stat || "").toLowerCase();
+    spi += row(nice(k) + " scaling", "+" + fmtNum(o.scale), "per " + who);
+  });
+  function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
+  return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
 }
 function renderHero(cn) {
   var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
   if (!h) { state.hero = null; return renderHeroes(); }
-  state.hero = cn; HERO_NAME = h.name;
+  state.hero = cn; HERO_NAME = h.name; SEL = {};
   var lore = h.description && typeof h.description === "object" ? (h.description.lore || "") : (h.description || "");
   var tags = (h.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("");
   var html = '<button class="back" id="back">‹ All heroes</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div><h1>' + esc(h.name) + "</h1>" +
     (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   if (lore) html += '<details class="lore"><summary>Lore</summary>' + rich(lore).replace(/(<br>)+/g, "<br><br>") + "</details>";
+  html += '<div class="sec">Stats</div>' + statBlock(h);
   var wc = weaponCard(h);
   if (wc) html += '<div class="sec">Weapon</div>' + wc;
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   html += '<div class="sec">Abilities</div>';
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
-  abs.forEach(function (a) { html += abilityCard(a); });
+  abs.forEach(function (a) { html += abilityCard(a, h); });
   $("main").innerHTML = html;
   $("back").onclick = function () { state.hero = null; render(); window.scrollTo(0, 0); };
   window.scrollTo(0, 0);
@@ -486,6 +616,15 @@ $("tabs").onclick = function (e) {
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
   state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; render(); window.scrollTo(0, 0);
 };
+$("main").addEventListener("click", function (e) {
+  var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
+  var card = u.closest(".ab"), key = card && card.getAttribute("data-ab"), it = key && state.byClass[key]; if (!it) return;
+  var t = Number(u.getAttribute("data-t")), cur = SEL[key] || 0;
+  SEL[key] = cur === t ? t - 1 : t; // tapping the top selected tier steps back one
+  var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], tmp = document.createElement("div");
+  tmp.innerHTML = abilityCard(it, h);
+  card.parentNode.replaceChild(tmp.firstChild, card);
+});
 $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); };
 $("refresh").onclick = function () { fetchAll().then(render).catch(showError); };
 
