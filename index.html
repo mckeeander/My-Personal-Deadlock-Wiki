@@ -124,6 +124,18 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .sblk h4{margin:0 0 4px;font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
 .srow{display:flex;gap:8px;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
 .srow span{flex:1;color:var(--dim)}
+.isec{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
+.isec h4{margin:0 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.isec.innate h4{color:var(--vital)}.isec.passive h4{color:var(--gold)}.isec.active h4{color:#e8847c}
+.isec h4 .chip{text-transform:none;letter-spacing:0;color:var(--fg)}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.pill2{border-radius:5px;padding:3px 8px;font-size:12px;font-weight:600;background:var(--panel2);color:var(--dim)}
+.pill2.weapon{background:#3d2a14;color:var(--weapon)}.pill2.vitality{background:#1f3320;color:var(--vital)}.pill2.spirit{background:#3b2d55;color:var(--spirit)}
+.rc{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;text-align:left;font-size:14px;width:100%;margin-top:6px;color:var(--fg)}
+.rc img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:4px}
+.rc span{flex:1;min-width:0}.rc em{font-style:normal;color:var(--dim);font-size:11px;margin-left:6px}
+.rc .cost{font-size:13px}
+.ihd{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:14px 0 2px}
 .srow em{font-style:normal;color:var(--vital);font-size:12px;text-align:right}
 </style>
 </head>
@@ -213,6 +225,11 @@ function load() {
 function index() {
   state.byClass = {};
   state.items.forEach(function (it) { if (it.class_name) state.byClass[it.class_name] = it; });
+  state.into = {};
+  state.items.forEach(function (it) {
+    if (it.type !== "upgrade" || it.shopable === false || it.disabled) return;
+    (it.component_items || []).forEach(function (c) { (state.into[c] = state.into[c] || []).push(it.class_name); });
+  });
 }
 function fmtNum(v) { var n = Number(v); return isNaN(n) ? String(v) : String(Math.round(n * 100) / 100); }
 function isDisabled(p) {
@@ -278,7 +295,7 @@ function modsFor(it, sel) {
       var t = pu.upgrade_type;
       if (t === "EAddToScale") o.addScale += b;
       else if (t === "EMultiplyScale") o.mulScale = (o.mulScale == null ? 1 : o.mulScale) * b;
-      else if (t === "EMultiplyBase") return; // meaning unclear in the data; the upgrade text still shows it
+      else if (t === "EMultiplyBase") o.mul *= 1 + b / 100; // percent increase (Ground Strike T3: +120% damage per meter)
       else o.add += b;
     });
   }
@@ -570,22 +587,61 @@ function renderShop(slot) {
   $("main").innerHTML = html;
   bindCommon();
 }
-function itemSheet(cn) {
-  var it = state.byClass[cn]; if (!it) return;
-  HERO_NAME = "";
-  var t = statTiles(it), tiles = "", bonus = "";
-  t.big.forEach(function (x) { tiles += tile(x.v, x.l, x); });
-  t.small.forEach(function (x) { bonus += '<span class="chip"><b>' + esc(x.v) + "</b> " + esc(x.l) + "</span>"; });
-  var comps = (it.component_items || []).map(function (c) { return state.byClass[c] ? nameOf(state.byClass[c]) : c; });
-  var html = '<div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + '</h3><span class="cost">' + (it.cost ? "$" + Number(it.cost).toLocaleString() : "") + "</span></div>" +
-    (comps.length ? '<p class="sub">Components: ' + esc(comps.join(", ")) + "</p>" : "") +
-    (bonus ? '<div class="bonus">' + bonus + "</div>" : "") + '<div class="desc">' + rich(descText(it.description)) + "</div>" +
-    (tiles ? '<div class="stats">' + tiles + "</div>" : "") +
-    '<button class="ibtn" id="close" style="width:100%;margin-top:10px">Close</button>';
-  $("sheetin").innerHTML = html; $("sheet").hidden = false;
-  $("close").onclick = closeSheet;
+var ISTACK = [];
+function itemSecHtml(it, sec, used) {
+  var type = sec.section_type || "passive", tiles = "", mini = "", chips = "", desc = "";
+  (sec.section_attributes || []).forEach(function (a) {
+    if (a.loc_string) desc += '<div class="desc">' + rich(a.loc_string) + "</div>";
+    function big(k) {
+      if (used[k]) return; var r = propRec(it, k); if (!r) return; used[k] = 1;
+      if (type === "innate") r = { v: r.v, l: r.l, kind: r.kind, rate: r.rate, sub: r.sub };
+      tiles += tile(r.v, r.l, r);
+    }
+    (a.elevated_properties || []).forEach(big);
+    (a.important_properties || []).forEach(big);
+    (a.properties || []).forEach(function (k) {
+      if (used[k]) return;
+      if (type === "innate") { big(k); return; }
+      var r = propRec(it, k); if (!r) return; used[k] = 1;
+      if (k === "AbilityCooldown") chips += '<span class="chip">⟳ ' + esc(r.v) + "</span>";
+      else if (k === "AbilityDuration") chips += '<span class="chip">⏳ ' + esc(r.v) + "</span>";
+      else mini += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>";
+    });
+  });
+  if (!desc && !tiles && !mini && !chips) return "";
+  var title = type === "innate" ? "Innate" : type === "active" ? "Active" : "Passive";
+  return '<div class="isec ' + type + '"><h4>' + title + chips + "</h4>" + desc + (tiles ? '<div class="stats">' + tiles + "</div>" : "") + (mini ? '<div class="minor">' + mini + "</div>" : "") + "</div>";
 }
-function closeSheet() { $("sheet").hidden = true; }
+function recipeRow(cn, depth, flat) {
+  var c = state.byClass[cn]; if (!c) return "";
+  var html = '<button class="rc" data-item="' + esc(cn) + '" style="margin-left:' + (depth * 16) + 'px;width:calc(100% - ' + (depth * 16) + 'px)">' + imgTag(itemImg(c)) + "<span>" + esc(nameOf(c)) +
+    (c.item_tier ? "<em>T" + esc(c.item_tier) + "</em>" : "") + '</span><span class="cost" style="flex:none">' + (c.cost ? "$" + Number(c.cost).toLocaleString() : "") + "</span></button>";
+  if (!flat && depth < 3) (c.component_items || []).forEach(function (x) { html += recipeRow(x, depth + 1); });
+  return html;
+}
+function itemSheet(cn, fromBack) {
+  var it = state.byClass[cn]; if (!it) return;
+  HERO_NAME = ""; CTX = null;
+  if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== cn) ISTACK.push(cn); }
+  var slot = slotOf(it), act = String(it.activation || ""), kind = act === "passive" ? "Passive" : act === "instant_cast_toggle" ? "Toggle" : act ? "Active" : (it.is_active_item ? "Active" : "");
+  var used = {}, secs = (it.tooltip_sections || []).map(function (sec) { return itemSecHtml(it, sec, used); }).join("");
+  var hasText = (it.tooltip_sections || []).some(function (sec) { return (sec.section_attributes || []).some(function (a) { return a.loc_string; }); });
+  var topDesc = !hasText ? rich(descText(it.description)) : "";
+  var comps = it.component_items || [], into = (state.into || {})[cn] || [];
+  var html = (ISTACK.length > 1 ? '<button class="back" id="ibk">‹ Back</button>' : "") +
+    '<div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + '</h3><span class="cost">' + (it.cost ? "$" + Number(it.cost).toLocaleString() : "") + "</span></div>" +
+    '<div class="pills">' + (slot ? '<span class="pill2 ' + esc(slot) + '">' + esc(slot.charAt(0).toUpperCase() + slot.slice(1)) + "</span>" : "") +
+    (it.item_tier ? '<span class="pill2">Tier ' + esc(it.item_tier) + "</span>" : "") + (kind ? '<span class="pill2">' + kind + "</span>" : "") + "</div>" +
+    (topDesc ? '<div class="desc">' + topDesc + "</div>" : "") + secs +
+    (comps.length ? '<div class="ihd">Builds from</div>' + comps.map(function (c) { return recipeRow(c, 0); }).join("") : "") +
+    (into.length ? '<div class="ihd">Builds into</div>' + into.map(function (c) { return recipeRow(c, 0, true); }).join("") : "") +
+    '<button class="ibtn" id="close" style="width:100%;margin-top:14px">Close</button>';
+  $("sheetin").innerHTML = html; $("sheet").hidden = false;
+  $("sheetin").scrollTop = 0;
+  $("close").onclick = closeSheet;
+  var bk = $("ibk"); if (bk) bk.onclick = function () { ISTACK.pop(); itemSheet(ISTACK[ISTACK.length - 1], true); };
+}
+function closeSheet() { $("sheet").hidden = true; ISTACK = []; }
 function debugSheet() {
   var h = state.heroes[0] || {}, it = state.items.filter(function (x) { return x.type === "ability"; })[0] || state.items[0] || {};
   var types = {}; state.items.forEach(function (x) { types[x.type] = (types[x.type] || 0) + 1; });
@@ -624,6 +680,9 @@ $("main").addEventListener("click", function (e) {
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], tmp = document.createElement("div");
   tmp.innerHTML = abilityCard(it, h);
   card.parentNode.replaceChild(tmp.firstChild, card);
+});
+$("sheetin").addEventListener("click", function (e) {
+  var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
 $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); };
 $("refresh").onclick = function () { fetchAll().then(render).catch(showError); };
