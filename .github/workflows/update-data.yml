@@ -171,6 +171,62 @@ jobs:
                       dbg.append("  %s: NOT FOUND on page" % name)
               return out, dbg, str(frag)
 
+
+          def weapon_extract(html):
+              """Best effort: the Weapon section's card title and its Notes list."""
+              soup = BeautifulSoup(html, "html.parser")
+              root = soup.find(class_="mw-parser-output") or soup
+              head = None
+              for h in root.find_all(re.compile(r"^h[1-4]$")):
+                  if re.match(r"^\s*weapon\s*$", txt(h), re.I):
+                      head = h
+                      break
+              if head is None:
+                  return None, "no Weapon heading", ""
+              level = int(head.name[1])
+              anchor = head.parent if head.parent is not None and "mw-heading" in (head.parent.get("class") or []) else head
+              frag = BeautifulSoup("<div></div>", "html.parser").div
+              for sib in anchor.next_siblings:
+                  if isinstance(sib, Tag):
+                      hh = sib if re.match(r"^h[1-6]$", sib.name or "") else (sib.find(re.compile(r"^h[1-6]$")) if "mw-heading" in (sib.get("class") or []) else None)
+                      if hh is not None and int(hh.name[1]) <= level:
+                          break
+                  frag.append(copy.copy(sib))
+              tags = [t for t in frag.descendants if isinstance(t, Tag)]
+              # card title: first short text element that is not a tag chip, the DPS line or the section label
+              name = ""
+              for t in tags:
+                  if t.name in ("li", "ul", "ol", "a", "script", "style", "img", "br", "td", "th", "tr", "table"):
+                      continue
+                  if t.find_parent(["li", "a"]):
+                      continue
+                  s = txt(t)
+                  cls = " ".join(t.get("class") or []).lower()
+                  if t.find(True) and not re.search(r"name|title", cls):
+                      continue
+                  if 2 <= len(s) <= 40 and not re.search(r"damage|range|fire|falloff|notes|weapon$|^\d", s, re.I):
+                      name = s
+                      break
+              start = None
+              for j, t in enumerate(tags):
+                  if t.name not in ("li", "ul", "ol", "p", "a") and not t.find_parent("li") and txt(t).lower().rstrip(":") == "notes":
+                      start = j
+                      break
+              notes = []
+              if start is not None:
+                  bset = set(id(b) for b in tags)
+                  for t in tags[start + 1:]:
+                      if t.name != "li":
+                          continue
+                      depth = len([p for p in t.find_parents("li") if id(p) in bset])
+                      c = copy.copy(t)
+                      for u in c.find_all(["ul", "ol"]):
+                          u.decompose()
+                      s = txt_inline(c)
+                      if s and depth <= 2:
+                          notes.append([depth, s])
+              return {"name": name, "notes": notes}, "name=%r, %d notes, notes-label=%s" % (name, len(notes), start is not None), str(frag)
+
           def main():
               heroes = json.load(open(os.path.join(DATA, "heroes.json")))
               items = json.load(open(os.path.join(DATA, "items.json")))
@@ -186,7 +242,7 @@ jobs:
                   pass
               result, log, ok, fail = {}, [], 0, 0
               for h in heroes:
-                  if h.get("disabled") or h.get("player_selectable") is False or (h.get("in_development") and h.get("development_state") != "release"):
+                  if h.get("disabled") or h.get("in_development"):
                       continue
                   name = h["name"]
                   abil = [by[h["items"][k]]["name"] for k in ("signature1", "signature2", "signature3", "signature4") if h.get("items", {}).get(k) in by]
@@ -206,9 +262,18 @@ jobs:
                           result[name] = prev[name]
                       continue
                   ok += 1
+                  try:
+                      wdata, wdbg, wfrag = weapon_extract(html)
+                  except Exception as e:
+                      wdata, wdbg, wfrag = None, "weapon error %r" % e, ""
+                  if wdata and (wdata["notes"] or wdata["name"]):
+                      data["__weapon"] = wdata
+                  if name == "Rem":
+                      open(os.path.join(DATA, "wiki_sample_weapon_Rem.html"), "w", encoding="utf-8").write(wfrag[:30000])
                   result[name] = data
                   log.append("%s: fetched via %s; %s" % (name, how, dbg[0]))
                   log.extend(dbg[1:])
+                  log.append("  [weapon] " + wdbg)
                   if name in ("Lash", "Drifter"):
                       open(os.path.join(DATA, "wiki_sample_%s.html" % name), "w", encoding="utf-8").write(frag[:90000])
                   if not OFFLINE:
