@@ -199,6 +199,7 @@ details.notes li{margin-bottom:4px}
 .nfig img{max-width:100%;max-height:260px;border-radius:6px}
 .nfig figcaption{font-size:12px;color:var(--dim);margin-top:4px}
 .chip .pi{filter:brightness(0) invert(1);opacity:.85}
+.minor .fl{color:var(--fg);font-weight:600}
 </style>
 </head>
 <body>
@@ -353,6 +354,8 @@ function fmtVal(p) {
   var raw = String(p.value), n = Number(raw), isNum = !isNaN(n);
   var pre = p.prefix || "";
   if (/\{s:sign\}/.test(pre)) pre = n >= 0 ? "+" : ""; else pre = pre.replace(/\{s:[^}]*\}/g, "");
+  var um = !isNum && /^(-?\d*\.?\d+)\s*([a-z%\/]+)$/i.exec(raw); // "19.0m" -> "19m"
+  if (um) return pre + fmtNum(um[1]) + um[2];
   return pre + (isNum ? fmtNum(raw) : raw) + (isNum ? unitFor(p) : "");
 }
 function propLabel(p, key) { return (p && (p.postvalue_label || p.label || p.display_name)) || prettify(key); }
@@ -498,10 +501,11 @@ function tile(v, l, r) {
 }
 // abilities use tooltip_details.info_sections
 function tooltipHtml(it) {
-  var secs = it.tooltip_details && it.tooltip_details.info_sections, html = "";
-  if (!secs || !secs.length) return "";
+  var secs = it.tooltip_details && it.tooltip_details.info_sections, parts = [], ex = upgradeExtras(it), tilesDone = false, lastMinor = -1;
+  if (!secs || !secs.length) secs = [];
+  var extraTiles = ex.tiles.map(function (r) { return tile(r.v, r.l, r); }).join("");
   secs.forEach(function (sec, si) {
-    if (si > 0 && sec.loc_string) html += '<div class="desc">' + rich(sec.loc_string) + "</div>";
+    if (si > 0 && sec.loc_string) parts.push('<div class="desc">' + rich(sec.loc_string) + "</div>");
     (sec.properties_block || []).forEach(function (blk) {
       var tiles = "";
       (blk.properties || []).forEach(function (pp) {
@@ -513,13 +517,20 @@ function tooltipHtml(it) {
         var key = pp.important_property || pp.property; if (!key) return;
         var r = propRec(it, key); if (r) tiles += tile(r.v, r.l, r);
       });
-      if (tiles) html += (blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>";
+      if (tiles && !tilesDone) { tiles += extraTiles; tilesDone = true; } // upgrade-added stats sit with the main tiles
+      if (tiles) parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>");
     });
     var minor = "";
-    (sec.basic_properties || []).forEach(function (k) { var r = propRec(it, k); if (r) minor += "<span>" + pIcon(r.icon) + "<b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; });
-    if (minor) html += '<div class="minor">' + minor + "</div>";
+    (sec.basic_properties || []).forEach(function (k) { var r = propRec(it, k); if (r) minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; });
+    if (minor) { parts.push('<div class="minor">' + minor + "</div>"); lastMinor = parts.length - 1; }
   });
-  return html;
+  if (extraTiles && !tilesDone) parts.push('<div class="stats">' + extraTiles + "</div>");
+  var fl = ex.flags.map(function (f) { return '<span class="fl">' + esc(f) + "</span>"; }).join("");
+  if (fl) {
+    if (lastMinor >= 0) parts[lastMinor] = parts[lastMinor].replace(/<\/div>$/, fl + "</div>");
+    else parts.push('<div class="minor">' + fl + "</div>");
+  }
+  return parts.join("");
 }
 // every property key the game's own tooltip already lists for this ability
 function listedKeys(it) {
@@ -563,21 +574,36 @@ function chipsHtml(it) {
   if (!left && !right) return "";
   return '<div class="chips"><div class="g">' + left + '</div><div class="g">' + right + "</div></div>";
 }
-// stats an upgrade changes that the game tooltip body never lists (e.g. Pillow Toss fire-rate slow)
-function upgradeExtraHtml(it) {
-  var L = listedKeys(it), keys = [], seen = {}, tiles = "";
+// stats an upgrade changes that the game tooltip body never lists (e.g. Pillow Toss fire-rate slow).
+// Numbers join the main stat tiles; unlabelled on/off switches become plain text in the small-stats row.
+function camelHead(k) { return (String(k).match(/[A-Z][a-z0-9]*/g) || []).slice(0, 2).join(""); }
+function upgradeExtras(it) {
+  var L = listedKeys(it), keys = [], seen = {}, res = { tiles: [], flags: [] }, P = it.properties || {};
   (it.upgrades || []).forEach(function (u) {
     ((u && u.property_upgrades) || []).forEach(function (pu) {
       var t = pu.upgrade_type;
       if (t === "EAddToScale" || t === "EMultiplyScale") return;
-      var k = pu.name; if (seen[k] || L[k] || HEADER_KEYS[k]) return; seen[k] = 1;
-      var p = (it.properties || {})[k]; if (!p) return;
-      if (!(p.postvalue_label || p.label) && /^(Use|Refresh|Unlimited|Improved)/.test(k)) return; // on/off switches read oddly as stats
-      keys.push(k);
+      var k = pu.name; if (seen[k] || L[k] || HEADER_KEYS[k] || !P[k]) return; seen[k] = 1; keys.push(k);
     });
   });
-  keys.forEach(function (k) { var r = propRec(it, k); if (r) tiles += tile(r.v, r.l, r); });
-  return tiles ? '<div class="blk">More stats</div><div class="stats">' + tiles + "</div>" : "";
+  keys.forEach(function (k) {
+    var p = P[k], named = !!(p.postvalue_label || p.label), base = parseFloat(p.value), e = effP(it, k), ev = e ? parseFloat(e.value) : NaN;
+    if (!named) {
+      if (/^(Refresh|Improved)/.test(k)) return;
+      // an unlabelled twin of a tile the tooltip already shows (e.g. Bonus Item Range next to Bonus Item Duration/Range)
+      var dup = Object.keys(L).some(function (lk) {
+        var q = effP(it, lk); return q && lk !== k && camelHead(lk) === camelHead(k) && parseFloat(q.value) === ev;
+      });
+      if (dup) return;
+      var ones = (it.upgrades || []).every(function (u) { return ((u && u.property_upgrades) || []).every(function (pu) { return pu.name !== k || parseFloat(pu.bonus) === 1; }); });
+      var isToggle = ones && base === 0 && !p.postfix && !p.prefix && !p.display_units && !/(Duration|Time|Count|Stacks?|Percent|Pct|Range|Distance|Height|Radius|Damage|Lifesteal|Amp|Window|Delay|Speed|Cooldown|Targets|Resist|Spirit|Weapon|Fire|Bonus|Buff)/i.test(k);
+      if (isToggle) { if (ev > 0) res.flags.push(prettify(k)); return; } // on/off switch, shown by name only
+    }
+    var r = propRec(it, k); if (!r) return;
+    if (/^Consume/.test(k) && r.v.charAt(0) !== "-") r.v = "-" + r.v; // a cost, not a gain
+    res.tiles.push(r);
+  });
+  return res;
 }
 function upgradeTexts(it) {
   var d = it.description && typeof it.description === "object" ? it.description : {}, ups = it.upgrades || [], out = [];
@@ -642,7 +668,7 @@ function abilityCard(it, h) {
     return '<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       chipsHtml(it) +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc } : it.description)) + "</div>" +
-      tooltipHtml(it) + upgradeExtraHtml(it) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
+      tooltipHtml(it) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
   } finally { CTX = null; }
 }
 function nice(k) { return prettify(String(k).replace(/^E(Weapon(Attribute)?_?)?/, "")).replace(/([a-z])([A-Z])/g, "$1 $2"); }
