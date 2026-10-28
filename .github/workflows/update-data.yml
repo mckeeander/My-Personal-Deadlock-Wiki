@@ -1,0 +1,47 @@
+name: Update Deadlock data
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/update-data.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download data
+        run: |
+          mkdir -p data
+          grab() {
+            out="data/$1"; shift
+            for u in "$@"; do
+              echo "Trying $u"
+              code=$(curl -sS -L -o tmp.json -w "%{http_code}" "$u" || true)
+              echo "  HTTP $code"
+              if [ "$code" = "200" ] && python3 -c "import json,sys; d=json.load(open('tmp.json')); sys.exit(0 if isinstance(d,list) and len(d)>0 else 1)"; then
+                mv tmp.json "$out"
+                echo "  saved $out"
+                return 0
+              fi
+            done
+            echo "FAILED: no working address for $out"
+            return 1
+          }
+          grab heroes.json "https://assets.deadlock-api.com/v2/heroes" "https://api.deadlock-api.com/v1/assets/heroes"
+          grab items.json "https://assets.deadlock-api.com/v2/items" "https://api.deadlock-api.com/v1/assets/items"
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > data/updated.txt
+
+      - name: Save to repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet && echo "No changes" || (git commit -m "Update Deadlock data" && git push)
