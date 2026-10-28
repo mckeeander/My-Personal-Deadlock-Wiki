@@ -1,5 +1,5 @@
 // Deadlock Codex service worker: keeps the page and item/hero art available offline.
-var SHELL = "codex-shell-v1", ART = "codex-art-v1", ART_MAX = 700;
+var SHELL = "codex-shell-v2", ART = "codex-art-v1", ART_MAX = 700;
 
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(SHELL).then(function (c) { return c.addAll(["./", "index.html", "manifest.webmanifest", "icon-192.png"]); }).then(function () { return self.skipWaiting(); }));
@@ -35,7 +35,7 @@ self.addEventListener("fetch", function (e) {
     }));
     return;
   }
-  if (u.hostname === "assets-bucket.deadlock-api.com") {
+  if (u.hostname === "assets-bucket.deadlock-api.com" || u.hostname === "cdn.deadlock.wiki") {
     // game art: saved copy first, fetched once
     e.respondWith(caches.open(ART).then(function (c) {
       return c.match(r).then(function (hit) {
