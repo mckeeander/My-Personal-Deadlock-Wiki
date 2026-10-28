@@ -71,6 +71,17 @@ dialog,.sheet{position:fixed;inset:0;background:rgba(10,8,14,.78);z-index:20;dis
 .err{background:#3a1d1f;border:1px solid var(--red);padding:12px;border-radius:8px;font-size:14px;line-height:1.4}
 pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--panel);padding:8px;border-radius:6px;max-height:50vh;overflow:auto}
 .link{color:var(--gold);background:none;border:0;padding:0;text-decoration:underline;font-size:12px}
+
+.hl{color:#fff;font-weight:700}
+.dm{color:var(--dim)}
+.ia{height:1.15em;width:auto;vertical-align:-.2em;margin-right:3px}
+.blk{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:12px 0 4px}
+.sec{font-family:var(--disp);color:var(--gold);font-size:15px;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tag{background:#3b2230;color:#f0b8b0;border-radius:4px;padding:3px 8px;font-size:12px;letter-spacing:.04em}
+details.lore{margin:4px 0 6px;color:var(--dim);font-size:14px;line-height:1.45}
+details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bottom:6px}
+.stat.plain{border-color:var(--line);background:var(--panel2)}
 </style>
 </head>
 <body>
@@ -99,18 +110,56 @@ var $ = function (id) { return document.getElementById(id); };
 
 /* ---------- helpers ---------- */
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
-// descriptions may contain simple markup; allow a tiny safe subset
+var HERO_NAME = "";
+function prettify(k) {
+  return String(k).replace(/^citadel_ability_|^citadel_weapon_|^ability_/, "").replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+}
+function nameOf(it) { return it.name || prettify(it.class_name); }
+function colorFor(cls, style) {
+  var m = /color:\s*(#[0-9a-fA-F]{3,8})/.exec(style || "");
+  if (m) return m[1];
+  if (/Spirit/.test(cls)) return "var(--spirit)";
+  return "";
+}
+// Game text carries markup, inline SVG icons and {s:...} placeholders. Keep a small safe subset.
 function rich(s) {
   s = String(s == null ? "" : s);
-  s = esc(s);
-  s = s.replace(/&lt;(\/?)(b|i|strong|em|br)\s*\/?&gt;/gi, "<$1$2>");
-  s = s.replace(/&lt;span[^&]*&gt;/gi, '<span class="hl">').replace(/&lt;\/span&gt;/gi, "</span>");
-  s = s.replace(/&lt;[^&]*?&gt;/g, "");
-  return s.replace(/\n/g, "<br>");
+  s = s.replace(/<svg[\s\S]*?<\/svg>/gi, "").replace(/<Panel[\s\S]*?<\/Panel>/gi, "");
+  s = s.replace(/\{s:hero_name\}/g, HERO_NAME || "the hero").replace(/\{s:[^}]*\}/g, "");
+  var parts = s.split(/(<[^>]*>)/), out = "";
+  parts.forEach(function (p) {
+    if (p.charAt(0) !== "<") { out += esc(p); return; }
+    var m = /^<\s*(\/?)\s*([a-zA-Z]+)([^>]*)>/.exec(p);
+    if (!m) return;
+    var close = m[1] === "/", tag = m[2].toLowerCase(), attrs = m[3] || "";
+    if (tag === "br") { out += "<br>"; return; }
+    if (tag === "span") {
+      if (close) { out += "</span>"; return; }
+      var cls = (/class="([^"]*)"/.exec(attrs) || [0, ""])[1];
+      var style = (/style="([^"]*)"/.exec(attrs) || [0, ""])[1];
+      var col = colorFor(cls, style);
+      var c = /highlight/.test(cls) ? "hl" : /diminish/.test(cls) ? "dm" : "";
+      out += "<span" + (c ? ' class="' + c + '"' : "") + (col ? ' style="color:' + col + '"' : "") + ">";
+      return;
+    }
+    if (tag === "img") {
+      var src = (/src="([^"]*)"/.exec(attrs) || [0, ""])[1];
+      if (/^https:\/\/assets-bucket\.deadlock-api\.com\//.test(src)) out += '<img class="ia" alt="" src="' + esc(src) + '">';
+      return;
+    }
+    if (tag === "b" || tag === "i" || tag === "strong" || tag === "em") out += close ? "</" + tag + ">" : "<" + tag + ">";
+  });
+  return out;
+}
+function descText(d) {
+  if (!d) return "";
+  if (typeof d === "string") return d;
+  return [d.passive, d.active, d.desc].filter(Boolean).join("<br><br>");
 }
 function pick(o, keys) { for (var i = 0; i < keys.length; i++) { if (o && o[keys[i]]) return o[keys[i]]; } return ""; }
 function heroImg(h) { return pick(h.images, ["icon_hero_card", "icon_image_small", "selection_image", "icon_image_small_webp", "minimap_image"]) || pick(h, ["image"]); }
 function itemImg(it) { return pick(it, ["image_webp", "image"]) || ""; }
+function imgTag(src) { return src ? '<img alt="" src="' + esc(src) + '" onerror="this.style.display=\'none\'">' : ""; }
 function save() { try { localStorage.setItem(KEY, JSON.stringify({ t: state.fetchedAt, h: state.heroes, i: state.items })); } catch (e) {} }
 function load() {
   try { var d = JSON.parse(localStorage.getItem(KEY) || "null"); if (d && d.h && d.i) { state.heroes = d.h; state.items = d.i; state.fetchedAt = d.t || 0; index(); return true; } } catch (e) {}
@@ -120,14 +169,38 @@ function index() {
   state.byClass = {};
   state.items.forEach(function (it) { if (it.class_name) state.byClass[it.class_name] = it; });
 }
+function fmtNum(v) { var n = Number(v); return isNaN(n) ? String(v) : String(Math.round(n * 100) / 100); }
+function isDisabled(p) {
+  if (!p || p.value == null || p.value === "") return true;
+  if (p.disable_value != null && Number(p.disable_value) === Number(p.value)) return true;
+  return false;
+}
+function unitFor(p) {
+  if (p.postfix != null && p.postfix !== "") return p.postfix;
+  var u = p.display_units || "";
+  if (/MetersPerSecond/.test(u)) return "m/s";
+  if (/Meters/.test(u)) return "m";
+  if (/Seconds/.test(u)) return "s";
+  if (/Percent/.test(u)) return "%";
+  if (p.css_class === "cooldown" || p.css_class === "duration") return "s";
+  return "";
+}
 function fmtVal(p) {
   if (!p || p.value == null || p.value === "") return null;
-  var v = p.value, n = Number(v);
-  if (!isNaN(n)) v = Math.round(n * 100) / 100;
-  var pre = p.prefix || "", post = p.postfix || p.post_value_label || "";
-  return pre + v + post;
+  var raw = String(p.value), n = Number(raw), isNum = !isNaN(n);
+  var pre = p.prefix || "";
+  if (/\{s:sign\}/.test(pre)) pre = n >= 0 ? "+" : ""; else pre = pre.replace(/\{s:[^}]*\}/g, "");
+  return pre + (isNum ? fmtNum(raw) : raw) + (isNum ? unitFor(p) : "");
 }
-function propLabel(p, key) { return (p && (p.label || p.display_name)) || String(key).replace(/([A-Z])/g, " $1").trim(); }
+function propLabel(p, key) { return (p && (p.postvalue_label || p.label || p.display_name)) || prettify(key); }
+function propRec(it, key) {
+  var p = (it.properties || {})[key];
+  if (isDisabled(p)) return null;
+  var n = parseFloat(p.value);
+  if (!isNaN(n) && (n === 0 || (n < 0 && key === "AbilityCooldownBetweenCharge"))) return null; // inactive until an upgrade enables it
+  var v = fmtVal(p);
+  return v == null ? null : { v: v, l: propLabel(p, key) };
+}
 
 /* ---------- data ---------- */
 var RAW = "https://raw.githubusercontent.com/mckeeander/My-Personal-Deadlock-Wiki/main/data/";
@@ -167,32 +240,13 @@ function renderHeroes() {
   $("main").innerHTML = html + "</div>";
   bindCommon();
 }
-function abilitiesOf(h) {
-  var out = [], seen = {};
-  var src = h.items || {};
-  Object.keys(src).forEach(function (k) {
-    var cn = src[k];
-    if (typeof cn !== "string") return;
-    var it = state.byClass[cn];
-    if (it && it.type !== "weapon" && !seen[cn]) { seen[cn] = 1; out.push({ slot: k, item: it }); }
-  });
-  if (!out.length) { // fallback: items that name this hero
-    state.items.forEach(function (it) {
-      if (it.type === "ability" && (it.hero === h.id || (it.heroes || []).indexOf(h.id) >= 0 || (it.hero_class_name === h.class_name))) out.push({ slot: "", item: it });
-    });
-  }
-  out.sort(function (a, b) { return String(a.slot).localeCompare(String(b.slot)); });
-  return out;
-}
 function statTiles(it) {
-  var props = it.properties || {}, used = {}, big = [], small = [], minor = [];
+  // used by shop items (tooltip_sections)
+  var big = [], small = [], used = {};
   function add(key, level) {
-    var p = props[key]; if (!p || used[key]) return;
-    var v = fmtVal(p); if (v == null) return;
-    if (p.disabled_value && String(p.disabled_value) === String(p.value)) return;
-    used[key] = 1;
-    var rec = { l: propLabel(p, key), v: v, scale: p.scale_function && p.scale_function.specific_stat_scale_type ? p.scale_function : null };
-    if (level === "big") big.push(rec); else small.push(rec);
+    if (used[key]) return;
+    var r = propRec(it, key); if (!r) return;
+    used[key] = 1; (level === "big" ? big : small).push(r);
   }
   (it.tooltip_sections || []).forEach(function (sec) {
     (sec.section_attributes || []).forEach(function (a) {
@@ -201,48 +255,99 @@ function statTiles(it) {
       (a.properties || []).forEach(function (k) { add(k, "small"); });
     });
   });
-  if (!big.length && !small.length) { Object.keys(props).forEach(function (k) { add(k, "small"); }); }
   return { big: big, small: small };
 }
-function abilityCard(it) {
-  var cd = it.properties && it.properties.AbilityCooldown;
-  var dur = it.properties && it.properties.AbilityDuration;
-  var chips = "";
-  if (dur && fmtVal(dur)) chips += '<span class="chip">⏳ ' + esc(fmtVal(dur)) + "s</span>";
-  if (cd && fmtVal(cd)) chips += '<span class="chip">⟳ ' + esc(fmtVal(cd)) + "s</span>";
-  var t = statTiles(it), tiles = "", minor = "";
-  t.big.concat(t.small.filter(function (x) { return x.l !== "Cooldown" && x.l !== "Duration"; }).slice(0, 2)).forEach(function (x) { tiles += '<div class="stat big"><b>' + esc(x.v) + "</b><i>" + esc(x.l) + "</i></div>"; });
-  t.small.slice(2).forEach(function (x) { minor += "<span><b>" + esc(x.v) + "</b> " + esc(x.l) + "</span>"; });
-  return '<section class="ab"><div class="abh"><img alt="" src="' + esc(itemImg(it)) + '"><h3>' + esc(it.name) + "</h3>" + chips + "</div>" +
-    '<div class="desc">' + rich(it.description && typeof it.description === "object" ? (it.description.desc || it.description.active || it.description.passive || "") : it.description) + "</div>" +
-    (tiles ? '<div class="stats">' + tiles + "</div>" : "") + (minor ? '<div class="minor">' + minor + "</div>" : "") + upgradesHtml(it) + "</section>";
+function tile(v, l) { return '<div class="stat big"><b>' + esc(v) + "</b><i>" + esc(l) + "</i></div>"; }
+// abilities use tooltip_details.info_sections
+function tooltipHtml(it) {
+  var secs = it.tooltip_details && it.tooltip_details.info_sections, html = "";
+  if (!secs || !secs.length) return "";
+  secs.forEach(function (sec, si) {
+    if (si > 0 && sec.loc_string) html += '<div class="desc">' + rich(sec.loc_string) + "</div>";
+    (sec.properties_block || []).forEach(function (blk) {
+      var tiles = "";
+      (blk.properties || []).forEach(function (pp) {
+        if (pp.status_effect_name) {
+          var sv = propRec(it, pp.status_effect_value);
+          if (sv) tiles += tile(sv.v, pp.status_effect_name);
+          return;
+        }
+        var key = pp.important_property || pp.property; if (!key) return;
+        var r = propRec(it, key); if (r) tiles += tile(r.v, r.l);
+      });
+      if (tiles) html += (blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>";
+    });
+    var minor = "";
+    (sec.basic_properties || []).forEach(function (k) { var r = propRec(it, k); if (r) minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + "</span>"; });
+    if (minor) html += '<div class="minor">' + minor + "</div>";
+  });
+  return html;
+}
+function chipsHtml(it) {
+  var P = it.properties || {}, h = "";
+  [["AbilityDuration", "⏳"], ["AbilityCastRange", "↔"], ["AbilityCooldown", "⟳"]].forEach(function (g) {
+    var p = P[g[0]];
+    if (isDisabled(p) || Number(p.value) === 0) return;
+    h += '<span class="chip">' + g[1] + " " + esc(fmtVal(p)) + "</span>";
+  });
+  return h;
+}
+function upgradeTexts(it) {
+  var d = it.description && typeof it.description === "object" ? it.description : {}, ups = it.upgrades || [], out = [];
+  for (var i = 0; i < 3; i++) {
+    var k = "t" + (i + 1) + "_desc";
+    if (d[k]) { out.push(rich(d[k])); continue; }
+    if (ups[i] && ups[i].property_upgrades) {
+      var bits = [];
+      ups[i].property_upgrades.forEach(function (pu) {
+        var p = (it.properties || {})[pu.name] || {}, b = pu.bonus, n = Number(b);
+        var sign = !isNaN(n) && n >= 0 && !/^[+-]/.test(String(b)) ? "+" : "";
+        bits.push(esc(sign + fmtNum(b) + (isNaN(n) ? "" : unitFor(p)) + " " + propLabel(p, pu.name)));
+      });
+      out.push(bits.join("<br>") || "—");
+    } else out.push("—");
+  }
+  return out;
 }
 function upgradesHtml(it) {
-  var ups = it.upgrades || [];
-  if (!ups.length) return "";
-  var costs = ["1", "2", "5"], html = '<div class="ups">';
-  for (var i = 0; i < Math.min(3, ups.length); i++) {
-    var u = ups[i], bits = [];
-    (u.property_upgrades || []).forEach(function (pu) {
-      var p = (it.properties || {})[pu.name], lab = propLabel(p, pu.name), b = pu.bonus;
-      var sign = (typeof b === "number" || /^-?\d/.test(String(b))) && String(b).charAt(0) !== "-" ? "+" : "";
-      bits.push(esc(sign + b + (p && p.postfix ? p.postfix : "")) + " " + esc(lab));
-    });
-    if (u.description) bits.unshift(rich(u.description));
-    html += '<div class="up"><div>◆ ' + costs[i] + "</div><div>" + (bits.join("<br>") || "—") + "</div></div>";
-  }
+  var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
+  for (var i = 0; i < 3; i++) html += '<div class="up"><div>◆ ' + costs[i] + "</div><div>" + t[i] + "</div></div>";
   return html + "</div>";
+}
+function abilityCard(it) {
+  return '<section class="ab"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
+    '<div class="chips">' + chipsHtml(it) + "</div>" +
+    '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc } : it.description)) + "</div>" +
+    tooltipHtml(it) + upgradesHtml(it) + "</section>";
+}
+function weaponCard(h) {
+  var w = state.byClass[(h.items || {}).weapon_primary];
+  if (!w || !w.weapon_info) return "";
+  var i = w.weapon_info, n = i.bullets > 1 ? " ×" + i.bullets : "", rate = i.cycle_time ? 1 / i.cycle_time : 0, t = "";
+  if (i.bullet_damage != null) t += tile(fmtNum(i.bullet_damage) + n, "Damage per shot");
+  if (i.clip_size != null) t += tile(i.clip_size, "Ammo");
+  if (rate) t += tile(fmtNum(rate) + "/s", "Fire rate");
+  if (i.reload_duration != null) t += tile(fmtNum(i.reload_duration) + "s", "Reload");
+  var dps = (i.burst_shot_count || 1) <= 1 && rate && i.bullet_damage ? i.bullet_damage * (i.bullets || 1) * rate : 0;
+  return '<section class="ab"><div class="abh">' + imgTag(itemImg(w)) + "<h3>" + esc(nameOf(w)) + "</h3>" +
+    (h.gun_tag ? '<span class="chip">' + esc(h.gun_tag) + "</span>" : "") + '</div><div class="stats">' + t + "</div>" +
+    (dps ? '<div class="minor"><span><b>' + fmtNum(dps) + "</b> Damage per second (all pellets hit)</span></div>" : "") + "</section>";
 }
 function renderHero(cn) {
   var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
   if (!h) { state.hero = null; return renderHeroes(); }
-  state.hero = cn;
-  var d = h.description && typeof h.description === "object" ? (h.description.role || h.description.playstyle || "") : (h.description || "");
-  var html = '<button class="back" id="back">‹ All heroes</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div><h1>' + esc(h.name) + "</h1></div></div>";
-  if (d) html += '<p class="sub">' + rich(d) + "</p>";
-  var abs = abilitiesOf(h);
-  if (!abs.length) html += '<div class="err">No abilities found for this hero. Open “data check” on the hero list to see what the API returned.</div>';
-  abs.forEach(function (a) { html += abilityCard(a.item); });
+  state.hero = cn; HERO_NAME = h.name;
+  var lore = h.description && typeof h.description === "object" ? (h.description.lore || "") : (h.description || "");
+  var tags = (h.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("");
+  var html = '<button class="back" id="back">‹ All heroes</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div><h1>' + esc(h.name) + "</h1>" +
+    (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
+  if (lore) html += '<details class="lore"><summary>Lore</summary>' + rich(lore).replace(/(<br>)+/g, "<br><br>") + "</details>";
+  var wc = weaponCard(h);
+  if (wc) html += '<div class="sec">Weapon</div>' + wc;
+  var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
+  html += '<div class="sec">Abilities</div>';
+  if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
+  abs.forEach(function (a) { html += abilityCard(a); });
   $("main").innerHTML = html;
   $("back").onclick = function () { state.hero = null; render(); window.scrollTo(0, 0); };
   window.scrollTo(0, 0);
@@ -262,7 +367,7 @@ function renderShop(slot) {
     var cost = arr[0].cost ? " · " + Number(arr[0].cost).toLocaleString() : "";
     html += '<div class="tier">Tier ' + esc(t) + "<small>" + esc(cost) + '</small></div><div class="itiles">';
     arr.forEach(function (it) {
-      html += '<button class="it' + (it.is_active_item ? " act" : "") + '" data-item="' + esc(it.class_name) + '"><img loading="lazy" alt="" src="' + esc(itemImg(it)) + '">' + esc(it.name) + "</button>";
+      html += '<button class="it' + (it.is_active_item ? " act" : "") + '" data-item="' + esc(it.class_name) + '"><img loading="lazy" alt="" src="' + esc(itemImg(it)) + '">' + esc(nameOf(it)) + "</button>";
     });
     html += "</div>";
   });
@@ -272,16 +377,14 @@ function renderShop(slot) {
 }
 function itemSheet(cn) {
   var it = state.byClass[cn]; if (!it) return;
-  var t = statTiles(it), tiles = "";
-  t.big.forEach(function (x) { tiles += '<div class="stat big"><b>' + esc(x.v) + "</b><i>" + esc(x.l) + "</i></div>"; });
-  var bonus = "";
+  HERO_NAME = "";
+  var t = statTiles(it), tiles = "", bonus = "";
+  t.big.forEach(function (x) { tiles += tile(x.v, x.l); });
   t.small.forEach(function (x) { bonus += '<span class="chip"><b>' + esc(x.v) + "</b> " + esc(x.l) + "</span>"; });
-  var comps = (it.component_items || []).map(function (c) { return state.byClass[c] ? state.byClass[c].name : c; });
-  var d = it.description;
-  var dtxt = d && typeof d === "object" ? [d.passive, d.active, d.desc].filter(Boolean).join("<br><br>") : d;
-  var html = '<div class="abh"><img alt="" src="' + esc(itemImg(it)) + '"><h3>' + esc(it.name) + '</h3><span class="cost">' + (it.cost ? "$" + Number(it.cost).toLocaleString() : "") + "</span></div>" +
+  var comps = (it.component_items || []).map(function (c) { return state.byClass[c] ? nameOf(state.byClass[c]) : c; });
+  var html = '<div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + '</h3><span class="cost">' + (it.cost ? "$" + Number(it.cost).toLocaleString() : "") + "</span></div>" +
     (comps.length ? '<p class="sub">Components: ' + esc(comps.join(", ")) + "</p>" : "") +
-    (bonus ? '<div class="bonus">' + bonus + "</div>" : "") + '<div class="desc">' + (d && typeof d === "object" ? dtxt.replace(/&/g, "&amp;") && rich(dtxt) : rich(dtxt)) + "</div>" +
+    (bonus ? '<div class="bonus">' + bonus + "</div>" : "") + '<div class="desc">' + rich(descText(it.description)) + "</div>" +
     (tiles ? '<div class="stats">' + tiles + "</div>" : "") +
     '<button class="ibtn" id="close" style="width:100%;margin-top:10px">Close</button>';
   $("sheetin").innerHTML = html; $("sheet").hidden = false;
