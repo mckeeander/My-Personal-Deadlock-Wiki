@@ -26,6 +26,8 @@ header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px so
 .tab.on{background:var(--panel2);border-bottom-color:var(--gold);font-weight:600}
 .tab[data-c=weapon].on{border-bottom-color:var(--weapon)} .tab[data-c=vitality].on{border-bottom-color:var(--vital)} .tab[data-c=spirit].on{border-bottom-color:var(--spirit)}
 main{padding:12px;max-width:760px;margin:0 auto}
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:hidden}
 input[type=search]{width:100%;padding:11px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--fg);font-size:16px;margin-bottom:12px}
 .status{font-size:12px;color:var(--dim);margin:0 0 10px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
@@ -107,7 +109,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .uphint{font-size:11px;color:var(--dim);margin:8px 0 0;text-align:center}
 .wpn{background:linear-gradient(160deg,#2e1f12,var(--panel) 60%);border:1px solid #6b4a22;border-radius:12px;padding:12px;margin-bottom:12px}
 .wh{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.wh img{width:64px;height:40px;object-fit:contain;flex:none}
+.wh img{width:104px;height:60px;object-fit:contain;flex:none}
 .wh h3{margin:0;flex:1;min-width:120px;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
 .wdps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0 8px}
 .wdps div{text-align:center;background:#3a2814;border:1px solid #6b4a22;border-radius:8px;padding:8px 2px}
@@ -223,7 +225,12 @@ function descText(d) {
 function pick(o, keys) { for (var i = 0; i < keys.length; i++) { if (o && o[keys[i]]) return o[keys[i]]; } return ""; }
 function heroImg(h) { return pick(h.images, ["icon_hero_card", "icon_image_small", "selection_image", "icon_image_small_webp", "minimap_image"]) || pick(h, ["image"]); }
 function itemImg(it) { return pick(it, ["image_webp", "image"]) || ""; }
-function imgTag(src) { return src ? '<img alt="" src="' + esc(src) + '" onerror="this.style.display=\'none\'">' : ""; }
+function itemArt(it) { return pick(it, ["shop_image_webp", "shop_image", "image_webp", "image"]) || ""; } // the in-game shop art
+function imgTag(src, fb) {
+  if (!src) return "";
+  return '<img alt="" src="' + esc(src) + '"' + (fb && fb !== src ? ' data-f="' + esc(fb) + '"' : "") +
+    ' onerror="if(this.dataset.f){this.src=this.dataset.f;this.dataset.f=\'\'}else{this.style.display=\'none\'}">';
+}
 function save() { try { localStorage.setItem(KEY, JSON.stringify({ t: state.fetchedAt, h: state.heroes, i: state.items })); } catch (e) {} }
 function load() {
   try { var w = JSON.parse(localStorage.getItem(WKEY) || "null"); if (w && w.heroes) state.wiki = w; } catch (e) {}
@@ -475,7 +482,7 @@ function upgradeTexts(it) {
 function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
   for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + t[i] + "</div></div>";
-  return html + '</div><div class="uphint">Tap a tier to see its stats on this card</div>';
+  return html + "</div>";
 }
 function bulletOf(h) {
   var w = h && state.byClass[(h.items || {}).weapon_primary];
@@ -492,10 +499,10 @@ function wikiHtml(h, it) {
   }
   var chips = (a.items || []).map(function (nm) {
     var cn = state.byName[String(nm).toLowerCase()]; if (!cn) return "";
-    return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemImg(state.byClass[cn])) + "<span>" + esc(nm) + "</span></button>";
+    return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + "</span></button>";
   }).join("");
-  if (chips) html += '<div class="ihd">Related items</div><div class="pgrid">' + chips + "</div>";
-  return html + '<div class="uphint">From deadlock.wiki, may lag behind the game</div></div>';
+  if (chips) html += '<div class="ihd">Will proc:</div><div class="pgrid">' + chips + "</div>";
+  return html + "</div>";
 }
 function abilityCard(it, h) {
   var sel = SEL[it.class_name] || 0;
@@ -509,6 +516,10 @@ function abilityCard(it, h) {
 }
 function nice(k) { return prettify(String(k).replace(/^E(Weapon(Attribute)?_?)?/, "")).replace(/([a-z])([A-Z])/g, "$1 $2"); }
 function meters(u) { return fmtNum(u / 39.37) + "m"; }
+function gunImg(h) {
+  var d = ((h.shop_stat_display || {}).weapon_stats_display) || {};
+  return d.weapon_image_webp || d.weapon_image || "";
+}
 function weaponCard(h) {
   var w = state.byClass[(h.items || {}).weapon_primary];
   if (!w || !w.weapon_info) return "";
@@ -538,7 +549,7 @@ function weaponCard(h) {
     fo = '<div class="fo">Damage falloff: full damage out to <b>' + meters(i.damage_falloff_start_range) + "</b>, down to <b>" + fmtNum((i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0) * 100) + "%</b> at <b>" + meters(i.damage_falloff_end_range) + '</b><div class="fob" style="background:linear-gradient(90deg,var(--weapon) 0%,var(--weapon) ' + pct + "%,#5a3a1a 100%)\"></div></div>";
   }
   var boon = Number(up.MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL) > 0 ? '<div class="fo">Bullet damage grows by <b>+' + fmtNum(up.MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL) + "</b> per boon.</div>" : "";
-  return '<section class="wpn"><div class="wh">' + imgTag(itemImg(w)) + "<h3>" + esc(nameOf(w)) + "</h3>" + attrs + "</div>" +
+  return '<section class="wpn"><div class="wh">' + imgTag(gunImg(h) || itemImg(w)) + "<h3>" + esc(nameOf(w)) + "</h3>" + attrs + "</div>" +
     (dps ? '<div class="wdps"><div><b>' + fmtNum(dps) + "</b><i>Damage / sec</i></div>" +
       '<div><b>' + (i.damage_per_second_with_reload ? fmtNum(i.damage_per_second_with_reload) : "–") + "</b><i>With reloads</i></div>" +
       "<div><b>" + (i.damage_per_magazine ? fmtNum(i.damage_per_magazine) : "–") + "</b><i>Per magazine</i></div></div>" : "") +
@@ -610,7 +621,7 @@ function renderShop(slot) {
     var cost = arr[0].cost ? "$" + Number(arr[0].cost).toLocaleString() : "T" + t;
     html += '<div class="trow"><div class="tc ' + slot + '">' + esc(cost) + '</div><div class="tl">';
     arr.forEach(function (it) {
-      html += '<button class="it2" data-item="' + esc(it.class_name) + '">' + imgTag(itemImg(it)) + "<div>" + esc(nameOf(it)) + (it.is_active_item ? "<em>ACTIVE</em>" : "") + "</div></button>";
+      html += '<button class="it2" data-item="' + esc(it.class_name) + '">' + imgTag(itemArt(it), itemImg(it)) + "<div>" + esc(nameOf(it)) + (it.is_active_item ? "<em>ACTIVE</em>" : "") + "</div></button>";
     });
     html += "</div></div>";
   });
@@ -645,7 +656,7 @@ function itemSecHtml(it, sec, used) {
 }
 function recipeRow(cn, depth, flat) {
   var c = state.byClass[cn]; if (!c) return "";
-  var html = '<button class="rc" data-item="' + esc(cn) + '" style="margin-left:' + (depth * 16) + 'px;width:calc(100% - ' + (depth * 16) + 'px)">' + imgTag(itemImg(c)) + "<span>" + esc(nameOf(c)) +
+  var html = '<button class="rc" data-item="' + esc(cn) + '" style="margin-left:' + (depth * 16) + 'px;width:calc(100% - ' + (depth * 16) + 'px)">' + imgTag(itemArt(c), itemImg(c)) + "<span>" + esc(nameOf(c)) +
     (c.item_tier ? "<em>T" + esc(c.item_tier) + "</em>" : "") + '</span><span class="cost" style="flex:none">' + (c.cost ? "$" + Number(c.cost).toLocaleString() : "") + "</span></button>";
   if (!flat && depth < 3) (c.component_items || []).forEach(function (x) { html += recipeRow(x, depth + 1); });
   return html;
@@ -660,7 +671,7 @@ function itemSheet(cn, fromBack) {
   var topDesc = !hasText ? rich(descText(it.description)) : "";
   var comps = it.component_items || [], into = (state.into || {})[cn] || [];
   var html = (ISTACK.length > 1 ? '<button class="back" id="ibk">‹ Back</button>' : "") +
-    '<div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + '</h3><span class="cost">' + (it.cost ? "$" + Number(it.cost).toLocaleString() : "") + "</span></div>" +
+    '<div class="abh">' + imgTag(itemArt(it), itemImg(it)) + "<h3>" + esc(nameOf(it)) + '</h3><span class="cost">' + (it.cost ? "$" + Number(it.cost).toLocaleString() : "") + "</span></div>" +
     '<div class="pills">' + (slot ? '<span class="pill2 ' + esc(slot) + '">' + esc(slot.charAt(0).toUpperCase() + slot.slice(1)) + "</span>" : "") +
     (it.item_tier ? '<span class="pill2">Tier ' + esc(it.item_tier) + "</span>" : "") + (kind ? '<span class="pill2">' + kind + "</span>" : "") + "</div>" +
     (topDesc ? '<div class="desc">' + topDesc + "</div>" : "") + secs +
