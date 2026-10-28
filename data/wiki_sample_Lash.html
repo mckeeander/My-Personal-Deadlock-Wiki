@@ -1,0 +1,615 @@
+<div>
+<style data-mw-deduplicate="TemplateStyles:r199879">.mw-parser-output .ability-section{display:flex;flex-direction:row;flex-wrap:wrap;max-width:100%;gap:16px;margin-top:4px;margin-bottom:8px;align-items:stretch}.mw-parser-output .ability-section-card{flex:0 1 auto;max-width:100%}.mw-parser-output .ability-section-main{display:flex;flex-direction:row;flex-wrap:wrap;max-width:100%;gap:12px;flex:0 1 auto;align-items:stretch}.mw-parser-output .ability-section-details{flex:1 1 280px;min-width:280px}.mw-parser-output .ability-section-details .tabber{margin:0}.mw-parser-output .ability-section-details .tabber .tabber__tabs{background:unset}.mw-parser-output .ability-section-details .tabber .tabber__tab{flex:0;padding:8px 32px}.mw-parser-output .ability-section-details .tabber__section{scroll-snap-type:both mandatory}.mw-parser-output .ability-section-details .tabber__tab[aria-selected="true"]{box-shadow:inset var(--link-color)0 -1px 0 0}.mw-parser-output .ability-section-details .single-tabbed .tabber__tab{box-shadow:unset;pointer-events:none}.mw-parser-output .ability-section-details .tabber__panel:first-child{max-height:400px;overflow-y:auto}@media(min-width:900px){.mw-parser-output .ability-section-details{position:relative;min-height:300px}.mw-parser-output .ability-section-details .tabber{position:absolute;inset:0;display:flex;flex-direction:column}.mw-parser-output .ability-section-details .tabber__section{flex:1 1 0;min-height:0}.mw-parser-output .ability-section-details .tabber__panel,.mw-parser-output .ability-section-details .tabber__panel:first-child{max-height:none;height:100%;overflow-y:auto}}.mw-parser-output .ability-details-section-header{color:var(--color-subtle);border-bottom:1px solid var(--border-color-subtle)}.mw-parser-output .ability-details-section-header:first-child{padding-top:0}.mw-parser-output .ability-details-section-content{display:block;padding:0 4px}.mw-parser-output .ability-details-section-content .iconbox{margin-top:0.5em}.mw-parser-output .ability-section-hints{display:flex;flex-direction:column;gap:6px;flex:0 0 auto;justify-content:flex-start;padding:1px 0;margin-left:-8px;margin-right:8px}.mw-parser-output .ability-hint{position:relative;display:inline-flex;align-items:center;justify-content:center}.mw-parser-output .ability-hint img{border-radius:2px}.mw-parser-output .ability-hint .ability-hint-tip{position:absolute;left:calc(100% + 8px);top:50%;bottom:auto;transform:translateY(-50%);background:var(--background-color-base-subtle);color:var(--color-base);border:1px solid var(--border-color-subtle);border-radius:5px;padding:5px 9px;font-size:12px;line-height:1.3;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:20;box-shadow:0 4px 14px rgba(0,0,0,.5)}.mw-parser-output .ability-hint .ability-hint-tip::before{content:"";position:absolute;top:-8px;right:-8px;bottom:-8px;left:-8px;z-index:-1}.mw-parser-output .ability-hint .ability-hint-tip::after{content:"";position:absolute;top:-10px;bottom:-10px;right:100%;width:16px}.mw-parser-output .ability-hint:hover .ability-hint-tip{opacity:1;pointer-events:auto}.mw-parser-output .ability-hint-split{position:relative;display:block;width:24px;height:24px;line-height:0}.mw-parser-output .ability-hint-split-gray{position:absolute;top:0;left:0;width:100%;height:100%;filter:saturate(0)brightness(0.5);clip-path:polygon(0 0,100%0,0 100%);pointer-events:none}.mw-parser-output .ability-hint-icon span,.mw-parser-output .ability-hint-icon a,.mw-parser-output .ability-hint-icon picture,.mw-parser-output .ability-hint-icon img{display:block}.mw-parser-output .ability-hint-icon{position:relative;display:block;line-height:0}@media(max-width:560px){.mw-parser-output .ability-section-hints{flex-direction:row;flex-wrap:wrap;margin:-6px 0 0 0;padding:0 0 0 2px;position:relative}.mw-parser-output .ability-hint{position:static}.mw-parser-output .ability-hint .ability-hint-tip{left:0;right:auto;top:auto;bottom:calc(100% + 6px);width:max-content;max-width:300px;transform:none;white-space:normal;text-align:center}.mw-parser-output .ability-hint .ability-hint-tip::after{top:100%;right:auto;bottom:auto;left:0;width:auto;height:6px}}.mw-parser-output .ability-hint--disabled img{filter:saturate(0)brightness(0.5)}.mw-parser-output .ability-hint--enhanced .ability-hint-icon::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;border-radius:2px;background:radial-gradient(circle farthest-corner at 0 100%,rgba(55,160,197,0.5)0%,rgba(55,160,197,0.5)28%,rgba(55,160,197,0)95%);pointer-events:none}.mw-parser-output .iconbox{scroll-margin-top:10vh}.mw-parser-output .iconbox:target{box-shadow:0 0 0 2px oklch(from var(--link-color)l c h/0.45);animation:iconbox-highlight 1.4s ease-out}@keyframes iconbox-highlight{0%{box-shadow:0 0 0 2px var(--link-color),0 0 12px 3px oklch(from var(--link-color)l c h/0.7)}100%{box-shadow:0 0 0 2px oklch(from var(--link-color)l c h/0.45)}}.mw-parser-output .ability-section .ac-title{display:flex;align-items:center;font-size:1.5rem}.mw-parser-output .ability-section .ac-title .ac-icon{margin-right:5px}.mw-parser-output .ability-section-wrapper .ability-name-toc{position:absolute;clip:rect(0,0,0,0);clip-path:inset(50%);width:1px;height:1px;margin:-1px;overflow:hidden;padding:0;border:0;white-space:nowrap}.mw-parser-output .ability-section .ac-header-right{flex-direction:column;align-items:flex-end;justify-content:flex-start;gap:10px;margin-top:0}.mw-parser-output .ability-section .ac-charge-row{margin-top:11px}.mw-parser-output .ability-section .ac-header-attrs{height:auto;min-height:0;align-items:center}.mw-parser-output .ability-section .ac-header-attrs p{display:none}.mw-parser-output .ability-section .ac-header-attrs .ability-headerattr{margin-top:24px}.mw-parser-output .ability-section .ac-icon img{width:45px}.mw-parser-output .ability-section-wrapper{margin-bottom:0;background-color:transparent;border:none;padding:0}.mw-parser-output .ability-section-wrapper~.ability-section-wrapper{position:relative;margin-top:48px}.mw-parser-output .ability-section-wrapper~.ability-section-wrapper::before{content:"";position:absolute;top:-24px;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--border-color-subtle)20%,var(--border-color-subtle)80%,transparent)}</style><div class="ability-section-wrapper"><h3 class="ability-name-toc mw-html-heading" id="Ground_Strike">Ground Strike</h3><div class="ability-section"><div class="ability-section-main"><div class="ability-section-card"><style data-mw-deduplicate="TemplateStyles:r210907">.mw-parser-output .ability-card{font-size:0.9rem;line-height:1.4;font-family:"Retail Demo","Open Sans","PT Serif",serif;color:#FFEFD7;display:flex;flex-direction:column;background:radial-gradient(ellipse at center,#101010,#00000070),#232323;align-items:center;width:500px;max-width:100%;border-radius:4px}.mw-parser-output .ac-header-wrapper{width:100%}.mw-parser-output .ac-header{display:flex;flex-direction:row;justify-content:space-between;border-radius:13px 13px 0 0;margin:0 20px;gap:10px}.mw-parser-output .ac-header-left{display:flex;flex-direction:column}.mw-parser-output .ac-title{font-size:2rem}.mw-parser-output .ac-icon{filter:brightness(0)saturate(100%)invert(98%)sepia(19%)saturate(1458%)hue-rotate(301deg)brightness(102%)contrast(109%);padding-right:5px}.mw-parser-output .ac-name{font-family:"Valve Occult","Retail Demo","Open Sans";font-weight:bold}.mw-parser-output .ac-header-attrs{display:flex;flex-direction:row;gap:10px}.mw-parser-output .ability-card p{display:none}.mw-parser-output .ability-card .ac-title p{display:block}.mw-parser-output .ability-card .ac-mainbox-value p{display:block}.mw-parser-output .ability-card .ac-info-alt p{display:block}.mw-parser-output .ability-card .ac-headerattr-ss p{display:block}.mw-parser-output .ability-card .ac-mainbox-scale p{display:block}.mw-parser-output .ac-header-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;gap:10px}.mw-parser-output .ac-charge-row{display:flex;flex-direction:row;justify-content:flex-end;margin-bottom:5px;gap:2px}.mw-parser-output .ac-info-outer{margin:15px 10px 0 10px;padding:3px 0 5px 0;width:calc(100% - 18px);box-sizing:border-box}.mw-parser-output .ac-info-section{display:flex;flex-direction:column;align-items:center;width:100%}.mw-parser-output .ac-info-desc{align-self:stretch;padding:0 10px}.mw-parser-output .ac-info-main{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:center;width:calc(97% - 5px);min-width:280px;align-items:flex-end}.mw-parser-output .ac-info-alt{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;background-color:#36332D;width:calc(97% - 19px);min-width:267px;padding:0 4px;column-gap:15px}.mw-parser-output .ac-upgrades{display:flex;flex-direction:row;flex-wrap:wrap;margin-bottom:5px;justify-content:center;width:calc(97% - 16px);min-width:280px}.mw-parser-output .ac-notes-wrapper{align-self:flex-start;margin:10px 0 10px 20px;font-size:0.8rem}.mw-parser-output .ac-notes-title{font-size:1.15rem}.mw-parser-output .ac-notes-edit{font-size:0.7rem}.mw-parser-output .ac-notes-body{align-self:flex-start;margin:10px 0 10px 20px;font-size:0.8rem}.mw-parser-output .ability-headerattr{background-color:#2C2C2C;padding:6px;white-space:nowrap;font-size:calc(1em - 2px);border-radius:3px}.mw-parser-output .ability-headerattr>span{vertical-align:middle}.mw-parser-output .ac-headerattr-ss{position:relative}.mw-parser-output .ac-headerattr-ss-badge{position:absolute;top:-22px;right:-18px}.mw-parser-output .ability-mainbox{display:flex;flex-direction:column;flex-grow:1;flex-basis:0;max-height:100%;padding:8px 0 2px 0;margin:2px;overflow:hidden;justify-content:flex-end}.mw-parser-output .ac-mainbox-title{padding-bottom:2px;font-size:0.8rem;color:#9C9C9C;font-variant:small-caps}.mw-parser-output .ac-mainbox-scale{position:relative}.mw-parser-output .ac-mainbox-scale-badge{position:absolute;top:-16px;right:0}.mw-parser-output .ac-mainbox-inner{display:flex;flex-direction:column;justify-content:center;text-align:center;border-radius:1px;height:60px}.mw-parser-output .ac-mainbox-inner--default{background-color:#36332D;border:2px solid #36332D}.mw-parser-output .ac-mainbox-inner--spirit{background:radial-gradient(ellipse at center,rgb(6,6,6)0%,rgb(55,25,80)100%);border:2px solid #52326C}.mw-parser-output .ac-mainbox-inner--boon{background:radial-gradient(ellipse at center,rgb(6,6,6)0%,rgb(43,63,53)100%);border:2px solid #35594B}.mw-parser-output .ac-mainbox-inner--weapon{background:radial-gradient(ellipse at center,rgb(6,6,6)0%,rgba(66,55,47,1)100%);border:2px solid #5b412b}.mw-parser-output .ac-mainbox-inner--melee{background:radial-gradient(ellipse at center,rgb(6,6,6)0%,rgb(63,36,17)100%);border:2px solid #53350F}.mw-parser-output .ac-mainbox-value{font-family:"Valve Occult";font-weight:bold;margin-top:4px}.mw-parser-output .ac-mainbox-value p{margin:auto 0}.mw-parser-output .ac-mainbox-label{font-size:0.75em;padding-bottom:3px}.mw-parser-output .ability-upgrade{white-space:normal;display:flex;flex-direction:column;flex-grow:1;flex-basis:0;justify-content:flex-start;max-height:120px;background-color:#131211;padding:0 0 0 0;margin:6px;text-align:center;box-shadow:0 0 10px #2A2A2A;border-radius:5px}.mw-parser-output .ability-upgrade-header{width:100%;padding:2px 0 0 2px;font-family:"Retail Demo bold";background-color:#402f4c;border-radius:5px 5px 0 0}.mw-parser-output .ac-upgrade-descwrap{width:100%;box-sizing:border-box;padding:4px;margin:auto 0}.mw-parser-output .ac-upgrade-desc{overflow-wrap:anywhere}.mw-parser-output .ac-statusbox-inner{display:flex;flex-direction:column;flex-grow:1;justify-content:center;align-items:center;text-align:center;border-radius:1px;height:60px}.mw-parser-output .ac-statusbox-effect{font-weight:bold;margin-top:4px}.mw-parser-output .ac-statusbox-value-row{display:flex;flex-direction:row;align-items:center;gap:5px;font-size:0.75rem;padding-bottom:3px}.mw-parser-output .ac-statusbox-value{font-weight:bold}.mw-parser-output .ac-statusbox-no-value{font-weight:bold;font-size:0.75rem;color:#B2B2B2}.mw-parser-output .ability-altbox{display:flex;flex-direction:row;flex-grow:1;flex-basis:0;justify-content:center;font-size:0.85em;margin:3px;text-align:center;white-space:nowrap}.mw-parser-output .ac-altbox-inner{white-space:nowrap}.mw-parser-output .ac-altbox-label{font-size:0.75rem;white-space:nowrap}.mw-parser-output .ac-altbox-uom{font-size:10px;color:#9C9C9C}.mw-parser-output .ability-scaling{font-size:0.8em;white-space:nowrap}.mw-parser-output .ability-scaling-attr{font-family:"Valve Pulp","Retail Demo","PT Serif","Palatino";width:auto;border-radius:2px;padding:0 2px;vertical-align:middle}.mw-parser-output .ac-scaling--spirit .ability-scaling-attr{color:#ce91ff}.mw-parser-output .ac-scaling--weapon .ability-scaling-attr{color:#ec981a}.mw-parser-output .ac-scaling--melee .ability-scaling-attr{color:#ec981a}.mw-parser-output .ac-scaling--boon .ability-scaling-attr{color:#54e1c5}.mw-parser-output .hide{display:none!important}.mw-parser-output .ability-attr{transition:text-shadow 0.6s ease;font-weight:bold}.mw-parser-output .ability-attr.highlight{text-shadow:0 0 6px rgba(255,250,0,0.6),0 0 12px rgba(255,250,0,0.5),0 0 24px rgba(255,250,0,0.4)}.mw-parser-output .ability-upgrade{transition:all 0.1s ease;cursor:pointer}.mw-parser-output .ability-upgrade{transition:all 0.1s ease;cursor:pointer;box-shadow:unset!important}.mw-parser-output .ability-upgrade.hovered{background-color:#3d2d52a3!important;transform:translateY(-2px)}.mw-parser-output .ability-upgrade.selected{background-color:#503667!important}.mw-parser-output .ability-upgrade.selected.hovered{background-color:#3d2d52a3!important}.mw-parser-output .ability-upgrade-header{transition:background-color 0.1s ease}.mw-parser-output .ability-upgrade.selected .ability-upgrade-header{background-color:#11140E!important;transition:background-color 0.2s ease}.mw-parser-output .cdx-button{border:1px solid #2a2a2a}</style><span id="Ground_Strike"></span><div class="ability-card" id="hero_lash:citadel_ability_lash_down_strike">
+<div class="ac-header-wrapper">
+<div class="ac-header">
+<div class="ac-header-left">
+<div class="ac-title">
+<p><span class="ac-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="137" data-file-width="137" decoding="async" height="45" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ground_Strike.png/45px-Ground_Strike.png" srcset="https://cdn.deadlock.wiki/thumb/Ground_Strike.png/90px-Ground_Strike.png 2x" width="45"/></span></span></span><span class="ac-name">Ground Strike</span>
+</p>
+</div>
+<div class="ac-header-attrs">
+<p><br/>
+</p><p><br/>
+</p>
+<div class="ability-headerattr" style=""><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Radius"><img alt="Radius" class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechRange.png/20px-AttributeIconTechRange.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechRange.png/40px-AttributeIconTechRange.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="Radius"><b>10</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">m</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+<p><br/>
+</p><p><br/>
+</p>
+</div>
+</div>
+<div class="ac-header-right">
+<div class="ac-charge-row">
+<div class="ability-headerattr hide" style="margin-right: 0;"><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Number of Charges"><img alt="Number of Charges" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/20px-AttributeIconMaxChargesIncrease.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/40px-AttributeIconMaxChargesIncrease.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCharges"><b>0</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2"></span></span>
+</div>
+<p><br/>
+</p>
+</div>
+<div class="ability-headerattr" style=""><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Cooldown"><img alt="Cooldown" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldown.png/20px-AttributeIconTechCooldown.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldown.png/40px-AttributeIconTechCooldown.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCooldown"><b>18</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">s</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="ac-info-outer">
+<div class="ability-info ac-info-section" id="ability-info1">
+<div class="ac-info-desc">Stomp the ground beneath you, <span style="font-weight:bold">damaging enemies</span> in front of you. If you perform Ground Strike while airborne, you quickly dive towards the ground. Damage grows slower after 25m.</div>
+<div class="ac-info-main">
+<div class="ability-mainbox">
+<div class="ac-mainbox-scale">
+<div class="ac-mainbox-scale-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+<p><span class="ability-scaling">
+<span class="ac-scaling--spirit">
+<span typeof="mw:File"><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><img class="mw-file-element" data-file-height="53" data-file-width="76" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/28px-Spirit_scaling.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/56px-Spirit_scaling.png 2x" width="28"/></a></span><span class="ability-scaling-attr"><i>x</i><span class="ability-attr" id="StompDamage-scale">0.791
+</span></span></span>
+</span></p>
+</div>
+</div>
+<div class="ac-mainbox-inner ac-mainbox-inner--spirit">
+<div class="ac-mainbox-value">
+<p><span style="position: relative;">
+<span typeof="mw:File"><a href="/Spirit_Damage" title="Spirit Damage"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_damage.png/18px-Spirit_damage.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_damage.png/36px-Spirit_damage.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="StompDamage"><b>60</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2"></span>
+</span></p>
+</div>
+<div class="ac-mainbox-label">Stomp Damage</div>
+</div></div><div class="ability-mainbox">
+<div class="ac-mainbox-scale">
+<div class="ac-mainbox-scale-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+<p><span class="ability-scaling">
+<span class="ac-scaling--spirit">
+<span typeof="mw:File"><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><img class="mw-file-element" data-file-height="53" data-file-width="76" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/28px-Spirit_scaling.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/56px-Spirit_scaling.png 2x" width="28"/></a></span><span class="ability-scaling-attr"><i>x</i><span class="ability-attr" id="StompDamagePerMeterPrimary-scale">0.04
+</span></span></span>
+</span></p>
+</div>
+</div>
+<div class="ac-mainbox-inner ac-mainbox-inner--spirit">
+<div class="ac-mainbox-value">
+<p><span style="position: relative;">
+<span typeof="mw:File"><a href="/Spirit_Damage" title="Spirit Damage"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_damage.png/18px-Spirit_damage.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_damage.png/36px-Spirit_damage.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="StompDamagePerMeterPrimary"><b>5.5</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2"></span>
+</span></p>
+</div>
+<div class="ac-mainbox-label">Damage Per Meter</div>
+</div></div><div class="ability-mainbox ability-mainbox--status hide">
+<p><br/>
+</p>
+<div class="ac-statusbox-inner ac-mainbox-inner--default">
+<div class="ac-statusbox-effect"><span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);"><span typeof="mw:File"><a class="mw-file-description" href="/File:Status_Displacement.png"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Status_Displacement.png/20px-Status_Displacement.png" srcset="https://cdn.deadlock.wiki/thumb/Status_Displacement.png/40px-Status_Displacement.png 2x" width="20"/></a></span></span><span style="color: inherit;"> </span>Displacement</div>
+<div class="ac-statusbox-value-row">
+<div class="ac-statusbox-value"><span class="ability-attr" id="TossDuration"><b>0</b></span><span style="{{{uom_style}}}">s</span>
+</div>
+<div class="ac-statusbox-label">Duration</div>
+</div></div></div>
+</div>
+<div class="ac-info-alt">
+<div class="ability-altbox hide">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);">
+<span typeof="mw:File"><a href="/Movement_Slow" title="Movement Slow"><img class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/MoveSlow.png/18px-MoveSlow.png" srcset="https://cdn.deadlock.wiki/thumb/MoveSlow.png/36px-MoveSlow.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="EnemySlowPct"><b>0</b></span><span style="font-size: 10px; color: #9C9C9C">%</span>
+</span> <span class="ac-altbox-label">Enemy Move Speed</span></span>
+</p>
+</div><div class="ability-altbox hide">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);">
+<span typeof="mw:File"><a href="/Ability_Duration" title="Ability Duration"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechDuration.png/18px-AttributeIconTechDuration.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechDuration.png/36px-AttributeIconTechDuration.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="SlowDuration"><b>0</b></span><span style="font-size: 10px; color: #9C9C9C">s</span>
+</span> <span class="ac-altbox-label">Slow Duration</span></span>
+</p>
+</div>
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info2">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info3">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info4">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+</div>
+<div class="ac-upgrades">
+<div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="1" id="ability-upgrade-1" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">1</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 11.90cqw; line-height: 1.4;"><span class="">-10</span><span style="font-size: 0.8em; color: #9C9C9C">s</span> Cooldown</div></div>
+<div></div>
+</div><div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="2" id="ability-upgrade-2" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">2</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 8.40cqw; line-height: 1.4;">Struck enemies are <span style="font-weight:bold">knocked up</span> and slowed by <span style="font-weight:bold">40%</span> for <span style="font-weight:bold">3s</span></div></div>
+<div></div>
+</div><div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="3" id="ability-upgrade-5" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">5</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 8.40cqw; line-height: 1.4;"><span style="font-weight:bold">Damage Per Meter</span> +120% and improved scaling</div></div>
+<div></div>
+</div>
+</div>
+</div></div><div class="ability-section-hints"><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Debuff_Reducer.png/24px-Debuff_Reducer.png" srcset="https://cdn.deadlock.wiki/thumb/Debuff_Reducer.png/48px-Debuff_Reducer.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Debuff duration reduced by <a href="/Debuff_Resist" title="Debuff Resist">Debuff Resist</a></span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Reactive_Barrier.png/24px-Reactive_Barrier.png" srcset="https://cdn.deadlock.wiki/thumb/Reactive_Barrier.png/48px-Reactive_Barrier.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Triggers <a href="/Reactive_Barrier" title="Reactive Barrier">Reactive Barrier</a></span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Dispel_Magic.png/24px-Dispel_Magic.png" srcset="https://cdn.deadlock.wiki/thumb/Dispel_Magic.png/48px-Dispel_Magic.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Effect can be <a href="/Dispel_Magic" title="Dispel Magic">dispelled</a></span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Indomitable.png/24px-Indomitable.png" srcset="https://cdn.deadlock.wiki/thumb/Indomitable.png/48px-Indomitable.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Disable prevented by <a href="/Indomitable" title="Indomitable">Indomitable</a></span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Unstoppable.png/24px-Unstoppable.png" srcset="https://cdn.deadlock.wiki/thumb/Unstoppable.png/48px-Unstoppable.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">CC effect suppressed by <a href="/Unstoppable" title="Unstoppable">Unstoppable</a></span></span></div></div><div class="ability-section-details"><div class="single-tabbed"><div class="tabber tabber--init"><header class="tabber__header"><button aria-hidden="true" class="tabber__header__prev" tabindex="-1" type="button"></button><nav class="tabber__tabs" role="tablist"><a aria-controls="tabber-Notes" class="tabber__tab" href="#tabber-Notes" id="tabber-Notes-label" role="tab">Notes</a></nav><button aria-hidden="true" class="tabber__header__next" tabindex="-1" type="button"></button></header><div class="tabber__section"><div aria-labelledby="tabber-Notes-label" class="tabber__panel" id="tabber-Notes" role="tabpanel" tabindex="0">
+<div class="ability-details-panel">
+<ul><li>Ground Strike hits in a 120 degree wedge in front of Lash.</li>
+<li>Ground Strike rotation is restricted to 90 degrees from the direction Lash was looking when the ability was cast.</li>
+<li>If Lash collides with a flying enemy while doing a mid-air Ground Strike, he will drag them to the ground. This will proc the passive effect of <span class="item-link-wrapper" data-item-name="Reactive Barrier"><span style="white-space:nowrap;"><span class="c-icon" style="position:relative; bottom:2px;"><span typeof="mw:File"><a href="/Reactive_Barrier" title="Reactive Barrier"><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Reactive_Barrier.png/20px-Reactive_Barrier.png" srcset="https://cdn.deadlock.wiki/thumb/Reactive_Barrier.png/40px-Reactive_Barrier.png 2x" width="20"/></a></span></span> <a href="/Reactive_Barrier" title="Reactive Barrier">Reactive Barrier</a></span></span> and <span class="item-link-wrapper" data-item-name="Indomitable"><span style="white-space:nowrap;"><span class="c-icon" style="position:relative; bottom:2px;"><span typeof="mw:File"><a href="/Indomitable" title="Indomitable"><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Indomitable.png/20px-Indomitable.png" srcset="https://cdn.deadlock.wiki/thumb/Indomitable.png/40px-Indomitable.png 2x" width="20"/></a></span></span> <a href="/Indomitable" title="Indomitable">Indomitable</a></span></span>.</li>
+<li>Ground Strike can be used while on the <a href="/Zipline" title="Zipline">Zipline</a>.</li>
+<li>Damage growth after 25m is instead 4.2 <style data-mw-deduplicate="TemplateStyles:r114132">.mw-parser-output .ss-wrapper{z-index:1;position:relative;left:1px;bottom:7px;margin-left:-5px;font-family:"Retail Demo Regular","PT Serif","Palatino",serif;color:var(--color-scaling-spirit,#E3BDFA)}.mw-parser-output .ss-icon{position:relative;z-index:-1;opacity:0.7}.mw-parser-output .ss-text{color:var(--color-scaling-spirit,#E3BDFA);text-shadow:1.5px 1.5px rgba(0,0,0,0.7);font-weight:bold;background-color:var(--background-color-scaling-spirit,rgba(83,54,105,0.8));border-radius:5px;padding:2px 2px 0px 2px;margin-left:-8px}.mw-parser-output .ss-compact{cursor:help;display:inline-flex;align-items:center;gap:2px;vertical-align:middle;line-height:1}.mw-parser-output .ss-value{color:var(--color-scaling-spirit-value,#b89de0);font-size:0.75em;font-variant-numeric:tabular-nums;font-family:inherit;text-shadow:none;white-space:nowrap}.mw-parser-output .ss-compact:hover .ss-value{color:var(--color-scaling-spirit-value--hover,#E3BDFA);transition:color 0.15s ease}</style><span class="ss-wrapper" style="font-size: 12px;"><span class="ss-icon"><span typeof="mw:File"><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><img class="mw-file-element" data-file-height="53" data-file-width="76" decoding="async" height="17" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/25px-Spirit_scaling.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/50px-Spirit_scaling.png 2x" width="25"/></a></span></span><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><span class="ss-text"><i>x</i>0.008137</span></a></span> per meter.</li>
+<li>At Tier 3, Ground Strike gets a bonus <link href="mw-data:TemplateStyles:r114132" rel="mw-deduplicated-inline-style"/><span class="ss-wrapper" style="font-size: 12px;"><span class="ss-icon"><span typeof="mw:File"><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><img class="mw-file-element" data-file-height="53" data-file-width="76" decoding="async" height="17" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/25px-Spirit_scaling.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/50px-Spirit_scaling.png 2x" width="25"/></a></span></span><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><span class="ss-text"><i>x</i>0.03255</span></a></span> damage per meter up to 25m, and <link href="mw-data:TemplateStyles:r114132" rel="mw-deduplicated-inline-style"/><span class="ss-wrapper" style="font-size: 12px;"><span class="ss-icon"><span typeof="mw:File"><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><img class="mw-file-element" data-file-height="53" data-file-width="76" decoding="async" height="17" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/25px-Spirit_scaling.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/50px-Spirit_scaling.png 2x" width="25"/></a></span></span><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><span class="ss-text"><i>x</i>0.008137</span></a></span> above 25m.</li></ul>
+</div>
+</div></div></div></div></div></div></div>
+<link href="mw-data:TemplateStyles:r199879" rel="mw-deduplicated-inline-style"/><div class="ability-section-wrapper"><h3 class="ability-name-toc mw-html-heading" id="Grapple">Grapple</h3><div class="ability-section"><div class="ability-section-main"><div class="ability-section-card"><link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/><span id="Grapple"></span><div class="ability-card" id="hero_lash:citadel_ability_lash">
+<div class="ac-header-wrapper">
+<div class="ac-header">
+<div class="ac-header-left">
+<div class="ac-title">
+<p><span class="ac-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="137" data-file-width="137" decoding="async" height="45" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Grapple.png/45px-Grapple.png" srcset="https://cdn.deadlock.wiki/thumb/Grapple.png/90px-Grapple.png 2x" width="45"/></span></span></span><span class="ac-name">Grapple</span>
+</p>
+</div>
+<div class="ac-header-attrs">
+<p><br/>
+</p>
+<div class="ability-headerattr" style=""><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Cast Range"><img alt="Cast Range" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/CastRange.png/20px-CastRange.png" srcset="https://cdn.deadlock.wiki/thumb/CastRange.png/40px-CastRange.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCastRange"><b>30</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">m</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+<p><br/>
+</p><p><br/>
+</p><p><br/>
+</p>
+</div>
+</div>
+<div class="ac-header-right">
+<div class="ac-charge-row">
+<div class="ability-headerattr" style="margin-right: 0;"><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Number of Charges"><img alt="Number of Charges" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/20px-AttributeIconMaxChargesIncrease.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/40px-AttributeIconMaxChargesIncrease.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCharges"><b>1</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2"></span></span>
+</div>
+<div class="ability-headerattr" style="margin-left: 1px; margin-right: 0"><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Charge Cooldown"><img alt="Charge Cooldown" class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="16" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldownBetweenChargeUses.png/16px-AttributeIconTechCooldownBetweenChargeUses.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldownBetweenChargeUses.png/32px-AttributeIconTechCooldownBetweenChargeUses.png 2x" width="16"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCooldownBetweenCharge"><b>2</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">s</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+</div>
+<div class="ability-headerattr" style=""><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Cooldown"><img alt="Cooldown" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldown.png/20px-AttributeIconTechCooldown.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldown.png/40px-AttributeIconTechCooldown.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCooldown"><b>35</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">s</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="ac-info-outer">
+<div class="ability-info ac-info-section" id="ability-info1">
+<div class="ac-info-desc"><span style="font-weight:bold">Pull yourself through the air</span> toward a target. Using Grapple also resets your limit of <span style="font-weight:bold">air jumps and dashes</span>.</div>
+<div class="ac-info-main">
+<div class="ability-mainbox">
+<p><br/>
+</p>
+<div class="ac-mainbox-inner ac-mainbox-inner--default">
+<div class="ac-mainbox-value">
+<p><span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(66%)sepia(32%)saturate(1046%)hue-rotate(95deg)brightness(103%)contrast(102%);">
+<span typeof="mw:File"><a href="/Move_Speed" title="Move Speed"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Move_speed.png/18px-Move_speed.png" srcset="https://cdn.deadlock.wiki/thumb/Move_speed.png/36px-Move_speed.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="JumpVelocity"><b>20</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">m</span>
+</span></p>
+</div>
+<div class="ac-mainbox-label">Jump Velocity</div>
+</div></div>
+</div>
+<div class="ac-info-alt">
+<div class="ability-altbox hide">
+<p><span class="ac-altbox-inner">
+<span style="position: relative;">
+<span typeof="mw:File"><a href="/Bullet_Damage" title="Bullet Damage"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Bullet_damage.png/18px-Bullet_damage.png" srcset="https://cdn.deadlock.wiki/thumb/Bullet_damage.png/36px-Bullet_damage.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="WeaponDamageBonus"><b>0</b></span><span style="font-size: 10px; color: #9C9C9C"></span>
+</span> <span class="ac-altbox-label">Weapon Damage</span></span>
+</p>
+</div><div class="ability-altbox hide">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);">
+<span typeof="mw:File"><a href="/Ability_Duration" title="Ability Duration"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechDuration.png/18px-AttributeIconTechDuration.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechDuration.png/36px-AttributeIconTechDuration.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="WeaponDamageBonusDuration"><b>0</b></span><span style="font-size: 10px; color: #9C9C9C">s</span>
+</span> <span class="ac-altbox-label">Bonus Duration</span></span>
+</p>
+</div><div class="ability-altbox hide">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(80%)sepia(42%)saturate(6295%)hue-rotate(355deg)brightness(104%)contrast(85%);">
+<span typeof="mw:File"><a href="/Fire_Rate" title="Fire Rate"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Fire_Rate.png/18px-Fire_Rate.png" srcset="https://cdn.deadlock.wiki/thumb/Fire_Rate.png/36px-Fire_Rate.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="WeaponFireRateBonus"><b>0</b></span><span style="font-size: 10px; color: #9C9C9C">%</span>
+</span> <span class="ac-altbox-label">Fire Rate</span></span>
+</p>
+</div>
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info2">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info3">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info4">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+</div>
+<div class="ac-upgrades">
+<div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="1" id="ability-upgrade-1" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">1</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 11.90cqw; line-height: 1.4;"><span class="">-17</span><span style="font-size: 0.8em; color: #9C9C9C">s</span> Cooldown</div></div>
+<div></div>
+</div><div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="2" id="ability-upgrade-2" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">2</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 8.40cqw; line-height: 1.4;"><span style="font-weight:bold">+20m</span> Cast Range and gain <span style="font-weight:bold">+7</span> Weapon Damage for 6s</div></div>
+<div></div>
+</div><div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="3" id="ability-upgrade-5" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">5</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 8.40cqw; line-height: 1.4;"><span style="font-weight:bold">+1</span> Charges<br/>OnCast : <span style="font-weight:bold">+1</span> Stamina and <span style="font-weight:bold">+60%</span> Air Control</div></div>
+<div></div>
+</div>
+</div>
+</div></div><div class="ability-section-hints"><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Slowing_Hex.png/24px-Slowing_Hex.png" srcset="https://cdn.deadlock.wiki/thumb/Slowing_Hex.png/48px-Slowing_Hex.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Disabled by <a href="/Slowing_Hex" title="Slowing Hex">Slowing Hex</a></span></span></div></div><div class="ability-section-details"><div class="single-tabbed"><div class="tabber tabber--init"><header class="tabber__header"><button aria-hidden="true" class="tabber__header__prev" tabindex="-1" type="button"></button><nav class="tabber__tabs" role="tablist"><a aria-controls="tabber-Notes_2" class="tabber__tab" href="#tabber-Notes_2" id="tabber-Notes_2-label" role="tab">Notes</a></nav><button aria-hidden="true" class="tabber__header__next" tabindex="-1" type="button"></button></header><div class="tabber__section"><div aria-labelledby="tabber-Notes_2-label" class="tabber__panel" id="tabber-Notes_2" role="tabpanel" tabindex="0">
+<div class="ability-details-panel">
+<ul><li>Additional uses of Grapple with the T2 upgrade will refresh the duration of the Bonus Weapon Damage buff.</li>
+<li>Grapple can target all other heroes and any <a href="/Unit" title="Unit">Unit</a>.</li></ul>
+</div>
+</div></div></div></div></div></div></div>
+<link href="mw-data:TemplateStyles:r199879" rel="mw-deduplicated-inline-style"/><div class="ability-section-wrapper"><h3 class="ability-name-toc mw-html-heading" id="Flog">Flog</h3><div class="ability-section"><div class="ability-section-main"><div class="ability-section-card"><link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/><span id="Flog"></span><div class="ability-card" id="hero_lash:ability_lash_flog">
+<div class="ac-header-wrapper">
+<div class="ac-header">
+<div class="ac-header-left">
+<div class="ac-title">
+<p><span class="ac-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="137" data-file-width="137" decoding="async" height="45" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Flog.png/45px-Flog.png" srcset="https://cdn.deadlock.wiki/thumb/Flog.png/90px-Flog.png 2x" width="45"/></span></span></span><span class="ac-name">Flog</span>
+</p>
+</div>
+<div class="ac-header-attrs">
+<p><br/>
+</p>
+<div class="ability-headerattr" style=""><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Cast Range"><img alt="Cast Range" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/CastRange.png/20px-CastRange.png" srcset="https://cdn.deadlock.wiki/thumb/CastRange.png/40px-CastRange.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCastRange"><b>20</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">m</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+<p><br/>
+</p><p><br/>
+</p><p><br/>
+</p>
+</div>
+</div>
+<div class="ac-header-right">
+<div class="ac-charge-row">
+<div class="ability-headerattr hide" style="margin-right: 0;"><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Number of Charges"><img alt="Number of Charges" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/20px-AttributeIconMaxChargesIncrease.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/40px-AttributeIconMaxChargesIncrease.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCharges"><b>0</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2"></span></span>
+</div>
+<p><br/>
+</p>
+</div>
+<div class="ability-headerattr" style=""><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Cooldown"><img alt="Cooldown" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldown.png/20px-AttributeIconTechCooldown.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldown.png/40px-AttributeIconTechCooldown.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCooldown"><b>26</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">s</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="ac-info-outer">
+<div class="ability-info ac-info-section" id="ability-info1">
+<div class="ac-info-desc">Strike enemies in front of you with your whip, <span class="no-blue-link" style="text-wrap:nowrap; font-weight:bold; color:#13f278;"><span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(66%)sepia(32%)saturate(1046%)hue-rotate(95deg)brightness(103%)contrast(102%);"><span typeof="mw:File"><a href="/Healing" title="Healing"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Healing.png/20px-Healing.png" srcset="https://cdn.deadlock.wiki/thumb/Healing.png/40px-Healing.png 2x" width="20"/></a></span></span><span style="color: inherit;"> </span> <a href="/Healing" title="Healing">healing</a></span> for a portion of the damage dealt.</div>
+<div class="ac-info-main">
+<div class="ability-mainbox">
+<div class="ac-mainbox-scale">
+<div class="ac-mainbox-scale-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+<p><span class="ability-scaling">
+<span class="ac-scaling--spirit">
+<span typeof="mw:File"><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><img class="mw-file-element" data-file-height="53" data-file-width="76" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/28px-Spirit_scaling.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/56px-Spirit_scaling.png 2x" width="28"/></a></span><span class="ability-scaling-attr"><i>x</i><span class="ability-attr" id="Damage-scale">0.85
+</span></span></span>
+</span></p>
+</div>
+</div>
+<div class="ac-mainbox-inner ac-mainbox-inner--spirit">
+<div class="ac-mainbox-value">
+<p><span style="position: relative;">
+<span typeof="mw:File"><a href="/Spirit_Damage" title="Spirit Damage"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_damage.png/18px-Spirit_damage.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_damage.png/36px-Spirit_damage.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="Damage"><b>65</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2"></span>
+</span></p>
+</div>
+<div class="ac-mainbox-label">Damage</div>
+</div></div><div class="ability-mainbox">
+<div class="ac-mainbox-scale">
+<div class="ac-mainbox-scale-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+<div class="ac-mainbox-inner ac-mainbox-inner--default">
+<div class="ac-mainbox-value">
+<p><span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(66%)sepia(32%)saturate(1046%)hue-rotate(95deg)brightness(103%)contrast(102%);">
+<span typeof="mw:File"><a href="/Healing" title="Healing"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Healing.png/18px-Healing.png" srcset="https://cdn.deadlock.wiki/thumb/Healing.png/36px-Healing.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="HealPctVsHeroes"><b>40</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">%</span>
+</span></p>
+</div>
+<div class="ac-mainbox-label">Heal vs heroes</div>
+</div></div><div class="ability-mainbox">
+<p><br/>
+</p>
+<div class="ac-mainbox-inner ac-mainbox-inner--default">
+<div class="ac-mainbox-value">
+<p><span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);">
+<span typeof="mw:File"><a href="/Ability_Range" title="Ability Range"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechRange.png/18px-AttributeIconTechRange.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechRange.png/36px-AttributeIconTechRange.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="TargetingConeAngle"><b>40</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">°</span>
+</span></p>
+</div>
+<div class="ac-mainbox-label">Attack Angle</div>
+</div></div>
+</div>
+<div class="ac-info-alt">
+<div class="ability-altbox">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(66%)sepia(32%)saturate(1046%)hue-rotate(95deg)brightness(103%)contrast(102%);">
+<span typeof="mw:File"><a href="/Healing" title="Healing"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Healing.png/18px-Healing.png" srcset="https://cdn.deadlock.wiki/thumb/Healing.png/36px-Healing.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="HealPctVsNonHeroes"><b>16</b></span><span style="font-size: 10px; color: #9C9C9C">%</span>
+</span> <span class="ac-altbox-label">Heal vs non-heroes 
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/></span></span>
+</p>
+</div><div class="ability-altbox hide">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);">
+<span typeof="mw:File"><a href="/Movement_Slow" title="Movement Slow"><img class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/MoveSlow.png/18px-MoveSlow.png" srcset="https://cdn.deadlock.wiki/thumb/MoveSlow.png/36px-MoveSlow.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="EnemySlowPct"><b>0</b></span><span style="font-size: 10px; color: #9C9C9C">%</span>
+</span> <span class="ac-altbox-label">Enemy Move Speed</span></span>
+</p>
+</div><div class="ability-altbox hide">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);">
+<span typeof="mw:File"><a href="/Ability_Duration" title="Ability Duration"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechDuration.png/18px-AttributeIconTechDuration.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechDuration.png/36px-AttributeIconTechDuration.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="EnemySlowDuration"><b>0</b></span><span style="font-size: 10px; color: #9C9C9C">s</span>
+</span> <span class="ac-altbox-label">Debuff Duration</span></span>
+</p>
+</div><div class="ability-altbox hide">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(80%)sepia(42%)saturate(6295%)hue-rotate(355deg)brightness(104%)contrast(85%);">
+<span typeof="mw:File"><a href="/Fire_Rate" title="Fire Rate"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Fire_Rate.png/18px-Fire_Rate.png" srcset="https://cdn.deadlock.wiki/thumb/Fire_Rate.png/36px-Fire_Rate.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="FireRateSlow"><b>0</b></span><span style="font-size: 10px; color: #9C9C9C">%</span>
+</span> <span class="ac-altbox-label">Fire Rate</span></span>
+</p>
+</div>
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info2">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info3">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info4">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+</div>
+<div class="ac-upgrades">
+<div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="1" id="ability-upgrade-1" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">1</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 11.90cqw; line-height: 1.4;">Apply <span style="font-weight:bold">-28%</span> Move speed for 3s</div></div>
+<div></div>
+</div><div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="2" id="ability-upgrade-2" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">2</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 10.20cqw; line-height: 1.4;">Apply <span style="font-weight:bold">-30%</span> Fire Rate <br/><span style="font-weight:bold">-16s</span> Cooldown</div></div>
+<div></div>
+</div><div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="3" id="ability-upgrade-5" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">5</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 8.40cqw; line-height: 1.4;"><span style="font-weight:bold">+80</span> Damage <br/><span style="font-weight:bold">+25</span> Attack angle<br/><span style="font-weight:bold">+15%</span> Heal</div></div>
+<div></div>
+</div>
+</div>
+</div></div><div class="ability-section-hints"><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Debuff_Reducer.png/24px-Debuff_Reducer.png" srcset="https://cdn.deadlock.wiki/thumb/Debuff_Reducer.png/48px-Debuff_Reducer.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Debuff duration reduced by <a href="/Debuff_Resist" title="Debuff Resist">Debuff Resist</a></span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Healing_Booster.png/24px-Healing_Booster.png" srcset="https://cdn.deadlock.wiki/thumb/Healing_Booster.png/48px-Healing_Booster.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Healing amplified by <a href="/Healing_Booster" title="Healing Booster">Healing Booster</a> and affected by healing reduction</span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Dispel_Magic.png/24px-Dispel_Magic.png" srcset="https://cdn.deadlock.wiki/thumb/Dispel_Magic.png/48px-Dispel_Magic.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Effect can be <a href="/Dispel_Magic" title="Dispel Magic">dispelled</a></span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Healing_Tempo.png/24px-Healing_Tempo.png" srcset="https://cdn.deadlock.wiki/thumb/Healing_Tempo.png/48px-Healing_Tempo.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Healing triggers <a href="/Healing_Tempo" title="Healing Tempo">Healing Tempo</a>'s unique effect</span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Unstoppable.png/24px-Unstoppable.png" srcset="https://cdn.deadlock.wiki/thumb/Unstoppable.png/48px-Unstoppable.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">CC effect suppressed by <a href="/Unstoppable" title="Unstoppable">Unstoppable</a></span></span></div></div></div></div>
+<link href="mw-data:TemplateStyles:r199879" rel="mw-deduplicated-inline-style"/><div class="ability-section-wrapper"><h3 class="ability-name-toc mw-html-heading" id="Death_Slam">Death Slam</h3><div class="ability-section"><div class="ability-section-main"><div class="ability-section-card"><link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/><span id="Death_Slam"></span><div class="ability-card" id="hero_lash:citadel_ability_lash_ultimate">
+<div class="ac-header-wrapper">
+<div class="ac-header">
+<div class="ac-header-left">
+<div class="ac-title">
+<p><span class="ac-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="137" data-file-width="137" decoding="async" height="45" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Death_Slam.png/45px-Death_Slam.png" srcset="https://cdn.deadlock.wiki/thumb/Death_Slam.png/90px-Death_Slam.png 2x" width="45"/></span></span></span><span class="ac-name">Death Slam</span>
+</p>
+</div>
+<div class="ac-header-attrs">
+<div class="ability-headerattr" style=""><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Channel Time"><img alt="Channel Time" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/20px-AttributeIconMaxChargesIncrease.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/40px-AttributeIconMaxChargesIncrease.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityChannelTime"><b>2.3</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">s</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+<div class="ability-headerattr" style=""><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Cast Range"><img alt="Cast Range" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/CastRange.png/20px-CastRange.png" srcset="https://cdn.deadlock.wiki/thumb/CastRange.png/40px-CastRange.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCastRange"><b>20</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">m</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+<p><br/>
+</p><p><br/>
+</p><p><br/>
+</p>
+</div>
+</div>
+<div class="ac-header-right">
+<div class="ac-charge-row">
+<div class="ability-headerattr hide" style="margin-right: 0;"><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Number of Charges"><img alt="Number of Charges" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/20px-AttributeIconMaxChargesIncrease.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/40px-AttributeIconMaxChargesIncrease.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCharges"><b>0</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2"></span></span>
+</div>
+<p><br/>
+</p>
+</div>
+<div class="ability-headerattr" style=""><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);"><span typeof="mw:File"><span title="Cooldown"><img alt="Cooldown" class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldown.png/20px-AttributeIconTechCooldown.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechCooldown.png/40px-AttributeIconTechCooldown.png 2x" width="20"/></span></span></span><span style="color: inherit;"> <span class="ability-attr" id="AbilityCooldown"><b>170</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">s</span></span>
+</div>
+<div class="ac-headerattr-ss">
+<div class="ac-headerattr-ss-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="ac-info-outer">
+<div class="ability-info ac-info-section" id="ability-info1">
+<div class="ac-info-desc">Focus on enemies to connect whips to them. After channeling, connected enemies are <span style="font-weight:bold">lifted and stunned</span> then slammed into the ground. Your victims and any enemies in the landing zone will be <span style="font-weight:bold">damaged and slowed</span>. <br/>Press<b> Fire</b> to throw connected enemies early. Enemies that are not in line of sight or go out of range during the latch time will not be grabbed.</div>
+<div class="ac-info-main">
+<div class="ability-mainbox">
+<div class="ac-mainbox-scale">
+<div class="ac-mainbox-scale-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+<p><span class="ability-scaling">
+<span class="ac-scaling--spirit">
+<span typeof="mw:File"><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><img class="mw-file-element" data-file-height="53" data-file-width="76" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/28px-Spirit_scaling.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/56px-Spirit_scaling.png 2x" width="28"/></a></span><span class="ability-scaling-attr"><i>x</i><span class="ability-attr" id="ImpactDamage-scale">0.975
+</span></span></span>
+</span></p>
+</div>
+</div>
+<div class="ac-mainbox-inner ac-mainbox-inner--spirit">
+<div class="ac-mainbox-value">
+<p><span style="position: relative;">
+<span typeof="mw:File"><a href="/Spirit_Damage" title="Spirit Damage"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_damage.png/18px-Spirit_damage.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_damage.png/36px-Spirit_damage.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="ImpactDamage"><b>105</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2"></span>
+</span></p>
+</div>
+<div class="ac-mainbox-label">Impact Damage</div>
+</div></div><div class="ability-mainbox">
+<div class="ac-mainbox-scale">
+<div class="ac-mainbox-scale-badge">
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/>
+<p><span class="ability-scaling">
+<span class="ac-scaling--spirit">
+<span typeof="mw:File"><a href="/Spirit_Power#Spirit_Power_Scaling" title="Spirit Power"><img class="mw-file-element" data-file-height="53" data-file-width="76" decoding="async" height="20" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/28px-Spirit_scaling.png" srcset="https://cdn.deadlock.wiki/thumb/Spirit_scaling.png/56px-Spirit_scaling.png 2x" width="28"/></a></span><span class="ability-scaling-attr"><i>x</i><span class="ability-attr" id="ThrowDistance-scale">0.14
+</span></span></span>
+</span></p>
+</div>
+</div>
+<div class="ac-mainbox-inner ac-mainbox-inner--spirit">
+<div class="ac-mainbox-value">
+<p><span style="position: relative;filter: brightness(0) saturate(100%) invert(69%) sepia(4%) saturate(19%) hue-rotate(356deg) brightness(87%) contrast(95%);">
+</span><span style="color: inherit;">
+<span class="ability-attr" id="ThrowDistance"><b>14</b></span><span style="font-size: calc(1em - 2px); color: #B2B2B2">m</span>
+</span>
+</p>
+</div>
+<div class="ac-mainbox-label">Max Throw Distance</div>
+</div></div>
+</div>
+<div class="ac-info-alt">
+<div class="ability-altbox">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);">
+<span typeof="mw:File"><a href="/Movement_Slow" title="Movement Slow"><img class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/MoveSlow.png/18px-MoveSlow.png" srcset="https://cdn.deadlock.wiki/thumb/MoveSlow.png/36px-MoveSlow.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="SlowPercent"><b>40</b></span><span style="font-size: 10px; color: #9C9C9C">%</span>
+</span> <span class="ac-altbox-label">Move Speed</span></span>
+</p>
+</div><div class="ability-altbox">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);">
+<span typeof="mw:File"><a href="/Ability_Duration" title="Ability Duration"><img class="mw-file-element" data-file-height="128" data-file-width="128" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconTechDuration.png/18px-AttributeIconTechDuration.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconTechDuration.png/36px-AttributeIconTechDuration.png 2x" width="18"/></a></span></span><span style="color: inherit;">
+<span class="ability-attr" id="SlowDuration"><b>4</b></span><span style="font-size: 10px; color: #9C9C9C">s</span>
+</span> <span class="ac-altbox-label">Slow Duration 
+<link href="mw-data:TemplateStyles:r210907" rel="mw-deduplicated-inline-style"/></span></span>
+</p>
+</div><div class="ability-altbox">
+<p><span class="ac-altbox-inner">
+<span style="position: relative; bottom: 2px; filter: brightness(0)saturate(100%)invert(78%)sepia(43%)saturate(4738%)hue-rotate(215deg)brightness(100%)contrast(102%);">
+<span typeof="mw:File"><span><img class="mw-file-element" data-file-height="64" data-file-width="64" decoding="async" height="18" loading="lazy" src="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/18px-AttributeIconMaxChargesIncrease.png" srcset="https://cdn.deadlock.wiki/thumb/AttributeIconMaxChargesIncrease.png/36px-AttributeIconMaxChargesIncrease.png 2x" width="18"/></span></span></span><span style="color: inherit;">
+<span class="ability-attr" id="AbilityCastDelay"><b>0.3</b></span><span style="font-size: 10px; color: #9C9C9C">s</span>
+</span> <span class="ac-altbox-label">Charge Time</span></span>
+</p>
+</div>
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info2">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info3">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+<div class="ability-info ac-info-section ac-info-section--padded" id="ability-info4">
+<div class="ac-info-desc"></div>
+<div class="ac-info-main">
+</div>
+<div class="ac-info-alt">
+</div>
+</div>
+</div>
+<div class="ac-upgrades">
+<div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="1" id="ability-upgrade-1" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">1</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 11.90cqw; line-height: 1.4;"><span class="">+12</span><span style="font-size: 0.8em; color: #9C9C9C">m</span> Max Throw Distance</div></div>
+<div></div>
+</div><div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="2" id="ability-upgrade-2" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">2</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 11.90cqw; line-height: 1.4;"><span class="">-35</span><span style="font-size: 0.8em; color: #9C9C9C">s</span> Cooldown</div></div>
+<div></div>
+</div><div class="cdx-button cdx-button--action-progressive ability-upgrade" data-index="3" id="ability-upgrade-5" tabindex="0">
+<div class="ability-upgrade-header"><span style="position: relative; bottom: 2px; margin-right: 3px; filter: brightness(0) saturate(100%) invert(83%) sepia(26%) saturate(1312%) hue-rotate(197deg) brightness(107%) contrast(101%);"><span typeof="mw:File"><a href="/Ability_Point" title="Ability Point"><img alt="Ability Point" class="mw-file-element" data-file-height="32" data-file-width="32" decoding="async" height="15" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Ability_point.png/15px-Ability_point.png" srcset="https://cdn.deadlock.wiki/thumb/Ability_point.png/30px-Ability_point.png 2x" width="15"/></a></span></span><b><span style="color:#bc8ee8;">5</span></b></div>
+<div class="ac-upgrade-descwrap" style="container-type: inline-size;"><div class="ac-upgrade-desc" style="font-size: 8.40cqw; line-height: 1.4;"><span style="font-weight:bold">Stun</span> enemies in Radius for 1.2s<br/><span style="font-weight:bold">+6m</span> Cast Range</div></div>
+<div></div>
+</div>
+</div>
+</div></div><div class="ability-section-hints"><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Debuff_Reducer.png/24px-Debuff_Reducer.png" srcset="https://cdn.deadlock.wiki/thumb/Debuff_Reducer.png/48px-Debuff_Reducer.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Debuff duration reduced by <a href="/Debuff_Resist" title="Debuff Resist">Debuff Resist</a></span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Reactive_Barrier.png/24px-Reactive_Barrier.png" srcset="https://cdn.deadlock.wiki/thumb/Reactive_Barrier.png/48px-Reactive_Barrier.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Triggers <a href="/Reactive_Barrier" title="Reactive Barrier">Reactive Barrier</a></span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Indomitable.png/24px-Indomitable.png" srcset="https://cdn.deadlock.wiki/thumb/Indomitable.png/48px-Indomitable.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">Disable prevented by <a href="/Indomitable" title="Indomitable">Indomitable</a></span></span><span class="ability-hint"><span class="ability-hint-icon"><span typeof="mw:File"><span><img class="mw-file-element" data-file-height="200" data-file-width="200" decoding="async" height="24" loading="lazy" src="https://cdn.deadlock.wiki/thumb/Unstoppable.png/24px-Unstoppable.png" srcset="https://cdn.deadlock.wiki/thumb/Unstoppable.png/48px-Unstoppable.png 2x" width="24"/></span></span></span><span class="ability-hint-tip">CC effect suppressed by <a href="/Unstoppable" title="Unstoppable">Unstoppable</a></span></span></div></div><div class="ability-section-details"><div class="single-tabbed"><div class="tabber tabber--init"><header class="tabber__header"><button aria-hidden="true" class="tabber__header__prev" tabindex="-1" type="button"></button><nav class="tabber__tabs" role="tablist"><a aria-controls="tabber-Notes_3" class="tabber__tab" href="#tabber-Notes_3" id="tabber-Notes_3-label" role="tab">Notes</a></nav><button aria-hidden="true" class="tabber__header__next" tabindex="-1" type="button"></button></header><div class="tabber__section"><div aria-labelledby="tabber-Notes_3-label" class="tabber__panel" id="tabber-Notes_3" role="tabpanel" tabindex="0">
+<div class="ability-details-panel">
+<ul><li>Death Slam has a 0.4s grace time before losing focus on incomplete connections.</li>
+<li>The landing zone impact radius is 6m and can be increased with <a href="/Ability_Range" title="Ability Range">Ability Range</a> upgrades.</li>
+<li>Death Slam cannot connect to enemies behind a <a href="/Cosmic_Veil" title="Cosmic Veil">Cosmic Veil</a>, even from the visible side.</li></ul>
+</div>
+</div></div></div></div></div></div></div>
+</div>

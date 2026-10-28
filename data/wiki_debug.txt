@@ -1,0 +1,211 @@
+heroes ok=42 failed=0, abilities with notes/items=167
+Infernus: fetched via api; abilities-section, found headings: Napalm, Flame Dash, Afterburn, Concussive Combustion
+  Napalm: 0 notes, items=['Healing Booster', 'Dispel Magic', 'Unstoppable'], notes-label=False
+  Flame Dash: 7 notes, items=['Dispel Magic', 'Slowing Hex', 'Debuff Reducer', 'Warp Stone', 'Majestic Leap', 'Ethereal Shift', 'Refresher'], notes-label=True
+  Afterburn: 7 notes, items=['Dispel Magic', 'Plated Armor', 'Unstoppable'], notes-label=True
+  Concussive Combustion: 3 notes, items=['Healing Booster', 'Reactive Barrier', 'Indomitable', 'Unstoppable', 'Shadow Weave'], notes-label=True
+Seven: fetched via api; abilities-section, found headings: Lightning Ball, Static Charge, Power Surge, Storm Cloud
+  Lightning Ball: 1 notes, items=['Dispel Magic', 'Unstoppable', 'Debuff Reducer'], notes-label=True
+  Static Charge: 0 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=False
+  Power Surge: 5 notes, items=['Dispel Magic', 'Plated Armor', 'Ricochet'], notes-label=True
+  Storm Cloud: 2 notes, items=[], notes-label=True
+Vindicta: fetched via api; abilities-section, found headings: Stake, Flight, Crow Familiar, Assassinate
+  Stake: 3 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable', 'Slowing Hex', 'Greater Expansion', 'Echo Shard', 'Refresher'], notes-label=True
+  Flight: 6 notes, items=['Plated Armor', 'Slowing Hex', 'Counterspell', 'Titanic Magazine'], notes-label=True
+  Crow Familiar: 4 notes, items=['Dispel Magic'], notes-label=True
+  Assassinate: 12 notes, items=['Lightning Scroll'], notes-label=True
+Lady Geist: fetched via api; abilities-section, found headings: Essence Bomb, Life Drain, Malice, Soul Exchange
+  Essence Bomb: 4 notes, items=[], notes-label=True
+  Life Drain: 6 notes, items=['Healing Booster', 'Dispel Magic', 'Healing Tempo'], notes-label=True
+  Malice: 2 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Soul Exchange: 10 notes, items=['Healing Booster', 'Reactive Barrier', 'Healing Tempo', 'Indomitable', 'Unstoppable', 'Mystic Reverb', 'Counterspell'], notes-label=True
+Abrams: fetched via api; abilities-section, found headings: Siphon Life, Shoulder Charge, Infernal Resilience, Seismic Impact
+  Siphon Life: 3 notes, items=['Healing Booster', 'Healing Tempo'], notes-label=True
+  Shoulder Charge: 8 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable', 'Slowing Hex'], notes-label=True
+  Infernal Resilience: 2 notes, items=['Healing Booster', 'Healing Tempo', 'Cheat Death'], notes-label=True
+  Seismic Impact: 5 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable', 'Slowing Hex'], notes-label=True
+Wraith: fetched via api; abilities-section, found headings: Card Trick, Project Mind, Full Auto, Telekinesis
+  Card Trick: 12 notes, items=['Healing Booster', 'Dispel Magic', 'Healing Tempo', 'Plated Armor', 'Unstoppable', 'Transcendent Cooldown', 'Superior Cooldown', 'Rapid Recharge'], notes-label=True
+  Project Mind: 2 notes, items=['Slowing Hex'], notes-label=True
+  Full Auto: 1 notes, items=['Plated Armor'], notes-label=True
+  Telekinesis: 2 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable', 'Slowing Hex'], notes-label=True
+McGinnis: fetched via api; abilities-section, found headings: Mini Turret, Medicinal Specter, Spectral Wall, Heavy Barrage
+  Mini Turret: 8 notes, items=['Monster Rounds', 'Heroic Aura'], notes-label=True
+  Medicinal Specter: 2 notes, items=['Healing Booster', 'Healing Tempo'], notes-label=True
+  Spectral Wall: 7 notes, items=['Monster Rounds', 'Heroic Aura', 'Dispel Magic', 'Unstoppable', 'Mystic Expansion', 'Arcane Surge'], notes-label=True
+  Heavy Barrage: 3 notes, items=['Unstoppable', 'Enduring Speed'], notes-label=True
+Paradox: fetched via api; abilities-section, found headings: Pulse Grenade, Time Wall, Kinetic Carbine, Paradoxical Swap
+  Pulse Grenade: 6 notes, items=['Dispel Magic', 'Echo Shard', 'Unstoppable'], notes-label=True
+  Time Wall: 3 notes, items=['Dispel Magic', 'Unstoppable', 'Reactive Barrier', 'Indomitable'], notes-label=True
+  Kinetic Carbine: 10 notes, items=['Dispel Magic', 'Veil Walker', 'Shadow Weave', 'Unstoppable', 'Plated Armor'], notes-label=True
+  Paradoxical Swap: 10 notes, items=['Reactive Barrier', 'Unstoppable', 'Indomitable', 'Cloak of Opportunity'], notes-label=True
+Dynamo: fetched via api; abilities-section, found headings: Kinetic Pulse, Quantum Entanglement, Rejuvenating Aurora, Singularity
+  Kinetic Pulse: 12 notes, items=['Unstoppable'], notes-label=True
+  Quantum Entanglement: 9 notes, items=['Slowing Hex'], notes-label=True
+  Rejuvenating Aurora: 3 notes, items=['Healing Booster', 'Healing Tempo'], notes-label=True
+  Singularity: 2 notes, items=['Reactive Barrier', 'Unstoppable', 'Indomitable'], notes-label=True
+Kelvin: fetched via api; abilities-section, found headings: Frost Grenade, Ice Path, Arctic Beam, Frozen Shelter
+  Frost Grenade: 0 notes, items=['Healing Booster', 'Dispel Magic', 'Healing Tempo', 'Unstoppable'], notes-label=False
+  Ice Path: 2 notes, items=['Slowing Hex', 'Greater Expansion', 'Boundless Spirit'], notes-label=True
+  Arctic Beam: 4 notes, items=['Dispel Magic', 'Unstoppable', 'Debuff Reducer', 'Greater Expansion'], notes-label=True
+  Frozen Shelter: 5 notes, items=['Healing Booster', 'Healing Tempo', 'Unstoppable', 'Armor Piercer'], notes-label=True
+Haze: fetched via api; abilities-section, found headings: Sleep Dagger, Smoke Bomb, Fixation, Bullet Dance
+  Sleep Dagger: 5 notes, items=['Reactive Barrier', 'Veil Walker', 'Shadow Weave', 'Indomitable', 'Unstoppable'], notes-label=False
+  Smoke Bomb: 3 notes, items=[], notes-label=True
+  Fixation: 2 notes, items=['Plated Armor', 'Unstoppable'], notes-label=True
+  Bullet Dance: 5 notes, items=['Mystic Shot', 'Lucky Shot', 'Magic Carpet'], notes-label=True
+Holliday: fetched via api; abilities-section, found headings: Powder Keg, Bounce Pad, Crackshot, Spirit Lasso
+  Powder Keg: 4 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Bounce Pad: 4 notes, items=['Slowing Hex'], notes-label=True
+  Crackshot: 1 notes, items=['Dispel Magic', 'Plated Armor', 'Unstoppable'], notes-label=True
+  Spirit Lasso: 1 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable', 'Warp Stone'], notes-label=True
+Bebop: fetched via api; abilities-section, found headings: Exploding Uppercut, Sticky Bomb, Grapple Arm, Hyper Beam
+  Exploding Uppercut: 6 notes, items=['Melee Lifesteal', 'Healing Booster', 'Dispel Magic', 'Healing Tempo', 'Unstoppable'], notes-label=True
+  Sticky Bomb: 13 notes, items=['Spirit Snatch', 'Echo Shard', 'Boundless Spirit'], notes-label=True
+  Grapple Arm: 4 notes, items=['Melee Lifesteal', 'Reactive Barrier', 'Indomitable', 'Unstoppable', 'Spirit Snatch', 'Lifestrike', 'Melee Charge', 'Crushing Fists'], notes-label=True
+  Hyper Beam: 13 notes, items=['Unstoppable', 'Debuff Reducer'], notes-label=True
+Calico: fetched via api; abilities-section, found headings: Gloom Bombs, Leaping Slash, Ava, Return to Shadows
+  Gloom Bombs: 2 notes, items=[], notes-label=False
+  Leaping Slash: 2 notes, items=['Melee Lifesteal', 'Healing Booster', 'Healing Tempo', 'Slowing Hex'], notes-label=True
+  Ava: 3 notes, items=['Slowing Hex'], notes-label=True
+  Return to Shadows: 1 notes, items=['Healing Booster', 'Healing Tempo', 'Slowing Hex'], notes-label=True
+Grey Talon: fetched via api; abilities-section, found headings: Charged Shot, Rain of Arrows, Spirit Snare, Guided Owl
+  Charged Shot: 6 notes, items=[], notes-label=True
+  Rain of Arrows: 11 notes, items=['Healing Booster', 'Dispel Magic', 'Unstoppable', 'Slowing Hex', 'Split Shot', 'Phantom Strike'], notes-label=True
+  Spirit Snare: 6 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Guided Owl: 10 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
+Mo & Krill: fetched via api; abilities-section, found headings: Scorn, Burrow, Sand Blast, Combo
+  Scorn: 3 notes, items=['Healing Booster', 'Dispel Magic', 'Healing Tempo'], notes-label=True
+  Burrow: 19 notes, items=['Dispel Magic', 'Unstoppable', 'Alchemical Fire', 'Cursed Relic', 'Knockdown', 'Guardian Ward', 'Rescue Beam', 'Phantom Strike', 'Vortex Web', 'Slowing Hex'], notes-label=True
+  Sand Blast: 3 notes, items=['Dispel Magic', 'Unstoppable', 'Silence Wave', 'Mystic Burst'], notes-label=True
+  Combo: 5 notes, items=['Healing Booster', 'Reactive Barrier', 'Indomitable', 'Unstoppable', 'Majestic Leap', 'Rescue Beam'], notes-label=True
+Shiv: fetched via api; abilities-section, found headings: Serrated Knives, Slice and Dice, Bloodletting, Killing Blow
+  Serrated Knives: 2 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Slice and Dice: 1 notes, items=['Dispel Magic', 'Slowing Hex'], notes-label=True
+  Bloodletting: 4 notes, items=[], notes-label=True
+  Killing Blow: 14 notes, items=['Slowing Hex', 'Glass Cannon', 'Extra Charge', 'Rapid Recharge', 'Arcane Surge', 'Surge of Power', 'Close Quarters', 'Point Blank', 'Long Range', 'Sharpshooter', 'Opening Rounds'], notes-label=True
+Ivy: fetched via api; abilities-section, found headings: Entangling Thorns, Kudzu Connection, Stone Form, Air Drop
+  Entangling Thorns: 1 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
+  Kudzu Connection: 8 notes, items=['Healing Tempo', 'Bullet Lifesteal', 'Cursed Relic', 'Nullification Burst', 'Healing Booster'], notes-label=True
+  Stone Form: 4 notes, items=['Healing Booster', 'Reactive Barrier', 'Dispel Magic', 'Healing Tempo', 'Phantom Strike', 'Indomitable', 'Unstoppable'], notes-label=True
+  Air Drop: 8 notes, items=['Unstoppable', 'Slowing Hex', 'Reactive Barrier', 'Indomitable'], notes-label=True
+Warden: fetched via api; abilities-section, found headings: Alchemical Flask, Willpower, Binding Word, Last Stand
+  Alchemical Flask: 0 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=False
+  Willpower: 0 notes, items=[], notes-label=False
+  Binding Word: 0 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=False
+  Last Stand: 3 notes, items=['Healing Booster', 'Healing Tempo', 'Majestic Leap'], notes-label=True
+Yamato: fetched via api; abilities-section, found headings: Power Slash, Flying Slash, Crimson Slash, Shadow Transformation
+  Power Slash: 7 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Flying Slash: 5 notes, items=['Melee Lifesteal', 'Dispel Magic', 'Unstoppable', 'Slowing Hex'], notes-label=True
+  Crimson Slash: 2 notes, items=['Healing Booster', 'Dispel Magic', 'Healing Tempo'], notes-label=True
+  Shadow Transformation: 5 notes, items=['Healing Booster', 'Healing Tempo'], notes-label=True
+Lash: fetched via api; abilities-section, found headings: Ground Strike, Grapple, Flog, Death Slam
+  Ground Strike: 6 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Grapple: 2 notes, items=['Slowing Hex'], notes-label=True
+  Flog: 0 notes, items=['Healing Booster', 'Dispel Magic', 'Healing Tempo', 'Unstoppable'], notes-label=False
+  Death Slam: 3 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
+Viscous: fetched via api; abilities-section, found headings: Splatter, The Cube, Puddle Punch, Goo Ball
+  Splatter: 3 notes, items=['Dispel Magic', 'Unstoppable', 'Superior Duration'], notes-label=True
+  The Cube: 8 notes, items=['Healing Booster', 'Healing Tempo', 'Majestic Leap'], notes-label=True
+  Puddle Punch: 8 notes, items=['Melee Lifesteal', 'Healing Booster', 'Dispel Magic', 'Unstoppable', 'Rebuttal', 'Melee Charge', 'Spirit Snatch'], notes-label=True
+  Goo Ball: 2 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
+Pocket: fetched via api; abilities-section, found headings: Barrage, Flying Cloak, Enchanter's Satchel, Affliction
+  Barrage: 5 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Flying Cloak: 2 notes, items=['Slowing Hex'], notes-label=True
+  Enchanter's Satchel: 1 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Affliction: 2 notes, items=[], notes-label=True
+Mirage: fetched via api; abilities-section, found headings: Fire Scarabs, Dust Devil, Djinn's Mark, Traveler
+  Fire Scarabs: 4 notes, items=['Dispel Magic', 'Healing Tempo', 'Healing Booster', 'Unstoppable'], notes-label=True
+  Dust Devil: 1 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable', 'Slowing Hex'], notes-label=True
+  Djinn's Mark: 6 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable', 'Counterspell', 'Infuser', 'Focus Lens', 'Plated Armor', 'Arcane Surge'], notes-label=True
+  Traveler: 4 notes, items=[], notes-label=True
+Vyper: fetched via api; abilities-section, found headings: Screwjab Dagger, Lethal Venom, Slither, Petrifying Bola
+  Screwjab Dagger: 2 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Lethal Venom: 3 notes, items=['Dispel Magic', 'Plated Armor'], notes-label=True
+  Slither: 2 notes, items=[], notes-label=True
+  Petrifying Bola: 3 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
+Sinclair: fetched via api; abilities-section, found headings: Vexing Bolt, Spectral Assistant, Rabbit Hex, Audience Participation
+  Vexing Bolt: 2 notes, items=['Dispel Magic'], notes-label=True
+  Spectral Assistant: 4 notes, items=['Slowing Hex'], notes-label=True
+  Rabbit Hex: 4 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
+  Audience Participation: 23 notes, items=['Compress Cooldown', 'Mystic Expansion'], notes-label=True
+Mina: fetched via api; abilities-section, found headings: Rake, Sanguine Retreat, Love Bites, Nox Nostra
+  Rake: 4 notes, items=['Healing Booster', 'Healing Tempo'], notes-label=True
+  Sanguine Retreat: 3 notes, items=['Slowing Hex'], notes-label=True
+  Love Bites: 9 notes, items=['Dispel Magic', 'Plated Armor', 'Unstoppable', 'Healbane', 'Mystic Regeneration', 'Bullet Resist Shredder', 'Mystic Slow', 'Mystic Vulnerability', 'Suppressor', 'Radiant Regeneration', 'Escalating Exposure'], notes-label=True
+  Nox Nostra: 4 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable', 'Phantom Strike'], notes-label=True
+Drifter: fetched via api; abilities-section, found headings: Rend, Stalker's Mark, Bloodscent, Eternal Night
+  Rend: 4 notes, items=['Melee Lifesteal', 'Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable', 'Melee Charge', 'Spirit Snatch', 'Mercurial Magnum', 'Quicksilver Reload'], notes-label=True
+  Stalker's Mark: 8 notes, items=['Dispel Magic', 'Slowing Hex'], notes-label=True
+  Bloodscent: 4 notes, items=['Healing Booster', 'Healing Tempo'], notes-label=True
+  Eternal Night: 6 notes, items=['Trophy Collector', 'Shadow Weave', 'Spellslinger'], notes-label=True
+Venator: fetched via api; abilities-section, found headings: Consecrating Grenade, Gutshot, Hex-Lined Snap Trap, Ira Domini
+  Consecrating Grenade: 3 notes, items=['Dispel Magic', 'Rapid Recharge', 'Inhibitor'], notes-label=True
+  Gutshot: 9 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable', 'Inhibitor', 'Mystic Expansion', 'Greater Expansion', 'Superior Duration', 'Vampiric Burst'], notes-label=True
+  Hex-Lined Snap Trap: 2 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Ira Domini: 10 notes, items=['Vampiric Burst', 'Inhibitor', 'Ricochet', 'Split Shot', 'Plated Armor'], notes-label=True
+Victor: fetched via api; abilities-section, found headings: Pain Battery, Jumpstart, Aura of Suffering, Shocking Reanimation
+  Pain Battery: 1 notes, items=['Healing Booster', 'Dispel Magic', 'Healing Tempo', 'Unstoppable', 'Superior Cooldown'], notes-label=True
+  Jumpstart: 5 notes, items=['Healing Booster', 'Healing Tempo'], notes-label=True
+  Aura of Suffering: 9 notes, items=['Dispel Magic', 'Unstoppable', 'Ethereal Shift', 'Debuff Reducer'], notes-label=True
+  Shocking Reanimation: 7 notes, items=['Reactive Barrier', 'Indomitable', 'Plated Armor', 'Unstoppable', 'Mercurial Magnum', 'Mystic Reverb', 'Cheat Death', 'Blood Tribute'], notes-label=True
+Paige: fetched via api; abilities-section, found headings: Bookwyrm, Plot Armor, Captivating Read, Rallying Charge
+  Bookwyrm: 5 notes, items=['Dispel Magic', 'Greater Expansion'], notes-label=True
+  Plot Armor: 8 notes, items=['Echo Shard', 'Greater Expansion'], notes-label=True
+  Captivating Read: 1 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Rallying Charge: 6 notes, items=['Healing Booster', 'Reactive Barrier', 'Healing Tempo', 'Indomitable', 'Unstoppable'], notes-label=True
+The Doorman: fetched via api; abilities-section, found headings: Call Bell, Doorway, Luggage Cart, Hotel Guest
+  Call Bell: 12 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Doorway: 9 notes, items=['Slowing Hex'], notes-label=True
+  Luggage Cart: 8 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
+  Hotel Guest: 19 notes, items=['Reactive Barrier', 'Ethereal Shift', 'Counterspell', 'Indomitable', 'Cold Front', 'Compress Cooldown', 'Witchmail', 'Refresher', 'Unstoppable'], notes-label=True
+Billy: fetched via api; abilities-section, found headings: Bashdown, Rising Ram, Blasted, Chain Gang
+  Bashdown: 10 notes, items=['Melee Lifesteal', 'Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable', 'Magic Carpet', 'Melee Charge', 'Spirit Snatch'], notes-label=True
+  Rising Ram: 4 notes, items=['Slowing Hex', 'Siphon Bullets'], notes-label=True
+  Blasted: 9 notes, items=['Dispel Magic', 'Plated Armor'], notes-label=True
+  Chain Gang: 6 notes, items=['Reactive Barrier', 'Unstoppable', 'Duration Extender', 'Ethereal Shift', 'Indomitable'], notes-label=True
+Graves: fetched via api; abilities-section, found headings: Jar of Dead, Grasping Hands, Essence Theft, Borrowed Decree
+  Jar of Dead: 5 notes, items=['Monster Rounds', 'Heroic Aura', 'Dispel Magic', 'Unstoppable', 'Cultist Sacrifice'], notes-label=True
+  Grasping Hands: 4 notes, items=['Monster Rounds', 'Heroic Aura', 'Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Essence Theft: 6 notes, items=['Dispel Magic', 'Plated Armor'], notes-label=True
+  Borrowed Decree: 8 notes, items=['Monster Rounds', 'Heroic Aura', 'Unstoppable', 'Cultist Sacrifice'], notes-label=True
+Apollo: fetched via api; abilities-section, found headings: Disengaging Sigil, Riposte, Flawless Advance, Itani Lo Sahn
+  Disengaging Sigil: 2 notes, items=['Dispel Magic', 'Unstoppable', 'Slowing Hex'], notes-label=True
+  Riposte: 6 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable', 'Slowing Hex', 'Counterspell'], notes-label=True
+  Flawless Advance: 1 notes, items=['Healing Booster', 'Healing Tempo', 'Slowing Hex'], notes-label=True
+  Itani Lo Sahn: 5 notes, items=['Reactive Barrier', 'Unstoppable', 'Slowing Hex', 'Divine Barrier', 'Counterspell', 'Debuff Reducer', 'Indomitable'], notes-label=True
+Deadman Danny: fetched via api; abilities-section, found headings: Strix Salvo, Chimera Mk1, Jettison Fuel, Close The Deal
+  Strix Salvo: 2 notes, items=[], notes-label=True
+  Chimera Mk1: 16 notes, items=['Dispel Magic', 'Unstoppable', 'Arcane Surge', 'Kinetic Dash', 'Cold Front', 'Arctic Blast', 'Reactive Barrier', 'Indomitable', 'Slowing Hex'], notes-label=True
+  Jettison Fuel: 4 notes, items=['Dispel Magic', 'Metal Skin'], notes-label=True
+  Close The Deal: 4 notes, items=['Unstoppable', 'Reactive Barrier', 'Indomitable', 'Lightning Scroll'], notes-label=True
+Rem: fetched via api; abilities-section, found headings: Pillow Toss, Tag Along, Lil Helpers, Naptime
+  Pillow Toss: 3 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Tag Along: 11 notes, items=['Healing Booster', 'Healing Tempo', 'Slowing Hex'], notes-label=True
+  Lil Helpers: 14 notes, items=['Monster Rounds', 'Heroic Aura', 'Healing Booster', 'Healing Tempo', 'Echo Shard'], notes-label=True
+  Naptime: 2 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
+Silver: fetched via api; abilities-section, found headings: Slam Fire, Boot Kick, Entangling Bola, Lycan Curse
+  Slam Fire: 3 notes, items=[], notes-label=True
+  Boot Kick: 17 notes, items=['Melee Lifesteal', 'Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Slowing Hex', 'Magic Carpet', 'Unstoppable'], notes-label=True
+  Entangling Bola: 16 notes, items=['Dispel Magic', 'Unstoppable', 'Slowing Hex', 'Phantom Strike', 'Melee Lifesteal', 'Healing Booster', 'Close Quarters', 'Point Blank', 'Intensifying Magazine', 'Opening Rounds'], notes-label=True
+  Lycan Curse: 22 notes, items=['Healing Booster', 'Healing Tempo', 'Fleetfoot', 'Echo Shard'], notes-label=True
+Celeste: fetched via api; abilities-section, found headings: Light Eater, Dazzling Trick, Radiant Daggers, Shining Wonder
+  Light Eater: 1 notes, items=['Healing Booster', 'Dispel Magic', 'Plated Armor'], notes-label=True
+  Dazzling Trick: 2 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Radiant Daggers: 1 notes, items=[], notes-label=False
+  Shining Wonder: 6 notes, items=['Unstoppable'], notes-label=True
+Rat King: fetched via api; abilities-section, found headings: Scrap Grenade, Rat Swarm, Royal Pestments, Rule, Ratannia!
+  Scrap Grenade: 7 notes, items=['Dispel Magic', 'Unstoppable', 'Long Range', 'Sharpshooter', 'Close Quarters', 'Point Blank', 'Opening Rounds', 'Intensifying Magazine'], notes-label=True
+  Rat Swarm: 3 notes, items=['Dispel Magic'], notes-label=True
+  Royal Pestments: 19 notes, items=['Spellbreaker', 'Witchmail', 'Return Fire', 'Ricochet', 'Lucky Shot', 'Split Shot', 'Weakening Headshot', 'Crippling Headshot', 'Escalating Resilience', 'Hollow Point', 'Restorative Shot', 'Metal Skin'], notes-label=True
+  Rule, Ratannia!: 7 notes, items=['Unstoppable', 'Refresher'], notes-label=True
+Solomon: fetched via api; abilities-section, found headings: Setup Bishop, Kingside Knight, Rook Battery, Develop Queen
+  Setup Bishop: 10 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Kingside Knight: 1 notes, items=['Slowing Hex'], notes-label=True
+  Rook Battery: 0 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=False
+  Develop Queen: 11 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
+Nurse Harrow: fetched via api; abilities-section, found headings: Leech Therapy, Wretched Vapors, Healing Needles, Lurking Terrors
+  Leech Therapy: 5 notes, items=[], notes-label=True
+  Wretched Vapors: 7 notes, items=['Ethereal Shift'], notes-label=True
+  Healing Needles: 20 notes, items=['Cold Front', 'Split Shot', 'Express Shot', 'Ricochet', 'Armor Piercer', 'Restorative Shot', 'Burst Fire', 'Escalating Resilience', 'Headhunter', 'Spiritual Overflow', 'Active Reload', 'Arcane Surge'], notes-label=True
+  Lurking Terrors: 2 notes, items=['Unstoppable'], notes-label=True
