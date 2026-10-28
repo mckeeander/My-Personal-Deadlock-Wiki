@@ -1,4 +1,4 @@
-heroes ok=42 failed=0, abilities with notes/items=169
+heroes ok=44 failed=0, abilities with notes/items=177
 Infernus: fetched via api; abilities-section, found headings: Napalm, Flame Dash, Afterburn, Concussive Combustion
   Napalm: 0 notes, items=['Healing Booster', 'Dispel Magic', 'Unstoppable'], notes-label=False
   Flame Dash: 7 notes, items=['Dispel Magic', 'Slowing Hex', 'Debuff Reducer', 'Warp Stone', 'Majestic Leap', 'Ethereal Shift', 'Refresher'], notes-label=True
@@ -172,7 +172,7 @@ Venator: fetched via api; abilities-section, found headings: Consecrating Grenad
   Gutshot: 9 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable', 'Inhibitor', 'Mystic Expansion', 'Greater Expansion', 'Superior Duration', 'Vampiric Burst'], notes-label=True
   Hex-Lined Snap Trap: 2 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
   Ira Domini: 10 notes, items=['Vampiric Burst', 'Inhibitor', 'Ricochet', 'Split Shot', 'Plated Armor'], notes-label=True
-  [weapon] name='', 0 notes, notes-label=False
+  [weapon] name='51:20', 0 notes, notes-label=False
 Victor: fetched via api; abilities-section, found headings: Pain Battery, Jumpstart, Aura of Suffering, Shocking Reanimation
   Pain Battery: 1 notes, items=['Healing Booster', 'Dispel Magic', 'Healing Tempo', 'Unstoppable', 'Superior Cooldown'], notes-label=True
   Jumpstart: 5 notes, items=['Healing Booster', 'Healing Tempo'], notes-label=True
@@ -245,9 +245,21 @@ Solomon: fetched via api; abilities-section, found headings: Setup Bishop, Kings
   Rook Battery: 0 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=False
   Develop Queen: 11 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
   [weapon] name="Alekhine's Gun", 0 notes, notes-label=False
+Violet: fetched via api; abilities-section, found headings: Living Ink, Flow State, Still Life, Abstract Landscape
+  Living Ink: 17 notes, items=['Headhunter', 'Siphon Bullets', 'Express Shot', 'Split Shot', 'Ricochet', 'Sharpshooter', 'Point Blank', 'Opening Rounds', 'Intensifying Magazine'], notes-label=True
+  Flow State: 7 notes, items=['Dispel Magic', 'Unstoppable'], notes-label=True
+  Still Life: 6 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Abstract Landscape: 5 notes, items=['Healing Booster', 'Reactive Barrier', 'Indomitable', 'Unstoppable', 'Veil Walker', 'Refresher'], notes-label=True
+  [weapon] name='Creative Solutions', 0 notes, notes-label=False
 Nurse Harrow: fetched via api; abilities-section, found headings: Leech Therapy, Wretched Vapors, Healing Needles, Lurking Terrors
   Leech Therapy: 5 notes, items=[], notes-label=True
   Wretched Vapors: 7 notes, items=['Ethereal Shift'], notes-label=True
   Healing Needles: 20 notes, items=['Cold Front', 'Split Shot', 'Express Shot', 'Ricochet', 'Armor Piercer', 'Restorative Shot', 'Burst Fire', 'Escalating Resilience', 'Headhunter', 'Spiritual Overflow', 'Active Reload', 'Arcane Surge'], notes-label=True
   Lurking Terrors: 2 notes, items=['Unstoppable'], notes-label=True
   [weapon] name='Code Blue', 0 notes, notes-label=False
+Baba: fetched via api; abilities-section, found headings: Threadsap, Granny Long Legs, Baba's Brew, Feed The Birds
+  Threadsap: 1 notes, items=['Dispel Magic', 'Plated Armor', 'Spirit Snatch'], notes-label=True
+  Granny Long Legs: 13 notes, items=['Healing Tempo'], notes-label=True
+  Baba's Brew: 4 notes, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Feed The Birds: 14 notes, items=['Unstoppable', 'Divine Barrier', 'Reactive Barrier', 'Indomitable'], notes-label=True
+  [weapon] name='Bunko-Night Special', 0 notes, notes-label=False
