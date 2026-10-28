@@ -92,6 +92,30 @@ jobs:
               s = re.sub(r"\s+", " ", t.get_text("")).strip()
               return re.sub(r"\s+([.,;:!?)])", r"\1", s)
 
+
+          def figs_of(tags):
+              """Screenshots the wiki shows in a Notes area: [image url, caption]."""
+              out = []
+              for t in tags:
+                  if t.name != "figure":
+                      continue
+                  img = t.find("img")
+                  if img is None:
+                      continue
+                  cands = []
+                  for part in (img.get("srcset") or "").split(","):
+                      u = part.strip().split(" ")[0]
+                      if u:
+                          cands.append(u)
+                  src = (cands[-1] if cands else img.get("src")) or ""
+                  if src.startswith("//"):
+                      src = "https:" + src
+                  if not src.startswith("https://cdn.deadlock.wiki/"):
+                      continue
+                  cap = t.find("figcaption")
+                  out.append([src, txt(cap) if cap else ""])
+              return out
+
           def abilities_nodes(root):
               head = None
               for h in root.find_all(re.compile(r"^h[1-4]$")):
@@ -164,7 +188,7 @@ jobs:
                           key = norm(cnd or "")
                           if key in itemmap and itemmap[key] not in items:
                               items.append(itemmap[key])
-                  out[name] = {"notes": notes, "items": items}
+                  out[name] = {"notes": notes, "items": items, "figs": figs_of(block)}
                   dbg.append("  %s: %d notes, items=%s, notes-label=%s" % (name, len(notes), items, start is not None))
               for name in ability_names:
                   if name not in out:
@@ -195,7 +219,10 @@ jobs:
               tags = [t for t in frag.descendants if isinstance(t, Tag)]
               # card title: first short text element that is not a tag chip, the DPS line or the section label
               name = ""
-              for t in tags:
+              wn = frag.find(class_="weapon-name")
+              if wn is not None:
+                  name = txt(wn)
+              for t in ([] if name else tags):
                   if t.name in ("li", "ul", "ol", "a", "script", "style", "img", "br", "td", "th", "tr", "table"):
                       continue
                   if t.find_parent(["li", "a"]):
@@ -225,7 +252,7 @@ jobs:
                       s = txt_inline(c)
                       if s and depth <= 2:
                           notes.append([depth, s])
-              return {"name": name, "notes": notes}, "name=%r, %d notes, notes-label=%s" % (name, len(notes), start is not None), str(frag)
+              return {"name": name, "notes": notes, "figs": figs_of(tags)}, "name=%r, %d notes, notes-label=%s" % (name, len(notes), start is not None), str(frag)
 
           def main():
               heroes = json.load(open(os.path.join(DATA, "heroes.json")))
@@ -242,7 +269,7 @@ jobs:
                   pass
               result, log, ok, fail = {}, [], 0, 0
               for h in heroes:
-                  if h.get("disabled") or h.get("in_development"):
+                  if h.get("disabled") or h.get("player_selectable") is False or (h.get("in_development") and h.get("development_state") != "release"):
                       continue
                   name = h["name"]
                   abil = [by[h["items"][k]]["name"] for k in ("signature1", "signature2", "signature3", "signature4") if h.get("items", {}).get(k) in by]
@@ -266,7 +293,7 @@ jobs:
                       wdata, wdbg, wfrag = weapon_extract(html)
                   except Exception as e:
                       wdata, wdbg, wfrag = None, "weapon error %r" % e, ""
-                  if wdata and (wdata["notes"] or wdata["name"]):
+                  if wdata and (wdata["notes"] or wdata["name"] or wdata["figs"]):
                       data["__weapon"] = wdata
                   if name == "Rem":
                       open(os.path.join(DATA, "wiki_sample_weapon_Rem.html"), "w", encoding="utf-8").write(wfrag[:30000])
@@ -278,7 +305,7 @@ jobs:
                       open(os.path.join(DATA, "wiki_sample_%s.html" % name), "w", encoding="utf-8").write(frag[:90000])
                   if not OFFLINE:
                       time.sleep(1.2)
-              got = sum(1 for v in result.values() for a in v.values() if a.get("notes") or a.get("items"))
+              got = sum(1 for v in result.values() for a in v.values() if a.get("notes") or a.get("items") or a.get("figs"))
               log.insert(0, "heroes ok=%d failed=%d, abilities with notes/items=%d" % (ok, fail, got))
               open(os.path.join(DATA, "wiki_debug.txt"), "w", encoding="utf-8").write("\n".join(log) + "\n")
               if ok == 0 and prev:
