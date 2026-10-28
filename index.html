@@ -501,7 +501,7 @@ function wikiHtml(h, it) {
     var cn = state.byName[String(nm).toLowerCase()]; if (!cn) return "";
     return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + "</span></button>";
   }).join("");
-  if (chips) html += '<div class="ihd">Will proc:</div><div class="pgrid">' + chips + "</div>";
+  if (chips) html += '<div class="ihd">Interacts with</div><div class="pgrid">' + chips + "</div>";
   return html + "</div>";
 }
 function abilityCard(it, h) {
