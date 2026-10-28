@@ -55,6 +55,9 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .abh{display:flex;gap:10px;align-items:center}
 .abh img{width:44px;height:44px;object-fit:contain;flex:none}
 .abh h3{margin:0;flex:1;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
+.pi{height:1.15em;width:1.15em;object-fit:contain;vertical-align:-.22em;margin-right:4px}
+.stat b .pi{height:1em;width:1em;vertical-align:-.12em}
+.ic{height:1.1em;width:1.1em;vertical-align:-.2em;margin-right:3px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .chip{background:var(--panel2);border-radius:5px;padding:4px 8px;font-size:13px}
 .desc{font-size:15px;line-height:1.45;margin:8px 0}
@@ -217,7 +220,13 @@ function colorFor(cls, style) {
 // Game text carries markup, inline SVG icons and {s:...} placeholders. Keep a small safe subset.
 function rich(s) {
   s = String(s == null ? "" : s);
-  s = s.replace(/<svg[\s\S]*?<\/svg>/gi, "").replace(/<Panel[\s\S]*?<\/Panel>/gi, "");
+  var SVGS = [];
+  s = s.replace(/<svg([^>]*)>([\s\S]*?)<\/svg>/gi, function (m, at, inner) { // keep the game's inline icons, minus anything active
+    var vb = /viewBox="([^"]*)"/.exec(at);
+    if (!vb || /<script|foreignObject|<style|\son\w+\s*=|javascript:|href/i.test(inner)) return "";
+    SVGS.push('<svg class="ic" viewBox="' + esc(vb[1]) + '" xmlns="http://www.w3.org/2000/svg">' + inner + "</svg>");
+    return "\u0001" + (SVGS.length - 1) + "\u0001";
+  }).replace(/<Panel[\s\S]*?<\/Panel>/gi, "");
   s = s.replace(/\{s:hero_name\}/g, HERO_NAME || "the hero").replace(/\{s:[^}]*\}/g, "");
   var parts = s.split(/(<[^>]*>)/), out = "";
   parts.forEach(function (p) {
@@ -242,7 +251,7 @@ function rich(s) {
     }
     if (tag === "b" || tag === "i" || tag === "strong" || tag === "em") out += close ? "</" + tag + ">" : "<" + tag + ">";
   });
-  return out;
+  return out.replace(/\u0001(\d+)\u0001/g, function (m, i) { return SVGS[+i] || ""; });
 }
 function descText(d) {
   if (!d) return "";
@@ -395,7 +404,7 @@ function propRec(it, key) {
   if (!isNaN(n2) && (n2 === 0 || (n2 < 0 && key === "AbilityCooldownBetweenCharge"))) return null; // inactive until an upgrade enables it
   var v = fmtVal(shown);
   var label = propLabel(p0, key), wpn = (sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label);
-  return v == null ? null : { v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage") };
+  return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage") };
 }
 
 /* ---------- data ---------- */
@@ -457,9 +466,10 @@ function statTiles(it) {
   });
   return { big: big, small: small };
 }
+function pIcon(src) { return src ? imgTag(src).replace("<img ", '<img class="pi" ') : ""; }
 function tile(v, l, r) {
   var badge = scaleBadge(r);
-  return '<div class="stat' + (r && r.wpn ? " big wpn" : r && r.tech ? " big" : "") + '">' + badge + "<b>" + esc(v) + "</b><i>" + esc(l) + "</i></div>";
+  return '<div class="stat' + (r && r.wpn ? " big wpn" : r && r.tech ? " big" : "") + '">' + badge + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
 }
 // abilities use tooltip_details.info_sections
 function tooltipHtml(it) {
@@ -481,7 +491,7 @@ function tooltipHtml(it) {
       if (tiles) html += (blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>";
     });
     var minor = "";
-    (sec.basic_properties || []).forEach(function (k) { var r = propRec(it, k); if (r) minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; });
+    (sec.basic_properties || []).forEach(function (k) { var r = propRec(it, k); if (r) minor += "<span>" + pIcon(r.icon) + "<b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; });
     if (minor) html += '<div class="minor">' + minor + "</div>";
   });
   return html;
@@ -500,27 +510,31 @@ function listedKeys(it) {
 }
 var HEADER_KEYS = { AbilityDuration: 1, AbilityCastRange: 1, AbilityCooldown: 1, Radius: 1, AbilityCharges: 1, AbilityCooldownBetweenCharge: 1 };
 function chipsHtml(it) {
-  var left = "", right = "", seen = {}, L = listedKeys(it);
-  function chip(g, text) { return '<span class="chip">' + g + " " + esc(text) + "</span>"; }
-  [["AbilityDuration", "⏳"], ["AbilityCastRange", "↔"]].forEach(function (g) {
+  var left = "", right = "", seen = {}, L = listedKeys(it), P = it.properties || {};
+  // icon + number, like the wiki; the long-press title carries the name
+  function chip(key, glyph, text, title) {
+    var ic = P[key] && P[key].icon ? pIcon(P[key].icon) : "";
+    return '<span class="chip" title="' + esc(title) + '">' + (ic || glyph + " ") + esc(text) + "</span>";
+  }
+  [["AbilityDuration", "⏳", "Duration"], ["AbilityCastRange", "↔", "Range"]].forEach(function (g) {
     var p = effP(it, g[0]); seen[g[0]] = 1;
     if (isDisabled(p) || !(parseFloat(p.value) > 0 || isNaN(parseFloat(p.value)))) return;
-    left += chip(g[1], fmtVal(p));
+    left += chip(g[0], g[1], fmtVal(p), g[2]);
   });
   if (!L.Radius) { // radius is a header stat in the game even when the tooltip body omits it
     var rp = effP(it, "Radius"); seen.Radius = 1;
-    if (rp && !isDisabled(rp) && parseFloat(rp.value) > 0) left += chip("◎", fmtVal(rp) + " radius");
+    if (rp && !isDisabled(rp) && parseFloat(rp.value) > 0) left += chip("Radius", "◎", fmtVal(rp), "Radius");
   }
   var extra = (it.tooltip_details && it.tooltip_details.additional_header_properties) || [];
-  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += chip("•", r.v + " " + r.l); });
+  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" title="' + esc(r.l) + '">' + (pIcon(r.icon) || "• ") + esc(r.v) + "</span>"; });
   var ch = effP(it, "AbilityCharges"), nch = ch && !isDisabled(ch) ? parseFloat(ch.value) : 0;
   if (nch > 1 && !L.AbilityCharges) {
-    right += chip("▣", nch + " charges");
+    right += chip("AbilityCharges", "⚡", String(nch), "Charges");
     var cb = effP(it, "AbilityCooldownBetweenCharge");
-    if (cb && !isDisabled(cb) && parseFloat(cb.value) > 0 && !L.AbilityCooldownBetweenCharge) right += chip("↻", fmtVal(cb) + " recharge");
+    if (cb && !isDisabled(cb) && parseFloat(cb.value) > 0 && !L.AbilityCooldownBetweenCharge) right += chip("AbilityCooldownBetweenCharge", "↻", fmtVal(cb), "Charge recharge");
   }
   var cd = effP(it, "AbilityCooldown");
-  if (!isDisabled(cd) && parseFloat(cd.value) !== 0) right += chip("⟳", fmtVal(cd));
+  if (!isDisabled(cd) && parseFloat(cd.value) !== 0) right += chip("AbilityCooldown", "⟳", fmtVal(cd), "Cooldown");
   if (!left && !right) return "";
   return '<div class="chips"><div class="g">' + left + '</div><div class="g">' + right + "</div></div>";
 }
