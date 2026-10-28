@@ -124,6 +124,12 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .sblk h4{margin:0 0 4px;font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
 .srow{display:flex;gap:8px;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
 .srow span{flex:1;color:var(--dim)}
+.wk{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}
+details.notes summary{cursor:pointer;color:var(--gold);font-size:13px;margin:6px 0}
+details.notes ul{margin:4px 0 0;padding-left:18px;font-size:14px;line-height:1.45;color:var(--fg)}
+details.notes li{margin-bottom:4px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px}
+.pgrid .rc{margin-top:0}
 .isec{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
 .isec h4{margin:0 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .isec.innate h4{color:var(--vital)}.isec.passive h4{color:var(--gold)}.isec.active h4{color:#e8847c}
@@ -160,7 +166,8 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 var API = "https://assets.deadlock-api.com";
 var KEY = "dlcodex.v1";
 var MAX_AGE = 24 * 3600 * 1000;
-var state = { heroes: [], items: [], byClass: {}, fetchedAt: 0, tab: "heroes", q: "", hero: null };
+var WKEY = "dlcodex.wiki.v1";
+var state = { heroes: [], items: [], byClass: {}, byName: {}, wiki: null, fetchedAt: 0, tab: "heroes", q: "", hero: null };
 var $ = function (id) { return document.getElementById(id); };
 
 /* ---------- helpers ---------- */
@@ -219,12 +226,16 @@ function itemImg(it) { return pick(it, ["image_webp", "image"]) || ""; }
 function imgTag(src) { return src ? '<img alt="" src="' + esc(src) + '" onerror="this.style.display=\'none\'">' : ""; }
 function save() { try { localStorage.setItem(KEY, JSON.stringify({ t: state.fetchedAt, h: state.heroes, i: state.items })); } catch (e) {} }
 function load() {
+  try { var w = JSON.parse(localStorage.getItem(WKEY) || "null"); if (w && w.heroes) state.wiki = w; } catch (e) {}
   try { var d = JSON.parse(localStorage.getItem(KEY) || "null"); if (d && d.h && d.i) { state.heroes = d.h; state.items = d.i; state.fetchedAt = d.t || 0; index(); return true; } } catch (e) {}
   return false;
 }
 function index() {
-  state.byClass = {};
-  state.items.forEach(function (it) { if (it.class_name) state.byClass[it.class_name] = it; });
+  state.byClass = {}; state.byName = {};
+  state.items.forEach(function (it) {
+    if (it.class_name) state.byClass[it.class_name] = it;
+    if (it.type === "upgrade" && it.name) state.byName[String(it.name).toLowerCase()] = it.class_name;
+  });
   state.into = {};
   state.items.forEach(function (it) {
     if (it.type !== "upgrade" || it.shopable === false || it.disabled) return;
@@ -350,7 +361,11 @@ function fetchAll() {
     state.items = Array.isArray(r[1]) ? r[1] : [];
     state.heroes.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
     state.fetchedAt = Date.now(); index(); save();
-    return true;
+    // community notes are optional: a failure here never blocks the main data
+    return getJson("wiki.json").then(function (w) {
+      if (w && w.heroes) { state.wiki = w; try { localStorage.setItem(WKEY, JSON.stringify(w)); } catch (e) {} }
+      return true;
+    }, function () { return true; });
   }).finally(function () { $("refresh").textContent = "⟳ Refresh"; });
 }
 
@@ -466,6 +481,22 @@ function bulletOf(h) {
   var w = h && state.byClass[(h.items || {}).weapon_primary];
   return w && w.weapon_info ? Number(w.weapon_info.bullet_damage) || 0 : 0;
 }
+function wikiHtml(h, it) {
+  var w = state.wiki && state.wiki.heroes && h && state.wiki.heroes[h.name], a = w && w[it.name];
+  if (!a || (!(a.notes && a.notes.length) && !(a.items && a.items.length))) return "";
+  var html = '<div class="wk">';
+  if (a.notes && a.notes.length) {
+    html += '<details class="notes" open><summary>Notes</summary><ul>';
+    a.notes.forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + esc(n[1]) + "</li>"; });
+    html += "</ul></details>";
+  }
+  var chips = (a.items || []).map(function (nm) {
+    var cn = state.byName[String(nm).toLowerCase()]; if (!cn) return "";
+    return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemImg(state.byClass[cn])) + "<span>" + esc(nm) + "</span></button>";
+  }).join("");
+  if (chips) html += '<div class="ihd">Related items</div><div class="pgrid">' + chips + "</div>";
+  return html + '<div class="uphint">From deadlock.wiki, may lag behind the game</div></div>';
+}
 function abilityCard(it, h) {
   var sel = SEL[it.class_name] || 0;
   CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) };
@@ -473,7 +504,7 @@ function abilityCard(it, h) {
     return '<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       chipsHtml(it) +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc } : it.description)) + "</div>" +
-      tooltipHtml(it) + upgradesHtml(it, sel) + "</section>";
+      tooltipHtml(it) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
   } finally { CTX = null; }
 }
 function nice(k) { return prettify(String(k).replace(/^E(Weapon(Attribute)?_?)?/, "")).replace(/([a-z])([A-Z])/g, "$1 $2"); }
@@ -673,6 +704,8 @@ $("tabs").onclick = function (e) {
   state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; render(); window.scrollTo(0, 0);
 };
 $("main").addEventListener("click", function (e) {
+  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem]") : null;
+  if (pi) { itemSheet(pi.getAttribute("data-pitem")); return; }
   var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
   var card = u.closest(".ab"), key = card && card.getAttribute("data-ab"), it = key && state.byClass[key]; if (!it) return;
   var t = Number(u.getAttribute("data-t")), cur = SEL[key] || 0;
