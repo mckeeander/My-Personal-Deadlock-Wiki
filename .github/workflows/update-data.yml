@@ -186,7 +186,7 @@ jobs:
                   pass
               result, log, ok, fail = {}, [], 0, 0
               for h in heroes:
-                  if h.get("disabled") or h.get("in_development"):
+                  if h.get("disabled") or h.get("player_selectable") is False or (h.get("in_development") and h.get("development_state") != "release"):
                       continue
                   name = h["name"]
                   abil = [by[h["items"][k]]["name"] for k in ("signature1", "signature2", "signature3", "signature4") if h.get("items", {}).get(k) in by]
