@@ -486,20 +486,59 @@ function tooltipHtml(it) {
   });
   return html;
 }
+// every property key the game's own tooltip already lists for this ability
+function listedKeys(it) {
+  var s = {}, td = it.tooltip_details || {};
+  (td.info_sections || []).forEach(function (sec) {
+    (sec.properties_block || []).forEach(function (b) {
+      (b.properties || []).forEach(function (pp) { [pp.important_property, pp.property, pp.status_effect_value].forEach(function (k) { if (k) s[k] = 1; }); });
+    });
+    (sec.basic_properties || []).forEach(function (k) { s[k] = 1; });
+  });
+  (td.additional_header_properties || []).forEach(function (k) { s[k] = 1; });
+  return s;
+}
+var HEADER_KEYS = { AbilityDuration: 1, AbilityCastRange: 1, AbilityCooldown: 1, Radius: 1, AbilityCharges: 1, AbilityCooldownBetweenCharge: 1 };
 function chipsHtml(it) {
-  var P = it.properties || {}, left = "", right = "", seen = {};
+  var left = "", right = "", seen = {}, L = listedKeys(it);
   function chip(g, text) { return '<span class="chip">' + g + " " + esc(text) + "</span>"; }
   [["AbilityDuration", "⏳"], ["AbilityCastRange", "↔"]].forEach(function (g) {
     var p = effP(it, g[0]); seen[g[0]] = 1;
     if (isDisabled(p) || !(parseFloat(p.value) > 0 || isNaN(parseFloat(p.value)))) return;
     left += chip(g[1], fmtVal(p));
   });
+  if (!L.Radius) { // radius is a header stat in the game even when the tooltip body omits it
+    var rp = effP(it, "Radius"); seen.Radius = 1;
+    if (rp && !isDisabled(rp) && parseFloat(rp.value) > 0) left += chip("◎", fmtVal(rp) + " radius");
+  }
   var extra = (it.tooltip_details && it.tooltip_details.additional_header_properties) || [];
   extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += chip("•", r.v + " " + r.l); });
+  var ch = effP(it, "AbilityCharges"), nch = ch && !isDisabled(ch) ? parseFloat(ch.value) : 0;
+  if (nch > 1 && !L.AbilityCharges) {
+    right += chip("▣", nch + " charges");
+    var cb = effP(it, "AbilityCooldownBetweenCharge");
+    if (cb && !isDisabled(cb) && parseFloat(cb.value) > 0 && !L.AbilityCooldownBetweenCharge) right += chip("↻", fmtVal(cb) + " recharge");
+  }
   var cd = effP(it, "AbilityCooldown");
-  if (!isDisabled(cd) && parseFloat(cd.value) !== 0) right = chip("⟳", fmtVal(cd));
+  if (!isDisabled(cd) && parseFloat(cd.value) !== 0) right += chip("⟳", fmtVal(cd));
   if (!left && !right) return "";
   return '<div class="chips"><div class="g">' + left + '</div><div class="g">' + right + "</div></div>";
+}
+// stats an upgrade changes that the game tooltip body never lists (e.g. Pillow Toss fire-rate slow)
+function upgradeExtraHtml(it) {
+  var L = listedKeys(it), keys = [], seen = {}, tiles = "";
+  (it.upgrades || []).forEach(function (u) {
+    ((u && u.property_upgrades) || []).forEach(function (pu) {
+      var t = pu.upgrade_type;
+      if (t === "EAddToScale" || t === "EMultiplyScale") return;
+      var k = pu.name; if (seen[k] || L[k] || HEADER_KEYS[k]) return; seen[k] = 1;
+      var p = (it.properties || {})[k]; if (!p) return;
+      if (!(p.postvalue_label || p.label) && /^(Use|Refresh|Unlimited|Improved)/.test(k)) return; // on/off switches read oddly as stats
+      keys.push(k);
+    });
+  });
+  keys.forEach(function (k) { var r = propRec(it, k); if (r) tiles += tile(r.v, r.l, r); });
+  return tiles ? '<div class="blk">More stats</div><div class="stats">' + tiles + "</div>" : "";
 }
 function upgradeTexts(it) {
   var d = it.description && typeof it.description === "object" ? it.description : {}, ups = it.upgrades || [], out = [];
@@ -560,7 +599,7 @@ function abilityCard(it, h) {
     return '<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       chipsHtml(it) +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc } : it.description)) + "</div>" +
-      tooltipHtml(it) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
+      tooltipHtml(it) + upgradeExtraHtml(it) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
   } finally { CTX = null; }
 }
 function nice(k) { return prettify(String(k).replace(/^E(Weapon(Attribute)?_?)?/, "")).replace(/([a-z])([A-Z])/g, "$1 $2"); }
