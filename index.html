@@ -130,15 +130,20 @@ function fmtVal(p) {
 function propLabel(p, key) { return (p && (p.label || p.display_name)) || String(key).replace(/([A-Z])/g, " $1").trim(); }
 
 /* ---------- data ---------- */
-function getJson(path) {
-  return fetch(API + path, { cache: "no-store" }).then(function (r) {
-    if (!r.ok) throw new Error(path + " returned " + r.status);
-    return r.json();
-  });
+var RAW = "https://raw.githubusercontent.com/mckeeander/My-Personal-Deadlock-Wiki/main/data/";
+function getJson(name) {
+  var urls = [RAW + name + "?t=" + Date.now(), "data/" + name];
+  function tryAt(i) {
+    return fetch(urls[i], { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error(name + " returned " + r.status);
+      return r.json();
+    }).catch(function (e) { if (i + 1 < urls.length) return tryAt(i + 1); throw e; });
+  }
+  return tryAt(0);
 }
 function fetchAll() {
   $("refresh").textContent = "…";
-  return Promise.all([getJson("/v2/heroes?only_active=true"), getJson("/v2/items")]).then(function (r) {
+  return Promise.all([getJson("heroes.json"), getJson("items.json")]).then(function (r) {
     state.heroes = (Array.isArray(r[0]) ? r[0] : []).filter(function (h) { return !h.disabled && !h.in_development; });
     state.items = Array.isArray(r[1]) ? r[1] : [];
     state.heroes.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
