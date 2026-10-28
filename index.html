@@ -178,6 +178,19 @@ details.notes li{margin-bottom:4px}
 .rc .cost{font-size:13px}
 .ihd{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:14px 0 2px}
 .srow em{font-style:normal;color:var(--vital);font-size:12px}
+.wpn{text-align:center}
+.wpn h3{margin:2px 0 8px;font-size:22px;font-family:var(--disp);letter-spacing:.03em}
+.wtags{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.wdps1{margin:14px 0 4px;font-size:16px;color:var(--dim)}
+.wdps1 b{font-size:20px;color:var(--fg);margin-right:3px}
+.wdps1 .si{height:1.3em;width:1.3em;vertical-align:-.3em;margin-right:6px;color:var(--weapon)}
+.wimg img{width:100%;max-width:240px;height:150px;object-fit:contain}
+.fr{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:4px}
+.fr i{font-style:normal;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.fr b{font-size:20px}.fr b span{color:var(--weapon)}
+.wpn .wg{margin-top:14px}
+.wpn .notes{text-align:left;margin-top:12px}
+.sblk h4{text-align:center}
 </style>
 </head>
 <body>
@@ -594,15 +607,16 @@ function bulletOf(h) {
   var w = h && state.byClass[(h.items || {}).weapon_primary];
   return w && w.weapon_info ? Number(w.weapon_info.bullet_damage) || 0 : 0;
 }
+function notesBlock(a) {
+  if (!a || !(a.notes && a.notes.length)) return "";
+  var html = '<details class="notes" open><summary>Notes</summary><ul>';
+  a.notes.forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + esc(n[1]) + "</li>"; });
+  return html + "</ul></details>";
+}
 function wikiHtml(h, it) {
   var w = state.wiki && state.wiki.heroes && h && state.wiki.heroes[h.name], a = w && w[it.name];
   if (!a || (!(a.notes && a.notes.length) && !(a.items && a.items.length))) return "";
-  var html = '<div class="wk">';
-  if (a.notes && a.notes.length) {
-    html += '<details class="notes" open><summary>Notes</summary><ul>';
-    a.notes.forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + esc(n[1]) + "</li>"; });
-    html += "</ul></details>";
-  }
+  var html = '<div class="wk">' + notesBlock(a);
   var chips = (a.items || []).map(function (nm) {
     var cn = state.byName[String(nm).toLowerCase()]; if (!cn) return "";
     return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + "</span></button>";
@@ -621,7 +635,7 @@ function abilityCard(it, h) {
   } finally { CTX = null; }
 }
 function nice(k) { return prettify(String(k).replace(/^E(Weapon(Attribute)?_?)?/, "")).replace(/([a-z])([A-Z])/g, "$1 $2"); }
-function meters(u) { return fmtNum(u / 39.37) + "m"; }
+function meters(u) { return Math.round(u / 39.37) + "m"; }
 function gunImg(h) {
   var d = ((h.shop_stat_display || {}).weapon_stats_display) || {};
   return d.weapon_image_webp || d.weapon_image || "";
@@ -629,38 +643,36 @@ function gunImg(h) {
 function weaponCard(h) {
   var w = state.byClass[(h.items || {}).weapon_primary];
   if (!w || !w.weapon_info) return "";
-  var i = w.weapon_info, pel = i.bullets || 1, up = h.standard_level_up_upgrades || {};
-  var shots = i.shots_per_second || (i.cycle_time ? 1 / i.cycle_time : 0);
-  var WIC = { "Bullet damage": "dmg", "Damage per pellet": "dmg", "Damage per shot": "dmg", "Fire rate": "bps", "Ammo": "ammo", "Reload": "reload", "Pellets per second": "bps", "Headshot bonus": "crit", "Bullet speed": "vel" };
-  function wc(v, l) { return '<div class="wc"><b>' + siIcon(WIC[l]) + esc(v) + "</b><i>" + esc(l) + "</i></div>"; }
+  var i = w.weapon_info, pel = i.bullets || 1;
+  var wk = state.wiki && state.wiki.heroes && state.wiki.heroes[h.name], wa = wk && wk.__weapon;
   var attrs = (((h.shop_stat_display || {}).weapon_stats_display || {}).weapon_attributes || []).map(function (a) {
     return '<span class="chip">' + esc(String(a).replace(/^EWeaponAttribute_/, "").replace(/([a-z])([A-Z])/g, "$1 $2")) + "</span>";
   }).join("");
   if (!attrs && h.gun_tag) attrs = '<span class="chip">' + esc(h.gun_tag) + "</span>";
+  var shots = i.shots_per_second || (i.cycle_time ? 1 / i.cycle_time : 0);
   var dps = i.damage_per_second || (shots && i.bullet_damage ? i.bullet_damage * pel * shots : 0);
+  // everything the Stats block above already lists is left out here; this card adds what it doesn't
+  function wc(v, l, ic) { return '<div class="wc"><b>' + siIcon(ic) + esc(v) + "</b><i>" + esc(l) + "</i></div>"; }
   var g = "";
-  if (i.bullet_damage != null) g += wc(fmtNum(i.bullet_damage) + (pel > 1 ? " ×" + pel : ""), pel > 1 ? "Damage per pellet" : "Bullet damage");
-  if (pel > 1) g += wc(fmtNum(i.damage_per_shot || i.bullet_damage * pel), "Damage per shot");
-  if (shots) g += wc(fmtNum(shots) + "/s", "Fire rate");
-  if (i.clip_size != null) g += wc(i.clip_size, "Ammo");
-  if (i.reload_duration != null) g += wc(fmtNum(i.reload_duration) + "s", "Reload");
-  if (pel > 1 && i.bullets_per_second) g += wc(fmtNum(i.bullets_per_second) + "/s", "Pellets per second");
-  if ((i.burst_shot_count || 1) > 1) g += wc("×" + i.burst_shot_count, "Burst");
-  if (i.crit_bonus_start > 1) g += wc("+" + fmtNum((i.crit_bonus_start - 1) * 100) + "%", "Headshot bonus");
-  if (i.bullet_speed) g += wc(fmtNum(Math.round(i.bullet_speed / 39.37)) + " m/s", "Bullet speed");
-  if (i.shoot_move_speed_percent != null && i.shoot_move_speed_percent !== 1) g += wc(fmtNum(i.shoot_move_speed_percent * 100) + "%", "Move speed firing");
-  if (i.can_zoom && i.zoom_fov) g += wc(fmtNum(i.zoom_fov) + "°", "Zoom FOV");
+  if (pel > 1) g += wc(fmtNum(i.bullet_damage) + " ×" + pel, "Damage per shot", "dmg");
+  if (i.damage_per_second_with_reload) g += wc(fmtNum(Math.round(i.damage_per_second_with_reload * 10) / 10), "DPS with reloads", "dps");
+  if (i.damage_per_magazine) g += wc(fmtNum(i.damage_per_magazine), "Damage per magazine", "ammo");
+  if ((i.burst_shot_count || 1) > 1) g += wc("×" + i.burst_shot_count, "Burst", "bps");
+  if (i.crit_bonus_start > 1) g += wc("+" + fmtNum(Math.round((i.crit_bonus_start - 1) * 100)) + "%", "Headshot bonus", "crit");
+  if (i.shoot_move_speed_percent != null && i.shoot_move_speed_percent !== 1) g += wc(fmtNum(Math.round(i.shoot_move_speed_percent * 100)) + "%", "Move speed while firing", "boot");
+  if (i.can_zoom && i.zoom_fov) g += wc(fmtNum(i.zoom_fov) + "°", "Zoom FOV", "crit");
   var fo = "";
   if (i.damage_falloff_start_range && i.damage_falloff_end_range) {
     var pct = Math.round(i.damage_falloff_start_range / i.damage_falloff_end_range * 100);
-    fo = '<div class="fo">Damage falloff: full damage out to <b>' + meters(i.damage_falloff_start_range) + "</b>, down to <b>" + fmtNum((i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0) * 100) + "%</b> at <b>" + meters(i.damage_falloff_end_range) + '</b><div class="fob" style="background:linear-gradient(90deg,var(--weapon) 0%,var(--weapon) ' + pct + "%,#5a3a1a 100%)\"></div></div>";
+    fo = '<div class="fr"><i>Falloff range</i><b>' + meters(i.damage_falloff_start_range) + ' <span>→</span> ' + meters(i.damage_falloff_end_range) + "</b></div>" +
+      '<div class="fob" style="background:linear-gradient(90deg,var(--weapon) 0%,var(--weapon) ' + pct + "%,#5a3a1a 100%)\"></div>" +
+      '<div class="fo">Full damage out to <b>' + meters(i.damage_falloff_start_range) + "</b>, falling to <b>" + fmtNum(Math.round((i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0) * 100)) + "%</b> at <b>" + meters(i.damage_falloff_end_range) + "</b>.</div>";
   }
-  var boon = Number(up.MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL) > 0 ? '<div class="fo">Bullet damage grows by <b>+' + fmtNum(up.MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL) + "</b> per boon.</div>" : "";
-  return '<section class="wpn"><div class="wh">' + imgTag(gunImg(h) || itemImg(w)) + "<h3>" + esc(nameOf(w)) + "</h3>" + attrs + "</div>" +
-    (dps ? '<div class="wdps"><div><b>' + fmtNum(dps) + "</b><i>Damage / sec</i></div>" +
-      '<div><b>' + (i.damage_per_second_with_reload ? fmtNum(i.damage_per_second_with_reload) : "–") + "</b><i>With reloads</i></div>" +
-      "<div><b>" + (i.damage_per_magazine ? fmtNum(i.damage_per_magazine) : "–") + "</b><i>Per magazine</i></div></div>" : "") +
-    '<div class="wg">' + g + "</div>" + fo + boon + "</section>";
+  var title = (wa && wa.name) || nameOf(w);
+  return '<section class="wpn"><h3>' + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
+    (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" : "") +
+    '<div class="wimg">' + imgTag(gunImg(h) || itemImg(w)) + "</div>" + fo +
+    (g ? '<div class="wg">' + g + "</div>" : "") + notesBlock(wa) + "</section>";
 }
 // Hand-drawn stat icons (the game's own files can't be recoloured from another site), tinted by section
 var SI = {
