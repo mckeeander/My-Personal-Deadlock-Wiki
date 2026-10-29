@@ -23,7 +23,7 @@ body{padding-bottom:env(safe-area-inset-bottom,0)}
 button{font:inherit;color:inherit;cursor:pointer}
 img{max-width:100%}
 header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
-  padding:calc(env(safe-area-inset-top,0) + 8px) max(12px,calc((100% - 600px)/2)) 8px}
+  padding:calc(env(safe-area-inset-top,0) + 16px) max(12px,calc((100% - 600px)/2)) 8px}
 .bar{display:flex;gap:8px;align-items:center}
 .brand{font-family:var(--disp);font-size:18px;letter-spacing:.06em;flex:1}
 .brand{white-space:nowrap;overflow:hidden;min-width:0}
@@ -167,6 +167,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 details.notes summary{cursor:pointer;color:var(--gold);font-size:13px;margin:6px 0}
 details.notes ul{margin:4px 0 0;padding-left:18px;font-size:14px;line-height:1.45;color:var(--fg)}
 details.notes li{margin-bottom:4px}
+details.notes + details.notes{margin-top:12px}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px}
 .pgrid .rc{margin-top:0}
 .isec{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
@@ -920,14 +921,30 @@ function notesBlock(a, own) {
   (a.notes || []).forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; });
   return html + "</ul></details>";
 }
+// the item a card is about; stat cards ("Ability Range") use the item the wiki pictures for them (Greater Expansion)
+function interItem(x) {
+  var cn = state.byName[String(x.t || "").toLowerCase()];
+  if (!cn) { var m = /\/thumb\/([^\/]+)\.(?:png|webp|jpe?g)/i.exec(x.img || ""); if (m) cn = state.byName[decodeURIComponent(m[1]).replace(/_/g, " ").toLowerCase()]; }
+  return cn ? state.byClass[cn] : null;
+}
+// "Healing amplified by Healing Booster and ..." -> "Healing amplified and ..." (the chip already names the item)
+function shortTip(tip, nm) {
+  var e = String(nm).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return String(tip || "")
+    .replace(/\s*\(e\.g\.[^)]*\)/gi, "")
+    .replace(new RegExp(e + "\\s*'s\\b", "gi"), "its")
+    .replace(new RegExp("\\s*\\b(?:by|from)\\s+" + e + "(?:\\s+(?:and|or)\\s+[A-Z][\\w']*(?:\\s+[A-Z][\\w']*)*)?", "g"), "")
+    .replace(new RegExp("\\s*" + e + "\\s*\\.?$"), "")
+    .replace(/\s+/g, " ").trim();
+}
 // the wiki's Interactions tab: one card per item or stat, tagged good / bad / info like the wiki
 function interBlock(a, own) {
   var list = (a && a.inter) || []; if (!list.length) return "";
   var KL = { positive: "Helps", negative: "Hurts", info: "Note" };
   var html = '<details class="notes" open><summary>Interactions</summary>';
   list.forEach(function (x) {
-    var cn = state.byName[String(x.t || "").toLowerCase()], item = cn && state.byClass[cn];
-    var icon = item ? imgTag(itemArt(item), itemImg(item)) : (x.img && /^https:\/\/cdn\.deadlock\.wiki\//.test(x.img) ? '<img alt="" src="' + esc(x.img) + '" onerror="this.style.display=\'none\'">' : "");
+    var cn = state.byName[String(x.t || "").toLowerCase()], item = cn && state.byClass[cn], rep = interItem(x);
+    var icon = rep ? imgTag(itemArt(rep), itemImg(rep)) : (x.img && /^https:\/\/cdn\.deadlock\.wiki\//.test(x.img) ? '<img alt="" src="' + esc(x.img) + '" onerror="this.style.display=\'none\'">' : "");
     var k = /^(positive|negative|info)$/.test(x.k) ? x.k : "info", st = String(x.s || "");
     var tags = '<span class="itag ' + k + '">' + KL[k] + "</span>" + (/partial/.test(st) ? '<span class="itag st">Partly</span>' : "") + (/disabled/.test(st) ? '<span class="itag st">Disabled</span>' : "") + (/enhanced/.test(st) ? '<span class="itag st">Enhanced</span>' : "");
     var head = '<div class="ibh">' + icon + (item ? '<button class="link pitem" data-pitem="' + esc(cn) + '">' + esc(x.t) + "</button>" : "<b>" + esc(x.t) + "</b>") + tags + "</div>";
@@ -941,11 +958,11 @@ function wikiHtml(h, it) {
   var w = state.wiki && state.wiki.heroes && h && state.wiki.heroes[h.name], a = w && w[it.name];
   if (!a || (!(a.notes && a.notes.length) && !(a.items && a.items.length) && !(a.figs && a.figs.length) && !(a.inter && a.inter.length))) return "";
   var html = '<div class="wk">' + notesBlock(a, it.name) + interBlock(a, it.name);
-  var carded = {}; (a.inter || []).forEach(function (x) { carded[String(x.t || "").toLowerCase()] = 1; });
+  var carded = {}; (a.inter || []).forEach(function (x) { carded[String(x.t || "").toLowerCase()] = 1; var ri = interItem(x); if (ri && ri.name) carded[String(ri.name).toLowerCase()] = 1; });
   var hints = a.hints || {};
   var chips = (a.items || []).map(function (nm) {
     var cn = state.byName[String(nm).toLowerCase()]; if (!cn || carded[String(nm).toLowerCase()]) return ""; // already has its own interaction card
-    var tip = String(hints[nm] || "").replace(new RegExp("\\s*(by|from|with)?\\s*" + String(nm).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*\\.?$", "i"), "");
+    var tip = shortTip(hints[nm], nm);
     return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + (tip ? "<small>" + esc(tip) + "</small>" : "") + "</span></button>";
   }).join("");
   if (chips) html += '<div class="ihd">Interacts with</div><div class="pgrid">' + chips + "</div>";
