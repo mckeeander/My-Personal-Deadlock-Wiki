@@ -232,11 +232,11 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
  40%{box-shadow:0 0 0 2px rgba(238,190,72,1),0 0 18px 4px rgba(255,200,60,.75),inset 0 0 14px rgba(255,200,60,.28)}}
 @keyframes boxdown{0%,100%{box-shadow:0 0 0 0 rgba(90,125,255,0),0 0 0 rgba(90,125,255,0)}
  40%{box-shadow:0 0 0 2px rgba(104,134,250,1),0 0 18px 4px rgba(80,115,255,.8),inset 0 0 14px rgba(80,115,255,.3)}}
-.stat.pop,.chips .chip.pop,.up.pop{animation:boxup .85s ease-in-out both}
+.stat.pop,.chips .chip.pop,.up.pop{animation:boxup 1s ease-in-out both}
 .stat.pop.dn,.chips .chip.pop.dn,.up.pop.dn{animation-name:boxdown}
-.minor span.pop{animation:popup .85s ease-in-out both}
+.minor span.pop{animation:popup 1s ease-in-out both}
 .minor span.pop.dn{animation-name:popdown}
-.minor span.pop .si,.minor span.pop img{animation:iconup .85s ease-in-out both}
+.minor span.pop .si,.minor span.pop img{animation:iconup 1s ease-in-out both}
 .minor span.pop.dn .si,.minor span.pop.dn img{animation-name:icondown}
 .minor span.pop .pi{animation-name:chipup}
 .minor span.pop.dn .pi{animation-name:chipdown}
@@ -727,9 +727,15 @@ function upgradeTexts(it) {
   }
   return out;
 }
-function unitDim(h) { // grey the unit letters (s, m, %) after numbers, like the wiki
-  return String(h).split(/(<[^>]*>)/).map(function (p) {
-    return p.charAt(0) === "<" ? p : p.replace(/(\d)(s|m|%)(?![A-Za-z\/])/g, '$1<span class="u">$2</span>');
+function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, like the wiki
+  h = String(h).replace(/<\/?(?:b|strong)>/gi, "").replace(/<span class="highlight">([^<]*)<\/span>/g, "$1");
+  return h.split(/(<[^>]*>)/).map(function (p) {
+    if (p.charAt(0) === "<") return p;
+    return p.replace(/([+\-]?\d+(?:\.\d+)?)(?:(s|m|%)(?![A-Za-z\/]))?/g, function (m, n, u, off, str) {
+      var pc = off > 0 ? str.charAt(off - 1) : "";
+      if (/[A-Za-z0-9.#&]/.test(pc)) return m;
+      return "<b>" + n + "</b>" + (u ? '<span class="u">' + u + "</span>" : "");
+    });
   }).join("");
 }
 function upgradesHtml(it, sel) {
@@ -1283,7 +1289,7 @@ function pulseChanges(card, before, tier, down) {
     if (before[k] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); }
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); }
-  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1000);
+  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1100);
 }
 var TIPT = null;
 function tapTip(e) { // touch screens have no hover, so a tap on a chip names it for a moment
