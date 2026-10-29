@@ -227,8 +227,10 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 @keyframes icondown{0%,100%{filter:drop-shadow(0 0 0 rgba(100,140,255,0))}35%{filter:drop-shadow(0 0 4px rgba(130,165,255,.95)) drop-shadow(0 0 9px rgba(90,130,255,.65))}}
 @keyframes chipup{0%,100%{filter:brightness(0) invert(1) drop-shadow(0 0 0 rgba(255,208,72,0))}35%{filter:brightness(0) invert(1) drop-shadow(0 0 4px rgba(255,214,90,.95)) drop-shadow(0 0 9px rgba(255,200,60,.6))}}
 @keyframes chipdown{0%,100%{filter:brightness(0) invert(1) drop-shadow(0 0 0 rgba(100,140,255,0))}35%{filter:brightness(0) invert(1) drop-shadow(0 0 4px rgba(130,165,255,.95)) drop-shadow(0 0 9px rgba(90,130,255,.65))}}
-@keyframes boxup{0%,100%{box-shadow:0 0 0 rgba(255,208,72,0)}35%{box-shadow:0 0 14px 2px rgba(255,208,72,.6),inset 0 0 12px rgba(255,208,72,.22)}}
-@keyframes boxdown{0%,100%{box-shadow:0 0 0 rgba(100,140,255,0)}35%{box-shadow:0 0 14px 2px rgba(100,140,255,.65),inset 0 0 12px rgba(100,140,255,.25)}}
+@keyframes boxup{0%,100%{box-shadow:0 0 0 0 rgba(255,200,60,0),0 0 0 rgba(255,200,60,0)}
+ 30%,55%{box-shadow:0 0 0 2px rgba(238,190,72,1),0 0 18px 4px rgba(255,200,60,.75),inset 0 0 14px rgba(255,200,60,.28)}}
+@keyframes boxdown{0%,100%{box-shadow:0 0 0 0 rgba(90,125,255,0),0 0 0 rgba(90,125,255,0)}
+ 30%,55%{box-shadow:0 0 0 2px rgba(104,134,250,1),0 0 18px 4px rgba(80,115,255,.8),inset 0 0 14px rgba(80,115,255,.3)}}
 .stat.pop,.chips .chip.pop,.up.pop{animation:boxup 1.1s ease-in-out both}
 .stat.pop.dn,.chips .chip.pop.dn,.up.pop.dn{animation-name:boxdown}
 .minor span.pop{animation:popup 1.1s ease-in-out both}
@@ -701,6 +703,12 @@ function upgradeTexts(it) {
           var ln0 = lines[best].replace(/\.\s*$/, ""), stat = /^\s*(<[^>]+>\s*)*[+-]\d/.test(ln0), w0 = shortBits[0].w ? shortBits[0].w + " " : "";
           lines[best] = ln0 + (stat ? " and " : " with ") + '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + w0 + "scaling";
           out.push(lines.join("<br>")); continue;
+        }
+      }
+      if (!merged && shortBits.length === 1 && !/<br\s*\/?>/i.test(rd)) { // one line whose wording matches the scaled stat: attach it
+        var wds = String(labelBits[0] || "").toLowerCase().split(/\W+/).filter(function (w) { return w.length > 3; }), pl = rd.replace(/<[^>]+>/g, "").toLowerCase();
+        if (shortBits[0].w && wds.length && wds.every(function (w) { return pl.indexOf(w) >= 0; }) && !/scal/.test(pl)) {
+          out.push(rd.replace(/\.\s*$/, "") + ", with " + '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (shortBits[0].w ? shortBits[0].w + " " : "") + "scaling"); continue;
         }
       }
       out.push(rd + (merged ? "" : extra)); continue;
