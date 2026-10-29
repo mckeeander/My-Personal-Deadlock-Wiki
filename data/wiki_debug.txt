@@ -72,7 +72,7 @@ Holliday: fetched via api; abilities-section, found headings: Powder Keg, Bounce
   Spirit Lasso: 1 notes, items=['Reactive Barrier', 'Indomitable', 'Unstoppable', 'Warp Stone'], notes-label=True
   [weapon] name="Doc's Orders", 0 notes, notes-label=False
 Bebop: fetched via api; abilities-section, found headings: Exploding Uppercut, Sticky Bomb, Grapple Arm, Hyper Beam
-  Exploding Uppercut: 6 notes, items=['Melee Lifesteal', 'Healing Booster', 'Dispel Magic', 'Healing Tempo', 'Unstoppable'], notes-label=True
+  Exploding Uppercut: 7 notes, items=['Melee Lifesteal', 'Healing Booster', 'Dispel Magic', 'Healing Tempo', 'Unstoppable'], notes-label=True
   Sticky Bomb: 13 notes, items=['Spirit Snatch', 'Echo Shard', 'Boundless Spirit'], notes-label=True
   Grapple Arm: 4 notes, items=['Melee Lifesteal', 'Reactive Barrier', 'Indomitable', 'Unstoppable', 'Spirit Snatch', 'Lifestrike', 'Melee Charge', 'Crushing Fists'], notes-label=True
   Hyper Beam: 13 notes, items=['Unstoppable', 'Debuff Reducer'], notes-label=True
