@@ -331,6 +331,15 @@ function rich(s) {
     return "\u0001" + (SVGS.length - 1) + "\u0001";
   }).replace(/<Panel[\s\S]*?<\/Panel>/gi, "");
   s = s.replace(/\{s:hero_name\}/g, HERO_NAME || "the hero").replace(/\{s:[^}]*\}/g, "");
+  // the game greys whole paragraphs; rules like "While in slow motion, Apollo is invulnerable" read as real text, only how-to lines stay grey
+  s = s.replace(/<span class="diminish">((?:(?!<\/?span)[\s\S])*)<\/span>/g, function (m, body) {
+    return body.split(/(<br\s*\/?>)/).map(function (ln) {
+      if (/^<br/.test(ln) || !ln.trim()) return ln;
+      var t = ln.replace(/<[^>]+>/g, "").trim(), keyIc = (ln.match(/\u0001(\d+)\u0001/g) || []).some(function (q) { return /class="ic key"/.test(SVGS[+q.replace(/\u0001/g, "")] || ""); });
+      var hint = keyIc || /^(Press|Hold|Tap|Release)\b/.test(t) || t.length <= 25 || /:$/.test(t);
+      return hint ? '<span class="diminish">' + ln + "</span>" : ln;
+    }).join("");
+  });
   // the game's white damage glyphs get the coloured icons the stat tiles use, like the wiki
   s = s.replace(/\u0001(\d+)\u0001(\s*<span class="inline-attribute-label (\w+)")/g, function (m, i, rest, at) {
     var src = /Spirit/.test(at) && /Damage|DPS/.test(at) ? ICON_SPIRIT : /Weapon|Bullet/.test(at) ? ICON_WEAPON : "";
@@ -446,8 +455,9 @@ function isDisabled(p) {
   return false;
 }
 function unitFor(p) {
-  if (p.postfix != null && p.postfix !== "") return p.postfix;
   var u = p.display_units || "";
+  if (/MetersPerSecond/.test(u)) return " m/s"; // the game also sends postfix "m" for speeds
+  if (p.postfix != null && p.postfix !== "") return p.postfix;
   if (/MetersPerSecond/.test(u)) return "m/s";
   if (/Meters/.test(u)) return "m";
   if (/Seconds/.test(u)) return "s";
@@ -461,7 +471,7 @@ function fmtVal(p) {
   var pre = p.prefix || "";
   if (/\{s:sign\}/.test(pre)) pre = n >= 0 ? "+" : ""; else pre = pre.replace(/\{s:[^}]*\}/g, "");
   var um = !isNum && /^(-?\d*\.?\d+)\s*([a-z%\/]+)$/i.exec(raw); // "19.0m" -> "19m"
-  if (um) return pre + fmtNum(um[1]) + (um[2] === "m" && p.css_class === "move_speed" ? " m/s" : um[2]); // speeds come through as "3m"
+  if (um) return pre + fmtNum(um[1]) + (um[2] === "m" && (p.css_class === "move_speed" || /MetersPerSecond/.test(p.display_units || "")) ? " m/s" : um[2]); // speeds come through as "3m"
   return pre + (isNum ? fmtNum(raw) : raw) + (isNum ? unitFor(p) : "");
 }
 function propLabel(p, key) { return (p && (p.postvalue_label || p.label || p.display_name)) || prettify(key); }
@@ -539,6 +549,7 @@ function propRec(it, key) {
   if (!isNaN(n2) && (n2 === 0 || (n2 < 0 && key === "AbilityCooldownBetweenCharge"))) return null; // inactive until an upgrade enables it
   var v = fmtVal(shown);
   var label = propLabel(p0, key);
+  if (v != null && /(Duration|Time)$/.test(key) && /^[+-]?\d*\.?\d+$/.test(v)) v += "s"; // unitless durations (Dash Buff Duration)
   if (v != null && !p0.postvalue_label && !p0.label && !p0.display_name && /Percent$/.test(key)) { // an unlabelled "...Percent" value: use a % sign, not the word
     label = label.replace(/\s*Percent$/i, ""); if (!/%$/.test(v)) v = v + "%";
     if (parseFloat(p0.value) === 0 && parseFloat(shown.value) > 0 && v.charAt(0) !== "+") v = "+" + v;
@@ -616,6 +627,7 @@ function tile(v, l, r) {
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
 var GROUP_OV = {
   "Rain of Arrows": [{ l: "On Hit:", k: ["SlowPercent", "SlowDuration"] }],
+  "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }],
   "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
 };
 function tooltipHtml(it) {
@@ -656,8 +668,9 @@ function tooltipHtml(it) {
     var secStart = parts.length;
     if (si > 0 && sec.loc_string) parts.push('<div class="desc">' + rich(sec.loc_string) + "</div>");
     (sec.properties_block || []).forEach(function (blk) {
-      var tiles = "", seen = {};
+      var tiles = "", seen = {}, hadMoved = false;
       (blk.properties || []).forEach(function (pp) {
+        if (moved[pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property)]) hadMoved = true;
         if (moved[pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property)]) return;
         if (pp.status_effect_name) {
           var sv = propRec(it, pp.status_effect_value);
@@ -668,7 +681,7 @@ function tooltipHtml(it) {
         var r = propRec(it, key); if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = allSig[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
       });
       tiles += extraHtml(place[bi]);
-      if (tiles && !tilesDone) { tiles += extraHtml(place[-1]); tilesDone = true; } // other upgrade-added stats sit with the main tiles
+      if ((tiles || (hadMoved && place[-1])) && !tilesDone) { tiles += extraHtml(place[-1]); tilesDone = true; } // other upgrade-added stats sit with the main tiles
       if (tiles) parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>");
       bi++;
     });
