@@ -116,6 +116,70 @@ jobs:
                   out.append([src, txt(cap) if cap else ""])
               return out
 
+          def best_src(img):
+              if img is None:
+                  return ""
+              cands = [p.strip().split(" ")[0] for p in (img.get("srcset") or "").split(",") if p.strip()]
+              src = (cands[-1] if cands else img.get("src")) or ""
+              if src.startswith("//"):
+                  src = "https:" + src
+              return src if src.startswith("https://cdn.deadlock.wiki/") else ""
+
+          def li_lines(root, inside):
+              """Bullet lines under root as [depth, text]; nested lists keep their depth."""
+              lines = []
+              for t in root.find_all("li"):
+                  depth = len([p for p in t.find_parents("li") if id(p) in inside])
+                  c = copy.copy(t)
+                  for u in c.find_all(["ul", "ol"]):
+                      u.decompose()
+                  s = txt_inline(c)
+                  if s and depth <= 2:
+                      lines.append([depth, s])
+              return lines
+
+          def panel_kind(p):
+              pid = re.sub(r"_\d+$", "", (p.get("id") or "").replace("tabber-", ""))
+              return pid.lower().replace("_", " ")
+
+          def interactions_of(panel):
+              """Each wiki interaction box: the item/stat it is about, good/bad/info, partial/disabled, its icon and text."""
+              out = []
+              for box in panel.find_all("div", class_="iconbox"):
+                  cls = box.get("class") or []
+                  kind = next((c.split("iconbox-type-")[1] for c in cls if c.startswith("iconbox-type-")), "info")
+                  state = box.get("data-iconbox-state") or ("disabled" if "iconbox-disabled" in cls else "partial" if "iconbox-partial" in cls else "")
+                  if "iconbox-enhanced" in cls:
+                      state = (state + " enhanced").strip()
+                  head = box.find(class_="iconbox-header")
+                  title = box.get("data-iconbox-title") or (txt(head) if head else "")
+                  ic = box.find(class_="iconbox-icon")
+                  icon = best_src(ic.find("img")) if ic else ""
+                  body = box.find(class_="iconbox-text")
+                  lines = []
+                  if body is not None:
+                      inside = set(id(x) for x in body.find_all(True))
+                      lines = li_lines(body, inside)
+                      if not lines:
+                          s = txt_inline(copy.copy(body))
+                          if s:
+                              lines = [[0, s]]
+                  if title or lines:
+                      out.append({"t": title, "k": kind, "s": state, "img": icon, "lines": lines})
+              return out
+
+          def hints_of(block):
+              """The icon row above the tabs: 'CC effect suppressed by Unstoppable' etc., keyed by item name."""
+              out = {}
+              for t in block:
+                  if t.name == "span" and "ability-hint-tip" in (t.get("class") or []):
+                      a = t.find("a")
+                      nm = (a.get("title") if a else "") or ""
+                      tip = txt(t)
+                      if nm and tip:
+                          out[nm] = tip
+              return out
+
           def abilities_nodes(root):
               head = None
               for h in root.find_all(re.compile(r"^h[1-4]$")):
@@ -166,7 +230,19 @@ jobs:
                           start = j
                           break
                   seq = block[start + 1:] if start is not None else block
+                  panels = [t for t in block if "tabber__panel" in (t.get("class") or [])]
+                  note_panels = [p for p in panels if panel_kind(p) == "notes"]
+                  inter = []
+                  for p in panels:
+                      if panel_kind(p) == "interactions":
+                          inter += interactions_of(p)
                   notes = []
+                  if note_panels:  # tabbed layout: Notes tab only (Show All repeats it, Interactions are kept separately)
+                      seq = []
+                      for p in note_panels:
+                          notes += li_lines(p, set(id(x) for x in p.find_all(True)))
+                  elif panels:
+                      seq = []
                   for t in seq:
                       if t.name != "li":
                           continue
@@ -189,7 +265,12 @@ jobs:
                           if key in itemmap and itemmap[key] not in items:
                               items.append(itemmap[key])
                   out[name] = {"notes": notes, "items": items, "figs": figs_of(block)}
-                  dbg.append("  %s: %d notes, items=%s, notes-label=%s" % (name, len(notes), items, start is not None))
+                  if inter:
+                      out[name]["inter"] = inter
+                  hints = hints_of(block)
+                  if hints:
+                      out[name]["hints"] = hints
+                  dbg.append("  %s: %d notes, %d interactions, items=%s, notes-label=%s" % (name, len(notes), len(inter), items, start is not None))
               for name in ability_names:
                   if name not in out:
                       dbg.append("  %s: NOT FOUND on page" % name)
@@ -305,7 +386,7 @@ jobs:
                       open(os.path.join(DATA, "wiki_sample_%s.html" % name), "w", encoding="utf-8").write(frag[:90000])
                   if not OFFLINE:
                       time.sleep(1.2)
-              got = sum(1 for v in result.values() for a in v.values() if a.get("notes") or a.get("items") or a.get("figs"))
+              got = sum(1 for v in result.values() for a in v.values() if a.get("notes") or a.get("items") or a.get("figs") or a.get("inter"))
               log.insert(0, "heroes ok=%d failed=%d, abilities with notes/items=%d" % (ok, fail, got))
               open(os.path.join(DATA, "wiki_debug.txt"), "w", encoding="utf-8").write("\n".join(log) + "\n")
               if ok == 0 and prev:
