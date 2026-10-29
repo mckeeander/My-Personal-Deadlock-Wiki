@@ -51,7 +51,7 @@ input[type=search]{width:100%;padding:11px 12px;background:var(--panel);border:1
 .hero-h img{width:72px;aspect-ratio:3/4;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
 h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .sub{color:var(--dim);font-size:14px;line-height:1.4;margin:8px 0 14px}
-.ab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+.ab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:18px}
 .abh{display:flex;gap:10px;align-items:center}
 .abh img{width:44px;height:44px;object-fit:contain;flex:none}
 .abh h3{margin:0;flex:1;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
@@ -219,11 +219,11 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .bg div.spike{border-color:var(--sp);background:linear-gradient(160deg,var(--spbg),var(--panel2));box-shadow:0 0 12px var(--spglow)}
 .bg div.spike u{background:var(--sp)}
 .bg div.spike b{color:var(--sp)}
-@keyframes popup{0%,100%{transform:none;box-shadow:0 0 0 0 rgba(255,140,30,0);filter:brightness(1) saturate(1)}
- 35%{transform:translateY(-1px) scale(1.04);box-shadow:0 0 0 2px rgba(255,140,30,.8),0 0 18px 4px rgba(255,120,10,.48);filter:brightness(1.2) saturate(1.5)}}
+@keyframes popup{0%,100%{transform:none;box-shadow:0 0 0 0 rgba(255,190,50,0);filter:brightness(1) saturate(1)}
+ 35%{transform:translateY(-1px) scale(1.04);box-shadow:0 0 0 2px rgba(255,190,50,.7),0 0 16px 3px rgba(255,172,30,.36);filter:brightness(1.18) saturate(1.3)}}
 @keyframes popdown{0%,100%{transform:none;box-shadow:0 0 0 0 rgba(90,130,255,0);filter:brightness(1)}
  35%{transform:translateY(1px) scale(.965);box-shadow:0 0 0 2px rgba(90,130,255,.7),0 0 18px 4px rgba(70,110,255,.46);filter:brightness(.78)}}
-.pop{animation:popup 1s ease-in-out both}
+.pop{animation:popup 1.1s ease-in-out both}
 .pop.dn{animation-name:popdown}
 @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -231,8 +231,8 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .sheet:not([hidden]) .in{animation:slideup .24s cubic-bezier(.2,.8,.25,1)}
 .stat.pop{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.pop,.sheet:not([hidden]),.sheet:not([hidden]) .in{animation:none}}
-.hname{height:36px;display:flex;align-items:center}
-.hname img{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left center;filter:brightness(0) invert(1) sepia(.12)}
+.hname{position:relative;width:170px;max-width:100%;height:78px;overflow:hidden;flex:none}
+.hname img{position:absolute;left:50%;top:50%;width:111%;height:auto;transform:translate(-50%,-50%);filter:brightness(0) invert(1) sepia(.12)}
 .pron{font-size:12px;color:var(--dim);letter-spacing:.06em;margin:3px 0 6px}
 .nic{height:1.3em;width:auto;vertical-align:-.3em;margin:0 .2em 0 .1em;border-radius:4px}
 .nref{color:var(--vital);font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -857,10 +857,15 @@ function statBlock(h) {
   function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
 }
+var PRONOUNS = { Pocket: "They/Them" };
 function heroNameHtml(h) {
-  var nm = h.images && h.images.name_image, pr = h.gender === "male" ? "He/Him" : h.gender === "female" ? "She/Her" : "";
-  var head = nm ? '<h1 class="hname"><img alt="' + esc(h.name) + '" src="' + esc(nm) + '" onerror="this.parentNode.className=\'\';this.parentNode.textContent=this.alt"></h1>' : "<h1>" + esc(h.name) + "</h1>";
+  var nm = h.images && h.images.name_image, pr = PRONOUNS[h.name] || (h.gender === "male" ? "He/Him" : h.gender === "female" ? "She/Her" : "");
+  var head = nm ? '<h1 class="hname"><img alt="' + esc(h.name) + '" src="' + esc(nm) + '" onerror="var p=this.parentNode;p.className=\'\';p.removeAttribute(\'style\');p.textContent=this.alt"></h1>' : "<h1>" + esc(h.name) + "</h1>";
   return head + (pr ? '<div class="pron">' + pr + "</div>" : "");
+}
+function scrollToEl(el) { // land just below the sticky header
+  var hd = document.querySelector("header"), off = hd ? hd.getBoundingClientRect().bottom + 14 : 170;
+  window.scrollTo(0, el.getBoundingClientRect().top + (window.pageYOffset || 0) - off);
 }
 function renderHero(cn) {
   var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
@@ -1112,7 +1117,7 @@ function openResult(b) {
   renderHero(hero);
   if (kind === "ability") {
     var el = document.querySelector('[data-ab="' + cn + '"]');
-    if (el) window.scrollTo(0, el.getBoundingClientRect().top + (window.pageYOffset || 0) - 130);
+    if (el) scrollToEl(el);
   }
 }
 function render() {
@@ -1152,7 +1157,7 @@ function pulseChanges(card, before, tier, down) {
     if (before[k] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); }
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); }
-  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1100);
+  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1200);
 }
 var TIPT = null;
 function tapTip(e) { // touch screens have no hover, so a tap on a chip names it for a moment
@@ -1173,7 +1178,7 @@ $("main").addEventListener("click", function (e) {
   if (nr) { // an ability mentioned in a note: open its hero and scroll to it
     state.from = null; renderHero(nr.getAttribute("data-rh"));
     var tg = document.querySelector('[data-ab="' + nr.getAttribute("data-ra") + '"]');
-    if (tg) window.scrollTo(0, tg.getBoundingClientRect().top + (window.pageYOffset || 0) - 130);
+    if (tg) scrollToEl(tg);
     return;
   }
   var pi = e.target.closest ? e.target.closest(".pitem[data-pitem]") : null;
