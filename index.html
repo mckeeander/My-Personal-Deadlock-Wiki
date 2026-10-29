@@ -249,7 +249,12 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .sheet:not([hidden]) .in{animation:slideup .24s cubic-bezier(.2,.8,.25,1)}
 .stat.pop{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.pop,.pop .si,.pop img,.minor span.pop,.minor span.pop .si,.minor span.pop img,.sheet:not([hidden]),.sheet:not([hidden]) .in{animation:none}}
-.hname{margin:0}
+.hname{margin:0 0 8px}
+.backpill{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0) + 18px);transform:translateX(-50%);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.backpill[hidden]{display:none}
+.backpill.in{animation:pillin .22s ease-out}
+.backpill .bx{display:inline-block;padding:0 8px;margin-left:4px;border-left:1px solid var(--line);color:var(--dim);font-size:18px;line-height:1}
+@keyframes pillin{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 .gl{text-decoration:underline dotted;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--disp);font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -285,6 +290,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   </div>
 </header>
 <main id="main"></main>
+<button class="backpill" id="backpill" hidden></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
 <script>
@@ -318,10 +324,18 @@ function rich(s) {
   s = s.replace(/<svg([^>]*)>([\s\S]*?)<\/svg>/gi, function (m, at, inner) { // keep the game's inline icons, minus anything active
     var vb = /viewBox="([^"]*)"/.exec(at);
     if (!vb || /<script|foreignObject|<style|\son\w+\s*=|javascript:|href/i.test(inner)) return "";
-    SVGS.push('<svg class="ic" viewBox="' + esc(vb[1]) + '" xmlns="http://www.w3.org/2000/svg">' + inner + "</svg>");
+    var key = /fill="black"/.test(inner); // input glyphs (mouse buttons) are drawn in black for a light HUD
+    if (key) inner = inner.replace(/fill="black"/g, 'fill="#b9b2c8"');
+    SVGS.push('<svg class="ic' + (key ? " key" : "") + '" viewBox="' + esc(vb[1]) + '" xmlns="http://www.w3.org/2000/svg">' + inner + "</svg>");
     return "\u0001" + (SVGS.length - 1) + "\u0001";
   }).replace(/<Panel[\s\S]*?<\/Panel>/gi, "");
   s = s.replace(/\{s:hero_name\}/g, HERO_NAME || "the hero").replace(/\{s:[^}]*\}/g, "");
+  // the game's white damage glyphs get the coloured icons the stat tiles use, like the wiki
+  s = s.replace(/\u0001(\d+)\u0001(\s*<span class="inline-attribute-label (\w+)")/g, function (m, i, rest, at) {
+    var src = /Spirit/.test(at) && /Damage|DPS/.test(at) ? ICON_SPIRIT : /Weapon|Bullet/.test(at) ? ICON_WEAPON : "";
+    if (src) SVGS[+i] = '<img class="ia" alt="" src="' + src + '">';
+    return m;
+  });
   var parts = s.split(/(<[^>]*>)/), out = "";
   parts.forEach(function (p) {
     if (p.charAt(0) !== "<") { out += esc(p.replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")); return; }
@@ -347,6 +361,16 @@ function rich(s) {
     }
     if (tag === "b" || tag === "i" || tag === "strong" || tag === "em") out += close ? "</" + tag + ">" : "<" + tag + ">";
   });
+  // how-to-control lines ("Press Jump to...", a mouse glyph line) are greyed like the game's other hint text
+  out = out.split(/(<br>)/).map(function (ln) {
+    if (ln === "<br>") return ln;
+    var km = /^\s*\u0001(\d+)\u0001/.exec(ln);
+    if (km && /class="ic key"/.test(SVGS[+km[1]] || "") && !/</.test(ln)) return '<span class="dm">' + ln + "</span>";
+    return ln.replace(/(Press|Hold|Tap|Release)\s[^.!?<]*[.!?]/g, function (m, w, off, str) {
+      var before = str.slice(0, off);
+      return /(^|[.!?>]\s*|^\s*)$/.test(before) ? '<span class="dm">' + m + "</span>" : m;
+    });
+  }).join("");
   out = out.replace(/<span class="hl"((?: style="[^"]*")?)>([^<]+)<\/span>/g, function (m, st, txt) { // highlighted game terms open the glossary
     var gk = GAL[txt.toLowerCase().replace(/\s+/g, " ").trim()];
     return gk ? '<span class="hl gl" data-g="' + gk + '"' + st + ">" + txt + "</span>" : m;
@@ -489,7 +513,7 @@ function effP(it, key) {
   q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
   return q;
 }
-var LABEL_OV = { "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed" }; // some game labels need the subject spelled out
+var LABEL_OV = { "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
 function propRec(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -610,28 +634,39 @@ function tooltipHtml(it) {
     });
     (place[tgt] = place[tgt] || []).push(r);
   });
-  function extraHtml(list) { return (list || []).map(function (r) { return tile(r.v, r.l, r); }).join(""); }
+  var allSig = {};
+  function extraHtml(list) { return (list || []).map(function (r) { allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join(""); }
   bi = 0;
   secs.forEach(function (sec, si) {
+    var secStart = parts.length;
     if (si > 0 && sec.loc_string) parts.push('<div class="desc">' + rich(sec.loc_string) + "</div>");
     (sec.properties_block || []).forEach(function (blk) {
       var tiles = "", seen = {};
       (blk.properties || []).forEach(function (pp) {
         if (pp.status_effect_name) {
           var sv = propRec(it, pp.status_effect_value);
-          if (sv && !seen[sig(sv.v, pp.status_effect_name)]) { seen[sig(sv.v, pp.status_effect_name)] = 1; tiles += tile(sv.v, pp.status_effect_name); }
+          if (sv && !seen[sig(sv.v, pp.status_effect_name)]) { seen[sig(sv.v, pp.status_effect_name)] = allSig[sig(sv.v, pp.status_effect_name)] = 1; tiles += tile(sv.v, pp.status_effect_name); }
           return;
         }
         var key = pp.important_property || pp.property; if (!key) return;
-        var r = propRec(it, key); if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
+        var r = propRec(it, key); if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = allSig[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
       });
       tiles += extraHtml(place[bi]);
       if (tiles && !tilesDone) { tiles += extraHtml(place[-1]); tilesDone = true; } // other upgrade-added stats sit with the main tiles
       if (tiles) parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>");
       bi++;
     });
-    var minor = "";
-    (sec.basic_properties || []).forEach(function (k) { var r = propRec(it, k); if (r) minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; });
+    var minor = "", promo = "";
+    (sec.basic_properties || []).forEach(function (k) {
+      var r = propRec(it, k); if (!r) return;
+      var p0 = (it.properties || {})[k], b0 = p0 ? parseFloat(p0.value) : NaN;
+      if (b0 === 0) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
+      minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>";
+    });
+    if (promo) {
+      var lastStats = -1; for (var pi2 = parts.length - 1; pi2 >= secStart; pi2--) if (/<div class="stats">/.test(parts[pi2])) { lastStats = pi2; break; }
+      if (lastStats >= 0) parts[lastStats] = parts[lastStats].replace(/<\/div>$/, promo + "</div>"); else parts.push('<div class="stats">' + promo + "</div>");
+    }
     if (minor) { parts.push('<div class="minor">' + minor + "</div>"); lastMinor = parts.length - 1; }
   });
   if (place[-1] && !tilesDone) parts.push('<div class="stats">' + extraHtml(place[-1]) + "</div>");
@@ -738,9 +773,9 @@ function upgradeTexts(it) {
     if (d[k]) {
       var rd = rich(d[k]), merged = false;
       if (shortBits.length === 1) { // "improved Spirit scaling" + a separate line -> one phrase with the number in it
-        rd = rd.replace(/(?:improved|increased|increases)\s+(Spirit\s+|Weapon\s+|Boon\s+)?scaling/i, function (m0, wd) {
+        rd = rd.replace(/(?:improved|increased|increases)\s+(Spirit\s+|Weapon\s+|Boon\s+)?((?:damage|heal(?:ing)?|barrier|duration)\s+)?scaling/i, function (m0, wd, mid) {
           merged = true; var w = (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim();
-          return '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (w ? w + " " : "") + "scaling";
+          return '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (w ? w + " " : "") + (mid ? mid.toLowerCase() : "") + "scaling";
         });
       }
       if (!merged && shortBits.length === 1 && /<br\s*\/?>/i.test(rd)) { // multi-line text: put the scaling on the line it belongs to
@@ -778,12 +813,14 @@ function upgradeTexts(it) {
   return out;
 }
 function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, like the wiki
-  h = String(h).replace(/<\/?(?:b|strong)>/gi, "").replace(/<span class="(?:hl|highlight)">([^<]*)<\/span>/g, "$1");
+  h = String(h).replace(/<\/?(?:b|strong)>/gi, "");
+  for (var ui = 0; ui < 2; ui++) h = h.replace(/<span class="(?:hl|highlight)">([^<]*)<\/span>/g, "$1");
   return h.split(/(<[^>]*>)/).map(function (p) {
     if (p.charAt(0) === "<") return p;
     return p.replace(/([+\-]?\d+(?:\.\d+)?)(?:(s|m|%)(?![A-Za-z\/]))?/g, function (m, n, u, off, str) {
       var pc = off > 0 ? str.charAt(off - 1) : "";
       if (/[A-Za-z0-9.#&]/.test(pc)) return m;
+      n = n.replace(/\.0+$/, ""); // "+54.0" reads as "+54"
       return '<b class="v">' + n + (u ? '<span class="u">' + u + "</span>" : "") + "</b>";
     });
   }).join("");
@@ -970,7 +1007,7 @@ function scrollToEl(el) { // land just below the sticky header
   var hd = document.querySelector("header"), off = hd ? hd.getBoundingClientRect().bottom + 14 : 170;
   window.scrollTo(0, el.getBoundingClientRect().top + (window.pageYOffset || 0) - off);
 }
-var PRONOUNS = { Pocket: "They/Them" }, NMC = {}, NMP = {};
+var NMC = {}, NMP = {};
 // The game's name art is a framed plate. Fetch it, drop the frame, and crop to the lettering; plain text if that isn't possible.
 function nameSvg(url) {
   if (url in NMP) return NMP[url];
@@ -1037,9 +1074,9 @@ function cleanNameSvg(txt) {
   } catch (e) { return ""; } finally { document.body.removeChild(host); }
 }
 function heroNameHtml(h) {
-  var nm = h.images && h.images.name_image, pr = PRONOUNS[h.name] || (h.gender === "male" ? "He/Him" : h.gender === "female" ? "She/Her" : "");
+  var nm = h.images && h.images.name_image;
   var head = nm && NMC[nm] ? '<h1 class="hname" role="img" aria-label="' + esc(h.name) + '">' + NMC[nm] + "</h1>" : "<h1" + (nm ? ' class="hpend" data-nm="' + esc(nm) + '"' : "") + ">" + esc(h.name) + "</h1>";
-  return head + (pr ? '<div class="pron">' + pr + "</div>" : "");
+  return head;
 }
 function hydrateName() {
   var el = document.querySelector && document.querySelector(".hpend[data-nm]"); if (!el) return;
@@ -1364,7 +1401,7 @@ var GLOSS = [
   { k: "sprint", c: "move", t: "Sprint", a: ["sprint", "sprint speed"], d: "Extra move speed that kicks in after about 5 seconds out of combat. It ends when you enter combat or aim down sights." },
   { k: "slide", c: "move", t: "Slide", a: ["slide", "slides", "sliding"], d: "Crouching while moving fast, or on a slope, turns into a slide." }
 ];
-var GBY = {}, GAL = {};
+var GBY = {}, GAL = {}, ICON_SPIRIT = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_magic_color.svg", ICON_WEAPON = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_bullet_color.svg";
 GLOSS.forEach(function (g) { GBY[g.k] = g; g.a.forEach(function (x) { GAL[x] = g.k; }); GAL[g.t.toLowerCase()] = g.k; });
 // the game's own keyword labels in ability text
 var GATTR = { SpiritDamage: "spirit-damage", BonusSpiritDamage: "bonus-damage", SpiritDPS: "dot", WeaponDamage: "weapon-damage", BonusWeaponDamage: "bonus-damage", BulletDamage: "weapon-damage", WeaponDPS: "dot", Slow: "slow", SlowResistance: "slow-resist", Stun: "stun" };
@@ -1417,6 +1454,21 @@ function openGlossary(k) {
   var el = k && $("g-" + k);
   if (el) { scrollToEl(el); el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100); } else window.scrollTo(0, 0);
 }
+// "Back to Abrams" after following an ability link, so a quick look doesn't lose your place
+var BACK = null;
+function showBack(hero, y) {
+  var h = state.heroes.filter(function (x) { return x.class_name === hero; })[0], b = $("backpill");
+  if (!h || !b) return;
+  BACK = { hero: hero, y: y };
+  b.innerHTML = "‹ Back to " + esc(h.name) + '<span class="bx" aria-label="Dismiss">×</span>';
+  b.hidden = false; b.classList.remove("in"); void b.offsetWidth; b.classList.add("in");
+}
+function hideBack() { BACK = null; var b = $("backpill"); if (b) b.hidden = true; }
+$("backpill").onclick = function (e) {
+  if (e.target.classList && e.target.classList.contains("bx")) { hideBack(); return; }
+  var bk = BACK; hideBack(); if (!bk) return;
+  state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(bk.hero); window.scrollTo(0, bk.y);
+};
 function render() {
   if (state.tab === "glossary") return renderGlossary();
   if (state.tab === "search") return renderSearch();
@@ -1429,12 +1481,12 @@ function showError(e) {
 
 /* ---------- wiring ---------- */
 $("tabs").onclick = function (e) {
-  var b = e.target.closest(".tab"); if (!b) return;
+  var b = e.target.closest(".tab"); if (!b) return; hideBack();
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
   state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; state.from = null; render(); window.scrollTo(0, 0);
 };
-$("gbtn").onclick = function () { openGlossary(); };
-$("sbtn").onclick = function () {
+$("gbtn").onclick = function () { hideBack(); openGlossary(); };
+$("sbtn").onclick = function () { hideBack();
   state.tab = "search"; state.hero = null; state.from = null; setTabsUI(null); renderSearch(); window.scrollTo(0, 0);
   var i = $("sq"); if (i) i.focus();
 };
@@ -1444,16 +1496,23 @@ function statKey(el) {
   if (el.classList.contains("chip")) return "c:" + (el.getAttribute("data-tip") || "");
   var b = el.querySelector("b"); return "m:" + (b ? el.textContent.replace(b.textContent, "").trim() : el.textContent.trim());
 }
+function statEls(card) {
+  var seen = {}, out = [];
+  Array.prototype.forEach.call(card.querySelectorAll(".stat, .chips .chip, .minor span"), function (el) {
+    var k = statKey(el); seen[k] = (seen[k] || 0) + 1; out.push([el, k + "#" + seen[k]]);
+  });
+  return out;
+}
 function snapStats(card) {
   var m = {};
-  Array.prototype.forEach.call(card.querySelectorAll(".stat, .chips .chip, .minor span"), function (el) { m[statKey(el)] = el.textContent.replace(/\s+/g, " ").trim(); });
+  statEls(card).forEach(function (x) { m[x[1]] = x[0].textContent.replace(/\s+/g, " ").trim(); });
   return m;
 }
 function pulseChanges(card, before, tier, down) {
   var n = 0;
-  Array.prototype.forEach.call(card.querySelectorAll(".stat, .chips .chip, .minor span"), function (el) {
-    var k = statKey(el), now = el.textContent.replace(/\s+/g, " ").trim();
-    if (before[k] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); }
+  statEls(card).forEach(function (x) {
+    var el = x[0], now = el.textContent.replace(/\s+/g, " ").trim();
+    if (before[x[1]] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); }
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); }
   setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1100);
@@ -1478,8 +1537,10 @@ $("main").addEventListener("click", function (e) {
   var sf = e.target.closest ? e.target.closest(".sf[data-f]") : null;
   if (sf) { state.sf = sf.getAttribute("data-f"); renderSearch(); return; }
   var nr = e.target.closest ? e.target.closest(".nref[data-rh]") : null;
-  if (nr) { // an ability mentioned in a note: open its hero and scroll to it
+  if (nr) { // an ability mentioned in a note: open its hero and scroll to it, with a way back
+    var fromHero = state.hero, fromY = window.pageYOffset || 0;
     state.from = null; renderHero(nr.getAttribute("data-rh"));
+    showBack(fromHero, fromY);
     var tg = document.querySelector('[data-ab="' + nr.getAttribute("data-ra") + '"]');
     if (tg) scrollToEl(tg);
     return;
