@@ -232,8 +232,9 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .stat.pop{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.pop,.sheet:not([hidden]),.sheet:not([hidden]) .in{animation:none}}
 .hname{margin:0}
-.hname svg{display:block;height:40px;width:auto;max-width:100%}
+.hname svg{display:block;height:40px;width:auto;max-width:240px}
 .hname svg *{fill:#f1e8d4!important;stroke:none!important}
+.hname .nimg{display:block;height:40px;width:auto;max-width:240px;filter:brightness(0) invert(1) sepia(.12)}
 .pron{font-size:12px;color:var(--dim);letter-spacing:.06em;margin:3px 0 6px}
 .nic{height:1.3em;width:auto;vertical-align:-.3em;margin:0 .2em 0 .1em;border-radius:4px}
 .nref{color:var(--vital);font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -294,7 +295,7 @@ function rich(s) {
   s = s.replace(/\{s:hero_name\}/g, HERO_NAME || "the hero").replace(/\{s:[^}]*\}/g, "");
   var parts = s.split(/(<[^>]*>)/), out = "";
   parts.forEach(function (p) {
-    if (p.charAt(0) !== "<") { out += esc(p); return; }
+    if (p.charAt(0) !== "<") { out += esc(p.replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")); return; }
     var m = /^<\s*(\/?)\s*([a-zA-Z]+)([^>]*)>/.exec(p);
     if (!m) return;
     var close = m[1] === "/", tag = m[2].toLowerCase(), attrs = m[3] || "";
@@ -626,6 +627,11 @@ function upgradeExtras(it) {
   });
   keys.forEach(function (k) {
     var p = P[k], named = !!(p.postvalue_label || p.label), base = parseFloat(p.value), e = effP(it, k), ev = e ? parseFloat(e.value) : NaN;
+    var lbl0 = String(p.postvalue_label || p.label || "");
+    if (named && base === 0 && !p.postfix && !p.prefix && !p.display_units && /^(Reset|Can |Enable|Grant|Allow|Remove|Cancel|Ignore|Pierce|Disable|Purge|Dispel|Immune|Unstoppable|No )/i.test(lbl0) &&
+        (it.upgrades || []).every(function (u) { return ((u && u.property_upgrades) || []).every(function (pu) { return pu.name !== k || parseFloat(pu.bonus) === 1; }); })) {
+      if (ev > 0) res.flags.push(lbl0); return; // an on/off switch: shown as text, not as a "1"
+    }
     if (!named) {
       if (/^(Refresh|Improved)/.test(k)) return;
       // an unlabelled twin of a tile the tooltip already shows (e.g. Bonus Item Range next to Bonus Item Duration/Range)
@@ -871,12 +877,48 @@ function statBlock(h) {
   function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
 }
+function scrollToEl(el) { // land just below the sticky header
+  var hd = document.querySelector("header"), off = hd ? hd.getBoundingClientRect().bottom + 14 : 170;
+  window.scrollTo(0, el.getBoundingClientRect().top + (window.pageYOffset || 0) - off);
+}
 var PRONOUNS = { Pocket: "They/Them" }, NMC = {}, NMP = {};
 // The game's name art is a framed plate. Fetch it, drop the frame, and crop to the lettering; plain text if that isn't possible.
 function nameSvg(url) {
   if (url in NMP) return NMP[url];
-  NMP[url] = fetch(url + "?n=1").then(function (r) { return r.ok ? r.text() : ""; }).then(function (t) { return t ? cleanNameSvg(t) : ""; }).catch(function () { return ""; });
+  NMP[url] = fetch(url + "?n=1").then(function (r) { return r.ok ? r.text() : ""; }).then(function (t) {
+    if (!t) return "";
+    var c = cleanNameSvg(t); return c ? c : rasterNameSvg(t);
+  }).catch(function () { return ""; });
   return NMP[url];
+}
+// Art with filters, masks or embedded pictures can't be tidied as shapes: draw it, find where the pixels are, and crop to that.
+function rasterNameSvg(txt) {
+  return new Promise(function (res) {
+    try {
+      var m = txt.match(/<svg[^>]*>/i); if (!m) return res("");
+      var tag = m[0], vb = tag.match(/viewBox\s*=\s*["']([^"']+)["']/i), W = 0, H = 0;
+      if (vb) { var q = vb[1].trim().split(/[\s,]+/).map(Number); W = q[2]; H = q[3]; }
+      else { var wm = tag.match(/\swidth\s*=\s*["']([\d.]+)/i), hm = tag.match(/\sheight\s*=\s*["']([\d.]+)/i); W = wm ? +wm[1] : 0; H = hm ? +hm[1] : 0; }
+      if (!(W > 0 && H > 0)) return res("");
+      var S = 900 / W, cw = Math.round(W * S), ch = Math.round(H * S); if (ch > 2400) return res("");
+      var tag2 = tag.replace(/\s(width|height)\s*=\s*["'][^"']*["']/gi, "").replace(/<svg/i, '<svg width="' + cw + '" height="' + ch + '"');
+      if (!/xmlns\s*=/.test(tag2)) tag2 = tag2.replace(/<svg/i, '<svg xmlns="http://www.w3.org/2000/svg"');
+      var url = URL.createObjectURL(new Blob([txt.replace(tag, function () { return tag2; })], { type: "image/svg+xml" })), im = new Image();
+      im.onload = function () {
+        try {
+          var c = document.createElement("canvas"); c.width = cw; c.height = ch; var cx = c.getContext("2d"); cx.drawImage(im, 0, 0, cw, ch);
+          var d = cx.getImageData(0, 0, cw, ch).data, x0 = cw, y0 = ch, x1 = -1, y1 = -1;
+          for (var y = 0; y < ch; y++) for (var x = 0; x < cw; x++) if (d[(y * cw + x) * 4 + 3] > 24) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+          URL.revokeObjectURL(url);
+          var w = x1 - x0 + 1, h = y1 - y0 + 1; if (x1 < 0 || w / h < 1.2) return res("");
+          var o = document.createElement("canvas"); o.width = w; o.height = h; o.getContext("2d").drawImage(c, x0, y0, w, h, 0, 0, w, h);
+          res('<img class="nimg" alt="" src="' + o.toDataURL("image/png") + '">');
+        } catch (e) { res(""); }
+      };
+      im.onerror = function () { URL.revokeObjectURL(url); res(""); };
+      im.src = url;
+    } catch (e) { res(""); }
+  });
 }
 function cleanNameSvg(txt) {
   var host = document.createElement("div");
