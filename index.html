@@ -117,7 +117,7 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 details.lore{margin:4px 0 6px;color:var(--dim);font-size:14px;line-height:1.45}
 details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bottom:6px}
 .stat.plain{border-color:var(--line);background:var(--panel2)}
-.stat.big.wpn{border-color:var(--weapon);background:#3a2814}
+.stat.big.wtile{border-color:var(--weapon);background:#3a2814}
 .up{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
 .up.on{border-color:var(--spirit)}
 .up.on div:first-child{background:#6b45a8;color:#fff}
@@ -429,7 +429,7 @@ function fmtVal(p) {
   var pre = p.prefix || "";
   if (/\{s:sign\}/.test(pre)) pre = n >= 0 ? "+" : ""; else pre = pre.replace(/\{s:[^}]*\}/g, "");
   var um = !isNum && /^(-?\d*\.?\d+)\s*([a-z%\/]+)$/i.exec(raw); // "19.0m" -> "19m"
-  if (um) return pre + fmtNum(um[1]) + um[2];
+  if (um) return pre + fmtNum(um[1]) + (um[2] === "m" && p.css_class === "move_speed" ? " m/s" : um[2]); // speeds come through as "3m"
   return pre + (isNum ? fmtNum(raw) : raw) + (isNum ? unitFor(p) : "");
 }
 function propLabel(p, key) { return (p && (p.postvalue_label || p.label || p.display_name)) || prettify(key); }
@@ -578,34 +578,63 @@ function statTiles(it) {
 function pIcon(src) { return src ? imgTag(src).replace("<img ", '<img class="pi" ') : ""; }
 function tile(v, l, r) {
   var badge = scaleBadge(r);
-  return '<div class="stat' + (r && r.wpn ? " big wpn" : r && r.tech ? " big" : "") + '">' + badge + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
+  return '<div class="stat' + (r && r.wpn ? " big wtile" : r && r.tech ? " big" : "") + '">' + badge + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
 }
 // abilities use tooltip_details.info_sections
 function tooltipHtml(it) {
   var secs = it.tooltip_details && it.tooltip_details.info_sections, parts = [], ex = upgradeExtras(it), tilesDone = false, lastMinor = -1;
   if (!secs || !secs.length) secs = [];
-  var extraTiles = ex.tiles.map(function (r) { return tile(r.v, r.l, r); }).join("");
+  function sig(v, l) { return String(l).toLowerCase() + "|" + v; }
+  // which block each listed stat sits in, and what the game already shows
+  var blockOf = {}, listed = {}, bi = 0;
+  secs.forEach(function (sec) {
+    (sec.properties_block || []).forEach(function (blk) {
+      (blk.properties || []).forEach(function (pp) {
+        var k = pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property); if (!k) return;
+        blockOf[k] = bi; var r = propRec(it, k); if (r) listed[sig(r.v, pp.status_effect_name || r.l)] = 1;
+      });
+      bi++;
+    });
+  });
+  // an upgrade-added stat goes next to a stat the same upgrade changes (Bloodscent T2: stamina with the on-death healing);
+  // one that just repeats a shown stat (a second "Incoming Healing") is dropped
+  var place = {};
+  ex.tiles.forEach(function (r) {
+    if (listed[sig(r.v, r.l)]) return;
+    var tgt = -1;
+    (it.upgrades || []).some(function (u) {
+      var pus = (u && u.property_upgrades) || [];
+      if (!pus.some(function (pu) { return pu.name === r.key; })) return false;
+      pus.some(function (pu) { if (blockOf[pu.name] != null) { tgt = blockOf[pu.name]; return true; } return false; });
+      return tgt >= 0;
+    });
+    (place[tgt] = place[tgt] || []).push(r);
+  });
+  function extraHtml(list) { return (list || []).map(function (r) { return tile(r.v, r.l, r); }).join(""); }
+  bi = 0;
   secs.forEach(function (sec, si) {
     if (si > 0 && sec.loc_string) parts.push('<div class="desc">' + rich(sec.loc_string) + "</div>");
     (sec.properties_block || []).forEach(function (blk) {
-      var tiles = "";
+      var tiles = "", seen = {};
       (blk.properties || []).forEach(function (pp) {
         if (pp.status_effect_name) {
           var sv = propRec(it, pp.status_effect_value);
-          if (sv) tiles += tile(sv.v, pp.status_effect_name);
+          if (sv && !seen[sig(sv.v, pp.status_effect_name)]) { seen[sig(sv.v, pp.status_effect_name)] = 1; tiles += tile(sv.v, pp.status_effect_name); }
           return;
         }
         var key = pp.important_property || pp.property; if (!key) return;
-        var r = propRec(it, key); if (r) tiles += tile(r.v, r.l, r);
+        var r = propRec(it, key); if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
       });
-      if (tiles && !tilesDone) { tiles += extraTiles; tilesDone = true; } // upgrade-added stats sit with the main tiles
+      tiles += extraHtml(place[bi]);
+      if (tiles && !tilesDone) { tiles += extraHtml(place[-1]); tilesDone = true; } // other upgrade-added stats sit with the main tiles
       if (tiles) parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>");
+      bi++;
     });
     var minor = "";
     (sec.basic_properties || []).forEach(function (k) { var r = propRec(it, k); if (r) minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; });
     if (minor) { parts.push('<div class="minor">' + minor + "</div>"); lastMinor = parts.length - 1; }
   });
-  if (extraTiles && !tilesDone) parts.push('<div class="stats">' + extraTiles + "</div>");
+  if (place[-1] && !tilesDone) parts.push('<div class="stats">' + extraHtml(place[-1]) + "</div>");
   var fl = ex.flags.map(function (f) { return '<span class="fl">' + esc(f) + "</span>"; }).join("");
   if (fl) {
     if (lastMinor >= 0) parts[lastMinor] = parts[lastMinor].replace(/<\/div>$/, fl + "</div>");
@@ -645,10 +674,11 @@ function chipsHtml(it) {
   var extra = (it.tooltip_details && it.tooltip_details.additional_header_properties) || [];
   extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" data-tip="' + esc(r.l) + '">' + (pIcon(r.icon) || "• ") + esc(r.v) + "</span>"; });
   var ch = effP(it, "AbilityCharges"), nch = ch && !isDisabled(ch) ? parseFloat(ch.value) : 0;
-  if (nch > 1 && !L.AbilityCharges) {
+  var nch0 = P.AbilityCharges ? parseFloat(P.AbilityCharges.value) || 0 : 0;
+  if ((nch > 1 || (nch >= 1 && nch0 < 1)) && !L.AbilityCharges) { // also when an upgrade turns charges on (Consecrating Grenade T3)
     right += chip("AbilityCharges", "⚡", String(nch), "Charges");
     var cb = effP(it, "AbilityCooldownBetweenCharge");
-    if (cb && !isDisabled(cb) && parseFloat(cb.value) > 0 && !L.AbilityCooldownBetweenCharge) right += chip("AbilityCooldownBetweenCharge", "↻", fmtVal(cb), "Charge recharge");
+    if (cb && !isDisabled(cb) && parseFloat(cb.value) > 0 && !L.AbilityCooldownBetweenCharge) right += chip("AbilityCooldownBetweenCharge", "↻", fmtVal(cb), "Charge delay");
   }
   var cd = effP(it, "AbilityCooldown");
   if (!isDisabled(cd) && parseFloat(cd.value) !== 0) right += chip("AbilityCooldown", "⟳", fmtVal(cd), "Cooldown");
@@ -687,7 +717,7 @@ function upgradeExtras(it) {
     }
     var r = propRec(it, k); if (!r) return;
     if (/^Consume/.test(k) && r.v.charAt(0) !== "-") r.v = "-" + r.v; // a cost, not a gain
-    res.tiles.push(r);
+    r.key = k; res.tiles.push(r);
   });
   return res;
 }
@@ -1297,7 +1327,7 @@ var GLOSS = [
   { k: "investment", c: "scale", t: "Shop investment bonus", a: ["investment", "investment bonus"], d: "Spending souls in one shop category gives free stats on top of the items themselves: weapon spending raises weapon damage, spirit spending raises Spirit Power, and vitality spending raises health. The bonus steps up as your total in that category grows." },
   { k: "imbue", c: "scale", t: "Imbue", a: ["imbue", "imbues", "imbued"], d: "Some items ask you to pick one of your abilities when you buy them. The item’s special effect then applies only to that ability." },
   { k: "cooldown", c: "scale", t: "Cooldown", a: ["cooldown", "cooldown reduction"], d: "The wait before an ability or item can be used again. Cooldown reduction from items shortens it by a percentage." },
-  { k: "charges", c: "scale", t: "Charges", a: ["charge", "charges"], d: "An ability with charges stores several uses. Charges refill one at a time over the charge recharge time, and the regular cooldown is the shorter wait between uses." },
+  { k: "charges", c: "scale", t: "Charges", a: ["charge", "charges"], d: "An ability with charges stores several uses. Each charge refills over the ability’s cooldown, one at a time, and the charge delay is the short wait you need between uses." },
 
   { k: "bullet-resist", c: "def", t: "Bullet Resist", a: ["bullet resist", "bullet resistance", "bullet armor"], d: "Reduces the [[weapon-damage|weapon damage]] you take, melee included, by a percentage. Several sources multiply rather than add: 40% and 20% make 52%, not 60%." },
   { k: "spirit-resist", c: "def", t: "Spirit Resist", a: ["spirit resist", "spirit resistance", "spirit armor"], d: "Reduces the [[spirit-damage|spirit damage]] you take by a percentage. Like Bullet Resist, several sources multiply rather than add." },
