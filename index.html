@@ -223,7 +223,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
  35%{transform:translateY(-1px) scale(1.04);box-shadow:0 0 0 1px rgba(255,226,150,.55),0 0 14px 3px rgba(255,214,120,.32);filter:brightness(1.25)}}
 @keyframes popdown{0%,100%{transform:none;box-shadow:0 0 0 0 rgba(90,130,255,0);filter:brightness(1)}
  35%{transform:translateY(1px) scale(.965);box-shadow:0 0 0 2px rgba(90,130,255,.7),0 0 18px 4px rgba(70,110,255,.46);filter:brightness(.78)}}
-.pop{animation:popup 1.8s ease-in-out both}
+.pop{animation:popup 1.2s ease-in-out both}
 .pop.dn{animation-name:popdown}
 @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -231,6 +231,12 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .sheet:not([hidden]) .in{animation:slideup .24s cubic-bezier(.2,.8,.25,1)}
 .stat.pop{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.pop,.sheet:not([hidden]),.sheet:not([hidden]) .in{animation:none}}
+.hname{height:36px;display:flex;align-items:center}
+.hname img{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left center;filter:brightness(0) invert(1) sepia(.12)}
+.pron{font-size:12px;color:var(--dim);letter-spacing:.06em;margin:3px 0 6px}
+.nic{height:1.3em;width:auto;vertical-align:-.3em;margin:0 .2em 0 .1em;border-radius:4px}
+.nref{color:var(--vital);font-weight:600}
+.swc{will-change:transform,opacity}
 </style>
 </head>
 <body>
@@ -640,16 +646,26 @@ function upgradeTexts(it) {
   var d = it.description && typeof it.description === "object" ? it.description : {}, ups = it.upgrades || [], out = [];
   var KW = { ETechPower: "Spirit", EWeaponPower: "Weapon", ELevelUpBoons: "Boon" };
   for (var i = 0; i < 3; i++) {
-    var k = "t" + (i + 1) + "_desc", scaleBits = [];
+    var k = "t" + (i + 1) + "_desc", scaleBits = [], shortBits = [];
     ((ups[i] && ups[i].property_upgrades) || []).forEach(function (pu) {
       if (pu.upgrade_type !== "EAddToScale") return;
       var pp = (it.properties || {})[pu.name] || {}, sk = scaleOf(pp), word = KW[pu.scale_stat_filter] || (sk.kind === "spirit" ? "Spirit" : sk.kind === "weapon" ? "Weapon" : sk.kind === "boons" ? "Boon" : "");
       var bn = Number(pu.bonus);
       if (pu.scale_stat_filter === "EWeaponPower") bn = bn / 100;
       scaleBits.push(esc((bn >= 0 ? "+" : "") + fmtRate(bn) + " " + (word ? word + " " : "") + "scaling (" + propLabel(pp, pu.name) + ")"));
+      shortBits.push({ n: (bn >= 0 ? "+" : "") + fmtRate(bn), w: word });
     });
     var extra = scaleBits.length ? '<br><span class="dm">' + scaleBits.join("<br>") + "</span>" : "";
-    if (d[k]) { out.push(rich(d[k]) + extra); continue; }
+    if (d[k]) {
+      var rd = rich(d[k]), merged = false;
+      if (shortBits.length === 1) { // "improved Spirit scaling" + a separate line -> one phrase with the number in it
+        rd = rd.replace(/(?:improved|increased|increases)\s+(Spirit\s+|Weapon\s+|Boon\s+)?scaling/i, function (m0, wd) {
+          merged = true; var w = (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim();
+          return '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (w ? w + " " : "") + "scaling";
+        });
+      }
+      out.push(rd + (merged ? "" : extra)); continue;
+    }
     if (ups[i] && ups[i].property_upgrades) {
       var bits = [];
       ups[i].property_upgrades.forEach(function (pu) {
@@ -672,19 +688,46 @@ function bulletOf(h) {
   var w = h && state.byClass[(h.items || {}).weapon_primary];
   return w && w.weapon_info ? Number(w.weapon_info.bullet_damage) || 0 : 0;
 }
-function notesBlock(a) {
+var ABM = null, ABSRC = null;
+function abilityMap() {
+  if (ABM && ABSRC === state.heroes) return ABM;
+  var m = {}; ABSRC = state.heroes;
+  (state.heroes || []).forEach(function (h) {
+    ["signature1", "signature2", "signature3", "signature4"].forEach(function (k) {
+      var it = state.byClass[(h.items || {})[k]]; if (!it || !it.name || it.name.length < 4) return;
+      if (!m[it.name]) m[it.name] = itemImg(it);
+    });
+  });
+  ABM = m; return m;
+}
+// note text with an icon beside each ability it mentions (the wiki does this for linked abilities)
+function noteHtml(txt, own) {
+  txt = String(txt); var m = abilityMap(), names = Object.keys(m).filter(function (n) { return m[n] && !(own && own.indexOf(n) >= 0); });
+  if (!names.length) return esc(txt);
+  names.sort(function (a, b) { return b.length - a.length; });
+  var re = new RegExp("(^|[^A-Za-z])(" + names.map(function (n) { return n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")(?![A-Za-z])", "g");
+  var out = "", last = 0, x;
+  while ((x = re.exec(txt))) {
+    var start = x.index + x[1].length, nm = x[2], sentenceStart = start === 0 || /[.!?]\s+$/.test(txt.slice(0, start));
+    if (sentenceStart && nm.indexOf(" ") < 0) { re.lastIndex = start + 1; continue; } // a capitalised common word, not a reference
+    out += esc(txt.slice(last, start)) + '<span class="nref"><img class="nic" alt="" src="' + esc(m[nm]) + '" onerror="this.style.display=\'none\'">' + esc(nm) + "</span>";
+    last = start + nm.length; re.lastIndex = last;
+  }
+  return out + esc(txt.slice(last));
+}
+function notesBlock(a, own) {
   var figs = (a && a.figs || []).filter(function (f) { return /^https:\/\/cdn\.deadlock\.wiki\//.test(f[0]); });
   if (!a || !((a.notes && a.notes.length) || figs.length)) return "";
   var html = '<details class="notes" open><summary>Notes</summary>';
   figs.forEach(function (f) { html += '<figure class="nfig"><img loading="lazy" alt="" src="' + esc(f[0]) + '" onerror="this.parentNode.style.display=\'none\'">' + (f[1] ? "<figcaption>" + esc(f[1]) + "</figcaption>" : "") + "</figure>"; });
   html += "<ul>";
-  (a.notes || []).forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + esc(n[1]) + "</li>"; });
+  (a.notes || []).forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; });
   return html + "</ul></details>";
 }
 function wikiHtml(h, it) {
   var w = state.wiki && state.wiki.heroes && h && state.wiki.heroes[h.name], a = w && w[it.name];
   if (!a || (!(a.notes && a.notes.length) && !(a.items && a.items.length) && !(a.figs && a.figs.length))) return "";
-  var html = '<div class="wk">' + notesBlock(a);
+  var html = '<div class="wk">' + notesBlock(a, it.name);
   var chips = (a.items || []).map(function (nm) {
     var cn = state.byName[String(nm).toLowerCase()]; if (!cn) return "";
     return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + "</span></button>";
@@ -753,7 +796,7 @@ var SI = {
   dash: '<path stroke-width="3" d="M3.5 5.5l6.5 6.5-6.5 6.5M12.5 5.5l6.5 6.5-6.5 6.5"/>',
   dmg: '<path fill="currentColor" stroke="none" d="M2 9C2 5.8 4.2 3.5 7 3.5c2 0 3.7 1 5 3 1.3-2 3-3 5-3 2.8 0 5 2.3 5 5.5z"/><path fill="currentColor" stroke="none" d="M9.5 10.9h7.5c3.6 0 6.5.6 6.5 1.8s-2.9 1.8-6.5 1.8H9.5z"/><path stroke-width="1.8" d="M2.5 12.7h4.5"/><path fill="currentColor" stroke="none" d="M3.5 16.2h17L12 22z"/>',
   dps: '<path fill="currentColor" stroke="none" d="M13.5 1.5L4 13.5h6.2L8.8 22.5 20 9.5h-6.5z"/>',
-  ammo: '<path fill="currentColor" stroke="none" d="M4.9 17.4V9.2c0-2 .8-3.6 1.7-3.6S8.3 7.2 8.3 9.2v8.2zM10.3 17.4V9.2c0-2 .8-3.6 1.7-3.6S13.7 7.2 13.7 9.2v8.2zM15.7 17.4V9.2c0-2 .8-3.6 1.7-3.6S19.1 7.2 19.1 9.2v8.2z"/><path stroke-width="2" d="M1.5 11v8.4c0 .6.4 1 1 1h19c.6 0 1-.4 1-1V11"/>',
+  ammo: '<path fill="currentColor" stroke="none" d="M7.4 17.4V9.2c0-2 .9-3.6 1.8-3.6S11.0 7.2 11.0 9.2v8.2zM13 17.4V9.2c0-2 .9-3.6 1.8-3.6S16.6 7.2 16.6 9.2v8.2z"/><path stroke-width="2" d="M4.5 11v8.4c0 .6.4 1 1 1h13c.6 0 1-.4 1-1V11"/>',
   bps: '<path fill="currentColor" stroke="none" d="M8.5 3h6c3.2 0 5.8.8 5.8 2s-2.6 2-5.8 2H8.5zM8.5 10h6c3.2 0 5.8.8 5.8 2s-2.6 2-5.8 2H8.5zM8.5 17h6c3.2 0 5.8.8 5.8 2s-2.6 2-5.8 2H8.5z"/><path stroke-width="2.2" d="M1.5 5h4M1.5 12h4M1.5 19h4"/>',
   reload: '<path stroke-width="2.300" d="M19.500 12a7.500 7.500 0 1 1-2.300-5.400"/><path fill="currentColor" stroke="none" d="M21.500 2.500v7.500h-7.500z"/><path fill="currentColor" stroke="none" d="M10.300 9.800a1.700 1.700 0 0 1 3.400 0V15h-3.400z"/>',
   vel: '<g transform="rotate(45 12 12)"><path fill="currentColor" stroke="none" d="M12 1c3 2 4.3 4.6 4.3 8V15H7.7V9c0-3.4 1.3-6 4.3-8zM7.7 16.2h8.6v2.3H7.7z"/><path stroke-width="2" d="M9.2 20.8v2M12 20.8v3M14.8 20.8v2"/></g>',
@@ -814,6 +857,11 @@ function statBlock(h) {
   function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
 }
+function heroNameHtml(h) {
+  var nm = h.images && h.images.name_image, pr = h.gender === "male" ? "He/Him" : h.gender === "female" ? "She/Her" : "";
+  var head = nm ? '<h1 class="hname"><img alt="' + esc(h.name) + '" src="' + esc(nm) + '" onerror="this.parentNode.className=\'\';this.parentNode.textContent=this.alt"></h1>' : "<h1>" + esc(h.name) + "</h1>";
+  return head + (pr ? '<div class="pron">' + pr + "</div>" : "");
+}
 function renderHero(cn) {
   var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
   if (!h) { state.hero = null; return renderHeroes(); }
@@ -823,7 +871,7 @@ function renderHero(cn) {
   var cxn = Math.max(0, Math.min(3, Number(h.complexity) || 0)), dots = "";
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
   var tagsA = (h.hero_type ? '<span class="tag role">' + esc(roleLabel(h)) + "</span>" : "") + (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
-  var html = '<button class="back" id="back">' + (state.from === "search" ? "‹ Search results" : "‹ All heroes") + '</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div><h1>' + esc(h.name) + "</h1>" +
+  var html = '<button class="back" id="back">' + (state.from === "search" ? "‹ Search results" : "‹ All heroes") + '</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   if (lore) html += '<details class="lore"><summary>Lore</summary>' + rich(lore).replace(/(<br>)+/g, "<br><br>") + "</details>";
   html += '<div class="sec">Stats</div>' + statBlock(h);
@@ -938,15 +986,36 @@ function itemSheet(cn, fromBack) {
     (comps.length ? '<div class="ihd">Builds from</div>' + comps.map(function (c) { return recipeRow(c, 0); }).join("") : "") +
     (into.length ? '<div class="ihd">Builds into</div>' + intoTree(cn, 0, (function () { var o = {}; o[cn] = 1; return o; })()) : "") +
     '<button class="ibtn" id="close" style="width:100%;margin-top:14px">Close</button>';
-  $("sheetin").innerHTML = html; lockBody(); $("sheet").hidden = false;
-  $("sheetin").scrollTop = 0;
-  $("close").onclick = closeSheet;
-  var bk = $("ibk"); if (bk) bk.onclick = function () { ISTACK.pop(); itemSheet(ISTACK[ISTACK.length - 1], true); };
+  function bind() {
+    $("close").onclick = closeSheet;
+    var bk = $("ibk"); if (bk) bk.onclick = function () { ISTACK.pop(); itemSheet(ISTACK[ISTACK.length - 1], true); };
+  }
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!$("sheet").hidden && !calm && $("sheetin").firstChild) swapSheet(html, !!fromBack, bind);
+  else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = html; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
+}
+var SWAPT = 0;
+function resetSwap() { var b = $("sheetin"); b.style.height = ""; b.style.overflow = ""; b.style.transition = ""; }
+// slide the old card out, grow/shrink the sheet, bring the new card in from the other side
+function swapSheet(html, back, bind) {
+  clearTimeout(SWAPT); var box = $("sheetin"), dir = back ? -1 : 1, h0 = box.offsetHeight;
+  var old = box.firstChild && box.firstChild.className === "swc" ? box.firstChild : null;
+  if (!old) { old = document.createElement("div"); old.className = "swc"; while (box.firstChild) old.appendChild(box.firstChild); box.appendChild(old); }
+  box.style.height = h0 + "px"; box.style.overflow = "hidden";
+  old.style.transition = "transform .2s ease-in-out, opacity .2s ease-in-out";
+  old.style.transform = "translateX(" + (-dir * 36) + "px)"; old.style.opacity = "0";
+  SWAPT = setTimeout(function () {
+    box.innerHTML = '<div class="swc" style="opacity:0;transform:translateX(' + (dir * 36) + 'px)">' + html + "</div>"; box.scrollTop = 0; bind();
+    var nu = box.firstChild; box.style.height = "auto"; var h1 = box.offsetHeight; box.style.height = h0 + "px"; void box.offsetHeight;
+    box.style.transition = "height .26s ease-in-out"; box.style.height = h1 + "px";
+    nu.style.transition = "transform .26s ease-in-out, opacity .26s ease-in-out"; nu.style.transform = "none"; nu.style.opacity = "1";
+    SWAPT = setTimeout(function () { resetSwap(); }, 300);
+  }, 200);
 }
 var LOCKY = 0;
 function lockBody() { if (document.body.classList.contains("lock")) return; LOCKY = window.pageYOffset || 0; document.body.style.top = -LOCKY + "px"; document.body.classList.add("lock"); }
 function unlockBody() { if (!document.body.classList.contains("lock")) return; document.body.classList.remove("lock"); document.body.style.top = ""; window.scrollTo(0, LOCKY); }
-function closeSheet() { $("sheet").hidden = true; ISTACK = []; unlockBody(); }
+function closeSheet() { clearTimeout(SWAPT); resetSwap(); $("sheet").hidden = true; ISTACK = []; unlockBody(); }
 function debugSheet() {
   var h = state.heroes[0] || {}, it = state.items.filter(function (x) { return x.type === "ability"; })[0] || state.items[0] || {};
   var types = {}; state.items.forEach(function (x) { types[x.type] = (types[x.type] || 0) + 1; });
@@ -1083,7 +1152,7 @@ function pulseChanges(card, before, tier, down) {
     if (before[k] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); }
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); }
-  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1900);
+  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1300);
 }
 var TIPT = null;
 function tapTip(e) { // touch screens have no hover, so a tap on a chip names it for a moment
