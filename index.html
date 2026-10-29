@@ -250,6 +250,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .stat.pop{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.pop,.pop .si,.pop img,.minor span.pop,.minor span.pop .si,.minor span.pop img,.sheet:not([hidden]),.sheet:not([hidden]) .in{animation:none}}
 .hname{margin:0 0 8px}
+.hgap{display:block;height:7px}
 .backpill{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0) + 18px);transform:translateX(-50%);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
 .backpill[hidden]{display:none}
 .backpill.in{animation:pillin .22s ease-out}
@@ -362,15 +363,22 @@ function rich(s) {
     if (tag === "b" || tag === "i" || tag === "strong" || tag === "em") out += close ? "</" + tag + ">" : "<" + tag + ">";
   });
   // how-to-control lines ("Press Jump to...", a mouse glyph line) are greyed like the game's other hint text
-  out = out.split(/(<br>)/).map(function (ln) {
-    if (ln === "<br>") return ln;
-    var km = /^\s*\u0001(\d+)\u0001/.exec(ln);
-    if (km && /class="ic key"/.test(SVGS[+km[1]] || "") && !/</.test(ln)) return '<span class="dm">' + ln + "</span>";
-    return ln.replace(/(Press|Hold|Tap|Release)\s[^.!?<]*[.!?]/g, function (m, w, off, str) {
+  var lines = out.split(/<br>/), isHint = [];
+  lines = lines.map(function (ln, li) {
+    var keys = (ln.match(/\u0001(\d+)\u0001/g) || []).some(function (m) { return /class="ic key"/.test(SVGS[+m.replace(/\u0001/g, "")] || ""); });
+    if (ln.trim() && !/</.test(ln) && (keys || HINT_RX.some(function (rx) { return rx.test(ln.trim()); }))) { isHint[li] = 1; return '<span class="dm">' + ln + "</span>"; }
+    var o = ln.replace(/(Press|Hold|Tap|Release)\s[^.!?<]*[.!?]/g, function (m, w, off, str) {
       var before = str.slice(0, off);
       return /(^|[.!?>]\s*|^\s*)$/.test(before) ? '<span class="dm">' + m + "</span>" : m;
     });
-  }).join("");
+    if (/^\s*<span class="dm">[^<]*<\/span>\s*$/.test(o)) isHint[li] = 1;
+    return o;
+  });
+  out = "";
+  lines.forEach(function (ln, li) { // a little room between the description and the how-to-control lines under it
+    if (li === 0) { out += ln; return; }
+    out += isHint[li] && !isHint[li - 1] && lines[li - 1].trim() ? '<br><span class="hgap"></span>' + ln : "<br>" + ln;
+  });
   out = out.replace(/<span class="hl"((?: style="[^"]*")?)>([^<]+)<\/span>/g, function (m, st, txt) { // highlighted game terms open the glossary
     var gk = GAL[txt.toLowerCase().replace(/\s+/g, " ").trim()];
     return gk ? '<span class="hl gl" data-g="' + gk + '"' + st + ">" + txt + "</span>" : m;
@@ -605,9 +613,16 @@ function tile(v, l, r) {
   return '<div class="stat' + (r && r.wpn ? " big wtile" : r && r.tech ? " big" : "") + '">' + badge + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
 }
 // abilities use tooltip_details.info_sections
+// stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
+var GROUP_OV = {
+  "Rain of Arrows": [{ l: "On Hit:", k: ["SlowPercent", "SlowDuration"] }],
+  "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
+};
 function tooltipHtml(it) {
-  var secs = it.tooltip_details && it.tooltip_details.info_sections, parts = [], ex = upgradeExtras(it), tilesDone = false, lastMinor = -1;
+  var secs = it.tooltip_details && it.tooltip_details.info_sections, parts = [], ex = upgradeExtras(it), tilesDone = false, firstMinor = -1;
   if (!secs || !secs.length) secs = [];
+  var GO = GROUP_OV[it.name] || [], moved = {};
+  GO.forEach(function (g) { g.k.forEach(function (k) { moved[k] = 1; }); });
   function sig(v, l) { return String(l).toLowerCase() + "|" + v; }
   // which block each listed stat sits in, and what the game already shows
   var blockOf = {}, listed = {}, bi = 0;
@@ -624,7 +639,7 @@ function tooltipHtml(it) {
   // one that just repeats a shown stat (a second "Incoming Healing") is dropped
   var place = {};
   ex.tiles.forEach(function (r) {
-    if (listed[sig(r.v, r.l)]) return;
+    if (listed[sig(r.v, r.l)] || moved[r.key]) return;
     var tgt = -1;
     (it.upgrades || []).some(function (u) {
       var pus = (u && u.property_upgrades) || [];
@@ -643,6 +658,7 @@ function tooltipHtml(it) {
     (sec.properties_block || []).forEach(function (blk) {
       var tiles = "", seen = {};
       (blk.properties || []).forEach(function (pp) {
+        if (moved[pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property)]) return;
         if (pp.status_effect_name) {
           var sv = propRec(it, pp.status_effect_value);
           if (sv && !seen[sig(sv.v, pp.status_effect_name)]) { seen[sig(sv.v, pp.status_effect_name)] = allSig[sig(sv.v, pp.status_effect_name)] = 1; tiles += tile(sv.v, pp.status_effect_name); }
@@ -658,6 +674,7 @@ function tooltipHtml(it) {
     });
     var minor = "", promo = "";
     (sec.basic_properties || []).forEach(function (k) {
+      if (moved[k]) return;
       var r = propRec(it, k); if (!r) return;
       var p0 = (it.properties || {})[k], b0 = p0 ? parseFloat(p0.value) : NaN;
       if (b0 === 0) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
@@ -667,12 +684,16 @@ function tooltipHtml(it) {
       var lastStats = -1; for (var pi2 = parts.length - 1; pi2 >= secStart; pi2--) if (/<div class="stats">/.test(parts[pi2])) { lastStats = pi2; break; }
       if (lastStats >= 0) parts[lastStats] = parts[lastStats].replace(/<\/div>$/, promo + "</div>"); else parts.push('<div class="stats">' + promo + "</div>");
     }
-    if (minor) { parts.push('<div class="minor">' + minor + "</div>"); lastMinor = parts.length - 1; }
+    if (minor) { parts.push('<div class="minor">' + minor + "</div>"); if (firstMinor < 0) firstMinor = parts.length - 1; }
+    if (si === 0) GO.forEach(function (g) {
+      var t = g.k.map(function (k) { var r = propRec(it, k); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join("");
+      if (t) parts.push('<div class="blk">' + esc(g.l) + '</div><div class="stats">' + t + "</div>");
+    });
   });
   if (place[-1] && !tilesDone) parts.push('<div class="stats">' + extraHtml(place[-1]) + "</div>");
   var fl = ex.flags.map(function (f) { return '<span class="fl">' + esc(f) + "</span>"; }).join("");
   if (fl) {
-    if (lastMinor >= 0) parts[lastMinor] = parts[lastMinor].replace(/<\/div>$/, fl + "</div>");
+    if (firstMinor >= 0) parts[firstMinor] = parts[firstMinor].replace(/<\/div>$/, fl + "</div>"); // switches describe the ability itself, so they sit with its main stats
     else parts.push('<div class="minor">' + fl + "</div>");
   }
   return parts.join("");
@@ -773,9 +794,11 @@ function upgradeTexts(it) {
     if (d[k]) {
       var rd = rich(d[k]), merged = false;
       if (shortBits.length === 1) { // "improved Spirit scaling" + a separate line -> one phrase with the number in it
-        rd = rd.replace(/(?:improved|increased|increases)\s+(Spirit\s+|Weapon\s+|Boon\s+)?((?:damage|heal(?:ing)?|barrier|duration)\s+)?scaling/i, function (m0, wd, mid) {
-          merged = true; var w = (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim();
-          return '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (w ? w + " " : "") + (mid ? mid.toLowerCase() : "") + "scaling";
+        rd = rd.replace(/(?:improved|increased|increases)\s+((?:damage|heal(?:ing)?|barrier|duration)\s+)?(Spirit\s+|Weapon\s+|Boon\s+)?((?:damage|heal(?:ing)?|barrier|duration)\s+)?scaling/i, function (m0, mid1, wd, mid2, off, str) {
+          merged = true; var w = (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim(); w = w.charAt(0).toUpperCase() + w.slice(1); var mid = (mid1 || mid2 || "").toLowerCase();
+          var rest = (str.slice(0, off) + str.slice(off + m0.length)).replace(/<[^>]+>/g, "").toLowerCase();
+          if (mid && rest.indexOf(mid.trim()) >= 0) mid = ""; // "+70 Barrier and +0.76 Spirit scaling", not "...barrier scaling"
+          return '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (w ? w + " " : "") + mid + "scaling";
         });
       }
       if (!merged && shortBits.length === 1 && /<br\s*\/?>/i.test(rd)) { // multi-line text: put the scaling on the line it belongs to
@@ -805,7 +828,9 @@ function upgradeTexts(it) {
         if (pu.upgrade_type === "EAddToScale") return;
         var p = (it.properties || {})[pu.name] || {}, b = pu.bonus, n = Number(b);
         var sign = !isNaN(n) && n >= 0 && !/^[+-]/.test(String(b)) ? "+" : "";
-        bits.push(esc(sign + fmtNum(b) + (isNaN(n) ? "" : unitFor(p)) + " " + propLabel(p, pu.name)));
+        var bv = sign + fmtNum(b) + (isNaN(n) ? "" : unitFor(p));
+        if (p.css_class === "move_speed" && /\dm$/.test(bv)) bv = bv.slice(0, -1) + " m/s"; // speeds come through as "3.5m"
+        bits.push(esc(bv + " " + propLabel(p, pu.name)));
       });
       out.push((bits.join("<br>") || (scaleBits.length ? "" : "—")) + extra);
     } else out.push("—");
@@ -1401,7 +1426,7 @@ var GLOSS = [
   { k: "sprint", c: "move", t: "Sprint", a: ["sprint", "sprint speed"], d: "Extra move speed that kicks in after about 5 seconds out of combat. It ends when you enter combat or aim down sights." },
   { k: "slide", c: "move", t: "Slide", a: ["slide", "slides", "sliding"], d: "Crouching while moving fast, or on a slope, turns into a slide." }
 ];
-var GBY = {}, GAL = {}, ICON_SPIRIT = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_magic_color.svg", ICON_WEAPON = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_bullet_color.svg";
+var HINT_RX = [/^Hit the trap with a Charged Shot/i], GBY = {}, GAL = {}, ICON_SPIRIT = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_magic_color.svg", ICON_WEAPON = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_bullet_color.svg";
 GLOSS.forEach(function (g) { GBY[g.k] = g; g.a.forEach(function (x) { GAL[x] = g.k; }); GAL[g.t.toLowerCase()] = g.k; });
 // the game's own keyword labels in ability text
 var GATTR = { SpiritDamage: "spirit-damage", BonusSpiritDamage: "bonus-damage", SpiritDPS: "dot", WeaponDamage: "weapon-damage", BonusWeaponDamage: "bonus-damage", BulletDamage: "weapon-damage", WeaponDPS: "dot", Slow: "slow", SlowResistance: "slow-resist", Stun: "stun" };
