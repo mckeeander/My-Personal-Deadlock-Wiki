@@ -191,10 +191,10 @@ details.notes li{margin-bottom:4px}
 .wpn .wg{margin-top:14px}
 .wpn .notes{text-align:left;margin-top:12px}
 .sblk h4{text-align:center}
-.fobw{position:relative;margin:12px 6px 22px}
+.fobw{position:relative;margin:14px 6px 26px}
 .fobw .fob{margin:0;height:8px;border-radius:4px}
-.fdot{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#fff3dc;border:3px solid var(--weapon);box-shadow:0 0 0 3px rgba(0,0,0,.35)}
-.flab{position:absolute;top:14px;transform:translateX(-50%);font-size:11px;color:var(--dim);white-space:nowrap}
+.fdot{position:absolute;top:50%;width:6px;height:26px;margin:-13px 0 0 -3px;border-radius:3px;background:#fff3dc;border:2px solid var(--weapon);box-shadow:0 0 0 3px rgba(0,0,0,.35)}
+.flab{position:absolute;top:18px;transform:translateX(-50%);font-size:11px;color:var(--dim);white-space:nowrap}
 .nfig{margin:8px 0;text-align:center}
 .nfig img{max-width:100%;max-height:260px;border-radius:6px}
 .nfig figcaption{font-size:12px;color:var(--dim);margin-top:4px}
@@ -206,10 +206,25 @@ details.notes li{margin-bottom:4px}
 details.lore:not([open]) summary{margin-bottom:0}
 .lore + .sec{margin-top:22px}
 .sheet .in::before{content:"";display:block;width:42px;height:4px;border-radius:2px;background:var(--line);margin:-4px auto 10px}
-.bg div.spike{position:relative;border:2px solid var(--gold);background:linear-gradient(160deg,#3a2f14,var(--panel2));box-shadow:0 0 12px rgba(224,178,76,.28)}
-.bg div.spike u{position:absolute;top:-9px;left:50%;transform:translateX(-50%);text-decoration:none;font-size:9px;font-weight:700;letter-spacing:.12em;background:var(--gold);color:#1a1208;border-radius:6px;padding:1px 7px}
-.bg div.spike b{color:var(--gold)}
+.bg div.spike{position:relative;border:2px solid var(--sp)}
+.bg div.spike u{position:absolute;top:-9px;left:50%;transform:translateX(-50%);text-decoration:none;font-size:9px;font-weight:700;letter-spacing:.12em;color:#1a1208;border-radius:6px;padding:1px 7px}
 .bg div.spike span{color:var(--fg)}
+body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+.sheet .in{overscroll-behavior:contain}
+.wc i,.stat i{line-height:1.25}
+.wc i{display:block;margin-top:2px}
+.bon.s-weapon{--sp:var(--weapon);--spbg:#3a2814;--spglow:rgba(232,162,74,.32)}
+.bon.s-vitality{--sp:var(--vital);--spbg:#1c3320;--spglow:rgba(111,197,109,.3)}
+.bon.s-spirit{--sp:var(--spirit);--spbg:#2d2145;--spglow:rgba(181,131,240,.32)}
+.bg div.spike{border-color:var(--sp);background:linear-gradient(160deg,var(--spbg),var(--panel2));box-shadow:0 0 12px var(--spglow)}
+.bg div.spike u{background:var(--sp)}
+.bg div.spike b{color:var(--sp)}
+@keyframes pop{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,226,150,.0);filter:brightness(1)}
+ 25%{transform:scale(1.07);box-shadow:0 0 0 2px rgba(255,226,150,.85),0 0 22px 6px rgba(255,214,120,.55);filter:brightness(1.55)}
+ 100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,226,150,0);filter:brightness(1)}}
+.pop{animation:pop .75s ease-out both}
+.stat.pop{position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}}
 </style>
 </head>
 <body>
@@ -727,12 +742,12 @@ var SI = {
   health: '<path fill="currentColor" stroke="none" d="M12 21.5S3 16 1.8 10.2C1 6.5 3.3 3.5 6.7 3.5c2.1 0 3.9 1.1 5.3 3.1 1.4-2 3.2-3.1 5.3-3.1 3.4 0 5.7 3 4.9 6.7C21 16 12 21.5 12 21.5z"/>',
   regen: '<circle cx="12" cy="12" r="10"/><path fill="currentColor" stroke="none" transform="translate(5.5 5.5) scale(.55)" d="M12 21.5S3 16 1.8 10.2C1 6.5 3.3 3.5 6.7 3.5c2.1 0 3.9 1.1 5.3 3.1 1.4-2 3.2-3.1 5.3-3.1 3.4 0 5.7 3 4.9 6.7C21 16 12 21.5 12 21.5z"/>',
   boot: '<path fill="currentColor" stroke="none" d="M7 2.500h6v8l5.500 2.600c1.700.8 2.500 2 2.500 3.700V19c0 1-.8 1.800-1.800 1.800H5.800C4.800 20.800 4 20 4 19V4.500c0-1.100.900-2 3-2z"/><path stroke="var(--panel)" stroke-width="1.500" d="M4 17h17M7.500 6h5.500"/>',
-  sprint: '<g transform="translate(4.2 1.8) scale(.88)"><path fill="currentColor" stroke="none" d="M7 2.5h6v8l5.5 2.6c1.7.8 2.5 2 2.5 3.7V19c0 1-.8 1.8-1.8 1.8H5.8C4.8 20.8 4 20 4 19V4.5c0-1.1.9-2 3-2z"/><path stroke="var(--panel)" stroke-width="1.7" d="M4 17h17M7.5 6h5.5"/></g><path stroke-width="2.2" d="M1.5 7.5h4.5M1 12h5M1.5 16.5h4.5"/>',
+  sprint: '<g transform="translate(4.9 1.8) scale(.88)"><path fill="currentColor" stroke="none" d="M7 2.5h6v8l5.5 2.6c1.7.8 2.5 2 2.5 3.7V19c0 1-.8 1.8-1.8 1.8H5.8C4.8 20.8 4 20 4 19V4.5c0-1.1.9-2 3-2z"/><path stroke="var(--panel)" stroke-width="1.7" d="M4 17h17M7.5 6h5.5"/></g><path stroke-width="2.2" d="M1.2 7.5h3.4M1 12h3.8M1.2 16.5h3.4"/>',
   stamina: '<circle cx="12" cy="12" r="10"/><path fill="currentColor" stroke="none" d="M13.8 4.5L6.5 13.2h4.7l-1 6.3 7.3-8.7h-4.7z"/>',
   dash: '<path stroke-width="3" d="M3.5 5.5l6.5 6.5-6.5 6.5M12.5 5.5l6.5 6.5-6.5 6.5"/>',
   dmg: '<path fill="currentColor" stroke="none" d="M2 9C2 5.8 4.2 3.5 7 3.5c2 0 3.7 1 5 3 1.3-2 3-3 5-3 2.8 0 5 2.300 5 5.500z"/><path fill="currentColor" stroke="none" d="M2 11h17.500l2.500 1.500-2.500 1.500H2z"/><path fill="currentColor" stroke="none" d="M3.500 16h17L12 22z"/>',
   dps: '<path fill="currentColor" stroke="none" d="M13.5 1.5L4 13.5h6.2L8.8 22.5 20 9.5h-6.5z"/>',
-  ammo: '<rect x="1.500" y="7" width="16" height="14.500" rx="2.500" fill="none" stroke-width="2"/><path fill="currentColor" stroke="none" d="M4.500 18.500v-6a1.500 1.500 0 0 1 3 0v6zM8.500 18.500v-6a1.500 1.500 0 0 1 3 0v6zM12.500 18.500v-6a1.500 1.500 0 0 1 3 0v6z"/><path stroke-width="2.400" d="M21 3.500v6"/><circle cx="21" cy="13.500" r="1.200" fill="currentColor" stroke="none"/>',
+  ammo: '<path fill="currentColor" stroke="none" d="M4.2 15V9.2c0-1.3.7-2.7 1.8-3.7 1.1 1 1.8 2.4 1.8 3.7V15zM10.2 15V9.2c0-1.3.7-2.7 1.8-3.7 1.1 1 1.8 2.4 1.8 3.7V15zM16.2 15V9.2c0-1.3.7-2.7 1.8-3.7 1.1 1 1.8 2.4 1.8 3.7V15z"/><path stroke-width="2.2" d="M2.8 11.5v7.2c0 1.1.9 2 2 2h14.4c1.1 0 2-.9 2-2V11.5"/>',
   bps: '<path fill="currentColor" stroke="none" d="M8.500 2.500h8l4.500 2.500-4.500 2.500h-8zM8.500 9.500h8l4.500 2.500-4.500 2.500h-8zM8.500 16.500h8l4.500 2.500-4.500 2.500h-8z"/><path stroke-width="2.200" d="M1.500 5h4M1.500 12h4M1.500 19h4"/>',
   reload: '<path stroke-width="2.300" d="M19.500 12a7.500 7.500 0 1 1-2.300-5.400"/><path fill="currentColor" stroke="none" d="M21.500 2.500v7.500h-7.500z"/><path fill="currentColor" stroke="none" d="M10.300 9.800a1.700 1.700 0 0 1 3.400 0V15h-3.400z"/>',
   vel: '<g transform="rotate(45 12 12)"><path fill="currentColor" stroke="none" d="M12 1.5c2.2 2 3.2 4.8 3.2 8V16H8.8V9.5c0-3.2 1-6 3.2-8zM8.8 17.5h6.4v2.5H8.8z"/><path stroke-width="2" d="M10 22.5v.5M14 22.5v.5"/></g>',
@@ -833,7 +848,7 @@ function bonusCard(slot) {
     html += '<div' + (sp ? ' class="spike"' : "") + ">" + (sp ? "<u>SPIKE</u>" : "") + "<b>$" + Number(r.gold_threshold).toLocaleString() + "</b><span>+" + esc(fmtNum(r.bonus)) + unit + "</span></div>";
     prev = r.bonus;
   });
-  return '<details class="bon"><summary>Category bonuses: ' + label + '</summary><div class="bg">' + html + "</div><p>Total spent in this category unlocks these bonuses." + esc(spike) + "</p></details>";
+  return '<details class="bon s-' + slot + '"><summary>Category bonuses: ' + label + '</summary><div class="bg">' + html + "</div><p>Total spent in this category unlocks these bonuses." + esc(spike) + "</p></details>";
 }
 function slotOf(it) { return String(it.item_slot_type || "").toLowerCase(); }
 function renderShop(slot) {
@@ -917,12 +932,15 @@ function itemSheet(cn, fromBack) {
     (comps.length ? '<div class="ihd">Builds from</div>' + comps.map(function (c) { return recipeRow(c, 0); }).join("") : "") +
     (into.length ? '<div class="ihd">Builds into</div>' + intoTree(cn, 0, (function () { var o = {}; o[cn] = 1; return o; })()) : "") +
     '<button class="ibtn" id="close" style="width:100%;margin-top:14px">Close</button>';
-  $("sheetin").innerHTML = html; $("sheet").hidden = false;
+  $("sheetin").innerHTML = html; lockBody(); $("sheet").hidden = false;
   $("sheetin").scrollTop = 0;
   $("close").onclick = closeSheet;
   var bk = $("ibk"); if (bk) bk.onclick = function () { ISTACK.pop(); itemSheet(ISTACK[ISTACK.length - 1], true); };
 }
-function closeSheet() { $("sheet").hidden = true; ISTACK = []; }
+var LOCKY = 0;
+function lockBody() { if (document.body.classList.contains("lock")) return; LOCKY = window.pageYOffset || 0; document.body.style.top = -LOCKY + "px"; document.body.classList.add("lock"); }
+function unlockBody() { if (!document.body.classList.contains("lock")) return; document.body.classList.remove("lock"); document.body.style.top = ""; window.scrollTo(0, LOCKY); }
+function closeSheet() { $("sheet").hidden = true; ISTACK = []; unlockBody(); }
 function debugSheet() {
   var h = state.heroes[0] || {}, it = state.items.filter(function (x) { return x.type === "ability"; })[0] || state.items[0] || {};
   var types = {}; state.items.forEach(function (x) { types[x.type] = (types[x.type] || 0) + 1; });
@@ -930,7 +948,7 @@ function debugSheet() {
     "\n\nHERO FIELDS: " + Object.keys(h).join(", ") + "\nHERO.items: " + JSON.stringify(h.items) +
     "\n\nITEM FIELDS: " + Object.keys(it).join(", ") + "\n\nSAMPLE ITEM:\n" + JSON.stringify(it, null, 1).slice(0, 2500);
   $("sheetin").innerHTML = "<h3>Data check</h3><pre>" + esc(txt) + '</pre><button class="ibtn" id="close" style="width:100%">Close</button>';
-  $("sheet").hidden = false; $("close").onclick = closeSheet;
+  lockBody(); $("sheet").hidden = false; $("close").onclick = closeSheet;
 }
 function bindCommon() {
   var q = $("q");
@@ -1041,6 +1059,26 @@ $("sbtn").onclick = function () {
   state.tab = "search"; state.hero = null; state.from = null; setTabsUI(null); renderSearch(); window.scrollTo(0, 0);
   var i = $("sq"); if (i) i.focus();
 };
+// A short burst on every stat that changed when a tier was tapped
+function statKey(el) {
+  if (el.classList.contains("stat")) { var i = el.querySelector("i"); return "s:" + (i ? i.textContent : ""); }
+  if (el.classList.contains("chip")) return "c:" + (el.getAttribute("data-tip") || "");
+  var b = el.querySelector("b"); return "m:" + (b ? el.textContent.replace(b.textContent, "").trim() : el.textContent.trim());
+}
+function snapStats(card) {
+  var m = {};
+  Array.prototype.forEach.call(card.querySelectorAll(".stat, .chips .chip, .minor span"), function (el) { m[statKey(el)] = el.textContent.replace(/\s+/g, " ").trim(); });
+  return m;
+}
+function pulseChanges(card, before, tier) {
+  var n = 0;
+  Array.prototype.forEach.call(card.querySelectorAll(".stat, .chips .chip, .minor span"), function (el) {
+    var k = statKey(el), now = el.textContent.replace(/\s+/g, " ").trim();
+    if (before[k] !== now) { el.classList.add("pop"); el.style.animationDelay = (n++ * 60) + "ms"; }
+  });
+  var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) box.classList.add("pop");
+  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.style.animationDelay = ""; }); }, 1400);
+}
 var TIPT = null;
 function tapTip(e) { // touch screens have no hover, so a tap on a chip names it for a moment
   var ch = e.target.closest ? e.target.closest(".chip[data-tip]") : null;
@@ -1063,8 +1101,11 @@ $("main").addEventListener("click", function (e) {
   var t = Number(u.getAttribute("data-t")), cur = SEL[key] || 0;
   SEL[key] = cur === t ? t - 1 : t; // tapping the top selected tier steps back one
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], tmp = document.createElement("div");
+  var before = snapStats(card);
   tmp.innerHTML = abilityCard(it, h);
-  card.parentNode.replaceChild(tmp.firstChild, card);
+  var fresh = tmp.firstChild;
+  card.parentNode.replaceChild(fresh, card);
+  pulseChanges(fresh, before, t);
 });
 $("sheetin").addEventListener("click", function (e) {
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
