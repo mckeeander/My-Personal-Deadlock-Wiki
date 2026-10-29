@@ -178,7 +178,19 @@ details.notes li{margin-bottom:4px}
 .pill2.weapon{background:#3d2a14;color:var(--weapon)}.pill2.vitality{background:#1f3320;color:var(--vital)}.pill2.spirit{background:#3b2d55;color:var(--spirit)}
 .rc{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;text-align:left;font-size:14px;width:100%;margin-top:6px;color:var(--fg)}
 .rc img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:4px}
-.rc span{flex:1;min-width:0}.rc em{font-style:normal;color:var(--dim);font-size:11px;margin-left:6px}
+.rc span{flex:1;min-width:0}.rc small{display:block;color:var(--dim);font-size:11.5px;line-height:1.3;margin-top:1px}
+.ibox{background:var(--panel2);border:1px solid var(--line);border-left:3px solid #3f7599;border-radius:8px;padding:8px 10px;margin:6px 0}
+.ibox.positive{border-left-color:#4f9a55}.ibox.negative{border-left-color:#c0645a}
+.ibox.off .ibh img{filter:saturate(0) brightness(.6)}
+.ibh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.ibh img{width:28px;height:28px;object-fit:contain;border-radius:4px;flex:none}
+.ibh b,.ibh .link{font-size:15px;font-weight:600;color:var(--fg);text-decoration:none;padding:0;background:none;border:0}
+.itag{font-size:11px;font-weight:600;letter-spacing:.04em;border-radius:999px;padding:1px 8px;border:1px solid}
+.itag.positive{color:#8fd694;border-color:#3a813f;background:rgba(58,129,63,.18)}
+.itag.negative{color:#f0a097;border-color:#a85148;background:rgba(168,81,72,.18)}
+.itag.info{color:#9cc6e6;border-color:#3f7599;background:rgba(63,117,153,.18)}
+.itag.st{color:var(--dim);border-color:var(--line)}
+.ibox p{margin:0;font-size:14px;line-height:1.45}.ibox ul{margin:0;padding-left:18px;font-size:14px;line-height:1.45}.ibox li{margin-bottom:3px}.rc em{font-style:normal;color:var(--dim);font-size:11px;margin-left:6px}
 .rc .cost{font-size:13px}
 .ihd{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:14px 0 2px}
 .srow em{font-style:normal;color:var(--vital);font-size:12px}
@@ -908,13 +920,33 @@ function notesBlock(a, own) {
   (a.notes || []).forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; });
   return html + "</ul></details>";
 }
+// the wiki's Interactions tab: one card per item or stat, tagged good / bad / info like the wiki
+function interBlock(a, own) {
+  var list = (a && a.inter) || []; if (!list.length) return "";
+  var KL = { positive: "Helps", negative: "Hurts", info: "Note" };
+  var html = '<details class="notes" open><summary>Interactions</summary>';
+  list.forEach(function (x) {
+    var cn = state.byName[String(x.t || "").toLowerCase()], item = cn && state.byClass[cn];
+    var icon = item ? imgTag(itemArt(item), itemImg(item)) : (x.img && /^https:\/\/cdn\.deadlock\.wiki\//.test(x.img) ? '<img alt="" src="' + esc(x.img) + '" onerror="this.style.display=\'none\'">' : "");
+    var k = /^(positive|negative|info)$/.test(x.k) ? x.k : "info", st = String(x.s || "");
+    var tags = '<span class="itag ' + k + '">' + KL[k] + "</span>" + (/partial/.test(st) ? '<span class="itag st">Partly</span>' : "") + (/disabled/.test(st) ? '<span class="itag st">Disabled</span>' : "") + (/enhanced/.test(st) ? '<span class="itag st">Enhanced</span>' : "");
+    var head = '<div class="ibh">' + icon + (item ? '<button class="link pitem" data-pitem="' + esc(cn) + '">' + esc(x.t) + "</button>" : "<b>" + esc(x.t) + "</b>") + tags + "</div>";
+    var lines = x.lines || [], body = lines.length === 1 && !lines[0][0] ? "<p>" + noteHtml(lines[0][1], own) + "</p>" :
+      "<ul>" + lines.map(function (n) { return '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; }).join("") + "</ul>";
+    html += '<div class="ibox ' + k + (/disabled/.test(st) ? " off" : "") + '">' + head + body + "</div>";
+  });
+  return html + "</details>";
+}
 function wikiHtml(h, it) {
   var w = state.wiki && state.wiki.heroes && h && state.wiki.heroes[h.name], a = w && w[it.name];
-  if (!a || (!(a.notes && a.notes.length) && !(a.items && a.items.length) && !(a.figs && a.figs.length))) return "";
-  var html = '<div class="wk">' + notesBlock(a, it.name);
+  if (!a || (!(a.notes && a.notes.length) && !(a.items && a.items.length) && !(a.figs && a.figs.length) && !(a.inter && a.inter.length))) return "";
+  var html = '<div class="wk">' + notesBlock(a, it.name) + interBlock(a, it.name);
+  var carded = {}; (a.inter || []).forEach(function (x) { carded[String(x.t || "").toLowerCase()] = 1; });
+  var hints = a.hints || {};
   var chips = (a.items || []).map(function (nm) {
-    var cn = state.byName[String(nm).toLowerCase()]; if (!cn) return "";
-    return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + "</span></button>";
+    var cn = state.byName[String(nm).toLowerCase()]; if (!cn || carded[String(nm).toLowerCase()]) return ""; // already has its own interaction card
+    var tip = String(hints[nm] || "").replace(new RegExp("\\s*(by|from|with)?\\s*" + String(nm).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*\\.?$", "i"), "");
+    return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + (tip ? "<small>" + esc(tip) + "</small>" : "") + "</span></button>";
   }).join("");
   if (chips) html += '<div class="ihd">Interacts with</div><div class="pgrid">' + chips + "</div>";
   return html + "</div>";
