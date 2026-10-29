@@ -219,11 +219,11 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .bg div.spike{border-color:var(--sp);background:linear-gradient(160deg,var(--spbg),var(--panel2));box-shadow:0 0 12px var(--spglow)}
 .bg div.spike u{background:var(--sp)}
 .bg div.spike b{color:var(--sp)}
-@keyframes popup{0%,100%{transform:none;box-shadow:0 0 0 0 rgba(255,226,150,0);filter:brightness(1)}
- 35%{transform:translateY(-1px) scale(1.04);box-shadow:0 0 0 1px rgba(255,226,150,.55),0 0 14px 3px rgba(255,214,120,.32);filter:brightness(1.25)}}
+@keyframes popup{0%,100%{transform:none;box-shadow:0 0 0 0 rgba(255,140,30,0);filter:brightness(1) saturate(1)}
+ 35%{transform:translateY(-1px) scale(1.04);box-shadow:0 0 0 2px rgba(255,140,30,.8),0 0 18px 4px rgba(255,120,10,.48);filter:brightness(1.2) saturate(1.5)}}
 @keyframes popdown{0%,100%{transform:none;box-shadow:0 0 0 0 rgba(90,130,255,0);filter:brightness(1)}
  35%{transform:translateY(1px) scale(.965);box-shadow:0 0 0 2px rgba(90,130,255,.7),0 0 18px 4px rgba(70,110,255,.46);filter:brightness(.78)}}
-.pop{animation:popup 1.2s ease-in-out both}
+.pop{animation:popup 1s ease-in-out both}
 .pop.dn{animation-name:popdown}
 @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -235,7 +235,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .hname img{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left center;filter:brightness(0) invert(1) sepia(.12)}
 .pron{font-size:12px;color:var(--dim);letter-spacing:.06em;margin:3px 0 6px}
 .nic{height:1.3em;width:auto;vertical-align:-.3em;margin:0 .2em 0 .1em;border-radius:4px}
-.nref{color:var(--vital);font-weight:600}
+.nref{color:var(--vital);font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .swc{will-change:transform,opacity}
 </style>
 </head>
@@ -695,14 +695,14 @@ function abilityMap() {
   (state.heroes || []).forEach(function (h) {
     ["signature1", "signature2", "signature3", "signature4"].forEach(function (k) {
       var it = state.byClass[(h.items || {})[k]]; if (!it || !it.name || it.name.length < 4) return;
-      if (!m[it.name]) m[it.name] = itemImg(it);
+      if (!m[it.name]) m[it.name] = { img: itemImg(it), h: h.class_name, a: it.class_name };
     });
   });
   ABM = m; return m;
 }
 // note text with an icon beside each ability it mentions (the wiki does this for linked abilities)
 function noteHtml(txt, own) {
-  txt = String(txt); var m = abilityMap(), names = Object.keys(m).filter(function (n) { return m[n] && !(own && own.indexOf(n) >= 0); });
+  txt = String(txt); var m = abilityMap(), names = Object.keys(m).filter(function (n) { return m[n] && m[n].img && !(own && own.indexOf(n) >= 0); });
   if (!names.length) return esc(txt);
   names.sort(function (a, b) { return b.length - a.length; });
   var re = new RegExp("(^|[^A-Za-z])(" + names.map(function (n) { return n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")(?![A-Za-z])", "g");
@@ -710,7 +710,7 @@ function noteHtml(txt, own) {
   while ((x = re.exec(txt))) {
     var start = x.index + x[1].length, nm = x[2], sentenceStart = start === 0 || /[.!?]\s+$/.test(txt.slice(0, start));
     if (sentenceStart && nm.indexOf(" ") < 0) { re.lastIndex = start + 1; continue; } // a capitalised common word, not a reference
-    out += esc(txt.slice(last, start)) + '<span class="nref"><img class="nic" alt="" src="' + esc(m[nm]) + '" onerror="this.style.display=\'none\'">' + esc(nm) + "</span>";
+    out += esc(txt.slice(last, start)) + '<span class="nref" role="link" data-rh="' + esc(m[nm].h) + '" data-ra="' + esc(m[nm].a) + '"><img class="nic" alt="" src="' + esc(m[nm].img) + '" onerror="this.style.display=\'none\'">' + esc(nm) + "</span>";
     last = start + nm.length; re.lastIndex = last;
   }
   return out + esc(txt.slice(last));
@@ -1152,7 +1152,7 @@ function pulseChanges(card, before, tier, down) {
     if (before[k] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); }
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); }
-  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1300);
+  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1100);
 }
 var TIPT = null;
 function tapTip(e) { // touch screens have no hover, so a tap on a chip names it for a moment
@@ -1169,6 +1169,13 @@ $("main").addEventListener("click", function (e) {
   if (sr) { openResult(sr); return; }
   var sf = e.target.closest ? e.target.closest(".sf[data-f]") : null;
   if (sf) { state.sf = sf.getAttribute("data-f"); renderSearch(); return; }
+  var nr = e.target.closest ? e.target.closest(".nref[data-rh]") : null;
+  if (nr) { // an ability mentioned in a note: open its hero and scroll to it
+    state.from = null; renderHero(nr.getAttribute("data-rh"));
+    var tg = document.querySelector('[data-ab="' + nr.getAttribute("data-ra") + '"]');
+    if (tg) window.scrollTo(0, tg.getBoundingClientRect().top + (window.pageYOffset || 0) - 130);
+    return;
+  }
   var pi = e.target.closest ? e.target.closest(".pitem[data-pitem]") : null;
   if (pi) { itemSheet(pi.getAttribute("data-pitem")); return; }
   var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
