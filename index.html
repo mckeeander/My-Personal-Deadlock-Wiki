@@ -26,6 +26,8 @@ header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px so
   padding:calc(env(safe-area-inset-top,0) + 8px) max(12px,calc((100% - 600px)/2)) 8px}
 .bar{display:flex;gap:8px;align-items:center}
 .brand{font-family:var(--disp);font-size:18px;letter-spacing:.06em;flex:1}
+.brand{white-space:nowrap;overflow:hidden;min-width:0}
+@media (max-width:420px){.brand{font-size:16px;letter-spacing:.04em}.bar .ibtn{padding:8px 9px}}
 .ibtn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px}
 .tabs{display:flex;gap:6px;margin-top:8px}
 .tab{flex:1;padding:9px 4px;background:var(--panel);border:1px solid var(--line);border-bottom:3px solid var(--line);border-radius:8px 8px 0 0;font-size:14px}
@@ -93,7 +95,7 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .up{background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px;text-align:center}
 .up div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
 .up div:last-child{padding:8px 4px;line-height:1.3;font-weight:400}
-.up b.v{font-weight:600;color:inherit}
+.up b.v{font-weight:700;color:inherit}
 .up b.v .u{font-weight:inherit;font-size:1em;margin:0}
 .bonus{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
 .cost{color:var(--vital);font-weight:700}
@@ -248,6 +250,16 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .stat.pop{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.pop,.pop .si,.pop img,.minor span.pop,.minor span.pop .si,.minor span.pop img,.sheet:not([hidden]),.sheet:not([hidden]) .in{animation:none}}
 .hname{margin:0}
+.gl{text-decoration:underline dotted;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
+.gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
+.gh{font-family:var(--disp);font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.gt{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:120px}
+.gt h3{margin:0 0 4px;font-size:16px}
+.gt p,.gsh p{margin:0;line-height:1.5;font-size:15px}
+.gsh h3{font-size:20px;margin:10px 0 6px}
+.gt.pop{animation:boxup 1s ease-in-out both}
+#gq{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);font:inherit;margin:10px 0}
+.gico{width:40px;height:40px;flex:none;border-radius:4px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-family:var(--disp);color:var(--gold);font-size:16px}
 .hname svg{display:block;height:52px;width:auto;max-width:100%}
 .hname svg *{fill:#f1e8d4!important;stroke:none!important}
 .hname .nimg{display:block;height:52px;width:auto;aspect-ratio:auto;object-fit:contain;border:0;border-radius:0;max-width:100%;filter:brightness(0) invert(1) sepia(.12)}
@@ -262,6 +274,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   <div class="bar">
     <div class="brand" id="brand">DEADLOCK CODEX</div>
     <button class="ibtn" id="sbtn" aria-label="Search everything"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button>
+    <button class="ibtn" id="gbtn" aria-label="Glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button>
     <button class="ibtn" id="refresh" aria-label="Refresh data">⟳ Refresh</button>
   </div>
   <div class="tabs" id="tabs">
@@ -321,8 +334,10 @@ function rich(s) {
       var cls = (/class="([^"]*)"/.exec(attrs) || [0, ""])[1];
       var style = (/style="([^"]*)"/.exec(attrs) || [0, ""])[1];
       var col = colorFor(cls, style);
-      var c = /highlight/.test(cls) ? "hl" : /diminish/.test(cls) ? "dm" : "";
-      out += "<span" + (c ? ' class="' + c + '"' : "") + (col ? ' style="color:' + col + '"' : "") + ">";
+      var c = /highlight/.test(cls) ? "hl" : /diminish/.test(cls) ? "dm" : "", gk = "";
+      if (/inline-attribute-label/.test(cls)) gk = GATTR[cls.replace(/inline-attribute-label/, "").trim().split(/\s+/)[0]] || "";
+      if (gk) c = c ? c + " gl" : "gl";
+      out += "<span" + (c ? ' class="' + c + '"' : "") + (gk ? ' data-g="' + gk + '"' : "") + (col ? ' style="color:' + col + '"' : "") + ">";
       return;
     }
     if (tag === "img") {
@@ -331,6 +346,10 @@ function rich(s) {
       return;
     }
     if (tag === "b" || tag === "i" || tag === "strong" || tag === "em") out += close ? "</" + tag + ">" : "<" + tag + ">";
+  });
+  out = out.replace(/<span class="hl"((?: style="[^"]*")?)>([^<]+)<\/span>/g, function (m, st, txt) { // highlighted game terms open the glossary
+    var gk = GAL[txt.toLowerCase().replace(/\s+/g, " ").trim()];
+    return gk ? '<span class="hl gl" data-g="' + gk + '"' + st + ">" + txt + "</span>" : m;
   });
   return out.replace(/\u0001(\d+)\u0001/g, function (m, i) { return SVGS[+i] || ""; });
 }
@@ -1126,7 +1145,7 @@ function itemSheet(cn, fromBack) {
     '<button class="ibtn" id="close" style="width:100%;margin-top:14px">Close</button>';
   function bind() {
     $("close").onclick = closeSheet;
-    var bk = $("ibk"); if (bk) bk.onclick = function () { ISTACK.pop(); itemSheet(ISTACK[ISTACK.length - 1], true); };
+    var bk = $("ibk"); if (bk) bk.onclick = sheetBack;
   }
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!$("sheet").hidden && !calm && $("sheetin").firstChild) swapSheet(html, !!fromBack, bind);
@@ -1189,6 +1208,7 @@ function buildSearch() {
     });
   });
   HERO_NAME = "";
+  GLOSS.forEach(function (g) { var text = g.d.replace(/\[\[[a-z-]+\|([^\]]+)\]\]/g, "$1"); out.push({ k: "term", cn: g.k, name: g.t, sub: "Glossary", img: "", text: text, hay: (g.t + " " + g.a.join(" ") + " " + text).toLowerCase() }); });
   state.items.forEach(function (it) {
     if (it.type !== "upgrade" || it.shopable === false || it.disabled) return;
     var parts = [descText(it.description)];
@@ -1206,9 +1226,9 @@ function runSearch(q, filter) {
     if (filter !== "all" && e.k !== filter) return;
     for (var i = 0; i < words.length; i++) if (e.hay.indexOf(words[i]) < 0) return;
     var nm = e.name.toLowerCase(), inName = words.every(function (w) { return nm.indexOf(w) >= 0; });
-    res.push({ e: e, sc: inName ? (nm === ql ? 0 : nm.indexOf(ql) === 0 ? 1 : 2) : 3 });
+    res.push({ e: e, sc: inName ? (nm === ql ? 0 : nm.indexOf(ql) === 0 ? 1 : 2) : e.k === "term" ? 4 : 3 });
   });
-  var kord = { hero: 0, ability: 1, item: 2 };
+  var kord = { hero: 0, term: 1, ability: 2, item: 3 };
   res.sort(function (a, b) { return a.sc - b.sc || kord[a.e.k] - kord[b.e.k] || (a.e.name < b.e.name ? -1 : 1); });
   return res;
 }
@@ -1227,14 +1247,14 @@ function searchResults() {
   var html = '<p class="status">' + res.length + " result" + (res.length === 1 ? "" : "s") + "</p>";
   res.slice(0, 60).forEach(function (r) {
     var e = r.e;
-    html += '<button class="sr ' + e.k + '" data-kind="' + e.k + '" data-cn="' + esc(e.cn) + '" data-h="' + esc(e.hero || "") + '">' + imgTag(e.img, e.fb) +
-      "<div><b>" + esc(e.name) + "</b><small>" + esc(e.sub) + "</small>" + (r.sc === 3 ? "<em>" + snippet(e, words) + "</em>" : "") + "</div></button>";
+    html += '<button class="sr ' + e.k + '" data-kind="' + e.k + '" data-cn="' + esc(e.cn) + '" data-h="' + esc(e.hero || "") + '">' + (e.k === "term" ? '<span class="gico">Aa</span>' : imgTag(e.img, e.fb)) +
+      "<div><b>" + esc(e.name) + "</b><small>" + esc(e.sub) + "</small>" + (r.sc >= 3 ? "<em>" + snippet(e, words) + "</em>" : "") + "</div></button>";
   });
   if (res.length > 60) html += '<p class="status">Showing the first 60. Add a word to narrow it down.</p>';
   return html;
 }
 function renderSearch() {
-  var chips = [["all", "All"], ["hero", "Heroes"], ["ability", "Abilities"], ["item", "Items"]].map(function (c) {
+  var chips = [["all", "All"], ["hero", "Heroes"], ["ability", "Abilities"], ["item", "Items"], ["term", "Terms"]].map(function (c) {
     return '<button class="sf' + (state.sf === c[0] ? " on" : "") + '" data-f="' + c[0] + '">' + c[1] + "</button>";
   }).join("");
   $("main").innerHTML = '<input type="search" id="sq" placeholder="Search heroes, abilities, items" value="' + esc(state.sq) + '" autocomplete="off" autocapitalize="off">' +
@@ -1245,6 +1265,7 @@ function renderSearch() {
 function openResult(b) {
   var kind = b.getAttribute("data-kind"), cn = b.getAttribute("data-cn");
   if (kind === "item") { itemSheet(cn); return; }
+  if (kind === "term") { glossSheet(cn); return; }
   var hero = kind === "hero" ? cn : b.getAttribute("data-h");
   state.tab = "heroes"; state.from = "search"; setTabsUI("heroes");
   renderHero(hero);
@@ -1253,7 +1274,121 @@ function openResult(b) {
     if (el) scrollToEl(el);
   }
 }
+/* ---------- glossary ---------- */
+// [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
+var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Buffs & counters"], ["move", "Movement"]];
+var GLOSS = [
+  { k: "weapon-damage", c: "dmg", t: "Weapon damage", a: ["weapon damage", "bullet damage"], d: "Damage from your gun, plus abilities that say they deal weapon damage. It’s reduced by [[bullet-resist|Bullet Resist]] and raised by weapon items, which boost your gun by a percentage. Melee also counts as weapon damage, but weapon-damage bonuses apply to it at half strength." },
+  { k: "spirit-damage", c: "dmg", t: "Spirit damage", a: ["spirit damage"], d: "Damage from most abilities and many items. It’s reduced by [[spirit-resist|Spirit Resist]] and usually grows with [[spirit-power|Spirit Power]]." },
+  { k: "bonus-damage", c: "dmg", t: "Bonus damage", a: ["bonus damage", "bonus spirit damage", "bonus weapon damage"], d: "Extra damage added on top of a normal hit, like an ability that adds bonus spirit damage to each bullet. “Bonus weapon damage” can also mean the weapon-damage percentage you’ve gained from items and [[investment|shop spending]], which a few abilities scale with." },
+  { k: "dot", c: "dmg", t: "Damage over time", a: ["damage over time", "spirit damage over time", "weapon damage over time"], d: "Damage dealt in small ticks across a duration instead of all at once. The number shown is usually damage per second. [[bleed|Bleed]] is a damage-over-time effect." },
+  { k: "headshot", c: "dmg", t: "Headshot", a: ["headshot", "headshots", "critical hit", "crit"], d: "Bullets that hit the head deal 1.65× damage against heroes, troopers and guardians. Some heroes get a smaller headshot bonus or take less from headshots, and Graves can’t land critical hits at all." },
+  { k: "falloff", c: "dmg", t: "Falloff", a: ["falloff", "falloff range"], d: "Bullets lose damage over distance. Up to the falloff start you deal full damage; from there it drops steadily to 10% at the falloff end and beyond. The bar on each weapon card shows this." },
+  { k: "spreadshot", c: "dmg", t: "Spreadshot", a: ["spreadshot"], d: "Weapons that fire several pellets per shot. Every bonus applies to each pellet on its own, which is why bullet damage shows as something like “3.6 ×9”." },
+  { k: "fire-rate", c: "dmg", t: "Fire rate", a: ["fire rate"], d: "How fast your weapon shoots. Fire-rate bonuses raise your damage per second; fire-rate slows from enemies lower it." },
+  { k: "melee", c: "dmg", t: "Light & heavy melee", a: ["melee", "melee damage", "light melee", "heavy melee"], d: "Tap melee for a quick light attack, or hold it for a heavy attack that lunges forward without spending [[stamina|stamina]]. Most heroes start at 63 light and 116 heavy, and both grow with [[boons|boons]]. Melee can be [[parry|parried]]." },
+  { k: "parry", c: "dmg", t: "Parry", a: ["parry", "parried", "parries"], d: "Press parry (F) to block incoming melee for a short window (about 0.75s). A successful parry stuns the attacker for 2.75s and makes them take 25% more damage from everyone; [[debuff-resist|Debuff Resist]] doesn’t shorten that stun. A missed parry goes on a 4.5s cooldown." },
+
+  { k: "spirit-power", c: "scale", t: "Spirit Power", a: ["spirit power"], d: "The stat that makes abilities stronger. You gain it from [[boons|boons]], spirit items, [[investment|spirit shop spending]] and golden statues on the map. Any number with a ★ badge grows with it; see [[scaling|Scaling]]." },
+  { k: "scaling", c: "scale", t: "Scaling (★ ×0.6)", a: ["scaling", "spirit scaling"], d: "The ★ ×N badge on a stat is its spirit scaling: final value = base + Spirit Power × N. For example, 22 damage per second with ×0.6 at 50 Spirit Power becomes 22 + 50 × 0.6 = 52. Some stats grow per [[boons|boon]] instead, shown as “+X / boon”." },
+  { k: "souls", c: "scale", t: "Souls", a: ["souls", "soul"], d: "Deadlock’s currency and experience in one. You earn them from troopers, heroes, objectives and more, spend them in the shop, and your total souls set your level." },
+  { k: "boons", c: "scale", t: "Boons", a: ["boon", "boons"], d: "Each level-up grants a boon, which raises base health, bullet damage, melee damage and Spirit Power by set amounts per hero (the “+X / boon” values on hero pages). You can reach 35 boons." },
+  { k: "ability-points", c: "scale", t: "Ability points & tiers", a: ["ability points", "ability point"], d: "Level-ups also give ability points. Each ability has three upgrade tiers costing 1, 2 and 5 points (8 in total), shown as ◆1, ◆2 and ◆5. Your ultimate unlocks at 3,800 souls (level 7)." },
+  { k: "investment", c: "scale", t: "Shop investment bonus", a: ["investment", "investment bonus"], d: "Spending souls in one shop category gives free stats on top of the items themselves: weapon spending raises weapon damage, spirit spending raises Spirit Power, and vitality spending raises health. The bonus steps up as your total in that category grows." },
+  { k: "imbue", c: "scale", t: "Imbue", a: ["imbue", "imbues", "imbued"], d: "Some items ask you to pick one of your abilities when you buy them. The item’s special effect then applies only to that ability." },
+  { k: "cooldown", c: "scale", t: "Cooldown", a: ["cooldown", "cooldown reduction"], d: "The wait before an ability or item can be used again. Cooldown reduction from items shortens it by a percentage." },
+  { k: "charges", c: "scale", t: "Charges", a: ["charge", "charges"], d: "An ability with charges stores several uses. Charges refill one at a time over the charge recharge time, and the regular cooldown is the shorter wait between uses." },
+
+  { k: "bullet-resist", c: "def", t: "Bullet Resist", a: ["bullet resist", "bullet resistance", "bullet armor"], d: "Reduces the [[weapon-damage|weapon damage]] you take, melee included, by a percentage. Several sources multiply rather than add: 40% and 20% make 52%, not 60%." },
+  { k: "spirit-resist", c: "def", t: "Spirit Resist", a: ["spirit resist", "spirit resistance", "spirit armor"], d: "Reduces the [[spirit-damage|spirit damage]] you take by a percentage. Like Bullet Resist, several sources multiply rather than add." },
+  { k: "melee-resist", c: "def", t: "Melee Resist", a: ["melee resist"], d: "Reduces melee damage only, on top of [[bullet-resist|Bullet Resist]]." },
+  { k: "shred", c: "def", t: "Resist reduction (shred)", a: ["shred", "resist reduction", "bullet resist reduction", "spirit resist reduction"], d: "Effects that lower an enemy’s Bullet or Spirit Resist. The reduction is subtracted from their resist, so it can push it below zero: at −30% resist a target takes 130% damage." },
+  { k: "barrier", c: "def", t: "Barrier", a: ["barrier", "barriers"], d: "A temporary pool of extra health that takes damage before your real health. Resists still apply to damage that hits it, and anything left over spills into your health. Barriers expire after a while." },
+  { k: "lifesteal", c: "def", t: "Lifesteal", a: ["lifesteal", "spirit lifesteal", "bullet lifesteal", "weapon lifesteal", "melee lifesteal"], d: "Heals you for a share of the damage you deal. Bullet lifesteal works off weapon damage, spirit lifesteal off spirit damage, and melee lifesteal off melee hits. It’s often weaker against non-heroes, like a “vs non-heroes” line on an ability." },
+  { k: "healing-reduction", c: "def", t: "Healing reduction", a: ["healing reduction", "anti-heal", "anti heal", "reduced healing"], d: "Cuts the healing a target receives. Different sources multiply: two 40% sources make 64%, not 80%. The same item hitting twice doesn’t stack with itself." },
+  { k: "healing-amp", c: "def", t: "Healing amp", a: ["healing amp", "healing effectiveness", "heal amp"], d: "Increases the healing a hero gives, to themselves and allies, by a percentage." },
+  { k: "health-regen", c: "def", t: "Health regen", a: ["health regen", "regeneration", "regen"], d: "Health restored every second. The “Health regen” on hero pages is the hero’s passive base rate." },
+  { k: "debuff-resist", c: "def", t: "Debuff Resist", a: ["debuff resist", "debuff resistance"], d: "Shortens how long negative effects last on you. With 30% Debuff Resist, a 10s debuff lasts 7s. It doesn’t shorten the stun from being [[parry|parried]]." },
+  { k: "slow-resist", c: "def", t: "Slow Resist", a: ["slow resist", "slow resistance"], d: "Weakens slows on you. A 30% slow against 50% Slow Resist only slows you by 15%." },
+  { k: "diminishing", c: "def", t: "Diminishing returns", a: ["diminishing returns"], d: "Being hit by crowd control again and again makes later effects weaker, so chained stuns can’t lock you down forever. The game does this by briefly giving you [[debuff-resist|Debuff Resist]] after you’re controlled; exact values aren’t documented." },
+
+  { k: "stun", c: "cc", t: "Stun", a: ["stun", "stuns", "stunned", "stunning"], d: "The target can’t move, shoot, melee, or use abilities or items. A stun also [[interrupt|interrupts]] anything being cast or channeled." },
+  { k: "silence", c: "cc", t: "Silence", a: ["silence", "silences", "silenced"], d: "The target can’t use abilities but can still move, shoot and use items. It doesn’t cancel a cast already underway. Some effects silence items instead (“item silence”)." },
+  { k: "sleep", c: "cc", t: "Sleep", a: ["sleep", "asleep", "sleeping"], d: "The target can’t shoot or use abilities and moves very slowly. Any damage wakes them. Unlike a stun, it doesn’t [[interrupt|interrupt]]." },
+  { k: "immobilize", c: "cc", t: "Immobilize (root)", a: ["immobilize", "immobilizes", "immobilized", "root", "rooted", "roots"], d: "The target can’t move or use movement abilities but can still shoot and cast. Airborne targets drop to the ground." },
+  { k: "disarm", c: "cc", t: "Disarm", a: ["disarm", "disarms", "disarmed"], d: "The target can’t fire their weapon. Melee and most abilities still work, but abilities that change the main gun’s fire are blocked." },
+  { k: "slow", c: "cc", t: "Slow", a: ["slow", "slows", "slowed", "slowing", "movement slow", "move speed slow"], d: "Reduces movement speed by a percentage, but never below 2 m/s. Some slows also reduce dash speed. Fire-rate slows lower how fast the target shoots. [[slow-resist|Slow Resist]] weakens slows." },
+  { k: "interrupt", c: "cc", t: "Interrupt", a: ["interrupt", "interrupts", "interrupted"], d: "Cancels anything currently being cast or channeled. On its own it doesn’t stop the target from using abilities again right after." },
+  { k: "displace", c: "cc", t: "Displace", a: ["displace", "knockup", "knock-up", "knockback", "pull", "pulls"], d: "Pulls, knock-ups and knockbacks: effects that move a target by force." },
+  { k: "curse", c: "cc", t: "Curse", a: ["curse", "cursed"], d: "A combined debuff: [[interrupt|interrupt]], [[disarm|disarm]] and [[silence|silence]] for both abilities and items." },
+  { k: "bleed", c: "cc", t: "Bleed", a: ["bleed", "bleeding"], d: "A debuff that deals [[dot|damage over time]]. Like other debuffs, it can be removed by a [[purge|purge]]." },
+
+  { k: "unstoppable", c: "buff", t: "Unstoppable", a: ["unstoppable"], d: "Immune to all crowd control (stuns, silences, sleeps, slows, displacement and so on). You can still take damage." },
+  { k: "purge", c: "buff", t: "Purge", a: ["purge", "purges", "dispel", "cleanse"], d: "Removes debuffs currently on a target. Delayed effects are cancelled too, so a purged bomb never goes off. A few effects can’t be purged." },
+  { k: "invulnerable", c: "buff", t: "Invulnerable", a: ["invulnerable", "invulnerability", "invincible"], d: "Takes no damage for the duration." },
+  { k: "untargetable", c: "buff", t: "Untargetable", a: ["untargetable"], d: "Can’t be hit or targeted: bullets and area effects pass through, and targeted abilities and items can’t select you." },
+  { k: "invisible", c: "buff", t: "Invisible", a: ["invisible", "invisibility", "stealth"], d: "Enemies can’t see you. Many versions end early when you attack." },
+
+  { k: "stamina", c: "move", t: "Stamina", a: ["stamina"], d: "The pips by your crosshair, spent on dashes and air jumps. They refill one at a time; “Stamina cooldown” on hero pages is how long each takes." },
+  { k: "dash", c: "move", t: "Dash", a: ["dash", "dashes", "air dash", "ground dash", "dash jump"], d: "A quick burst in the direction you’re moving, on the ground or in the air (one air dash per jump). Jumping during a dash (a dash jump) carries the speed for 2 stamina total. Hero pages list each dash’s distance and how long it takes." },
+  { k: "sprint", c: "move", t: "Sprint", a: ["sprint", "sprint speed"], d: "Extra move speed that kicks in after about 5 seconds out of combat. It ends when you enter combat or aim down sights." },
+  { k: "slide", c: "move", t: "Slide", a: ["slide", "slides", "sliding"], d: "Crouching while moving fast, or on a slope, turns into a slide." }
+];
+var GBY = {}, GAL = {};
+GLOSS.forEach(function (g) { GBY[g.k] = g; g.a.forEach(function (x) { GAL[x] = g.k; }); GAL[g.t.toLowerCase()] = g.k; });
+// the game's own keyword labels in ability text
+var GATTR = { SpiritDamage: "spirit-damage", BonusSpiritDamage: "bonus-damage", SpiritDPS: "dot", WeaponDamage: "weapon-damage", BonusWeaponDamage: "bonus-damage", BulletDamage: "weapon-damage", WeaponDPS: "dot", Slow: "slow", SlowResistance: "slow-resist", Stun: "stun" };
+function glossBody(g) {
+  return esc(g.d).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
+}
+function glossCard(g) {
+  return '<section class="gt" id="g-' + g.k + '"><h3>' + esc(g.t) + "</h3><p>" + glossBody(g) + "</p></section>";
+}
+function glossList() {
+  var q = (state.gq || "").toLowerCase().trim(), html = "", n = 0;
+  GCATS.forEach(function (c) {
+    var list = GLOSS.filter(function (g) { return g.c === c[0] && (!q || (g.t + " " + g.a.join(" ") + " " + g.d).toLowerCase().indexOf(q) >= 0); });
+    if (!list.length) return; n += list.length;
+    html += '<h2 class="gh" id="gc-' + c[0] + '">' + esc(c[1]) + "</h2>" + list.map(glossCard).join("");
+  });
+  return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
+}
+function renderGlossary() {
+  var jump = GCATS.map(function (c) { return '<button class="sf" data-gc="' + c[0] + '">' + esc(c[1]) + "</button>"; }).join("");
+  $("main").innerHTML = '<h1 class="gtitle">Glossary</h1><p class="status">What the game’s terms mean. Underlined words in ability and item text open these too. Numbers can shift with patches.</p>' +
+    '<input type="search" id="gq" placeholder="Find a term" value="' + esc(state.gq || "") + '" autocomplete="off" autocapitalize="off">' +
+    '<div class="sfs">' + jump + '</div><div id="glist">' + glossList() + "</div>";
+  var inp = $("gq");
+  inp.oninput = function () { state.gq = inp.value; $("glist").innerHTML = glossList(); };
+}
+function glossSheet(k, fromBack) {
+  var g = GBY[k]; if (!g) return;
+  if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); }
+  var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
+  var html = (ISTACK.length > 1 ? '<button class="back" id="ibk">‹ Back</button>' : "") +
+    '<div class="gsh"><span class="pill2">' + esc(cat ? cat[1] : "Glossary") + "</span><h3>" + esc(g.t) + "</h3><p>" + glossBody(g) + "</p></div>" +
+    '<button class="ibtn" id="gall" style="width:100%;margin-top:14px">Open the glossary</button>' +
+    '<button class="ibtn" id="close" style="width:100%;margin-top:8px">Close</button>';
+  function bind() {
+    $("close").onclick = closeSheet;
+    $("gall").onclick = function () { closeSheet(); openGlossary(k); };
+    var bk = $("ibk"); if (bk) bk.onclick = sheetBack;
+  }
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!$("sheet").hidden && !calm && $("sheetin").firstChild) swapSheet(html, !!fromBack, bind);
+  else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = html; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
+}
+function sheetBack() {
+  ISTACK.pop(); var top = ISTACK[ISTACK.length - 1]; if (!top) return closeSheet();
+  if (top.indexOf("g:") === 0) glossSheet(top.slice(2), true); else itemSheet(top, true);
+}
+function openGlossary(k) {
+  state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI(null); renderGlossary();
+  var el = k && $("g-" + k);
+  if (el) { scrollToEl(el); el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100); } else window.scrollTo(0, 0);
+}
 function render() {
+  if (state.tab === "glossary") return renderGlossary();
   if (state.tab === "search") return renderSearch();
   if (state.tab === "heroes") { state.hero ? renderHero(state.hero) : renderHeroes(); } else renderShop(state.tab);
 }
@@ -1268,6 +1403,7 @@ $("tabs").onclick = function (e) {
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
   state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; state.from = null; render(); window.scrollTo(0, 0);
 };
+$("gbtn").onclick = function () { openGlossary(); };
 $("sbtn").onclick = function () {
   state.tab = "search"; state.hero = null; state.from = null; setTabsUI(null); renderSearch(); window.scrollTo(0, 0);
   var i = $("sq"); if (i) i.focus();
@@ -1302,6 +1438,10 @@ function tapTip(e) { // touch screens have no hover, so a tap on a chip names it
   return true;
 }
 $("main").addEventListener("click", function (e) {
+  var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
+  if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { scrollToEl(t0); t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1100); return; } } glossSheet(gl.getAttribute("data-g")); return; }
+  var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
+  if (gc) { var h0 = $("gc-" + gc.getAttribute("data-gc")); if (h0) scrollToEl(h0); return; }
   if (tapTip(e)) return;
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
   if (sr) { openResult(sr); return; }
@@ -1328,6 +1468,7 @@ $("main").addEventListener("click", function (e) {
   pulseChanges(fresh, before, t, (SEL[key] || 0) < cur);
 });
 $("sheetin").addEventListener("click", function (e) {
+  var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
 $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); };
