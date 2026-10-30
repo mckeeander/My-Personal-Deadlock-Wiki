@@ -547,7 +547,10 @@ function effP(it, key) {
   q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
   return q;
 }
-var LABEL_OV = { "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
+var FLAG_OV = { ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
+var PCT_KEYS = { ReduceDebuffs: 1 };
+var LABEL_OV = { "Quantum Entanglement|ReduceDebuffs": "Debuff Duration Reduction", "Chimera Mk1|SelfDamageReductionOnPlayerHitPercent": "Self Damage Reduction",
+  "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
   "Ava|OutgoingDamagePercent": "Max Damage Amp", "Ava|DamageAmpBuildDuration": "Build-up Time", "Ava|DamageAmpDuration": "Lingers For", "Gloom Bombs|MeleeResistReductionDuration": "Debuff Duration", "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
   "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
   "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
@@ -569,8 +572,8 @@ function propRec(it, key) {
   var v = fmtVal(shown);
   var label = propLabel(p0, key);
   if (v != null && /(Duration|Time)$/.test(key) && /^[+-]?\d*\.?\d+$/.test(v)) v += "s"; // unitless durations (Dash Buff Duration)
-  if (v != null && !p0.postvalue_label && !p0.label && !p0.display_name && /(Percent|Pct|Amp|Lifesteal)$/.test(key)) { // an unlabelled "...Percent" value: use a % sign, not the word
-    label = label.replace(/\s*(Percent|Pct)$/i, ""); if (!/%$/.test(v)) v = v + "%";
+  if (v != null && !p0.postvalue_label && !p0.label && !p0.display_name && (/(Percent|Pct|Amp|Lifesteal)$/.test(key) || PCT_KEYS[key])) { // an unlabelled "...Percent" value: use a % sign, not the word
+    label = label.replace(/\s*(Percent|Pct)$/i, ""); v = v.replace(/s$/, ""); if (!/%$/.test(v)) v = v + "%";
     if (parseFloat(p0.value) === 0 && parseFloat(shown.value) > 0 && v.charAt(0) !== "+") v = "+" + v;
   }
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
@@ -655,6 +658,9 @@ var GROUP_OV = {
   "Leaping Slash": [{ l: "Bounty:", k: ["BonusGoldOnKill", "BountyDuration"] }],
   "Ava": [{ l: "Damage Amp:", k: ["OutgoingDamagePercent", "DamageAmpBuildDuration", "DamageAmpDuration"] }],
   "Return to Shadows": [{ l: "On Completion:", k: ["HealAmount"], f: { RefundCooldowns: "Refunds all ability cooldowns" } }],
+  "Chimera Mk1": [{ l: "On Hero Hit:", k: ["HealOnHit", "SelfDamageReductionOnPlayerHitPercent", "OverheatLockoutDurationReductionOnPlayerHitPercent"] }],
+  "Jettison Fuel": [{ l: "On Backblast Hit, You Gain:", k: ["BonusFireRate", "BuffDuration"], f: { BurstMarkStacks: "Marks enemies hit (Strix Salvo)" } }],
+  "Essence Theft": [{ l: "", k: [], f: { SkullBuildUp: "", ZombieMeleeBuildUp: "" } }],
   "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }, { l: "On Hit, You Gain:", k: ["StaminaToRestore"], f: { ResetsAirLimit: "Reset Air Limit" } }],
   "Baba's Brew": [{ l: "", k: [], f: { BrewEffectiveness: "" } }],
@@ -786,7 +792,7 @@ function chipsHtml(it) {
     if (rp && !isDisabled(rp) && parseFloat(rp.value) > 0) left += chip("Radius", "◎", fmtVal(rp), "Radius");
   }
   var extra = (it.tooltip_details && it.tooltip_details.additional_header_properties) || [];
-  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" data-tip="' + esc(r.l) + '">' + (pIcon(r.icon) || "• ") + esc(r.v) + "</span>"; });
+  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" data-tip="' + esc(r.l) + '">' + (pIcon(r.icon) || "") + esc(r.v) + "</span>"; });
   var ch = effP(it, "AbilityCharges"), nch = ch && !isDisabled(ch) ? parseFloat(ch.value) : 0;
   var nch0 = P.AbilityCharges ? parseFloat(P.AbilityCharges.value) || 0 : 0;
   if ((nch > 1 || (nch >= 1 && nch0 < 1)) && !L.AbilityCharges) { // also when an upgrade turns charges on (Consecrating Grenade T3)
@@ -816,7 +822,7 @@ function upgradeExtras(it) {
     var lbl0 = String(p.postvalue_label || p.label || "");
     if (named && base === 0 && !p.postfix && !p.prefix && !p.display_units && /^(Reset|Can |Enable|Grant|Allow|Remove|Cancel|Ignore|Pierce|Disable|Purge|Dispel|Immune|Unstoppable|No )/i.test(lbl0) &&
         (it.upgrades || []).every(function (u) { return ((u && u.property_upgrades) || []).every(function (pu) { return pu.name !== k || parseFloat(pu.bonus) === 1; }); })) {
-      if (ev > 0) { res.flags.push(lbl0); (res.fk = res.fk || []).push(k); } return; // an on/off switch: shown as text, not as a "1"
+      if (ev > 0) { res.flags.push(FLAG_OV[k] || lbl0); (res.fk = res.fk || []).push(k); } return; // an on/off switch: shown as text, not as a "1"
     }
     if (!named) {
       if (/^(Refresh|Improved)/.test(k)) return;
@@ -827,7 +833,7 @@ function upgradeExtras(it) {
       if (dup) return;
       var ones = (it.upgrades || []).every(function (u) { return ((u && u.property_upgrades) || []).every(function (pu) { return pu.name !== k || parseFloat(pu.bonus) === 1; }); });
       var isToggle = ones && base === 0 && !p.postfix && !p.prefix && !p.display_units && !/(Duration|Time|Count|Stacks?|Percent|Pct|Range|Distance|Height|Radius|Damage|Lifesteal|Amp|Window|Delay|Speed|Cooldown|Targets|Resist|Spirit|Weapon|Fire|Bonus|Buff)/i.test(k);
-      if (isToggle) { if (ev > 0) { res.flags.push(prettify(k)); (res.fk = res.fk || []).push(k); } return; } // on/off switch, shown by name only
+      if (isToggle) { if (ev > 0) { res.flags.push(FLAG_OV[k] || prettify(k)); (res.fk = res.fk || []).push(k); } return; } // on/off switch, shown by name only
     }
     var r = propRec(it, k); if (!r) return;
     if (/^Consume/.test(k) && r.v.charAt(0) !== "-") r.v = "-" + r.v; // a cost, not a gain
@@ -848,6 +854,7 @@ function upgradeTexts(it) {
       scaleBits.push(esc((bn >= 0 ? "+" : "") + fmtRate(bn) + " " + (word ? word + " " : "") + "scaling (" + propLabel(pp, pu.name) + ")"));
       shortBits.push({ n: (bn >= 0 ? "+" : "") + fmtRate(bn), w: word }); labelBits.push(propLabel(pp, pu.name));
     });
+    if (shortBits.length > 1 && shortBits.every(function (b) { return b.n === shortBits[0].n && b.w === shortBits[0].w; })) { shortBits = [shortBits[0]]; labelBits = [labelBits[0]]; }
     var extra = scaleBits.length ? '<br><span class="dm">' + scaleBits.join("<br>") + "</span>" : "";
     if (d[k]) {
       var rd = rich(d[k]), merged = false;
@@ -1015,11 +1022,21 @@ function abilityCard(it, h) {
   var sel = SEL[it.class_name] || 0;
   CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) };
   try {
+    var CH = chipsHtml(it);
     return '<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
-      chipsHtml(it) +
+      CH +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc || (((it.tooltip_details || {}).info_sections || [])[0] || {}).loc_string || it.description.passive } : it.description)) + "</div>" +
-      tooltipHtml(it) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
+      dropChipDupes(tooltipHtml(it), CH) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
   } finally { CTX = null; }
+}
+function dropChipDupes(html, chips) {
+  var SAME = { Range: ["Range", "Cast Range"], Cooldown: ["Cooldown"], Duration: ["Duration"], Radius: ["Radius"] }, have = {};
+  (chips.match(/data-tip="[^"]*">(?:<img[^>]*>)?[^<]*/g) || []).forEach(function (c) {
+    var m = /data-tip="([^"]*)">(?:<img[^>]*>)?(?:[^\s<\d]+\s)?([^<]*)/.exec(c); if (!m) return;
+    (SAME[m[1]] || []).forEach(function (l) { have[l + "|" + m[2].trim()] = 1; });
+  });
+  return html.replace(/<div class="stat[^"]*">(?:<em[^>]*>[^<]*<\/em>)?<b>(?:<img[^>]*>)?([^<]*)<\/b><i>([^<]*)<\/i><\/div>/g, function (m, v, l) { return have[l + "|" + v.trim()] ? "" : m; })
+    .replace(/<div class="stats"><\/div>/g, "");
 }
 function nice(k) { return prettify(String(k).replace(/^E(Weapon(Attribute)?_?)?/, "")).replace(/([a-z])([A-Z])/g, "$1 $2"); }
 function meters(u) { return Math.round(u / 39.37) + "m"; }
