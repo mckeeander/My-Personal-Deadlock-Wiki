@@ -61,12 +61,12 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .wc b .si{height:1.15em;width:1.15em;vertical-align:-.2em;margin-right:5px;color:var(--weapon)}
 .pi{height:1.15em;width:1.15em;object-fit:contain;vertical-align:-.22em;margin-right:4px}
 .stat b .pi{height:1em;width:1em;vertical-align:-.12em}
-.ic{height:1.1em;width:1.1em;vertical-align:-.2em;margin-right:3px}
+.ic{height:1.1em;width:1.1em;vertical-align:-.2em;margin-right:3px}.ic.key{margin:0 2px 0 4px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .chip{background:var(--panel2);border-radius:5px;padding:4px 8px;font-size:13px}
 .desc{font-size:15px;line-height:1.45;margin:8px 0}
 .desc b,.desc .hl{color:#fff;font-weight:700}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:10px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:13px 6px;margin:10px 0}
 .stat{position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center}
 .sc{position:absolute;top:-9px;right:-3px;font-style:normal;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:600;border:1px solid;white-space:nowrap}
 .sc.sp{background:#3b2d55;color:var(--spirit)}
@@ -264,7 +264,9 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .stat.pop{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.pop,.pop .si,.pop img,.minor span.pop,.minor span.pop .si,.minor span.pop img,.sheet:not([hidden]),.sheet:not([hidden]) .in{animation:none}}
 .hname{margin:0 0 8px}
-.hgap{display:block;height:7px}
+.hgap{display:none}
+.desc .pg{display:block;height:8px}
+.desc + .stats,.desc + .minor{margin-top:16px}
 .backpill{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0) + 18px);transform:translateX(-50%);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
 .backpill[hidden]{display:none}
 .backpill.in{animation:pillin .22s ease-out}
@@ -347,11 +349,16 @@ function rich(s) {
   s = s.replace(/\{s:hero_name\}/g, HERO_NAME || "the hero").replace(/\{s:[^}]*\}/g, "");
   // the game greys whole paragraphs; rules like "While in slow motion, Apollo is invulnerable" read as real text, only how-to lines stay grey
   s = s.replace(/<span class="diminish">((?:(?!<\/?span)[\s\S])*)<\/span>/g, function (m, body) {
-    return body.split(/(<br\s*\/?>)/).map(function (ln) {
-      if (/^<br/.test(ln) || !ln.trim()) return ln;
+    var plainPrev = false;
+    return body.split(/(<br\s*\/?>)/).map(function (ln, li, arr) {
+      if (/^<br/.test(ln)) { var nx = arr[li + 1] || "", nt = nx.replace(/<[^>]+>/g, "").trim();
+        var nxHint = /\u0001/.test(nx) || /^(Press|Hold|Tap|Release)\b/.test(nt) || nt.length <= 25 || /:$/.test(nt);
+        return plainPrev && nt && !nxHint ? " " : ln; }
+      if (!ln.trim()) return ln;
       var t = ln.replace(/<[^>]+>/g, "").trim(), keyIc = (ln.match(/\u0001(\d+)\u0001/g) || []).some(function (q) { return /class="ic key"/.test(SVGS[+q.replace(/\u0001/g, "")] || ""); });
       var hint = keyIc || /^(Press|Hold|Tap|Release)\b/.test(t) || t.length <= 25 || /:$/.test(t);
       if (/[a-z0-9]$/i.test(ln.replace(/<[^>]+>/g, "").trim()) && !/:$/.test(t)) ln = ln.replace(/\s*$/, ".");
+      plainPrev = !hint;
       return hint ? '<span class="diminish">' + ln + "</span>" : ln;
     }).join("");
   });
@@ -411,6 +418,7 @@ function rich(s) {
     var gk = GAL[txt.toLowerCase().replace(/\s+/g, " ").trim()];
     return gk ? '<span class="hl gl" data-g="' + gk + '"' + st + ">" + txt + "</span>" : m;
   });
+  out = out.replace(/(?:\s*<br>\s*)+/g, '<span class="pg"></span>').replace(/^(<span class="pg"><\/span>)+|(<span class="pg"><\/span>)+$/g, ""); // every line break is the same short gap
   return out.replace(/\u0001(\d+)\u0001/g, function (m, i) { return SVGS[+i] || ""; });
 }
 function descText(d) {
@@ -554,11 +562,14 @@ function effP(it, key) {
   q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
   return q;
 }
-var ORDER_OV = { "Crackshot": ["Damage", "Fading Move Speed", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
+var ORDER_OV = { "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Move Speed", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
+  "Traveler": ["Move Speed", "Fire Rate", "Buff Duration", "Barrier"], "Crackshot": ["Damage", "Fading Move Speed", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
 var FLAG_OV = { SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
-var PCT_KEYS = { ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
-var LABEL_OV = { "Wretched Vapors|HealingEffectivenessPercent": "Healing & Regen Effectiveness", "Ice Path|BonusSpiritPct": "Spirit Power", "Ice Path|BonusSpirit": "Spirit Power",
+var PCT_KEYS = { AttackSpeedMult: 1, ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
+var LABEL_OV = { "Mini Turret|AttackSpeedMult": "Turret Fire Rate", "Spectral Wall|CreateTurrets": "Mini Turrets", "Spectral Wall|TurretLifeTime": "Turret Lifetime",
+  "Djinn's Mark|MovementSpeedSlow": "Fading Slow", "Djinn's Mark|StunDuration": "Stun at Max Marks", "Dust Devil|HoldInPlaceDuration": "Lift Duration", "Dust Devil|WhirlwindEvasionChance": "Bullet Evasion",
+  "Traveler|MovementSpeedBonusDuration": "Buff Duration", "Traveler|TeleportCompletedTime": "Wait Time", "Wretched Vapors|HealingEffectivenessPercent": "Healing & Regen Effectiveness", "Ice Path|BonusSpiritPct": "Spirit Power", "Ice Path|BonusSpirit": "Spirit Power",
   "Entangling Thorns|TimeToEntangle": "Time to Entangle", "Entangling Thorns|EntangleDuration": "Immobilize Duration", "Air Drop|AirDropOutgoingDamagePercent": "Damage Bonus", "Powder Keg|DPS": "Burn DPS", "Bounce Pad|SpeedOnLand": "Move Speed", "Bounce Pad|StompStunDuration": "Stomp Stun",
   "Crackshot|DebuffDuration": "Slow Duration", "Crackshot|BulletResistReductionDuration": "Shred Duration",
   "Crackshot|AbilityCooldownPerHeadshot": "Per Hero Headshot", "Crackshot|AbilityCooldownPerHeadshotNPC": "Per NPC Headshot", "Chimera Mk1|ExplosionDamage": "Spirit Explosion Damage", "Chimera Mk1|ExplosionBulletDamage": "Weapon Explosion Damage", "Quantum Entanglement|ReduceDebuffs": "Debuff Duration Reduction", "Chimera Mk1|SelfDamageReductionOnPlayerHitPercent": "Self Damage Reduction",
@@ -689,6 +700,9 @@ var GROUP_OV = {
   "Lurking Terrors": [{ l: "Feared Enemies:", k: ["SlowPercent", "FireRateSlow"] }],
   "Air Drop": [{ l: "Ivy and Ally Gain:", k: ["AirDropBulletShield", "AirDropOutgoingDamagePercent", "BuffDuration"] },
     { l: "Enemies Hit:", k: ["SlowPercent", "BulletArmorReduction", "DebuffDuration", "BulletArmorReductionDuration", "SilenceDuration"] }],
+  "Djinn's Mark": [{ l: "On Proc:", k: ["MovementSpeedSlow", "SlowDuration", "StunDuration"] }],
+  "Dust Devil": [{ l: "Enemies Hit:", k: ["SlowPercent", "SlowDuration", "HoldInPlaceDuration"] }, { l: "After Emerging, You Gain:", k: ["WhirlwindEvasionChance"] }],
+  "Traveler": [{ l: "You Gain:", k: ["BonusMoveSpeed", "BonusFireRate", "MovementSpeedBonusDuration", "CombatBarrier"] }],
   "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }, { l: "On Hit, You Gain:", k: ["StaminaToRestore"], f: { ResetsAirLimit: "Reset Air Limit" } }],
   "Baba's Brew": [{ l: "", k: [], f: { BrewEffectiveness: "" } }],
@@ -743,7 +757,7 @@ function tooltipHtml(it) {
   bi = 0;
   secs.forEach(function (sec, si) {
     var secStart = parts.length;
-    if (si > 0 && sec.loc_string) parts.push('<div class="desc">' + rich(sec.loc_string) + "</div>");
+    if (si > 0 && sec.loc_string && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc">' + rich(sec.loc_string) + "</div>");
     (sec.properties_block || []).forEach(function (blk) {
       var tiles = "", seen = {}, hadMoved = false;
       (blk.properties || []).forEach(function (pp) {
@@ -892,7 +906,7 @@ function upgradeTexts(it) {
     if (shortBits.length > 1 && shortBits.every(function (b) { return b.n === shortBits[0].n && b.w === shortBits[0].w; })) { shortBits = [shortBits[0]]; labelBits = [labelBits[0]]; }
     var extra = scaleBits.length ? '<br><span class="dm">' + scaleBits.join("<br>") + "</span>" : "";
     if (d[k]) {
-      var rd = rich(d[k]).replace(/\/\s+per\b/g, " per").replace(/( for )((?:<span[^>]*>)?)\+(?=[\d.]+s\b)/g, "$1$2"), merged = /scales? with (Spirit|Weapon)/i.test(rd); // the text already says what it scales with
+      var rd = rich(d[k]).replace(/^(\s*<span class="pg"><\/span>)+/, "").replace(/\/\s+per\b/g, " per").replace(/( for )((?:<span[^>]*>)?)\+(?=[\d.]+s\b)/g, "$1$2"), merged = /scales? with (Spirit|Weapon)/i.test(rd); // the text already says what it scales with
       if (shortBits.length === 1 && shortBits[0].w) { // a line that only states the scaling: use the real number
         rd = rd.replace(/(^|<br\s*\/?>)\s*(?:<span class="highlight">)?\+?[\d.]+(?:<\/span>)?\s+(Spirit|Weapon|Boon)\s+Scaling\s*(?=<br|$)/i, function (m0, br) {
           merged = true; return br + '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + shortBits[0].w + " scaling";
@@ -1051,7 +1065,9 @@ function interBlock(a, own) {
     var k = /^(positive|negative|info)$/.test(x.k) ? x.k : "info", st = String(x.s || "");
     var tags = '<span class="itag ' + k + '">' + KL[k] + "</span>" + (/partial/.test(st) ? '<span class="itag st">Partly</span>' : "") + (/disabled/.test(st) ? '<span class="itag st">Disabled</span>' : "") + (/enhanced/.test(st) ? '<span class="itag st">Enhanced</span>' : "");
     var head = '<div class="ibh">' + icon + (item ? '<button class="link pitem" data-pitem="' + esc(cn) + '">' + esc(x.t) + "</button>" : "<b>" + esc(x.t) + "</b>") + tags + "</div>";
-    var lines = x.lines || [], body = lines.length === 1 && !lines[0][0] ? "<p>" + noteHtml(lines[0][1], own) + "</p>" :
+    var lines = (x.lines || []).filter(function (n) {
+      return !(a.items || []).some(function (nm) { return new RegExp("^\\s*triggers? " + String(nm).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "'?s? unique", "i").test(n[1]); });
+    }).map(function (n) { return [n[0], n[1].replace(/;\s*$/, ".")]; }), body = lines.length === 1 && !lines[0][0] ? "<p>" + noteHtml(lines[0][1], own) + "</p>" :
       "<ul>" + lines.map(function (n) { return '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; }).join("") + "</ul>";
     html += '<div class="ibox ' + k + (/disabled/.test(st) ? " off" : "") + '">' + head + body + "</div>";
   });
@@ -1078,13 +1094,20 @@ function abilityCard(it, h) {
     var CH = chipsHtml(it);
     return '<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       CH +
-      '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc || (((it.tooltip_details || {}).info_sections || [])[0] || {}).loc_string || it.description.passive } : it.description)) + "</div>" +
+      '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: abilityDesc(it) } : it.description)) + "</div>" +
       flagOnes(dropChipDupes(tooltipHtml(it), CH)) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
   } finally { CTX = null; }
 }
 // a "1" that is really an on/off switch ("1 Purge Debuffs") reads better as plain text with the small stats
 var FLAG_TXT = { "Post Cube Buff": "Buff after leaving the Cube", "Silence Debuff": "Also silences", "Unstoppable Cast Delay": "Unstoppable while casting",
   "Channel Damage Immune": "Immune to damage while channeling", "Purge Debuffs": "Purges debuffs", "Remove Debuffs": "Removes debuffs", "Dispel Debuffs": "Dispels debuffs" };
+var DESC_OV = { "Rake": '<span class="diminish">Passive:</span> Holding Zoom / alt-fire causes you to briefly float.<br><br><span class="diminish">Active:</span> Slash with your umbrella, dealing spirit damage that increases with the target\'s missing health. Receive a heal for every target killed.' };
+function abilityDesc(it) {
+  var d = it.description || {}, l0 = (((it.tooltip_details || {}).info_sections || [])[0] || {}).loc_string;
+  if (DESC_OV[it.name]) return DESC_OV[it.name];
+  if (d.passive && (d.desc || d.active)) return d.passive + "<br><br>" + (d.active || d.desc);
+  return d.desc || (l0 && l0.charAt(0) !== "#" ? l0 : "") || d.passive || "";
+}
 function flagOnes(html) {
   var COUNT = /(Charge|Stamina|Count|Stack|Target|Bounce|Jump|Shard|Ghoul|Missile|Knight|Piece|Swap|Recast|Turret|Helper|Deadhead|Leech|Max|Bonus|Shot|Rocket|Mark|Bite|Pull)/i, flags = [];
   html = html.replace(/<div class="stat[^"]*"><b>1<\/b><i>([^<]*)<\/i><\/div>/g, function (m, l) { if (COUNT.test(l)) return m; flags.push(FLAG_TXT[l] || l); return ""; })
