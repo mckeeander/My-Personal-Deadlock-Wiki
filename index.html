@@ -351,6 +351,7 @@ function rich(s) {
       if (/^<br/.test(ln) || !ln.trim()) return ln;
       var t = ln.replace(/<[^>]+>/g, "").trim(), keyIc = (ln.match(/\u0001(\d+)\u0001/g) || []).some(function (q) { return /class="ic key"/.test(SVGS[+q.replace(/\u0001/g, "")] || ""); });
       var hint = keyIc || /^(Press|Hold|Tap|Release)\b/.test(t) || t.length <= 25 || /:$/.test(t);
+      if (/[a-z0-9]$/i.test(ln.replace(/<[^>]+>/g, "").trim()) && !/:$/.test(t)) ln = ln.replace(/\s*$/, ".");
       return hint ? '<span class="diminish">' + ln + "</span>" : ln;
     }).join("");
   });
@@ -405,6 +406,7 @@ function rich(s) {
     if (li === 0) { out += ln; return; }
     out += isHint[li] && !isHint[li - 1] && lines[li - 1].trim() ? '<br><span class="hgap"></span>' + ln : "<br>" + ln;
   });
+  out = out.replace(/<span class="dm">([\s\S]*?)<\/span>/g, function (m, b) { return '<span class="dm">' + b.replace(/([a-z0-9])(\s*<br>)/g, "$1.$2") + "</span>"; });
   out = out.replace(/<span class="hl"((?: style="[^"]*")?)>([^<]+)<\/span>/g, function (m, st, txt) { // highlighted game terms open the glossary
     var gk = GAL[txt.toLowerCase().replace(/\s+/g, " ").trim()];
     return gk ? '<span class="hl gl" data-g="' + gk + '"' + st + ">" + txt + "</span>" : m;
@@ -507,6 +509,7 @@ function scaleOf(p, m) {
     else if (cn === "scale_function_ability_weapon_damage") kind = "weapon";
   }
   if (cn === "scale_function_healing_boon_scale") kind = "boons";
+  if (!kind && m && m.filter) kind = m.filter === "ETechPower" ? "spirit" : m.filter === "ETechRange" ? "range" : m.filter === "EWeaponPower" ? "weapon" : "";
   if (!kind) return { kind: "", rate: 0 };
   var r = raw;
   if (m) { r += m.addScale || 0; if (m.mulScale != null) r *= m.mulScale; }
@@ -519,6 +522,7 @@ function scaleBadge(r) {
   var n = fmtRate(r.rate);
   if (r.kind === "spirit") return '<em class="sc sp">★ ×' + esc(n) + "</em>";
   if (r.kind === "weapon") return '<em class="sc wp">Weapon ×' + esc(n) + "</em>";
+  if (r.kind === "range") return '<em class="sc">Ability Range ×' + esc(n) + "</em>";
   if (r.kind === "melee") return '<em class="sc wp">' + esc(r.sub) + " ×" + esc(n) + "</em>";
   return '<em class="sc bn">+' + esc(n) + "/boon</em>";
 }
@@ -532,7 +536,7 @@ function modsFor(it, sel) {
       if (!P[nm]) { for (var pk in P) if (pk.toLowerCase() === String(nm).toLowerCase()) { nm = pk; break; } }
       var o = m[nm] = m[nm] || { add: 0, mul: 1, addScale: 0, mulScale: null };
       var t = pu.upgrade_type;
-      if (t === "EAddToScale") o.addScale += b;
+      if (t === "EAddToScale") { o.addScale += b; if (pu.scale_stat_filter) o.filter = pu.scale_stat_filter; }
       else if (t === "EMultiplyScale") o.mulScale = (o.mulScale == null ? 1 : o.mulScale) * b;
       else if (t === "EMultiplyBase") o.mul *= 1 + b / 100; // percent increase (Ground Strike T3: +120% damage per meter)
       else o.add += b;
@@ -554,7 +558,8 @@ var ORDER_OV = { "Crackshot": ["Damage", "Fading Move Speed", "Slow Duration", "
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
 var FLAG_OV = { SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
 var PCT_KEYS = { ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
-var LABEL_OV = { "Powder Keg|DPS": "Burn DPS", "Bounce Pad|SpeedOnLand": "Move Speed", "Bounce Pad|StompStunDuration": "Stomp Stun",
+var LABEL_OV = { "Wretched Vapors|HealingEffectivenessPercent": "Healing & Regen Effectiveness", "Ice Path|BonusSpiritPct": "Spirit Power", "Ice Path|BonusSpirit": "Spirit Power",
+  "Entangling Thorns|TimeToEntangle": "Time to Entangle", "Entangling Thorns|EntangleDuration": "Immobilize Duration", "Air Drop|AirDropOutgoingDamagePercent": "Damage Bonus", "Powder Keg|DPS": "Burn DPS", "Bounce Pad|SpeedOnLand": "Move Speed", "Bounce Pad|StompStunDuration": "Stomp Stun",
   "Crackshot|DebuffDuration": "Slow Duration", "Crackshot|BulletResistReductionDuration": "Shred Duration",
   "Crackshot|AbilityCooldownPerHeadshot": "Per Hero Headshot", "Crackshot|AbilityCooldownPerHeadshotNPC": "Per NPC Headshot", "Chimera Mk1|ExplosionDamage": "Spirit Explosion Damage", "Chimera Mk1|ExplosionBulletDamage": "Weapon Explosion Damage", "Quantum Entanglement|ReduceDebuffs": "Debuff Duration Reduction", "Chimera Mk1|SelfDamageReductionOnPlayerHitPercent": "Self Damage Reduction",
   "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
@@ -586,6 +591,7 @@ function propRec(it, key) {
   label = label.replace(/\bTech\b/g, "Spirit").replace(/\bLife Steal\b/g, "Lifesteal");
   if (v != null && /\bPercent(age)?\b/.test(label) && /^[+-]?[\d.]+$/.test(v)) { v += "%"; label = label.replace(/\s*\bPercent(age)?\b/, "").trim(); }
   if (v != null && /^[+-]?[\d.]+$/.test(v) && /(Stun|Cooldown|Window)$/.test(label)) v += "s";
+  if (v != null && /^[+-]?[\d.]+$/.test(v) && /^Health Regen$/.test(label)) v += "/s";
   if (v != null && /^[+-]?[\d.]+$/.test(v) && /Resist( Debuff)?$/.test(label)) { v += "%"; label = label.replace(/ Debuff$/, ""); }
   if (v != null && /^[+-]?[\d.]+m$/.test(v) && /Speed$/.test(label)) v = v.slice(0, -1) + " m/s";
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
@@ -593,7 +599,7 @@ function propRec(it, key) {
   if (key === "RatSwarmRows" && v != null) { var rc = parseFloat((effP(it, "RatSwarmCols") || {}).value) || 1, rr = parseFloat(v) || 0; v = String(rr * rc); label = "Rats (" + rc + " wide × " + rr + " deep)"; }
   if (key === "RatSwarmWidth" && v != null) { v = Math.round(parseFloat(v) / 39.37 * 10) / 10 + "m"; label = "Swarm Width"; } // game units: 39.37 per meter
   var wpn = (sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label);
-  return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage") };
+  return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label)) };
 }
 
 /* ---------- data ---------- */
@@ -679,6 +685,10 @@ var GROUP_OV = {
   "Bounce Pad": [{ l: "On Landing, You and Allies Gain:", k: ["SpeedOnLand", "SpeedOnLandDuration"] }],
   "Crackshot": [{ l: "On Hit:", k: ["FadingSlowPercent", "BulletResistReduction", "DebuffDuration", "BulletResistReductionDuration"] },
     { l: "Cooldown Refund:", k: ["AbilityCooldownPerHeadshot", "AbilityCooldownPerHeadshotNPC"] }],
+  "Wretched Vapors": [{ l: "", k: [], f: { HealAmpRegenPercent: "" } }],
+  "Lurking Terrors": [{ l: "Feared Enemies:", k: ["SlowPercent", "FireRateSlow"] }],
+  "Air Drop": [{ l: "Ivy and Ally Gain:", k: ["AirDropBulletShield", "AirDropOutgoingDamagePercent", "BuffDuration"] },
+    { l: "Enemies Hit:", k: ["SlowPercent", "BulletArmorReduction", "DebuffDuration", "BulletArmorReductionDuration", "SilenceDuration"] }],
   "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }, { l: "On Hit, You Gain:", k: ["StaminaToRestore"], f: { ResetsAirLimit: "Reset Air Limit" } }],
   "Baba's Brew": [{ l: "", k: [], f: { BrewEffectiveness: "" } }],
@@ -776,6 +786,8 @@ function tooltipHtml(it) {
     });
   });
   if (place[-1] && !tilesDone) parts.push('<div class="stats">' + extraHtml(place[-1]) + "</div>");
+  var cd0 = parseFloat(((it.properties || {}).AbilityCooldown || {}).value), cdN = parseFloat((effP(it, "AbilityCooldown") || {}).value);
+  if (cd0 > 0 && cdN <= 0) { ex.flags.push("Always active"); (ex.fk = ex.fk || []).push(""); }
   var fl = ex.flags.filter(function (f, i) { return !moved[(ex.fk || [])[i]]; }).map(function (f) { return '<span class="fl">' + esc(f) + "</span>"; }).join("");
   if (fl) {
     if (firstMinor >= 0) parts[firstMinor] = parts[firstMinor].replace(/<\/div>$/, fl + "</div>"); // switches describe the ability itself, so they sit with its main stats
@@ -866,7 +878,7 @@ function upgradeExtras(it) {
 }
 function upgradeTexts(it) {
   var d = it.description && typeof it.description === "object" ? it.description : {}, ups = it.upgrades || [], out = [];
-  var KW = { ETechPower: "Spirit", EWeaponPower: "Weapon", EBaseWeaponDamageIncrease: "Weapon", ELevelUpBoons: "Boon" };
+  var KW = { ETechRange: "Ability Range", ETechPower: "Spirit", EWeaponPower: "Weapon", EBaseWeaponDamageIncrease: "Weapon", ELevelUpBoons: "Boon" };
   for (var i = 0; i < 3; i++) {
     var k = "t" + (i + 1) + "_desc", scaleBits = [], shortBits = [], labelBits = [];
     ((ups[i] && ups[i].property_upgrades) || []).forEach(function (pu) {
@@ -880,7 +892,7 @@ function upgradeTexts(it) {
     if (shortBits.length > 1 && shortBits.every(function (b) { return b.n === shortBits[0].n && b.w === shortBits[0].w; })) { shortBits = [shortBits[0]]; labelBits = [labelBits[0]]; }
     var extra = scaleBits.length ? '<br><span class="dm">' + scaleBits.join("<br>") + "</span>" : "";
     if (d[k]) {
-      var rd = rich(d[k]).replace(/\/\s+per\b/g, " per"), merged = /scales? with (Spirit|Weapon)/i.test(rd); // the text already says what it scales with
+      var rd = rich(d[k]).replace(/\/\s+per\b/g, " per").replace(/( for )((?:<span[^>]*>)?)\+(?=[\d.]+s\b)/g, "$1$2"), merged = /scales? with (Spirit|Weapon)/i.test(rd); // the text already says what it scales with
       if (shortBits.length === 1 && shortBits[0].w) { // a line that only states the scaling: use the real number
         rd = rd.replace(/(^|<br\s*\/?>)\s*(?:<span class="highlight">)?\+?[\d.]+(?:<\/span>)?\s+(Spirit|Weapon|Boon)\s+Scaling\s*(?=<br|$)/i, function (m0, br) {
           merged = true; return br + '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + shortBits[0].w + " scaling";
@@ -889,7 +901,8 @@ function upgradeTexts(it) {
       if (!merged && shortBits.length > 1) { // "Improved Spirit Scaling" over several stats: name each number
         rd = rd.replace(/(?:improved|increased|increases)\s+(Spirit\s+|Weapon\s+)?scaling/i, function (m0, wd) {
           merged = true;
-          return shortBits.map(function (b, bi) { return '<span class="highlight">' + esc(b.n) + "</span> " + esc(labelBits[bi]); }).join(" and ") + " " + (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim() + " scaling";
+          var w1 = (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim();
+          return shortBits.map(function (b, bi) { return '<span class="highlight">' + esc(b.n) + "</span> " + (bi === 0 ? (w1 ? w1 + " " : "") + "scaling " : "") + "on " + esc(labelBits[bi]); }).join(" and ");
         });
       }
       if (!merged && shortBits.length === 1) { // "improved Spirit scaling" + a separate line -> one phrase with the number in it
@@ -924,12 +937,13 @@ function upgradeTexts(it) {
         }
       }
       if (!merged && shortBits.length) { // other ways the game says "better scaling": put the real numbers in their place
-        var named = shortBits.map(function (b, bi) { return '<span class="highlight">' + esc(b.n) + "</span> " + (shortBits.length > 1 || !b.w ? esc(labelBits[bi]) + " " : ""); }).join("and ").replace(/and $/, "");
         var wdn = shortBits[0].w ? shortBits[0].w + " " : "";
-        var nr = rd.replace(/(?:improved?|increased?|increases)\s+(?:[\w]+\s+){0,4}?scaling|(?:[\w]+\s+){0,5}scaling\s+increased/i, function () { merged = true; return named.replace(/\s+$/, " ") + wdn + "scaling"; });
+        var named = shortBits.length > 1 ? shortBits.map(function (b, bi) { return '<span class="highlight">' + esc(b.n) + "</span> " + (bi === 0 ? wdn + "scaling " : "") + "on " + esc(labelBits[bi]); }).join(" and ")
+          : '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (shortBits[0].w ? "" : esc(labelBits[0]) + " ") + wdn + "scaling";
+        var nr = rd.replace(/(?:improved?|increased?|increases)\s+(?:[\w]+\s+){0,4}?scaling|(?:[\w]+\s+){0,5}scaling\s+increased/i, function () { merged = true; return named; });
         if (merged) rd = nr;
         else if (/[+-]?[\d.]+%?\s+(?:\w+\s+)?scaling/i.test(rd.replace(/<[^>]+>/g, ""))) merged = true; // the text already gives the number
-        else extra = '<br><span class="dm">' + shortBits.map(function (b, bi) { return esc(b.n + " " + labelBits[bi] + " " + (b.w ? b.w + " " : "") + "scaling"); }).join("<br>") + "</span>";
+        else extra = '<br><span class="dm">' + shortBits.map(function (b, bi) { return esc(b.n + " " + (b.w ? b.w + " " : "") + "scaling on " + labelBits[bi]); }).join("<br>") + "</span>";
       }
       out.push(rd + (merged ? "" : extra)); continue;
     }
