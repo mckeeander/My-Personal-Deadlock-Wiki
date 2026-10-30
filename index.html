@@ -550,7 +550,7 @@ function effP(it, key) {
 var ORDER_OV = { "Crackshot": ["Damage", "Fading Move Speed", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
 var FLAG_OV = { SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
-var PCT_KEYS = { ReduceDebuffs: 1 };
+var PCT_KEYS = { ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
 var LABEL_OV = { "Powder Keg|DPS": "Burn DPS", "Bounce Pad|SpeedOnLand": "Move Speed", "Bounce Pad|StompStunDuration": "Stomp Stun",
   "Crackshot|DebuffDuration": "Slow Duration", "Crackshot|BulletResistReductionDuration": "Shred Duration",
   "Crackshot|AbilityCooldownPerHeadshot": "Per Hero Headshot", "Crackshot|AbilityCooldownPerHeadshotNPC": "Per NPC Headshot", "Chimera Mk1|ExplosionDamage": "Spirit Explosion Damage", "Chimera Mk1|ExplosionBulletDamage": "Weapon Explosion Damage", "Quantum Entanglement|ReduceDebuffs": "Debuff Duration Reduction", "Chimera Mk1|SelfDamageReductionOnPlayerHitPercent": "Self Damage Reduction",
@@ -586,6 +586,9 @@ function propRec(it, key) {
   if (v != null && /^[+-]?[\d.]+$/.test(v) && /Resist( Debuff)?$/.test(label)) { v += "%"; label = label.replace(/ Debuff$/, ""); }
   if (v != null && /^[+-]?[\d.]+m$/.test(v) && /Speed$/.test(label)) v = v.slice(0, -1) + " m/s";
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
+  if (key === "RatSwarmCols") return null; // shown together with the rows
+  if (key === "RatSwarmRows" && v != null) { var rc = parseFloat((effP(it, "RatSwarmCols") || {}).value) || 1, rr = parseFloat(v) || 0; v = String(rr * rc); label = "Rats (" + rc + " wide × " + rr + " deep)"; }
+  if (key === "RatSwarmWidth" && v != null) { v = Math.round(parseFloat(v) / 39.37 * 10) / 10 + "m"; label = "Swarm Width"; } // game units: 39.37 per meter
   var wpn = (sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label);
   return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage") };
 }
