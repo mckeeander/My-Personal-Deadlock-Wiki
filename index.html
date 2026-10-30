@@ -525,7 +525,9 @@ function modsFor(it, sel) {
   for (var i = 0; i < sel && i < ups.length; i++) {
     ((ups[i] && ups[i].property_upgrades) || []).forEach(function (pu) {
       var b = parseFloat(pu.bonus); if (isNaN(b)) return;
-      var o = m[pu.name] = m[pu.name] || { add: 0, mul: 1, addScale: 0, mulScale: null };
+      var nm = pu.name, P = it.properties || {};
+      if (!P[nm]) { for (var pk in P) if (pk.toLowerCase() === String(nm).toLowerCase()) { nm = pk; break; } }
+      var o = m[nm] = m[nm] || { add: 0, mul: 1, addScale: 0, mulScale: null };
       var t = pu.upgrade_type;
       if (t === "EAddToScale") o.addScale += b;
       else if (t === "EMultiplyScale") o.mulScale = (o.mulScale == null ? 1 : o.mulScale) * b;
@@ -545,7 +547,7 @@ function effP(it, key) {
   q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
   return q;
 }
-var LABEL_OV = { "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
+var LABEL_OV = { "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
 function propRec(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -553,7 +555,7 @@ function propRec(it, key) {
   var sk = scaleOf(p0, m), shown = p, n = parseFloat(p.value), cn = (p0.scale_function || {}).class_name;
   if (!isNaN(n) && CTX && CTX.hero) {
     var nv = null;
-    if (sk.kind === "melee" && n === 0) { // pure melee scaling: the game shows hero melee damage x rate
+    if (sk.kind === "melee" && Math.abs(n) < 0.05) { // pure melee scaling: the game shows hero melee damage x rate
       var ss = CTX.hero.starting_stats || {}, mm = ss[/Heavy/.test(sk.sub) ? "heavy_melee_damage" : "light_melee_damage"];
       if (mm && mm.value != null) nv = mm.value * sk.rate;
     } else if (cn === "scale_function_kinetic_carbine_damage" && CTX.bullet && sk.kind === "weapon") nv = n * CTX.bullet * sk.rate;
@@ -564,8 +566,8 @@ function propRec(it, key) {
   var v = fmtVal(shown);
   var label = propLabel(p0, key);
   if (v != null && /(Duration|Time)$/.test(key) && /^[+-]?\d*\.?\d+$/.test(v)) v += "s"; // unitless durations (Dash Buff Duration)
-  if (v != null && !p0.postvalue_label && !p0.label && !p0.display_name && /Percent$/.test(key)) { // an unlabelled "...Percent" value: use a % sign, not the word
-    label = label.replace(/\s*Percent$/i, ""); if (!/%$/.test(v)) v = v + "%";
+  if (v != null && !p0.postvalue_label && !p0.label && !p0.display_name && /(Percent|Pct)$/.test(key)) { // an unlabelled "...Percent" value: use a % sign, not the word
+    label = label.replace(/\s*(Percent|Pct)$/i, ""); if (!/%$/.test(v)) v = v + "%";
     if (parseFloat(p0.value) === 0 && parseFloat(shown.value) > 0 && v.charAt(0) !== "+") v = "+" + v;
   }
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
@@ -641,6 +643,9 @@ function tile(v, l, r) {
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
 var GROUP_OV = {
   "Rain of Arrows": [{ l: "On Hit:", k: ["SlowPercent", "SlowDuration"] }],
+  "Exploding Uppercut": [{ l: "On Hero Hit, You Gain:", k: ["MissingHPHeal", "BuffBaseWeaponPct", "UppercutBuffOnHit"],
+    x: [{ k: "BuffBaseWeaponPct", t: "Fast spin-up" }, { k: "BuffBaseWeaponPct", t: "2× weapon range" }], f: { RestoreHookCooldown: "Grapple Arm cooldown reset" } }],
+  "Sticky Bomb": [{ l: "On Cast, You Gain:", k: ["MovementSpeedBonus", "StatusResistancePercent", "MovementSpeedBonusDuration"], top: true }],
   "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }],
   "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
@@ -649,7 +654,16 @@ function tooltipHtml(it) {
   var secs = it.tooltip_details && it.tooltip_details.info_sections, parts = [], ex = upgradeExtras(it), tilesDone = false, firstMinor = -1;
   if (!secs || !secs.length) secs = [];
   var GO = GROUP_OV[it.name] || [], moved = {};
-  GO.forEach(function (g) { g.k.forEach(function (k) { moved[k] = 1; }); });
+  GO.forEach(function (g) { g.k.forEach(function (k) { moved[k] = 1; }); Object.keys(g.f || {}).forEach(function (k) { moved[k] = 1; }); });
+  // durations sit after the effects they time; a lone "Debuff Duration" with nothing to time is dropped
+  function arrange(html) {
+    var els = html.match(/<div class="stat[^"]*">[\s\S]*?<\/div>/g) || [];
+    function isDur(e) { return /<i>[^<]*(Duration|Time)<\/i>/.test(e); }
+    var main = els.filter(function (e) { return !isDur(e); }), dur = els.filter(isDur);
+    if (!main.length) dur = dur.filter(function (e) { return !/<i>(Debuff|Slow|Buff) Duration<\/i>/.test(e); });
+    return main.concat(dur).join("");
+  }
+  var firstStats = -1;
   function sig(v, l) { return String(l).toLowerCase() + "|" + v; }
   // which block each listed stat sits in, and what the game already shows
   var blockOf = {}, listed = {}, bi = 0;
@@ -697,12 +711,13 @@ function tooltipHtml(it) {
       });
       tiles += extraHtml(place[bi]);
       if ((tiles || (hadMoved && place[-1])) && !tilesDone) { tiles += extraHtml(place[-1]); tilesDone = true; } // other upgrade-added stats sit with the main tiles
-      if (tiles) parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>");
+      tiles = arrange(tiles);
+      if (tiles) { parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>"); if (firstStats < 0) firstStats = parts.length - 1; }
       bi++;
     });
     var minor = "", promo = "";
     (sec.basic_properties || []).forEach(function (k) {
-      if (moved[k]) return;
+      if (moved[k] || (k === "Radius" && blockOf.Radius == null)) return; // shown as a header chip
       var r = propRec(it, k); if (!r) return;
       var p0 = (it.properties || {})[k], b0 = p0 ? parseFloat(p0.value) : NaN;
       if (b0 === 0) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
@@ -714,8 +729,12 @@ function tooltipHtml(it) {
     }
     if (minor) { parts.push('<div class="minor">' + minor + "</div>"); if (firstMinor < 0) firstMinor = parts.length - 1; }
     if (si === 0) GO.forEach(function (g) {
-      var t = g.k.map(function (k) { var r = propRec(it, k); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join("");
-      if (t) parts.push('<div class="blk">' + esc(g.l) + '</div><div class="stats">' + t + "</div>");
+      var t = arrange(g.k.map(function (k) { var r = propRec(it, k); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join(""));
+      var mx = (g.x || []).filter(function (x) { return propRec(it, x.k); }).map(function (x) { return '<span class="fl">' + esc(x.t) + "</span>"; }).join("");
+      Object.keys(g.f || {}).forEach(function (k) { var e = effP(it, k); if (e && parseFloat(e.value) > 0) mx += '<span class="fl">' + esc(g.f[k]) + "</span>"; });
+      if (!t && !mx) return;
+      var html = '<div class="blk">' + esc(g.l) + "</div>" + (t ? '<div class="stats">' + t + "</div>" : "") + (mx ? '<div class="minor">' + mx + "</div>" : "");
+      if (g.top && firstStats >= 0) { parts.splice(firstStats + 1, 0, html); if (firstMinor > firstStats) firstMinor++; } else parts.push(html);
     });
   });
   if (place[-1] && !tilesDone) parts.push('<div class="stats">' + extraHtml(place[-1]) + "</div>");
@@ -751,7 +770,8 @@ function chipsHtml(it) {
     if (isDisabled(p) || !(parseFloat(p.value) > 0 || isNaN(parseFloat(p.value)))) return;
     left += chip(g[0], g[1], fmtVal(p), g[2]);
   });
-  if (!L.Radius) { // radius is a header stat in the game even when the tooltip body omits it
+  var inBlock = false; ((it.tooltip_details || {}).info_sections || []).forEach(function (sec) { (sec.properties_block || []).forEach(function (b) { (b.properties || []).forEach(function (pp) { if ((pp.important_property || pp.property) === "Radius") inBlock = true; }); }); });
+  if (!inBlock) { // radius is a header stat in the game even when the tooltip body omits it
     var rp = effP(it, "Radius"); seen.Radius = 1;
     if (rp && !isDisabled(rp) && parseFloat(rp.value) > 0) left += chip("Radius", "◎", fmtVal(rp), "Radius");
   }
@@ -1045,12 +1065,14 @@ var SI = {
   star: '<path fill="currentColor" fill-opacity=".35" stroke-width="2" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z"/>',
   crit: '<circle cx="12" cy="12" r="8"/><path stroke-width="2.2" d="M12 1.5v5.5M12 17v5.5M1.5 12H7M17 12h5.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
   hourglass: '<path stroke-width="2.2" d="M5.5 2.5h13M5.5 21.5h13M7 2.5c0 5.5 5 6.5 5 9.5s-5 4-5 9.5M17 2.5c0 5.5-5 6.5-5 9.5s5 4 5 9.5"/>',
-  shield: '<path stroke-width="2.2" d="M12 2.5l8 3v6c0 5-3.4 8.8-8 10.5-4.6-1.7-8-5.5-8-10.5v-6z"/>'
+  shield: '<path stroke-width="2.2" d="M12 2.5l8 3v6c0 5-3.4 8.8-8 10.5-4.6-1.7-8-5.5-8-10.5v-6z"/>',
+  bshield: '<path stroke-width="2" d="M12 2.5l8 3v6c0 5-3.4 8.8-8 10.5-4.6-1.7-8-5.5-8-10.5v-6z"/><path fill="currentColor" stroke="none" d="M12 6.6c1.5 1 2.2 2.4 2.2 4.2v4.4H9.8v-4.4c0-1.8.7-3.2 2.2-4.2zM9.8 16.1h4.4v1.4H9.8z"/>',
+  sshield: '<path stroke-width="2" d="M12 2.5l8 3v6c0 5-3.4 8.8-8 10.5-4.6-1.7-8-5.5-8-10.5v-6z"/><path fill="currentColor" stroke="none" d="M12 7.2l1.3 2.7 3 .4-2.2 2.1.5 3-2.6-1.4-2.6 1.4.5-3-2.2-2.1 3-.4z"/>'
 };
 function siIcon(n) {
   return n && SI[n] ? '<svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + SI[n] + "</svg>" : "";
 }
-var SICON = { "Health": "health", "Health regen": "regen", "Out-of-combat regen": "regen", "Crit reduction": "crit", "Bullet resist": "shield", "Spirit resist": "shield",
+var SICON = { "Health": "health", "Health regen": "regen", "Out-of-combat regen": "regen", "Crit reduction": "crit", "Bullet resist": "bshield", "Spirit resist": "sshield",
   "Move speed": "boot", "Sprint speed": "sprint", "Crouch speed": "boot", "Dash speed": "dash", "Stamina": "stamina", "Stamina cooldown": "hourglass", "Ground dash": "dash", "Air dash": "dash",
   "Damage per second": "dps", "Bullet damage": "dmg", "Ammo": "ammo", "Bullets per sec": "bps", "Reload time": "reload", "Bullet velocity": "vel", "Light melee": "fist", "Heavy melee": "fist", "Reload speed": "reload",
   "Spirit power": "star" };
