@@ -130,7 +130,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .wdps div{text-align:center;background:#3a2814;border:1px solid #6b4a22;border-radius:8px;padding:8px 2px}
 .wdps b{display:block;font-size:22px;color:var(--weapon)}
 .wdps i,.wc i{font-style:normal;font-size:11px;color:var(--dim)}
-.wg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.wg{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.wg>*{flex:0 0 calc((100% - 12px)/3);min-width:0}
 .wc{background:var(--panel2);border-radius:6px;padding:8px 4px;text-align:center}
 .wc b{display:block;font-size:16px}
 .fo{margin-top:12px;font-size:13px;color:var(--dim);line-height:1.4}
@@ -238,11 +238,11 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .bg div.spike u{background:var(--sp)}
 .bg div.spike b{color:var(--sp)}
 @keyframes popup{0%,100%{text-shadow:0 0 0 rgba(255,208,72,0)}
- 40%{text-shadow:0 0 5px rgba(236,196,92,.6),0 0 14px rgba(230,185,70,.42),0 0 26px rgba(220,175,60,.2)}}
+ 40%{color:#ffe7a6;text-shadow:0 0 4px rgba(255,214,110,.95),0 0 10px rgba(240,190,70,.8),0 0 22px rgba(230,180,60,.5)}}
 @keyframes popdown{0%,100%{text-shadow:0 0 0 rgba(100,140,255,0)}
- 40%{text-shadow:0 0 5px rgba(108,140,255,.62),0 0 14px rgba(72,112,248,.44),0 0 26px rgba(60,98,244,.24)}}
-@keyframes iconup{0%,100%{filter:drop-shadow(0 0 0 rgba(255,208,72,0))}40%{filter:drop-shadow(0 0 4px rgba(236,196,92,.6)) drop-shadow(0 0 9px rgba(230,185,70,.38))}}
-@keyframes icondown{0%,100%{filter:drop-shadow(0 0 0 rgba(100,140,255,0))}40%{filter:drop-shadow(0 0 4px rgba(108,140,255,.62)) drop-shadow(0 0 9px rgba(72,112,248,.4))}}
+ 40%{color:#c9d6ff;text-shadow:0 0 4px rgba(130,160,255,.95),0 0 10px rgba(80,118,250,.8),0 0 22px rgba(64,100,245,.5)}}
+@keyframes iconup{0%,100%{filter:drop-shadow(0 0 0 rgba(255,208,72,0))}40%{filter:drop-shadow(0 0 3px rgba(255,214,110,.95)) drop-shadow(0 0 8px rgba(240,190,70,.75))}}
+@keyframes icondown{0%,100%{filter:drop-shadow(0 0 0 rgba(100,140,255,0))}40%{filter:drop-shadow(0 0 3px rgba(130,160,255,.95)) drop-shadow(0 0 8px rgba(80,118,250,.75))}}
 @keyframes chipup{0%,100%{filter:brightness(0) invert(1) drop-shadow(0 0 0 rgba(255,208,72,0))}40%{filter:brightness(0) invert(1) drop-shadow(0 0 4px rgba(236,196,92,.6)) drop-shadow(0 0 9px rgba(230,185,70,.38))}}
 @keyframes chipdown{0%,100%{filter:brightness(0) invert(1) drop-shadow(0 0 0 rgba(100,140,255,0))}40%{filter:brightness(0) invert(1) drop-shadow(0 0 4px rgba(108,140,255,.62)) drop-shadow(0 0 9px rgba(72,112,248,.4))}}
 @keyframes boxup{0%,100%{box-shadow:0 0 0 0 rgba(255,200,60,0),0 0 0 rgba(255,200,60,0)}
@@ -362,7 +362,7 @@ function rich(s) {
   });
   var parts = s.split(/(<[^>]*>)/), out = "";
   parts.forEach(function (p) {
-    if (p.charAt(0) !== "<") { out += esc(p.replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")); return; }
+    if (p.charAt(0) !== "<") { out += esc(p.replace(/(\d)\.0(?!\d)/g, "$1").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")); return; }
     var m = /^<\s*(\/?)\s*([a-zA-Z]+)([^>]*)>/.exec(p);
     if (!m) return;
     var close = m[1] === "/", tag = m[2].toLowerCase(), attrs = m[3] || "";
@@ -547,7 +547,9 @@ function effP(it, key) {
   q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
   return q;
 }
-var LABEL_OV = { "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
+var LABEL_OV = { "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
+  "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
+  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
 function propRec(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -566,7 +568,7 @@ function propRec(it, key) {
   var v = fmtVal(shown);
   var label = propLabel(p0, key);
   if (v != null && /(Duration|Time)$/.test(key) && /^[+-]?\d*\.?\d+$/.test(v)) v += "s"; // unitless durations (Dash Buff Duration)
-  if (v != null && !p0.postvalue_label && !p0.label && !p0.display_name && /(Percent|Pct)$/.test(key)) { // an unlabelled "...Percent" value: use a % sign, not the word
+  if (v != null && !p0.postvalue_label && !p0.label && !p0.display_name && /(Percent|Pct|Amp|Lifesteal)$/.test(key)) { // an unlabelled "...Percent" value: use a % sign, not the word
     label = label.replace(/\s*(Percent|Pct)$/i, ""); if (!/%$/.test(v)) v = v + "%";
     if (parseFloat(p0.value) === 0 && parseFloat(shown.value) > 0 && v.charAt(0) !== "+") v = "+" + v;
   }
@@ -646,6 +648,8 @@ var GROUP_OV = {
   "Exploding Uppercut": [{ l: "On Hero Hit, You Gain:", k: ["MissingHPHeal", "BuffBaseWeaponPct", "UppercutBuffOnHit"],
     x: [{ k: "BuffBaseWeaponPct", t: "Fast spin-up" }, { k: "BuffBaseWeaponPct", t: "2× weapon range" }], f: { RestoreHookCooldown: "Grapple Arm cooldown reset" } }],
   "Sticky Bomb": [{ l: "On Cast, You Gain:", k: ["MovementSpeedBonus", "StatusResistancePercent", "MovementSpeedBonusDuration"], top: true }],
+  "Rising Ram": [{ l: "On Impact, You Gain:", k: ["MaxHealthBuffPct", "WeaponDamageBurst", "MaxHealthBuffDuration", "WeaponDamageBurstDuration"] }],
+  "Chain Gang": [{ l: "You Gain:", k: ["BulletResist", "TechResist", "UnstoppablePerHero"] }],
   "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }],
   "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
@@ -798,7 +802,7 @@ function upgradeExtras(it) {
     ((u && u.property_upgrades) || []).forEach(function (pu) {
       var t = pu.upgrade_type;
       if (t === "EAddToScale" || t === "EMultiplyScale") return;
-      var k = pu.name; if (seen[k] || L[k] || HEADER_KEYS[k] || !P[k]) return; seen[k] = 1; keys.push(k);
+      var k = pu.name; if (seen[k] || L[k] || HEADER_KEYS[k] || !P[k] || /^CountsAs/.test(k)) return; seen[k] = 1; keys.push(k); // "Counts as light melee" is shown by the scaling badge
     });
   });
   keys.forEach(function (k) {
@@ -1002,7 +1006,7 @@ function abilityCard(it, h) {
   try {
     return '<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       chipsHtml(it) +
-      '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc } : it.description)) + "</div>" +
+      '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc || (((it.tooltip_details || {}).info_sections || [])[0] || {}).loc_string || it.description.passive } : it.description)) + "</div>" +
       tooltipHtml(it) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
   } finally { CTX = null; }
 }
