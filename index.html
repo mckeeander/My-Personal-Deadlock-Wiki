@@ -179,7 +179,7 @@ details.notes + details.notes{margin-top:12px}
 .pill2.weapon{background:#3d2a14;color:var(--weapon)}.pill2.vitality{background:#1f3320;color:var(--vital)}.pill2.spirit{background:#3b2d55;color:var(--spirit)}
 .rc{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;text-align:left;font-size:14px;width:100%;margin-top:6px;color:var(--fg)}
 .rc img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:4px}
-.rc.cat-weapon{border-color:color-mix(in srgb,var(--weapon) 55%,transparent)}.rc.cat-vitality{border-color:color-mix(in srgb,var(--vital) 55%,transparent)}.rc.cat-spirit{border-color:color-mix(in srgb,var(--spirit) 55%,transparent)}
+.rc.cat-weapon img{box-shadow:0 0 0 1.5px var(--weapon)}.rc.cat-vitality img{box-shadow:0 0 0 1.5px var(--vital)}.rc.cat-spirit img{box-shadow:0 0 0 1.5px var(--spirit)}
 .rc span{flex:1;min-width:0}.rc small{display:block;color:var(--dim);font-size:11.5px;line-height:1.3;margin-top:1px}
 .ibox{background:var(--panel2);border:1px solid var(--line);border-left:3px solid #3f7599;border-radius:8px;padding:8px 10px;margin:6px 0}
 .ibox.positive{border-left-color:#4f9a55}.ibox.negative{border-left-color:#c0645a}
@@ -547,9 +547,9 @@ function effP(it, key) {
   q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
   return q;
 }
-var FLAG_OV = { ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
+var FLAG_OV = { BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
 var PCT_KEYS = { ReduceDebuffs: 1 };
-var LABEL_OV = { "Quantum Entanglement|ReduceDebuffs": "Debuff Duration Reduction", "Chimera Mk1|SelfDamageReductionOnPlayerHitPercent": "Self Damage Reduction",
+var LABEL_OV = { "Chimera Mk1|ExplosionDamage": "Spirit Explosion Damage", "Chimera Mk1|ExplosionBulletDamage": "Weapon Explosion Damage", "Quantum Entanglement|ReduceDebuffs": "Debuff Duration Reduction", "Chimera Mk1|SelfDamageReductionOnPlayerHitPercent": "Self Damage Reduction",
   "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
   "Ava|OutgoingDamagePercent": "Max Damage Amp", "Ava|DamageAmpBuildDuration": "Build-up Time", "Ava|DamageAmpDuration": "Lingers For", "Gloom Bombs|MeleeResistReductionDuration": "Debuff Duration", "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
   "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
@@ -658,8 +658,8 @@ var GROUP_OV = {
   "Leaping Slash": [{ l: "Bounty:", k: ["BonusGoldOnKill", "BountyDuration"] }],
   "Ava": [{ l: "Damage Amp:", k: ["OutgoingDamagePercent", "DamageAmpBuildDuration", "DamageAmpDuration"] }],
   "Return to Shadows": [{ l: "On Completion:", k: ["HealAmount"], f: { RefundCooldowns: "Refunds all ability cooldowns" } }],
-  "Chimera Mk1": [{ l: "On Hero Hit:", k: ["HealOnHit", "SelfDamageReductionOnPlayerHitPercent", "OverheatLockoutDurationReductionOnPlayerHitPercent"] }],
-  "Jettison Fuel": [{ l: "On Backblast Hit, You Gain:", k: ["BonusFireRate", "BuffDuration"], f: { BurstMarkStacks: "Marks enemies hit (Strix Salvo)" } }],
+  "Chimera Mk1": [{ l: "On Hero Hit:", k: ["HealOnHit", "OverheatLockoutDurationReductionOnPlayerHitPercent"], f: { SelfDamageReductionOnPlayerHitPercent: "No self damage" } }],
+  "Jettison Fuel": [{ l: "On Backblast Hit, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Essence Theft": [{ l: "", k: [], f: { SkullBuildUp: "", ZombieMeleeBuildUp: "" } }],
   "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }, { l: "On Hit, You Gain:", k: ["StaminaToRestore"], f: { ResetsAirLimit: "Reset Air Limit" } }],
@@ -818,6 +818,7 @@ function upgradeExtras(it) {
     });
   });
   keys.forEach(function (k) {
+    if (FLAG_OV[k]) { var fe = effP(it, k); if (fe && parseFloat(fe.value) > 0) { res.flags.push(FLAG_OV[k]); (res.fk = res.fk || []).push(k); } return; }
     var p = P[k], named = !!(p.postvalue_label || p.label), base = parseFloat(p.value), e = effP(it, k), ev = e ? parseFloat(e.value) : NaN;
     var lbl0 = String(p.postvalue_label || p.label || "");
     if (named && base === 0 && !p.postfix && !p.prefix && !p.display_units && /^(Reset|Can |Enable|Grant|Allow|Remove|Cancel|Ignore|Pierce|Disable|Purge|Dispel|Immune|Unstoppable|No )/i.test(lbl0) &&
@@ -1030,7 +1031,7 @@ function abilityCard(it, h) {
   } finally { CTX = null; }
 }
 function dropChipDupes(html, chips) {
-  var SAME = { Range: ["Range", "Cast Range"], Cooldown: ["Cooldown"], Duration: ["Duration"], Radius: ["Radius"] }, have = {};
+  var SAME = { Range: ["Cast Range"], Cooldown: ["Cooldown"], Duration: ["Duration"], Radius: ["Radius"] }, have = {};
   (chips.match(/data-tip="[^"]*">(?:<img[^>]*>)?[^<]*/g) || []).forEach(function (c) {
     var m = /data-tip="([^"]*)">(?:<img[^>]*>)?(?:[^\s<\d]+\s)?([^<]*)/.exec(c); if (!m) return;
     (SAME[m[1]] || []).forEach(function (l) { have[l + "|" + m[2].trim()] = 1; });
