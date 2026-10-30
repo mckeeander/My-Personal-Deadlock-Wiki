@@ -380,7 +380,10 @@ function rich(s) {
     }
     if (tag === "img") {
       var src = (/src="([^"]*)"/.exec(attrs) || [0, ""])[1];
-      if (/^https:\/\/assets-bucket\.deadlock-api\.com\//.test(src)) out += '<img class="ia" alt="" src="' + esc(src) + '">';
+      if (/^https:\/\/assets-bucket\.deadlock-api\.com\//.test(src)) { // some HUD modifier icons are missing from the game data; the matching property icon stands in
+        var alt = src.replace(/\/images\/hud\/modifiers\/([a-z_]+)\.png$/, "/icons/icons/properties/condition_$1.svg");
+        out += '<img class="ia" alt="" src="' + esc(src) + '"' + (alt !== src ? ' data-f="' + esc(alt) + '"' : "") + ' onerror="if(this.dataset.f){this.src=this.dataset.f;this.dataset.f=\'\'}else{this.style.display=\'none\'}">';
+      }
       return;
     }
     if (tag === "b" || tag === "i" || tag === "strong" || tag === "em") out += close ? "</" + tag + ">" : "<" + tag + ">";
