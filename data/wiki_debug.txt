@@ -84,7 +84,7 @@ Calico: fetched via api; abilities-section, found headings: Gloom Bombs, Leaping
   Return to Shadows: 1 notes, 0 interactions, items=['Healing Booster', 'Healing Tempo', 'Slowing Hex'], notes-label=True
   [weapon] name='Sweetest Lie', 0 notes, notes-label=False
 Grey Talon: fetched via api; abilities-section, found headings: Charged Shot, Rain of Arrows, Spirit Snare, Guided Owl
-  Charged Shot: 6 notes, 0 interactions, items=[], notes-label=True
+  Charged Shot: 7 notes, 0 interactions, items=[], notes-label=True
   Rain of Arrows: 9 notes, 0 interactions, items=['Healing Booster', 'Dispel Magic', 'Unstoppable', 'Slowing Hex', 'Split Shot', 'Phantom Strike'], notes-label=True
   Spirit Snare: 2 notes, 0 interactions, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
   Guided Owl: 6 notes, 0 interactions, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
