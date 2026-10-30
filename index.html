@@ -179,6 +179,7 @@ details.notes + details.notes{margin-top:12px}
 .pill2.weapon{background:#3d2a14;color:var(--weapon)}.pill2.vitality{background:#1f3320;color:var(--vital)}.pill2.spirit{background:#3b2d55;color:var(--spirit)}
 .rc{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;text-align:left;font-size:14px;width:100%;margin-top:6px;color:var(--fg)}
 .rc img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:4px}
+.rc.cat-weapon{border-color:color-mix(in srgb,var(--weapon) 55%,transparent)}.rc.cat-vitality{border-color:color-mix(in srgb,var(--vital) 55%,transparent)}.rc.cat-spirit{border-color:color-mix(in srgb,var(--spirit) 55%,transparent)}
 .rc span{flex:1;min-width:0}.rc small{display:block;color:var(--dim);font-size:11.5px;line-height:1.3;margin-top:1px}
 .ibox{background:var(--panel2);border:1px solid var(--line);border-left:3px solid #3f7599;border-radius:8px;padding:8px 10px;margin:6px 0}
 .ibox.positive{border-left-color:#4f9a55}.ibox.negative{border-left-color:#c0645a}
@@ -640,6 +641,7 @@ function tile(v, l, r) {
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
 var GROUP_OV = {
   "Rain of Arrows": [{ l: "On Hit:", k: ["SlowPercent", "SlowDuration"] }],
+  "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }],
   "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
 };
@@ -820,8 +822,12 @@ function upgradeTexts(it) {
     if (d[k]) {
       var rd = rich(d[k]), merged = false;
       if (shortBits.length === 1) { // "improved Spirit scaling" + a separate line -> one phrase with the number in it
-        rd = rd.replace(/(?:improved|increased|increases)\s+((?:damage|heal(?:ing)?|barrier|duration)\s+)?(Spirit\s+|Weapon\s+|Boon\s+)?((?:damage|heal(?:ing)?|barrier|duration)\s+)?scaling/i, function (m0, mid1, wd, mid2, off, str) {
-          merged = true; var w = (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim(); w = w.charAt(0).toUpperCase() + w.slice(1); var mid = (mid1 || mid2 || "").toLowerCase();
+        rd = rd.replace(/(?:improved|increased|increases)\s+((?:(?!Spirit\b|Weapon\b|Boon\b|scaling\b)[A-Za-z]+\s+){0,3})(Spirit\s+|Weapon\s+|Boon\s+)?((?:damage|heal(?:ing)?|barrier|duration)\s+)?scaling/i, function (m0, mid1, wd, mid2, off, str) {
+          merged = true; var w = (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim(); w = w.charAt(0).toUpperCase() + w.slice(1);
+          if (mid1 && mid1.trim().split(/\s+/).length > 1) { // a named stat: "+1.2 Heal per Kill Spirit scaling"
+            return '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + mid1 + (w ? w + " " : "") + "scaling";
+          }
+          var mid = mid1 || mid2 || ""; if (!/^[A-Z]{2,}\s*$/.test(mid)) mid = mid.toLowerCase(); // keep "DPS"
           var rest = (str.slice(0, off) + str.slice(off + m0.length)).replace(/<[^>]+>/g, "").toLowerCase();
           if (mid && rest.indexOf(mid.trim()) >= 0) mid = ""; // "+70 Barrier and +0.76 Spirit scaling", not "...barrier scaling"
           return '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (w ? w + " " : "") + mid + "scaling";
@@ -868,6 +874,8 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
   for (var ui = 0; ui < 2; ui++) h = h.replace(/<span class="(?:hl|highlight)">([^<]*)<\/span>/g, "$1");
   return h.split(/(<[^>]*>)/).map(function (p) {
     if (p.charAt(0) === "<") return p;
+    p = p.replace(/(\d)m(\s+(?:Move|Sprint|Dash)?\s*Speed\b)/g, "$1 m/s$2") // "+2.5m Move Speed" is a speed
+      .replace(/(\d)(\s+(?:[A-Z][a-z]+\s+)?(?:Cooldown|Duration)\b)/g, "$1s$2"); // "-5 Cooldown" is seconds
     return p.replace(/([+\-]?\d+(?:\.\d+)?)(?:(s|m|%)(?![A-Za-z\/]))?/g, function (m, n, u, off, str) {
       var pc = off > 0 ? str.charAt(off - 1) : "";
       if (/[A-Za-z0-9.#&]/.test(pc)) return m;
@@ -963,7 +971,7 @@ function wikiHtml(h, it) {
   var chips = (a.items || []).map(function (nm) {
     var cn = state.byName[String(nm).toLowerCase()]; if (!cn || carded[String(nm).toLowerCase()]) return ""; // already has its own interaction card
     var tip = shortTip(hints[nm], nm);
-    return '<button class="rc pitem" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + (tip ? "<small>" + esc(tip) + "</small>" : "") + "</span></button>";
+    return '<button class="rc pitem cat-' + esc(slotOf(state.byClass[cn])) + '" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + (tip ? "<small>" + esc(tip) + "</small>" : "") + "</span></button>";
   }).join("");
   if (chips) html += '<div class="ihd">Interacts with</div><div class="pgrid">' + chips + "</div>";
   return html + "</div>";
@@ -1455,7 +1463,7 @@ var GLOSS = [
 
   { k: "bullet-resist", c: "def", t: "Bullet Resist", a: ["bullet resist", "bullet resistance", "bullet armor"], d: "Reduces the [[weapon-damage|weapon damage]] you take, melee included, by a percentage. Several sources multiply rather than add: 40% and 20% make 52%, not 60%." },
   { k: "spirit-resist", c: "def", t: "Spirit Resist", a: ["spirit resist", "spirit resistance", "spirit armor"], d: "Reduces the [[spirit-damage|spirit damage]] you take by a percentage. Like Bullet Resist, several sources multiply rather than add." },
-  { k: "melee-resist", c: "def", t: "Melee Resist", a: ["melee resist"], d: "Reduces melee damage only, on top of [[bullet-resist|Bullet Resist]]." },
+  { k: "melee-resist", c: "def", t: "Melee Resist", a: ["melee resist", "melee resistance"], d: "Reduces melee damage only, on top of [[bullet-resist|Bullet Resist]]." },
   { k: "shred", c: "def", t: "Resist reduction (shred)", a: ["shred", "resist reduction", "bullet resist reduction", "spirit resist reduction"], d: "Effects that lower an enemy’s Bullet or Spirit Resist. The reduction is subtracted from their resist, so it can push it below zero: at −30% resist a target takes 130% damage." },
   { k: "barrier", c: "def", t: "Barrier", a: ["barrier", "barriers"], d: "A temporary pool of extra health that takes damage before your real health. Resists still apply to damage that hits it, and anything left over spills into your health. Barriers expire after a while." },
   { k: "lifesteal", c: "def", t: "Lifesteal", a: ["lifesteal", "spirit lifesteal", "bullet lifesteal", "weapon lifesteal", "melee lifesteal"], d: "Heals you for a share of the damage you deal. Bullet lifesteal works off weapon damage, spirit lifesteal off spirit damage, and melee lifesteal off melee hits. It’s often weaker against non-heroes, like a “vs non-heroes” line on an ability." },
