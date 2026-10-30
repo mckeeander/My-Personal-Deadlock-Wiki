@@ -547,7 +547,7 @@ function effP(it, key) {
   q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
   return q;
 }
-var ORDER_OV = { "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
+var ORDER_OV = { "Crackshot": ["Damage", "Fading Move Speed", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
 var FLAG_OV = { SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
 var PCT_KEYS = { ReduceDebuffs: 1 };
@@ -580,6 +580,11 @@ function propRec(it, key) {
     label = label.replace(/\s*(Percent|Pct)$/i, ""); v = v.replace(/s$/, ""); if (!/%$/.test(v)) v = v + "%";
     if (parseFloat(p0.value) === 0 && parseFloat(shown.value) > 0 && v.charAt(0) !== "+") v = "+" + v;
   }
+  label = label.replace(/\bTech\b/g, "Spirit").replace(/\bLife Steal\b/g, "Lifesteal");
+  if (v != null && /\bPercent(age)?\b/.test(label) && /^[+-]?[\d.]+$/.test(v)) { v += "%"; label = label.replace(/\s*\bPercent(age)?\b/, "").trim(); }
+  if (v != null && /^[+-]?[\d.]+$/.test(v) && /(Stun|Cooldown|Window)$/.test(label)) v += "s";
+  if (v != null && /^[+-]?[\d.]+$/.test(v) && /Resist( Debuff)?$/.test(label)) { v += "%"; label = label.replace(/ Debuff$/, ""); }
+  if (v != null && /^[+-]?[\d.]+m$/.test(v) && /Speed$/.test(label)) v = v.slice(0, -1) + " m/s";
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
   var wpn = (sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label);
   return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage") };
@@ -863,7 +868,7 @@ function upgradeTexts(it) {
       var pp = (it.properties || {})[pu.name] || {}, sk = scaleOf(pp), word = KW[pu.scale_stat_filter] || (sk.kind === "spirit" ? "Spirit" : sk.kind === "weapon" ? "Weapon" : sk.kind === "boons" ? "Boon" : "");
       var bn = Number(pu.bonus);
       if (pu.scale_stat_filter === "EWeaponPower") bn = bn / 100;
-      scaleBits.push(esc((bn >= 0 ? "+" : "") + fmtRate(bn) + " " + (word ? word + " " : "") + "scaling (" + propLabel(pp, pu.name) + ")"));
+      scaleBits.push(esc((bn >= 0 ? "+" : "") + fmtRate(bn) + " " + (LABEL_OV[it.name + "|" + pu.name] || propLabel(pp, pu.name)) + " " + (word ? word + " " : "") + "scaling"));
       shortBits.push({ n: (bn >= 0 ? "+" : "") + fmtRate(bn), w: word }); labelBits.push(LABEL_OV[it.name + "|" + pu.name] || propLabel(pp, pu.name));
     });
     if (shortBits.length > 1 && shortBits.every(function (b) { return b.n === shortBits[0].n && b.w === shortBits[0].w; })) { shortBits = [shortBits[0]]; labelBits = [labelBits[0]]; }
@@ -912,6 +917,14 @@ function upgradeTexts(it) {
           out.push(rd.replace(/\.\s*$/, "") + ", with " + '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (shortBits[0].w ? shortBits[0].w + " " : "") + "scaling"); continue;
         }
       }
+      if (!merged && shortBits.length) { // other ways the game says "better scaling": put the real numbers in their place
+        var named = shortBits.map(function (b, bi) { return '<span class="highlight">' + esc(b.n) + "</span> " + (shortBits.length > 1 || !b.w ? esc(labelBits[bi]) + " " : ""); }).join("and ").replace(/and $/, "");
+        var wdn = shortBits[0].w ? shortBits[0].w + " " : "";
+        var nr = rd.replace(/(?:improved?|increased?|increases)\s+(?:[\w]+\s+){0,4}?scaling|(?:[\w]+\s+){0,5}scaling\s+increased/i, function () { merged = true; return named.replace(/\s+$/, " ") + wdn + "scaling"; });
+        if (merged) rd = nr;
+        else if (/[+-]?[\d.]+%?\s+(?:\w+\s+)?scaling/i.test(rd.replace(/<[^>]+>/g, ""))) merged = true; // the text already gives the number
+        else extra = '<br><span class="dm">' + shortBits.map(function (b, bi) { return esc(b.n + " " + labelBits[bi] + " " + (b.w ? b.w + " " : "") + "scaling"); }).join("<br>") + "</span>";
+      }
       out.push(rd + (merged ? "" : extra)); continue;
     }
     if (ups[i] && ups[i].property_upgrades) {
@@ -935,7 +948,7 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
   for (var ui = 0; ui < 2; ui++) h = h.replace(/<span class="(?:hl|highlight)">([^<]*)<\/span>/g, "$1");
   return h.split(/(<[^>]*>)/).map(function (p) {
     if (p.charAt(0) === "<") return p;
-    p = p.replace(/(\d)m(\s+(?:(?:Move|Sprint|Dash)?\s*Speed|Movespeed)\b)/g, "$1 m/s$2") // "+2.5m Move Speed" is a speed
+    p = p.replace(/(\d) ?m(\s+(?:(?:Move|Sprint|Dash|Flight|Fly)?\s*Speed|Movespeed)\b)/g, "$1 m/s$2") // "+2.5m Move Speed" is a speed
       .replace(/(\d)(\s+(?:[A-Z][a-z]+\s+)?(?:Cooldown|Duration)\b)/g, "$1s$2"); // "-5 Cooldown" is seconds
     return p.replace(/([+\-]?\d+(?:\.\d+)?)(?:(s|m|%)(?![A-Za-z\/]))?/g, function (m, n, u, off, str) {
       var pc = off > 0 ? str.charAt(off - 1) : "";
@@ -1046,8 +1059,25 @@ function abilityCard(it, h) {
     return '<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       CH +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: it.description.desc || (((it.tooltip_details || {}).info_sections || [])[0] || {}).loc_string || it.description.passive } : it.description)) + "</div>" +
-      dropChipDupes(tooltipHtml(it), CH) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
+      flagOnes(dropChipDupes(tooltipHtml(it), CH)) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
   } finally { CTX = null; }
+}
+// a "1" that is really an on/off switch ("1 Purge Debuffs") reads better as plain text with the small stats
+var FLAG_TXT = { "Post Cube Buff": "Buff after leaving the Cube", "Silence Debuff": "Also silences", "Unstoppable Cast Delay": "Unstoppable while casting",
+  "Channel Damage Immune": "Immune to damage while channeling", "Purge Debuffs": "Purges debuffs", "Remove Debuffs": "Removes debuffs", "Dispel Debuffs": "Dispels debuffs" };
+function flagOnes(html) {
+  var COUNT = /(Charge|Stamina|Count|Stack|Target|Bounce|Jump|Shard|Ghoul|Missile|Knight|Piece|Swap|Recast|Turret|Helper|Deadhead|Leech|Max|Bonus|Shot|Rocket|Mark|Bite|Pull)/i, flags = [];
+  html = html.replace(/<div class="stat[^"]*"><b>1<\/b><i>([^<]*)<\/i><\/div>/g, function (m, l) { if (COUNT.test(l)) return m; flags.push(FLAG_TXT[l] || l); return ""; })
+    .replace(/<div class="stats"><\/div>/g, "");
+  if (!flags.length) return html;
+  var fl = flags.map(function (f) { return '<span class="fl">' + f + "</span>"; }).join("");
+  var i = html.indexOf('<div class="minor">');
+  if (i >= 0) { var j = html.indexOf("</div>", i); return html.slice(0, j) + fl + html.slice(j); }
+  var k = html.indexOf('<div class="stats">'); if (k < 0) return html + '<div class="minor">' + fl + "</div>";
+  var depth = 0, x = k; // after the first stats block
+  var re = /<\/?div[^>]*>/g; re.lastIndex = k; var mm;
+  while ((mm = re.exec(html))) { depth += mm[0].charAt(1) === "/" ? -1 : 1; if (depth === 0) { x = re.lastIndex; break; } }
+  return html.slice(0, x) + '<div class="minor">' + fl + "</div>" + html.slice(x);
 }
 function dropChipDupes(html, chips) {
   var SAME = { Range: ["Cast Range"], Cooldown: ["Cooldown"], Duration: ["Duration"], Radius: ["Radius"] }, have = {};
