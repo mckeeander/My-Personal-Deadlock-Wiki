@@ -547,11 +547,13 @@ function effP(it, key) {
   q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
   return q;
 }
-var ORDER_OV = { "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
+var ORDER_OV = { "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
 var FLAG_OV = { SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
 var PCT_KEYS = { ReduceDebuffs: 1 };
-var LABEL_OV = { "Chimera Mk1|ExplosionDamage": "Spirit Explosion Damage", "Chimera Mk1|ExplosionBulletDamage": "Weapon Explosion Damage", "Quantum Entanglement|ReduceDebuffs": "Debuff Duration Reduction", "Chimera Mk1|SelfDamageReductionOnPlayerHitPercent": "Self Damage Reduction",
+var LABEL_OV = { "Powder Keg|DPS": "Burn DPS", "Bounce Pad|SpeedOnLand": "Move Speed", "Bounce Pad|StompStunDuration": "Stomp Stun",
+  "Crackshot|DebuffDuration": "Slow Duration", "Crackshot|BulletResistReductionDuration": "Shred Duration",
+  "Crackshot|AbilityCooldownPerHeadshot": "Per Hero Headshot", "Crackshot|AbilityCooldownPerHeadshotNPC": "Per NPC Headshot", "Chimera Mk1|ExplosionDamage": "Spirit Explosion Damage", "Chimera Mk1|ExplosionBulletDamage": "Weapon Explosion Damage", "Quantum Entanglement|ReduceDebuffs": "Debuff Duration Reduction", "Chimera Mk1|SelfDamageReductionOnPlayerHitPercent": "Self Damage Reduction",
   "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
   "Ava|OutgoingDamagePercent": "Max Damage Amp", "Ava|DamageAmpBuildDuration": "Build-up Time", "Ava|DamageAmpDuration": "Lingers For", "Gloom Bombs|MeleeResistReductionDuration": "Debuff Duration", "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
   "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
@@ -663,6 +665,9 @@ var GROUP_OV = {
   "Chimera Mk1": [{ l: "On Hero Hit:", k: ["HealOnHit", "OverheatLockoutDurationReductionOnPlayerHitPercent"] }],
   "Jettison Fuel": [{ l: "On Backblast Hit, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Essence Theft": [{ l: "", k: [], f: { SkullBuildUp: "", ZombieMeleeBuildUp: "" } }],
+  "Bounce Pad": [{ l: "On Landing, You and Allies Gain:", k: ["SpeedOnLand", "SpeedOnLandDuration"] }],
+  "Crackshot": [{ l: "On Hit:", k: ["FadingSlowPercent", "BulletResistReduction", "DebuffDuration", "BulletResistReductionDuration"] },
+    { l: "Cooldown Refund:", k: ["AbilityCooldownPerHeadshot", "AbilityCooldownPerHeadshotNPC"] }],
   "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }, { l: "On Hit, You Gain:", k: ["StaminaToRestore"], f: { ResetsAirLimit: "Reset Air Limit" } }],
   "Baba's Brew": [{ l: "", k: [], f: { BrewEffectiveness: "" } }],
@@ -835,7 +840,7 @@ function upgradeExtras(it) {
       if (/^(Refresh|Improved)/.test(k)) return;
       // an unlabelled twin of a tile the tooltip already shows (e.g. Bonus Item Range next to Bonus Item Duration/Range)
       var dup = Object.keys(L).some(function (lk) {
-        var q = effP(it, lk); return q && lk !== k && camelHead(lk) === camelHead(k) && parseFloat(q.value) === ev;
+        var q = effP(it, lk); return q && lk !== k && camelHead(lk) === camelHead(k) && parseFloat(q.value) === ev && /Duration$/.test(lk) === /Duration$/.test(k);
       });
       if (dup) return;
       var ones = (it.upgrades || []).every(function (u) { return ((u && u.property_upgrades) || []).every(function (pu) { return pu.name !== k || parseFloat(pu.bonus) === 1; }); });
@@ -859,7 +864,7 @@ function upgradeTexts(it) {
       var bn = Number(pu.bonus);
       if (pu.scale_stat_filter === "EWeaponPower") bn = bn / 100;
       scaleBits.push(esc((bn >= 0 ? "+" : "") + fmtRate(bn) + " " + (word ? word + " " : "") + "scaling (" + propLabel(pp, pu.name) + ")"));
-      shortBits.push({ n: (bn >= 0 ? "+" : "") + fmtRate(bn), w: word }); labelBits.push(propLabel(pp, pu.name));
+      shortBits.push({ n: (bn >= 0 ? "+" : "") + fmtRate(bn), w: word }); labelBits.push(LABEL_OV[it.name + "|" + pu.name] || propLabel(pp, pu.name));
     });
     if (shortBits.length > 1 && shortBits.every(function (b) { return b.n === shortBits[0].n && b.w === shortBits[0].w; })) { shortBits = [shortBits[0]]; labelBits = [labelBits[0]]; }
     var extra = scaleBits.length ? '<br><span class="dm">' + scaleBits.join("<br>") + "</span>" : "";
@@ -868,6 +873,12 @@ function upgradeTexts(it) {
       if (shortBits.length === 1 && shortBits[0].w) { // a line that only states the scaling: use the real number
         rd = rd.replace(/(^|<br\s*\/?>)\s*(?:<span class="highlight">)?\+?[\d.]+(?:<\/span>)?\s+(Spirit|Weapon|Boon)\s+Scaling\s*(?=<br|$)/i, function (m0, br) {
           merged = true; return br + '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + shortBits[0].w + " scaling";
+        });
+      }
+      if (!merged && shortBits.length > 1) { // "Improved Spirit Scaling" over several stats: name each number
+        rd = rd.replace(/(?:improved|increased|increases)\s+(Spirit\s+|Weapon\s+)?scaling/i, function (m0, wd) {
+          merged = true;
+          return shortBits.map(function (b, bi) { return '<span class="highlight">' + esc(b.n) + "</span> " + esc(labelBits[bi]); }).join(" and ") + " " + (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim() + " scaling";
         });
       }
       if (!merged && shortBits.length === 1) { // "improved Spirit scaling" + a separate line -> one phrase with the number in it
@@ -911,7 +922,8 @@ function upgradeTexts(it) {
         var pn = parseFloat(b), sign = !isNaN(pn) && pn >= 0 && !/^[+-]/.test(String(b)) ? "+" : ""; // "3m" gets its + too
         var bv = sign + fmtNum(b) + (isNaN(n) ? "" : unitFor(p));
         if (p.css_class === "move_speed" && /\dm$/.test(bv)) bv = bv.slice(0, -1) + " m/s"; // speeds come through as "3.5m"
-        bits.push(esc(bv + " " + propLabel(p, pu.name)));
+        var bl = propLabel(p, pu.name); if (Math.abs(pn) === 1) bl = bl.replace(/Charges$/, "Charge");
+        bits.push(esc(bv + " " + bl));
       });
       out.push((bits.join("<br>") || (scaleBits.length ? "" : "—")) + extra);
     } else out.push("—");
@@ -928,7 +940,7 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
     return p.replace(/([+\-]?\d+(?:\.\d+)?)(?:(s|m|%)(?![A-Za-z\/]))?/g, function (m, n, u, off, str) {
       var pc = off > 0 ? str.charAt(off - 1) : "";
       if (/[A-Za-z0-9.#&]/.test(pc)) return m;
-      n = n.replace(/\.0+$/, ""); // "+54.0" reads as "+54"
+      n = n.replace(/\.0+$/, "").replace(/(\.\d\d)\d{2,}$/, "$1"); // "13.3333" reads as "13.33" // "+54.0" reads as "+54"
       return '<b class="v">' + n + (u ? '<span class="u">' + u + "</span>" : "") + "</b>";
     });
   }).join("");
@@ -973,7 +985,8 @@ function notesBlock(a, own) {
   var figs = (a && a.figs || []).filter(function (f) { return /^https:\/\/cdn\.deadlock\.wiki\//.test(f[0]); });
   if (!a || !((a.notes && a.notes.length) || figs.length)) return "";
   var html = '<details class="notes" open><summary>Notes</summary>';
-  figs.forEach(function (f) { html += '<figure class="nfig"><img loading="lazy" alt="" src="' + esc(f[0]) + '" onerror="var d=this.closest(\'details\');this.parentNode.remove();if(d&&!d.querySelector(\'li,figure\'))d.remove()">' + (f[1] ? "<figcaption>" + esc(f[1]) + "</figcaption>" : "") + "</figure>"; });
+  figs.forEach(function (f) { var orig = String(f[0]).replace(/\/thumb\/([^\/]+)\/[^\/]*$/, "/$1"); // the full-size file, if the resized copy won't load
+    html += '<figure class="nfig"><img loading="lazy" alt="" referrerpolicy="no-referrer" src="' + esc(f[0]) + '"' + (orig !== f[0] ? ' data-o="' + esc(orig) + '"' : "") + ' onerror="if(this.dataset.o){this.src=this.dataset.o;this.dataset.o=\'\';return}var d=this.closest(\'details\');this.parentNode.remove();if(d&&!d.querySelector(\'li,figure\'))d.remove()">' + (f[1] ? "<figcaption>" + esc(f[1]) + "</figcaption>" : "") + "</figure>"; });
   if ((a.notes || []).length) html += "<ul>";
   (a.notes || []).forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; });
   return html + ((a.notes || []).length ? "</ul>" : "") + "</details>";
