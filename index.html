@@ -25,7 +25,13 @@ img{max-width:100%}
 /* the title, buttons and tabs sit at the bottom, within thumb reach */
 header{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);display:flex;flex-direction:column-reverse;
   padding:0 max(12px,calc((100% - 600px)/2)) calc(env(safe-area-inset-bottom,0) + 6px);box-shadow:0 -6px 18px rgba(0,0,0,.35);transition:transform .15s ease-out}
-header .tabs{margin:0 0 8px;border-bottom:1px solid var(--line)}
+header .tabs{margin:0 0 8px;gap:0}
+header .tab{border-radius:0;border-left-width:0}
+header .tab:first-child{border-left-width:1px;border-top-left-radius:10px}
+header .tab:last-child{border-top-right-radius:10px}
+header::after{content:"";position:absolute;left:0;right:0;top:100%;height:160px;background:var(--bg)} /* fills any gap above the keyboard */
+header.kb{padding-bottom:6px}
+.brand{cursor:pointer}
 body::before{content:"";position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0) + 10px);background:linear-gradient(var(--bg) 70%,rgba(0,0,0,0));z-index:6;pointer-events:none}
 body{padding-top:calc(env(safe-area-inset-top,0) + 16px)}
 .bar{display:flex;gap:8px;align-items:center}
@@ -1731,6 +1737,9 @@ $("tabs").onclick = function (e) {
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
   state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; state.from = null; render(); window.scrollTo(0, 0);
 };
+$("brand").onclick = function () { // the title goes home: the hero list
+  hideBack(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
+};
 $("gbtn").onclick = function () { hideBack(); openGlossary(); };
 $("sbtn").onclick = function () { hideBack();
   state.tab = "search"; state.hero = null; state.from = null; setTabsUI(null); renderSearch(); window.scrollTo(0, 0);
@@ -1834,7 +1843,7 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
 })();
 (function () { // when the keyboard opens, lift the bottom bar so it stays reachable
   var vv = window.visualViewport, hd = document.querySelector("header"); if (!vv || !hd) return;
-  function place() { var kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop); hd.style.transform = kb > 60 ? "translateY(" + -kb + "px)" : ""; }
+  function place() { var kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop), up = kb > 60; hd.classList.toggle("kb", up); hd.style.transform = up ? "translateY(" + -kb + "px)" : ""; }
   vv.addEventListener("resize", place); vv.addEventListener("scroll", place);
 })();
 $("refresh").onclick = function () {
