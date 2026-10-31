@@ -1107,7 +1107,7 @@ function tierDmg(it) {
   return Object.keys(m).filter(function (l) { return m[l]; }).sort(function (a, b) { return b.length - a.length; }).map(function (l) { return [l, m[l]]; });
 }
 // stats whose name reads as a buff but here is done to the enemy (opposite colour)
-var TIER_OV = { "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_VT]] };
+var TIER_OV = { "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]] };
 // wording fixes for a single tier line: [ability, tier 1-3, from, to]
 var TIER_TXT = [["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"]];
 // a bare "Damage" or "DPS" takes the ability's damage type when all its damage is one type
