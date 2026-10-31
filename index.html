@@ -1170,9 +1170,23 @@ function tierColor(h, it, ti) {
     return '<span style="color:' + TIER_BL + '">' + w + r + "</span>";
   });
 }
+// "-45s Cooldown and +6s Duration" -> one stat per line, the same everywhere. Lines with a lead-in ("On Hit: ..."), a list ("a, b and c")
+// or a shared tail ("... for 4s") keep their "and", since splitting them would lose what applies to both
+function tierSplit(h) {
+  return String(h).split(/(<br>)/).map(function (ln) {
+    if (ln === "<br>") return ln;
+    var txt = ln.replace(/<[^>]+>/g, "");
+    if (/:/.test(txt) || /,/.test(txt)) return ln;
+    var parts = ln.split(/ and (?=<b class="v">[+-])/);
+    if (parts.length < 2) return ln;
+    var last = parts[parts.length - 1].replace(/<[^>]+>/g, "");
+    if (/\b(for|on|to|while|per hit|against)\b/i.test(last) && !/scaling/i.test(last)) return ln;
+    return parts.join("<br>");
+  }).join("");
+}
 function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
-  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, t[i])), it, i).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>') + "</div></div>";
+  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierSplit(tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, t[i])), it, i)).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>') + "</div></div>";
   return html + "</div>";
 }
 function bulletOf(h) {
