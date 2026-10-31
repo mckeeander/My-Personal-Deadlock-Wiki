@@ -1082,31 +1082,49 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
 }
 // tier text: every stat name in its type's colour (spirit purple, weapon orange, vitality green), Title Case, no inline icons,
 // so the game's own coloured labels and our plain ones read the same
-var TIER_SP = "#CE90FF", TIER_WP = "#EC9719", TIER_VT = "#0F9", TIER_NE = "#FFEFD7";
-var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_WP], ["spirit lifesteal", TIER_SP], ["bullet lifesteal", TIER_WP], ["spirit resist", TIER_SP], ["bullet resist shred", TIER_WP], ["bullet resist", TIER_WP],
-  ["spirit damage", TIER_SP], ["spirit power", TIER_SP], ["spirit scaling", TIER_SP], ["weapon damage", TIER_WP], ["bullet damage", TIER_WP], ["burst damage", TIER_SP],
-  ["melee damage", TIER_WP], ["bonus fire rate", TIER_WP], ["fire rate", TIER_WP], ["bonus move speed", TIER_VT], ["move speed", TIER_VT], ["sprint speed", TIER_VT],
-  ["max health", TIER_VT], ["bonus health", TIER_VT], ["bullet amp", TIER_WP], ["health regen", TIER_VT], ["heal", TIER_VT], ["barrier", TIER_NE], ["stun duration", TIER_NE],
-  ["radius", ""], ["range", ""], ["cooldown", ""]];
-function tierColor(h) {
+var TIER_SP = "#CE90FF", TIER_WP = "#EC9719", TIER_VT = "#0F9", TIER_NE = "#FFEFD7", TIER_RD = "#FF5C4D";
+var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_WP], ["spirit lifesteal", TIER_SP], ["bullet lifesteal", TIER_WP], ["melee lifesteal", TIER_VT],
+  ["explosion lifesteal", TIER_VT], ["lifesteal", TIER_VT], ["spirit resist", TIER_SP], ["bullet resist shred", TIER_WP], ["bullet resist", TIER_WP],
+  ["spirit damage", TIER_SP], ["spirit power", TIER_SP], ["spirit scaling", TIER_SP], ["spirit amp", TIER_SP], ["weapon damage", TIER_WP], ["bullet damage", TIER_WP],
+  ["burst damage", TIER_SP], ["melee damage", TIER_WP], ["bonus fire rate", TIER_WP], ["fire rate", TIER_WP], ["bullet speed", TIER_WP], ["bullet evasion", TIER_WP],
+  ["evasion", TIER_WP], ["per bullet", TIER_WP], ["ammo", TIER_WP], ["bullet amp", TIER_WP],
+  ["bonus move speed", TIER_VT], ["move speed", TIER_VT], ["sprint speed", TIER_VT], ["flight speed", TIER_VT], ["dash speed", TIER_VT], ["rush speed", TIER_VT],
+  ["ghoul speed", TIER_VT], ["lunge speed", TIER_VT], ["max health", TIER_VT], ["bonus health", TIER_VT], ["health regen", TIER_VT], ["max hp regen", TIER_VT],
+  ["total hp regen", TIER_VT], ["hp regen", TIER_VT], ["regen", TIER_VT], ["stamina", TIER_VT],
+  ["incoming healing", "heal"], ["healing", "heal"], ["heal", "heal"], // green when it adds healing, red when it cuts it
+  ["movement slow", TIER_RD], ["fading slow", TIER_RD], ["max slow", TIER_RD], ["dash slow", TIER_RD], ["slow", TIER_RD],
+  ["barrier", TIER_NE], ["stun duration", TIER_NE], ["radius", ""], ["range", ""], ["cooldown", ""]];
+// named damage ("Impact Damage", "Detonation Damage") takes the colour of that stat's own damage type when the ability says which
+function tierDmg(it) {
+  var m = {}, P = (it && it.properties) || {};
+  Object.keys(P).forEach(function (k) {
+    var p = P[k], l = String(propLabel(p, k) || "").toLowerCase(); if (!/\S damage$/.test(l) || /^(spirit|weapon|bullet|melee|burst) damage$/.test(l)) return;
+    var c = /tech_damage/.test(p.css_class) ? TIER_SP : /bullet_damage|melee_damage/.test(p.css_class) ? TIER_WP : "";
+    m[l] = l in m && m[l] !== c ? "" : c; // two stats with the same name and different types: leave it plain
+  });
+  return Object.keys(m).filter(function (l) { return m[l]; }).sort(function (a, b) { return b.length - a.length; }).map(function (l) { return [l, m[l]]; });
+}
+function tierColor(h, it) {
   h = String(h).replace(/<img\b[^>]*>/g, "").replace(/<svg class="ic(?! key)[^"]*"[\s\S]*?<\/svg>/g, "").replace(/(<span\b[^>]*?)\s+style="color:[^"]*"/g, "$1");
+  var list = tierDmg(it).concat(TIER_STATS), seen = "";
   return h.split(/(<[^>]*>)/).map(function (p) {
     if (!p || p.charAt(0) === "<") return p;
     var low = p.toLowerCase(), out = "", i = 0;
     while (i < p.length) {
       var hit = null;
-      if (i === 0 || /[^a-z]/i.test(p.charAt(i - 1))) for (var k = 0; k < TIER_STATS.length; k++) { var w = TIER_STATS[k][0]; if (low.substr(i, w.length) === w && !/[a-z]/i.test(p.charAt(i + w.length) || "")) { hit = TIER_STATS[k]; break; } }
+      if (i === 0 || /[^a-z]/i.test(p.charAt(i - 1))) for (var k = 0; k < list.length; k++) { var w = list[k][0]; if (low.substr(i, w.length) === w && !/[a-z]/i.test(p.charAt(i + w.length) || "")) { hit = list[k]; break; } }
       if (hit) {
-        var word = p.substr(i, hit[0].length).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); // a bare "Damage" stays plain: it can be spirit, weapon or melee
-        out += hit[1] ? '<span style="color:' + hit[1] + '">' + word + "</span>" : word; i += hit[0].length;
+        var word = p.substr(i, hit[0].length).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }), col = hit[1];
+        if (col === "heal") col = /(-[\d.]+%?\s*|reduc\w*\s+(?:\w+\s+)?|prevents?\s+(?:all\s+)?|less\s+|no\s+)$/i.test((seen + p.slice(0, i)).slice(-30)) ? TIER_RD : TIER_VT;
+        out += col ? '<span style="color:' + col + '">' + word + "</span>" : word; i += hit[0].length;
       } else { out += p.charAt(i); i++; }
     }
-    return out;
+    seen += p; return out;
   }).join("");
 }
 function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
-  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierColor(unitDim(t[i])) + "</div></div>";
+  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierColor(unitDim(t[i]), it) + "</div></div>";
   return html + "</div>";
 }
 function bulletOf(h) {
