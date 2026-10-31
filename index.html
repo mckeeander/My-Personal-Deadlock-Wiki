@@ -1104,9 +1104,11 @@ function tierDmg(it) {
   });
   return Object.keys(m).filter(function (l) { return m[l]; }).sort(function (a, b) { return b.length - a.length; }).map(function (l) { return [l, m[l]]; });
 }
+// stats whose name reads as a buff but here is done to the enemy (opposite colour)
+var TIER_OV = { "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]] };
 function tierColor(h, it) {
   h = String(h).replace(/<img\b[^>]*>/g, "").replace(/<svg class="ic(?! key)[^"]*"[\s\S]*?<\/svg>/g, "").replace(/(<span\b[^>]*?)\s+style="color:[^"]*"/g, "$1");
-  var list = tierDmg(it).concat(TIER_STATS), seen = "";
+  var list = (TIER_OV[it && it.name] || []).concat(tierDmg(it), TIER_STATS), seen = "";
   return h.split(/(<[^>]*>)/).map(function (p) {
     if (!p || p.charAt(0) === "<") return p;
     var low = p.toLowerCase(), out = "", i = 0;
