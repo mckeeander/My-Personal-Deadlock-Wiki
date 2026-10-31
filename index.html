@@ -117,7 +117,7 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .up{background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px;text-align:center}
 .up div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
 .up div:last-child{padding:8px 4px;line-height:1.3;font-weight:400}
-.up .pg{display:block;height:4px} /* each line of a tier's text starts on its own line */
+.up .pg{display:block;height:9px} /* each line of a tier's text starts on its own line */
 .up b.v{font-weight:700;color:inherit}
 .up b.v .u{font-weight:inherit;font-size:1em;margin:0}
 .bonus{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
@@ -586,7 +586,10 @@ function effP(it, key) {
   return q;
 }
 // experiment: a duration shown on the card of the effect it times, instead of as its own stat
-var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" } };
+var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
+  "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
+// stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
+var TECH_OV = { "Itani Lo Sahn|BonusDamagePercent": 1 };
 // pairs effect keys with the duration that times them: by name first (SlowDuration → SlowPercent, FireRateSlow),
 // then a lone generic Debuff/Buff Duration covers the rest of its block's effects
 var DUR_SKIP = /^(Ability|Channel|Cast|Stun|Silence|Sleep|Immobilize|Tether|Fear|Invis|Disarm|Lifetime|Hold|Root|Petrify|Turret|Wall|Total|Ultimate|Explosion)/;
@@ -690,7 +693,7 @@ function propRec(it, key) {
   if (key === "RatSwarmRows" && v != null) { var rc = parseFloat((effP(it, "RatSwarmCols") || {}).value) || 1, rr = parseFloat(v) || 0; v = String(rr * rc); label = "Rats (" + rc + " wide × " + rr + " deep)"; }
   if (key === "RatSwarmWidth" && v != null) { v = Math.round(parseFloat(v) / 39.37 * 10) / 10 + "m"; label = "Swarm Width"; } // game units: 39.37 per meter
   var wpn = (sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label);
-  return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label)) };
+  return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label) || !!TECH_OV[it.name + "|" + key]) };
 }
 
 /* ---------- data ---------- */
@@ -996,7 +999,7 @@ function upgradeTexts(it) {
     if (shortBits.length > 1 && shortBits.every(function (b) { return b.n === shortBits[0].n && b.w === shortBits[0].w; })) { shortBits = [shortBits[0]]; labelBits = [labelBits[0]]; }
     var extra = scaleBits.length ? '<br><span class="dm">' + scaleBits.join("<br>") + "</span>" : "";
     if (d[k]) {
-      var rd = unGloss(rich(d[k])).replace(/<span class="pg"><\/span>/g, "<br>").replace(/^(\s*<br>)+/, "").replace(/\/\s+per\b/g, " per").replace(/( for )((?:<span[^>]*>)?)\+(?=[\d.]+s\b)/g, "$1$2"), merged = /scales? with (Spirit|Weapon)/i.test(rd); // the text already says what it scales with
+      var rd = unGloss(rich(d[k])).replace(/(\d)ss\b/g, "$1s").replace(/\s*&amp;\s*(<br>|<span class="pg"><\/span>)/g, "$1").replace(/\bOn(Cast|Hit)\s*:/g, "On $1:").replace(/(\b1(?:<\/span>)?\s+)Charges\b/g, "$1Charge").replace(/<span class="pg"><\/span>/g, "<br>").replace(/^(\s*<br>)+/, "").replace(/\/\s+per\b/g, " per").replace(/( for )((?:<span[^>]*>)?)\+(?=[\d.]+s\b)/g, "$1$2"), merged = /scales? with (Spirit|Weapon)/i.test(rd); // the text already says what it scales with
       if (shortBits.length === 1 && shortBits[0].w) { // a line that only states the scaling: use the real number
         rd = rd.replace(/(^|<br\s*\/?>)\s*(?:<span class="highlight">)?\+?[\d.]+(?:<\/span>)?\s+(Spirit|Weapon|Boon)\s+Scaling\s*(?=<br|$)/i, function (m0, br) {
           merged = true; return br + '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + shortBits[0].w + " scaling";
@@ -1077,14 +1080,14 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
     return p.replace(/([+\-]?\d+(?:\.\d+)?)(?:(s|m|%)(?![A-Za-z\/]))?/g, function (m, n, u, off, str) {
       var pc = off > 0 ? str.charAt(off - 1) : "";
       if (/[A-Za-z0-9.#&]/.test(pc)) return m;
-      n = n.replace(/\.0+$/, "").replace(/(\.\d\d)\d{2,}$/, "$1"); // "13.3333" reads as "13.33" // "+54.0" reads as "+54"
+      n = n.replace(/\.0+$/, ""); if (!/^[+-]?0\.0/.test(n)) n = n.replace(/(\.\d\d)\d{2,}$/, "$1"); // "13.3333" reads as "13.33"; a tiny rate like 0.0081 keeps its digits // "+54.0" reads as "+54"
       return '<b class="v">' + n + (u ? '<span class="u">' + u + "</span>" : "") + "</b>";
     });
   }).join("");
 }
 // tier text: every stat name in its type's colour (spirit purple, weapon orange, vitality green), Title Case, no inline icons,
 // so the game's own coloured labels and our plain ones read the same
-var TIER_KEEP = /^(heals|health|silences|silenced|stuns|stunned|immobilizes|immobilized|sleeps)$/; // verbs and plain words keep the sentence's own case
+var TIER_KEEP = /^(heals|health|knocked up|knocked back|slowed|bullets|silences|silenced|stuns|stunned|immobilizes|immobilized|sleeps)$/; // verbs and plain words keep the sentence's own case
 var TIER_BL = "#6AA6FF", TIER_SP = "#CE90FF", TIER_WP = "#EC9719", TIER_VT = "#0F9", TIER_NE = "#FFEFD7", TIER_RD = "#FF5C4D";
 var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_WP], ["spirit lifesteal", TIER_VT], ["bullet lifesteal", TIER_VT], ["melee lifesteal", TIER_VT],
   ["explosion lifesteal", TIER_VT], ["lifesteal", TIER_VT], ["spirit resistance", TIER_SP], ["spirit resist", TIER_SP], ["bullet resistance", TIER_WP], ["bullet resist shred", TIER_WP], ["bullet resist", TIER_WP],
@@ -1097,10 +1100,12 @@ var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_W
   ["incoming healing", "heal"], ["healing", "heal"], ["heals", "heal"], ["heal", "heal"],
   ["burn damage", TIER_SP], ["burn dps", TIER_SP], // every burn in the game data is spirit damage // green when it adds healing, red when it cuts it
   ["movement slow", TIER_RD], ["fading slow", TIER_RD], ["max slow", TIER_RD], ["dash slow", TIER_RD], ["slow", TIER_RD],
-  ["debuff resistance", TIER_VT], ["debuff resist", TIER_VT], ["melee resist", TIER_WP], ["weapon range", TIER_WP], ["dash distance", "mv"], ["dash range", "mv"], ["damage regenerated", TIER_VT],
+  ["debuff resistance", TIER_VT], ["debuff resist", TIER_VT], ["melee resist", TIER_WP], ["weapon range", TIER_WP], ["dash distance", "mv"], ["stamina recovery", "mv"], ["air control", TIER_VT], ["jump velocity", TIER_VT], ["health steal", TIER_VT],
+  ["damage penalty", TIER_RD], ["knocked up", TIER_RD], ["knocked back", TIER_RD], ["slowed", TIER_RD], ["bullets", TIER_WP], ["dash range", "mv"], ["damage regenerated", TIER_VT],
   ["silences", TIER_RD], ["silenced", TIER_RD], ["silence", TIER_RD], ["barrier", TIER_NE], ["stun duration", TIER_RD], ["sleep duration", TIER_RD], ["immobilize duration", TIER_RD],
   ["immobilizes", TIER_RD], ["immobilized", TIER_RD], ["immobilize", TIER_RD], ["stuns", TIER_RD], ["stunned", TIER_RD], ["stun", TIER_RD], ["sleeps", TIER_RD], ["sleep", TIER_RD],
-  ["spirit", TIER_SP], ["damage", "dmg"], ["dps", "dmg"], ["close range", null], ["impact radius", TIER_BL], ["cast range", TIER_BL], ["radius", TIER_BL], ["range", TIER_BL], ["cooldown", TIER_BL], ["duration", TIER_BL], ["charge time", TIER_BL], ["charge delay", TIER_BL],
+  ["spirit", TIER_SP], ["damage", "dmg"], ["dps", "dmg"], ["close range", null], ["heal radius", TIER_BL], ["attack angle", TIER_BL], ["max throw distance", TIER_BL], ["multiplier duration", TIER_BL],
+  ["recast window", TIER_BL], ["recasts", TIER_BL], ["recast", TIER_BL], ["lifetime", TIER_BL], ["impact radius", TIER_BL], ["cast range", TIER_BL], ["radius", TIER_BL], ["range", TIER_BL], ["cooldown", TIER_BL], ["duration", TIER_BL], ["charge time", TIER_BL], ["charge delay", TIER_BL],
   ["charges", TIER_BL], ["charge", TIER_BL]];
 // named damage ("Impact Damage", "Detonation Damage") takes the colour of that stat's own damage type when the ability says which
 function tierDmg(it) {
@@ -1114,7 +1119,7 @@ function tierDmg(it) {
 }
 // stats whose name reads as a buff but here is done to the enemy (opposite colour)
 var TIER_OV = { "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]],
-  "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""], ["debuff duration", TIER_RD]], "Granny Long Legs": [["resists", TIER_VT]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]] };
+  "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""], ["debuff duration", TIER_RD]], "Granny Long Legs": [["resists", TIER_VT]], "Itani Lo Sahn": [["bonus damage", TIER_SP]], "Death Slam": [["radius", ""]], "Love Bites": [["per bullet", ""]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]] };
 // wording fixes for a single tier line: [ability, tier 1-3, from, to]
 var TIER_TXT = [["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"], ["Exploding Uppercut", 3, /Set (<span[^>]*>)Grapple Arm cooldown to 0<\/span>/, "Resets $1Grapple Arm Cooldown</span>"]];
 // a bare "Damage" or "DPS" takes the ability's damage type when all its damage is one type
@@ -1134,7 +1139,7 @@ function tierBarrier(it) {
 function tierColor(h, it, ti) {
   h = unGlossAll(h); // unwrap glossary links so phrases stay whole
   h = String(h).replace(/\s+data-g="[^"]*"/g, "").replace(/class="([^"]*)\bgl\b([^"]*)"/g, function (m, a, b) { return 'class="' + (a + b).trim() + '"'; }).replace(/<img\b[^>]*>/g, "").replace(/<svg class="ic(?! key)[^"]*"[\s\S]*?<\/svg>/g, "").replace(/(<span\b[^>]*?)\s+style="color:[^"]*"/g, "$1");
-  var list = (TIER_OV[it && it.name] || []).concat(tierDmg(it), tierBarrier(it), TIER_STATS), seen = "", base = tierBase(it);
+  var list = (TIER_OV[it && it.name] || []).concat(tierDmg(it).concat(tierBarrier(it), TIER_STATS).map(function (x, n) { return [x, n]; }).sort(function (a, b) { return b[0][0].length - a[0][0].length || a[1] - b[1]; }).map(function (x) { return x[0]; })), seen = "", base = tierBase(it); // longest phrase wins
   // the stat this tier actually upgrades decides a bare "Damage" (Rend T1 adds spirit damage to a melee ability)
   (((it && it.upgrades || [])[ti] || {}).property_upgrades || []).forEach(function (pu) {
     var pp = ((it.properties || {})[pu.name]) || {}; if (pu.upgrade_type || !/^(Damage|DPS|Damage Per Second)$/.test(propLabel(pp, pu.name) || "")) return;
@@ -1161,13 +1166,13 @@ function tierColor(h, it, ti) {
       } else { out += p.charAt(i); i++; }
     }
     seen += p; return out;
-  }).join("").replace(new RegExp("((?:[A-Z][a-z]+ ){1,2})<span style=\"color:" + TIER_BL + "\">(Range|Radius)</span>", "g"), function (m, w, r) { // "Flick Range", "Big Detonation Radius": the whole name in blue
+  }).join("").replace(new RegExp("((?:[A-Z][a-z]+ ){1,2})<span style=\"color:" + TIER_BL + "\">(Range|Radius|Lifetime)</span>", "g"), function (m, w, r) { // "Flick Range", "Big Detonation Radius": the whole name in blue
     return '<span style="color:' + TIER_BL + '">' + w + r + "</span>";
   });
 }
 function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
-  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, t[i])), it, i) + "</div></div>";
+  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, t[i])), it, i).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>') + "</div></div>";
   return html + "</div>";
 }
 function bulletOf(h) {
