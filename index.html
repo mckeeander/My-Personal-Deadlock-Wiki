@@ -22,18 +22,21 @@ html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);
 body{padding-bottom:env(safe-area-inset-bottom,0)}
 button{font:inherit;color:inherit;cursor:pointer}
 img{max-width:100%}
-header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
-  padding:calc(env(safe-area-inset-top,0) + 24px) max(12px,calc((100% - 600px)/2)) 8px}
+/* the title, buttons and tabs sit at the bottom, within thumb reach */
+header{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);
+  padding:8px max(12px,calc((100% - 600px)/2)) calc(env(safe-area-inset-bottom,0) + 8px);box-shadow:0 -6px 18px rgba(0,0,0,.35)}
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0);background:var(--bg);z-index:6}
+body{padding-top:env(safe-area-inset-top,0)}
 .bar{display:flex;gap:8px;align-items:center}
 .brand{font-family:var(--disp);font-size:18px;letter-spacing:.06em;flex:1}
 .brand{white-space:nowrap;overflow:hidden;min-width:0}
 @media (max-width:420px){.brand{font-size:16px;letter-spacing:.04em}.bar .ibtn{padding:8px 9px}}
 .ibtn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px}
 .tabs{display:flex;gap:6px;margin-top:8px}
-.tab{flex:1;padding:9px 4px;background:var(--panel);border:1px solid var(--line);border-bottom:3px solid var(--line);border-radius:8px 8px 0 0;font-size:14px}
-.tab.on{background:var(--panel2);border-bottom-color:var(--gold);font-weight:600}
-.tab[data-c=weapon].on{border-bottom-color:var(--weapon)} .tab[data-c=vitality].on{border-bottom-color:var(--vital)} .tab[data-c=spirit].on{border-bottom-color:var(--spirit)}
-main{padding:12px;max-width:600px;margin:0 auto}
+.tab{flex:1;padding:9px 4px;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--line);border-radius:0 0 8px 8px;font-size:14px}
+.tab.on{background:var(--panel2);border-top-color:var(--gold);font-weight:600}
+.tab[data-c=weapon].on{border-top-color:var(--weapon)} .tab[data-c=vitality].on{border-top-color:var(--vital)} .tab[data-c=spirit].on{border-top-color:var(--spirit)}
+main{padding:12px 12px calc(env(safe-area-inset-bottom,0) + 130px);max-width:600px;margin:0 auto}
 html{-webkit-text-size-adjust:100%}
 body{overflow-x:hidden}
 input[type=search]{width:100%;padding:11px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--fg);font-size:16px;margin-bottom:12px}
@@ -267,7 +270,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .hgap{display:none}
 .desc .pg{display:block;height:8px}
 .desc + .stats,.desc + .minor{margin-top:16px}
-.backpill{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0) + 18px);transform:translateX(-50%);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.backpill{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0) + 128px);transform:translateX(-50%);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
 .backpill[hidden]{display:none}
 .backpill.in{animation:pillin .22s ease-out}
 .backpill .bx{display:inline-block;padding:0 8px;margin-left:4px;border-left:1px solid var(--line);color:var(--dim);font-size:18px;line-height:1}
@@ -275,7 +278,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .gl{text-decoration:underline dotted;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--disp);font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
-.gt{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:120px}
+.gt{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:24px}
 .gt h3{margin:0 0 4px;font-size:16px}
 .gt p,.gsh p{margin:0;line-height:1.5;font-size:15px}
 .gsh h3{font-size:20px;margin:10px 0 6px}
@@ -1245,8 +1248,8 @@ function statBlock(h) {
   function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
 }
-function scrollToEl(el) { // land just below the sticky header
-  var hd = document.querySelector("header"), off = hd ? hd.getBoundingClientRect().bottom + 14 : 170;
+function scrollToEl(el) { // land near the top of the screen (the header now sits at the bottom)
+  var off = 20 + (parseFloat(getComputedStyle(document.body).paddingTop) || 0);
   window.scrollTo(0, el.getBoundingClientRect().top + (window.pageYOffset || 0) - off);
 }
 var NMC = {}, NMP = {};
@@ -1797,6 +1800,8 @@ $("main").addEventListener("click", function (e) {
   var before = snapStats(card);
   tmp.innerHTML = abilityCard(it, h);
   var fresh = tmp.firstChild;
+  var openState = Array.prototype.map.call(card.querySelectorAll("details"), function (d) { return d.open; });
+  Array.prototype.forEach.call(fresh.querySelectorAll("details"), function (d, i) { if (i < openState.length) d.open = openState[i]; });
   card.parentNode.replaceChild(fresh, card);
   pulseChanges(fresh, before, t, (SEL[key] || 0) < cur);
 });
