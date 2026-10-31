@@ -1104,7 +1104,7 @@ var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_W
   ["damage penalty", TIER_RD], ["knocked up", TIER_RD], ["knocked back", TIER_RD], ["slowed", TIER_RD], ["bullets", TIER_WP], ["dash range", "mv"], ["damage regenerated", TIER_VT],
   ["silences", TIER_RD], ["silenced", TIER_RD], ["silence", TIER_RD], ["barrier", TIER_NE], ["stun duration", TIER_RD], ["sleep duration", TIER_RD], ["immobilize duration", TIER_RD],
   ["immobilizes", TIER_RD], ["immobilized", TIER_RD], ["immobilize", TIER_RD], ["stuns", TIER_RD], ["stunned", TIER_RD], ["stun", TIER_RD], ["sleeps", TIER_RD], ["sleep", TIER_RD],
-  ["spirit", TIER_SP], ["damage", "dmg"], ["dps", "dmg"], ["close range", null], ["heal radius", TIER_BL], ["attack angle", TIER_BL], ["max throw distance", TIER_BL], ["multiplier duration", TIER_BL],
+  ["spirit", TIER_SP], ["damage", "dmg"], ["dps", "dmg"], ["close range", null], ["channel time", TIER_BL], ["width", TIER_BL], ["height", TIER_BL], ["length", TIER_BL], ["heal radius", TIER_BL], ["attack angle", TIER_BL], ["max throw distance", TIER_BL], ["multiplier duration", TIER_BL],
   ["recast window", TIER_BL], ["recasts", TIER_BL], ["recast", TIER_BL], ["lifetime", TIER_BL], ["impact radius", TIER_BL], ["cast range", TIER_BL], ["radius", TIER_BL], ["range", TIER_BL], ["cooldown", TIER_BL], ["duration", TIER_BL], ["charge time", TIER_BL], ["charge delay", TIER_BL],
   ["charges", TIER_BL], ["charge", TIER_BL]];
 // named damage ("Impact Damage", "Detonation Damage") takes the colour of that stat's own damage type when the ability says which
@@ -1166,7 +1166,8 @@ function tierColor(h, it, ti) {
       } else { out += p.charAt(i); i++; }
     }
     seen += p; return out;
-  }).join("").replace(new RegExp("((?:[A-Z][a-z]+ ){1,2})<span style=\"color:" + TIER_BL + "\">(Range|Radius|Lifetime)</span>", "g"), function (m, w, r) { // "Flick Range", "Big Detonation Radius": the whole name in blue
+  }).join("").replace(new RegExp("<span style=\"color:" + TIER_RD + "\">Immobilize Duration</span>", "g"), '<span style="color:' + TIER_RD + '">Immobilize</span> Duration')
+  .replace(new RegExp("((?:[A-Z][a-z]+ ){1,2})<span style=\"color:" + TIER_BL + "\">(Range|Radius|Lifetime|Width|Height|Length)</span>", "g"), function (m, w, r) { // "Flick Range", "Big Detonation Radius": the whole name in blue
     return '<span style="color:' + TIER_BL + '">' + w + r + "</span>";
   });
 }
@@ -1177,6 +1178,7 @@ function tierSplit(h) {
     if (ln === "<br>") return ln;
     var txt = ln.replace(/<[^>]+>/g, "");
     if (/:/.test(txt) || /,/.test(txt)) return ln;
+    ln = ln.replace(/ and (provides|applies|grants|gains?) (?=<b class="v">[+-])/g, function (m, v) { return "<br>" + v.charAt(0).toUpperCase() + v.slice(1) + " "; }); // "and provides +100% ..." starts its own line
     var parts = ln.split(/ and (?=<b class="v">[+-])/);
     if (parts.length < 2) return ln;
     var last = parts[parts.length - 1].replace(/<[^>]+>/g, "");
@@ -1821,6 +1823,7 @@ var GLOSS = [
   { k: "immobilize", c: "cc", t: "Immobilize (root)", a: ["immobilize", "immobilizes", "immobilized", "immobilizing", "root", "rooted", "roots"], d: "The target can’t move or use movement abilities but can still shoot and cast. Airborne targets drop to the ground." },
   { k: "disarm", c: "cc", t: "Disarm", a: ["disarm", "disarms", "disarmed"], d: "The target can’t fire their weapon. Melee and most abilities still work, but abilities that change the main gun’s fire are blocked." },
   { k: "slow", c: "cc", t: "Slow", a: ["slow", "slows", "slowed", "slowing", "movement slow", "move speed slow"], d: "Reduces movement speed by a percentage, but never below 2 m/s. Some slows also reduce dash speed. Fire-rate slows lower how fast the target shoots. [[slow-resist|Slow Resist]] weakens slows." },
+  { k: "time-slow", c: "cc", t: "Time slow", a: ["time slow", "time slowed", "time slowing", "slow motion"], d: "Slows the target’s time itself rather than just their movement: walking, shooting, jumping, dashing and cast animations all play out slower. It’s a debuff, so it can be dispelled, and [[unstoppable|Unstoppable]] ignores it. Some time slows, like Itani Lo Sahn’s, can’t be shortened by [[debuff-resist|Debuff Resist]] items." },
   { k: "interrupt", c: "cc", t: "Interrupt", a: ["interrupt", "interrupts", "interrupted"], d: "Cancels anything currently being cast or channeled. On its own it doesn’t stop the target from using abilities again right after." },
   { k: "displace", c: "cc", t: "Displace", a: ["displace", "knockup", "knock-up", "knockback", "pull", "pulls"], d: "Pulls, knock-ups and knockbacks: effects that move a target by force." },
   { k: "curse", c: "cc", t: "Curse", a: ["curse", "cursed"], d: "A combined debuff: [[interrupt|interrupt]], [[disarm|disarm]] and [[silence|silence]] for both abilities and items." },
