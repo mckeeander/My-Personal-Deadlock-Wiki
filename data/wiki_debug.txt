@@ -84,8 +84,8 @@ Calico: fetched via api; abilities-section, found headings: Gloom Bombs, Leaping
   Return to Shadows: 1 notes, 0 interactions, items=['Healing Booster', 'Healing Tempo', 'Slowing Hex'], notes-label=True
   [weapon] name='Sweetest Lie', 0 notes, notes-label=False
 Grey Talon: fetched via api; abilities-section, found headings: Charged Shot, Rain of Arrows, Spirit Snare, Guided Owl
-  Charged Shot: 7 notes, 0 interactions, items=[], notes-label=True
-  Rain of Arrows: 9 notes, 0 interactions, items=['Healing Booster', 'Dispel Magic', 'Unstoppable', 'Slowing Hex', 'Split Shot', 'Phantom Strike'], notes-label=True
+  Charged Shot: 8 notes, 0 interactions, items=[], notes-label=True
+  Rain of Arrows: 8 notes, 0 interactions, items=['Healing Booster', 'Dispel Magic', 'Unstoppable', 'Slowing Hex', 'Split Shot'], notes-label=True
   Spirit Snare: 2 notes, 0 interactions, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
   Guided Owl: 6 notes, 0 interactions, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
   [weapon] name='The Mourning Comes', 0 notes, notes-label=False
@@ -141,7 +141,7 @@ Mirage: fetched via api; abilities-section, found headings: Fire Scarabs, Dust D
   Fire Scarabs: 1 notes, 2 interactions, items=['Dispel Magic', 'Healing Tempo', 'Healing Booster', 'Unstoppable'], notes-label=True
   Dust Devil: 1 notes, 0 interactions, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable', 'Slowing Hex'], notes-label=True
   Djinn's Mark: 6 notes, 2 interactions, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable', 'Counterspell', 'Infuser', 'Focus Lens', 'Plated Armor', 'Arcane Surge'], notes-label=True
-  Traveler: 2 notes, 0 interactions, items=[], notes-label=True
+  Traveler: 3 notes, 0 interactions, items=[], notes-label=True
   [weapon] name='Promises Kept', 0 notes, notes-label=False
 Vyper: fetched via api; abilities-section, found headings: Screwjab Dagger, Lethal Venom, Slither, Petrifying Bola
   Screwjab Dagger: 2 notes, 0 interactions, items=['Dispel Magic', 'Unstoppable'], notes-label=True
@@ -211,7 +211,7 @@ Apollo: fetched via api; abilities-section, found headings: Disengaging Sigil, R
   [weapon] name='Pride of Ixia', 0 notes, notes-label=False
 Deadman Danny: fetched via api; abilities-section, found headings: Strix Salvo, Chimera Mk1, Jettison Fuel, Close The Deal
   Strix Salvo: 2 notes, 0 interactions, items=[], notes-label=True
-  Chimera Mk1: 16 notes, 3 interactions, items=['Dispel Magic', 'Unstoppable', 'Arcane Surge', 'Kinetic Dash', 'Cold Front', 'Arctic Blast', 'Reactive Barrier', 'Indomitable', 'Slowing Hex'], notes-label=True
+  Chimera Mk1: 18 notes, 4 interactions, items=['Dispel Magic', 'Unstoppable', 'Arcane Surge', 'Kinetic Dash', 'Cold Front', 'Arctic Blast', 'Reactive Barrier', 'Indomitable', 'Slowing Hex', 'Cursed Relic'], notes-label=True
   Jettison Fuel: 4 notes, 0 interactions, items=['Dispel Magic', 'Metal Skin'], notes-label=True
   Close The Deal: 4 notes, 3 interactions, items=['Unstoppable', 'Reactive Barrier', 'Indomitable', 'Lightning Scroll'], notes-label=True
   [weapon] name='Chimera Peace Bringer', 0 notes, notes-label=False
@@ -234,7 +234,7 @@ Celeste: fetched via api; abilities-section, found headings: Light Eater, Dazzli
   Shining Wonder: 6 notes, 0 interactions, items=['Unstoppable'], notes-label=True
   [weapon] name='Carny Life', 0 notes, notes-label=False
 Rat King: fetched via api; abilities-section, found headings: Scrap Grenade, Rat Swarm, Royal Pestments, Rule, Ratannia!
-  Scrap Grenade: 7 notes, 0 interactions, items=['Dispel Magic', 'Unstoppable', 'Long Range', 'Sharpshooter', 'Close Quarters', 'Point Blank', 'Opening Rounds', 'Intensifying Magazine'], notes-label=True
+  Scrap Grenade: 8 notes, 0 interactions, items=['Dispel Magic', 'Unstoppable', 'Long Range', 'Sharpshooter', 'Close Quarters', 'Point Blank', 'Opening Rounds', 'Intensifying Magazine'], notes-label=True
   Rat Swarm: 3 notes, 0 interactions, items=['Dispel Magic'], notes-label=True
   Royal Pestments: 19 notes, 0 interactions, items=['Spellbreaker', 'Witchmail', 'Return Fire', 'Ricochet', 'Lucky Shot', 'Split Shot', 'Weakening Headshot', 'Crippling Headshot', 'Escalating Resilience', 'Hollow Point', 'Restorative Shot', 'Metal Skin'], notes-label=True
   Rule, Ratannia!: 7 notes, 0 interactions, items=['Unstoppable', 'Refresher'], notes-label=True
@@ -255,11 +255,11 @@ Nurse Harrow: fetched via api; abilities-section, found headings: Leech Therapy,
   Leech Therapy: 5 notes, 0 interactions, items=[], notes-label=True
   Wretched Vapors: 7 notes, 1 interactions, items=['Ethereal Shift'], notes-label=True
   Healing Needles: 20 notes, 0 interactions, items=['Cold Front', 'Split Shot', 'Express Shot', 'Ricochet', 'Armor Piercer', 'Restorative Shot', 'Burst Fire', 'Escalating Resilience', 'Headhunter', 'Spiritual Overflow', 'Active Reload', 'Arcane Surge'], notes-label=True
-  Lurking Terrors: 2 notes, 0 interactions, items=['Unstoppable'], notes-label=True
+  Lurking Terrors: 3 notes, 0 interactions, items=['Unstoppable'], notes-label=True
   [weapon] name='Code Blue', 0 notes, notes-label=False
 Baba: fetched via api; abilities-section, found headings: Threadsap, Granny Long Legs, Baba's Brew, Feed The Birds
-  Threadsap: 1 notes, 0 interactions, items=['Dispel Magic', 'Plated Armor', 'Spirit Snatch'], notes-label=True
+  Threadsap: 2 notes, 0 interactions, items=['Dispel Magic', 'Plated Armor', 'Spirit Snatch'], notes-label=True
   Granny Long Legs: 13 notes, 0 interactions, items=['Healing Tempo'], notes-label=True
-  Baba's Brew: 4 notes, 0 interactions, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Baba's Brew: 6 notes, 0 interactions, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
   Feed The Birds: 14 notes, 3 interactions, items=['Unstoppable', 'Divine Barrier', 'Reactive Barrier', 'Indomitable'], notes-label=True
   [weapon] name='Bunko-Night Special', 0 notes, notes-label=False
