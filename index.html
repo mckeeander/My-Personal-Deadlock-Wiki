@@ -32,8 +32,9 @@ header .tab{border:0;border-radius:7px;background:transparent;padding:9px 4px;co
 header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--nav)}
 header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .tab[data-c=vitality].on{box-shadow:inset 0 -3px 0 var(--vital)} header .tab[data-c=spirit].on{box-shadow:inset 0 -3px 0 var(--spirit)}
 header .bar{padding:8px 0 0 6px}
-.stat .dur{display:flex;width:fit-content;align-items:center;gap:3px;margin:6px auto 0;font-size:12px;font-weight:600;color:var(--fg);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;padding:1px 8px 1px 6px}
-.stat .dur .si{width:11px;height:11px;color:var(--dim)}
+.corner{position:absolute;top:-9px;right:-3px;display:flex;gap:4px}.corner .sc{position:static}
+.stat .dur{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid #4f6a8f;border-radius:6px;padding:1px 6px;background:#2b3442;color:#b9cdee}
+.stat .dur .si{width:11px;height:11px;color:#b9cdee}
 .brand .logo{display:block;height:25px;width:auto;max-width:100%}
 header .tab.gtab{flex:0 0 46px;display:flex;align-items:center;justify-content:center}
 header .tab.gtab.on{box-shadow:inset 0 -3px 0 var(--gold)}
@@ -584,6 +585,61 @@ function effP(it, key) {
 }
 // experiment: a duration shown on the card of the effect it times, instead of as its own stat
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" } };
+// pairs effect keys with the duration that times them: by name first (SlowDuration → SlowPercent, FireRateSlow),
+// then a lone generic Debuff/Buff Duration covers the rest of its block's effects
+var DUR_SKIP = /^(Ability|Channel|Cast|Stun|Silence|Sleep|Immobilize|Tether|Fear|Invis|Disarm|Lifetime|Hold|Root|Petrify|Turret|Wall|Total|Ultimate|Explosion)/;
+var EFF_NO = /Duration|Time|Damage|DPS|Radius|Range|Charges|Delay|Cooldown|Width|Length|Height|Distance|Count|Stacks|Lifetime|Marks|Threshold|Size|Heal\b|Healing$|Spirit Power|Gold|Ammo|Bonus Health|Max Health/;
+function durPairs(it, secs, GO, moved, extra) {
+  var out = {};
+  function rec(k) { return propRec(it, k); }
+  function isDur(k) { var r = rec(k); return /Duration$/.test(k) && r && /s$/.test(r.v) && /Duration$/.test(r.l) && !DUR_SKIP.test(k); }
+  function effOk(k) {
+    var r = rec(k); if (!r || r.v === "1" || /Duration$/.test(k) || /Sleep|Window|Recast|Restored|Angle|Min Health|Missing Health|Health Restored|Cooldown|Interval|Threshold|Effectiveness|Radius|Range|Charges|Delay|Width|Length|Height|Count|Lifetime|^Max (?!Move)|Gravity Scale/.test(r.l)) return false;
+    return /^[+-]/.test(r.v) || (/%$/.test(r.v) && /Bonus|Amp|Resist|Speed|Slow|Rate|Lifesteal/.test(r.l)) || !EFF_NO.test(r.l);
+  }
+  // a duration only folds into a card when its name is generic or names that card's effect, so "Fear Duration" or "Mark Duration" stay visible
+  function fits(d, e) { var w = rec(d).l.replace(/ Duration$/, ""), l = rec(e).l; return /^(Debuff|Buff|Effect|Slow|Stack|Shred|Amp|Weapon Debuff|Barrier)$/.test(w) || l.indexOf(w) >= 0 || (l.length >= 8 && w.indexOf(l) >= 0); }
+  function slowish(e) { var r = rec(e); return /Slow/.test(r.l) || (/Move(ment)? Speed|Fire Rate/.test(r.l) && /^-/.test(r.v)); }
+  function run(keys, genOk, genEff) {
+    var all = keys; keys = keys.filter(function (k, i) { return keys.indexOf(k) === i && rec(k); });
+    var durs = keys.filter(isDur), effs = keys.filter(effOk), gen = [];
+    durs.forEach(function (d) {
+      var stem = d.replace(/Duration$/, ""), w = rec(d).l.replace(/ Duration$/, "");
+      if (/^(Debuff|Buff|Effect)$/.test(w)) { if (!genOk || genOk[d]) gen.push(d); return; }
+      effs.forEach(function (e) { if (!out[e] && fits(d, e) && ((stem.length >= 4 && e.indexOf(stem) >= 0) || (rec(e).l.length >= 8 && w.indexOf(rec(e).l) >= 0))) out[e] = d; });
+    });
+    durs.forEach(function (d) { if (rec(d).l === "Slow Duration") effs.forEach(function (e) { if (!out[e] && slowish(e)) out[e] = d; }); });
+    // a Debuff and a Buff Duration side by side split by sign: slows and shreds on the enemy, bonuses on you
+    if (gen.length === 2) {
+      var db = gen.filter(function (d) { return /^Debuff/.test(rec(d).l); })[0], bf = gen.filter(function (d) { return /^Buff/.test(rec(d).l); })[0];
+      if (db && bf) effs.forEach(function (e) { if (!out[e]) { var v = rec(e).v; if (/^-/.test(v)) out[e] = db; else if (/^\+/.test(v)) out[e] = bf; } });
+    }
+    // a block with status-effect cards would be only partly tagged, so there the generic duration keeps its own card
+    if (gen.length === 1 && !all.some(function (k) { return k.charAt(0) === "!"; })) effs.forEach(function (e) { if (!out[e] && (!genEff || genEff[e]) && fits(gen[0], e)) out[e] = gen[0]; });
+  }
+  GO.forEach(function (g) { run(g.k); });
+  // a generic duration inside a block covers that block; one in the plain list or added by an upgrade covers the whole section
+  extra = extra || {};
+  var loose = {}, bi = 0; Object.keys(extra).forEach(function (k) { if (extra[k] < 0) loose[k] = 1; });
+  secs.forEach(function (sec) {
+    var keys = [], basic = (sec.basic_properties || []).filter(function (k) { return !moved[k]; }), own = {};
+    basic.forEach(function (k) { loose[k] = 1; });
+    (sec.properties_block || []).forEach(function (blk) {
+      var bk = [];
+      (blk.properties || []).forEach(function (pp) { if (pp.status_effect_name) { bk.push("!" + pp.status_effect_value); return; } var k = pp.important_property || pp.property; if (k && !moved[k]) bk.push(k); });
+      Object.keys(extra).forEach(function (k) { if (extra[k] === bi && !moved[k]) bk.push(k); }); bi++; // upgrade stats placed in this block
+      own = {}; bk.forEach(function (k) { own[k] = 1; });
+      run(bk.concat(basic), own); keys = keys.concat(bk);
+    });
+    var bset = {}; basic.forEach(function (k) { bset[k] = 1; });
+    var ext = Object.keys(loose).filter(function (k) { return !moved[k] && extra[k] != null; }), eset = {}; ext.forEach(function (k) { eset[k] = 1; });
+    run(keys.concat(basic), bset); // a generic duration in the plain list covers the whole section
+    // upgrade-added stats (Pain Battery's slow and its duration) pair like listed ones, but an upgrade's generic Buff Duration only
+    // covers other loose stats, never a block it isn't part of (Slither's barrier)
+    run(keys.concat(basic, ext), eset, loose);
+  });
+  return out;
+}
 var ORDER_OV = { "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Move Speed"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Move Speed", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
   "Traveler": ["Move Speed", "Fire Rate", "Buff Duration", "Barrier"], "Crackshot": ["Damage", "Fading Move Speed", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
@@ -697,8 +753,9 @@ function statTiles(it) {
 function pIcon(src) { return src ? imgTag(src).replace("<img ", '<img class="pi" ') : ""; }
 function tile(v, l, r) {
   var badge = scaleBadge(r);
-  var dur = r && r.dur ? '<span class="dur">' + siIcon("hourglass") + esc(r.dur) + "</span>" : ""; // how long this effect lasts, on its own card
-  return '<div class="stat' + (r && r.wpn ? " big wtile" : r && r.tech ? " big" : "") + '">' + badge + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i>" + dur + "</div>";
+  var dur = r && r.dur ? '<span class="dur">' + siIcon("hourglass") + esc(r.dur) + "</span>" : ""; // how long this effect lasts, tagged in the corner
+  var corner = dur ? '<span class="corner">' + dur + badge + "</span>" : badge;
+  return '<div class="stat' + (r && r.wpn ? " big wtile" : r && r.tech ? " big" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
 }
 // abilities use tooltip_details.info_sections
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
@@ -735,9 +792,10 @@ function tooltipHtml(it) {
   var secs = it.tooltip_details && it.tooltip_details.info_sections, parts = [], ex = upgradeExtras(it), tilesDone = false, firstMinor = -1;
   if (!secs || !secs.length) secs = [];
   var GO = GROUP_OV[it.name] || [], moved = {};
-  var DO = DUR_OV[it.name] || {}; Object.keys(DO).forEach(function (k) { moved[DO[k]] = 1; });
-  function withDur(k, r) { if (r && DO[k]) { var d = propRec(it, DO[k]); if (d) r.dur = d.v; } return r; }
   GO.forEach(function (g) { g.k.forEach(function (k) { moved[k] = 1; }); Object.keys(g.f || {}).forEach(function (k) { moved[k] = 1; }); });
+  // each timed effect carries its own duration as a corner tag; the duration's own card or line is then dropped
+  var DO = {}, durUsed = {};
+  function withDur(k, r) { if (r && DO[k]) { var d = propRec(it, DO[k]); if (d) r.dur = d.v; } return r; }
   // durations sit after the effects they time; a lone "Debuff Duration" with nothing to time is dropped
   function arrange(html) {
     var els = html.match(/<div class="stat[^"]*">[\s\S]*?<\/div>/g) || [], ord = ORDER_OV[it.name];
@@ -777,8 +835,11 @@ function tooltipHtml(it) {
     });
     (place[tgt] = place[tgt] || []).push(r);
   });
+  var at = {}; Object.keys(place).forEach(function (b) { place[b].forEach(function (r) { at[r.key] = +b; }); });
+  DO = DUR_OV[it.name] || durPairs(it, secs, GO, moved, at);
+  Object.keys(DO).forEach(function (k) { if (propRec(it, k) && propRec(it, DO[k])) durUsed[DO[k]] = 1; });
   var allSig = {};
-  function extraHtml(list) { return (list || []).map(function (r) { allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join(""); }
+  function extraHtml(list) { return (list || []).map(function (r) { if (durUsed[r.key]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, withDur(r.key, r)); }).join(""); }
   bi = 0;
   secs.forEach(function (sec, si) {
     var secStart = parts.length;
@@ -787,7 +848,7 @@ function tooltipHtml(it) {
       var tiles = "", seen = {}, hadMoved = false;
       (blk.properties || []).forEach(function (pp) {
         if (moved[pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property)]) hadMoved = true;
-        if (moved[pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property)]) return;
+        if (moved[pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property)] || durUsed[pp.important_property || pp.property]) return;
         if (pp.status_effect_name) {
           var sv = propRec(it, pp.status_effect_value);
           if (sv && !seen[sig(sv.v, pp.status_effect_name)]) { seen[sig(sv.v, pp.status_effect_name)] = allSig[sig(sv.v, pp.status_effect_name)] = 1; tiles += tile(sv.v, pp.status_effect_name); }
@@ -804,11 +865,11 @@ function tooltipHtml(it) {
     });
     var minor = "", promo = "";
     (sec.basic_properties || []).forEach(function (k) {
-      if (moved[k] || (k === "Radius" && blockOf.Radius == null)) return; // shown as a header chip
-      var r = propRec(it, k); if (!r) return;
+      if (moved[k] || durUsed[k] || (k === "Radius" && blockOf.Radius == null)) return; // shown as a header chip
+      var r = withDur(k, propRec(it, k)); if (!r) return;
       var p0 = (it.properties || {})[k], b0 = p0 ? parseFloat(p0.value) : NaN;
       if (b0 === 0 || (/damage$/.test(String(p0 && p0.css_class)) && /Damage$/.test(r.l) && !/Bonus|Reduction|Amp|Self|Headshot/.test(r.l) && !/%$/.test(r.v))) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
-      minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>";
+      minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + (r.dur ? " for " + esc(r.dur) : "") + scaleBadge(r) + "</span>";
     });
     if (promo) {
       var lastStats = -1; for (var pi2 = parts.length - 1; pi2 >= secStart; pi2--) if (/<div class="stats">/.test(parts[pi2])) { lastStats = pi2; break; }
@@ -816,7 +877,7 @@ function tooltipHtml(it) {
     }
     if (minor) { parts.push('<div class="minor">' + minor + "</div>"); if (firstMinor < 0) firstMinor = parts.length - 1; }
     if (si === 0) GO.forEach(function (g) {
-      var t = arrange(g.k.map(function (k) { var r = propRec(it, k); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join(""));
+      var t = arrange(g.k.map(function (k) { if (durUsed[k]) return ""; var r = withDur(k, propRec(it, k)); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join(""));
       var mx = (g.x || []).filter(function (x) { return propRec(it, x.k); }).map(function (x) { return '<span class="fl">' + esc(x.t) + "</span>"; }).join("");
       Object.keys(g.f || {}).forEach(function (k) { var e = effP(it, k); if (g.f[k] && e && parseFloat(e.value) > 0) mx += '<span class="fl">' + esc(g.f[k]) + "</span>"; });
       if (!t && !mx) return; if (!g.l) return;
@@ -830,6 +891,7 @@ function tooltipHtml(it) {
   var fl = ex.flags.filter(function (f, i) { return !moved[(ex.fk || [])[i]]; }).map(function (f) { return '<span class="fl">' + esc(f) + "</span>"; }).join("");
   if (fl) {
     if (firstMinor >= 0) parts[firstMinor] = parts[firstMinor].replace(/<\/div>$/, fl + "</div>"); // switches describe the ability itself, so they sit with its main stats
+    else if (firstStats >= 0) parts.splice(firstStats + 1, 0, '<div class="minor">' + fl + "</div>");
     else parts.push('<div class="minor">' + fl + "</div>");
   }
   return parts.join("");
