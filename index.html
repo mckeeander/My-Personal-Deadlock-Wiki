@@ -1080,9 +1080,33 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
     });
   }).join("");
 }
+// tier text: every stat name in its type's colour (spirit purple, weapon orange, vitality green), Title Case, no inline icons,
+// so the game's own coloured labels and our plain ones read the same
+var TIER_SP = "#CE90FF", TIER_WP = "#EC9719", TIER_VT = "#0F9", TIER_NE = "#FFEFD7";
+var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_WP], ["spirit lifesteal", TIER_SP], ["bullet lifesteal", TIER_WP], ["spirit resist", TIER_SP], ["bullet resist shred", TIER_WP], ["bullet resist", TIER_WP],
+  ["spirit damage", TIER_SP], ["spirit power", TIER_SP], ["spirit scaling", TIER_SP], ["weapon damage", TIER_WP], ["bullet damage", TIER_WP], ["burst damage", TIER_SP],
+  ["melee damage", TIER_WP], ["bonus fire rate", TIER_WP], ["fire rate", TIER_WP], ["bonus move speed", TIER_VT], ["move speed", TIER_VT], ["sprint speed", TIER_VT],
+  ["max health", TIER_VT], ["health regen", TIER_VT], ["heal", TIER_VT], ["barrier", TIER_NE], ["stun duration", TIER_NE],
+  ["radius", ""], ["range", ""], ["cooldown", ""]];
+function tierColor(h) {
+  h = String(h).replace(/<img\b[^>]*>/g, "").replace(/<svg class="ic(?! key)[^"]*"[\s\S]*?<\/svg>/g, "").replace(/(<span\b[^>]*?)\s+style="color:[^"]*"/g, "$1");
+  return h.split(/(<[^>]*>)/).map(function (p) {
+    if (!p || p.charAt(0) === "<") return p;
+    var low = p.toLowerCase(), out = "", i = 0;
+    while (i < p.length) {
+      var hit = null;
+      if (i === 0 || /[^a-z]/i.test(p.charAt(i - 1))) for (var k = 0; k < TIER_STATS.length; k++) { var w = TIER_STATS[k][0]; if (low.substr(i, w.length) === w && !/[a-z]/i.test(p.charAt(i + w.length) || "")) { hit = TIER_STATS[k]; break; } }
+      if (hit) {
+        var word = p.substr(i, hit[0].length).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); // a bare "Damage" stays plain: it can be spirit, weapon or melee
+        out += hit[1] ? '<span style="color:' + hit[1] + '">' + word + "</span>" : word; i += hit[0].length;
+      } else { out += p.charAt(i); i++; }
+    }
+    return out;
+  }).join("");
+}
 function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
-  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + unitDim(t[i]) + "</div></div>";
+  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierColor(unitDim(t[i])) + "</div></div>";
   return html + "</div>";
 }
 function bulletOf(h) {
