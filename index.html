@@ -32,6 +32,8 @@ header .tab{border:0;border-radius:7px;background:transparent;padding:9px 4px;co
 header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--nav)}
 header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .tab[data-c=vitality].on{box-shadow:inset 0 -3px 0 var(--vital)} header .tab[data-c=spirit].on{box-shadow:inset 0 -3px 0 var(--spirit)}
 header .bar{padding:8px 0 0 6px}
+.stat .dur{display:flex;width:fit-content;align-items:center;gap:3px;margin:6px auto 0;font-size:12px;font-weight:600;color:var(--fg);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;padding:1px 8px 1px 6px}
+.stat .dur .si{width:11px;height:11px;color:var(--dim)}
 .brand .logo{display:block;height:25px;width:auto;max-width:100%}
 header .tab.gtab{flex:0 0 46px;display:flex;align-items:center;justify-content:center}
 header .tab.gtab.on{box-shadow:inset 0 -3px 0 var(--gold)}
@@ -580,12 +582,14 @@ function effP(it, key) {
   q.value = String(Math.round((n * m.mul + m.add) * 1000) / 1000) + raw.replace(/^\s*-?[\d.]+/, "");
   return q;
 }
-var ORDER_OV = { "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Move Speed", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
+// experiment: a duration shown on the card of the effect it times, instead of as its own stat
+var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" } };
+var ORDER_OV = { "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Move Speed"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Move Speed", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
   "Traveler": ["Move Speed", "Fire Rate", "Buff Duration", "Barrier"], "Crackshot": ["Damage", "Fading Move Speed", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
 var FLAG_OV = { SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
 var PCT_KEYS = { AttackSpeedMult: 1, ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
-var LABEL_OV = { "Mini Turret|AttackSpeedMult": "Turret Fire Rate", "Spectral Wall|CreateTurrets": "Mini Turrets", "Spectral Wall|TurretLifeTime": "Turret Lifetime",
+var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Turret|AttackSpeedMult": "Turret Fire Rate", "Spectral Wall|CreateTurrets": "Mini Turrets", "Spectral Wall|TurretLifeTime": "Turret Lifetime",
   "Djinn's Mark|MovementSpeedSlow": "Fading Slow", "Djinn's Mark|StunDuration": "Stun at Max Marks", "Dust Devil|HoldInPlaceDuration": "Lift Duration", "Dust Devil|WhirlwindEvasionChance": "Bullet Evasion",
   "Traveler|MovementSpeedBonusDuration": "Buff Duration", "Traveler|TeleportCompletedTime": "Wait Time", "Wretched Vapors|HealingEffectivenessPercent": "Healing & Regen Effectiveness", "Ice Path|BonusSpiritPct": "Spirit Power", "Ice Path|BonusSpirit": "Spirit Power",
   "Entangling Thorns|TimeToEntangle": "Time to Entangle", "Entangling Thorns|EntangleDuration": "Immobilize Duration", "Air Drop|AirDropOutgoingDamagePercent": "Damage Bonus", "Powder Keg|DPS": "Burn DPS", "Bounce Pad|SpeedOnLand": "Move Speed", "Bounce Pad|StompStunDuration": "Stomp Stun",
@@ -693,7 +697,8 @@ function statTiles(it) {
 function pIcon(src) { return src ? imgTag(src).replace("<img ", '<img class="pi" ') : ""; }
 function tile(v, l, r) {
   var badge = scaleBadge(r);
-  return '<div class="stat' + (r && r.wpn ? " big wtile" : r && r.tech ? " big" : "") + '">' + badge + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
+  var dur = r && r.dur ? '<span class="dur">' + siIcon("hourglass") + esc(r.dur) + "</span>" : ""; // how long this effect lasts, on its own card
+  return '<div class="stat' + (r && r.wpn ? " big wtile" : r && r.tech ? " big" : "") + '">' + badge + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i>" + dur + "</div>";
 }
 // abilities use tooltip_details.info_sections
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
@@ -730,6 +735,8 @@ function tooltipHtml(it) {
   var secs = it.tooltip_details && it.tooltip_details.info_sections, parts = [], ex = upgradeExtras(it), tilesDone = false, firstMinor = -1;
   if (!secs || !secs.length) secs = [];
   var GO = GROUP_OV[it.name] || [], moved = {};
+  var DO = DUR_OV[it.name] || {}; Object.keys(DO).forEach(function (k) { moved[DO[k]] = 1; });
+  function withDur(k, r) { if (r && DO[k]) { var d = propRec(it, DO[k]); if (d) r.dur = d.v; } return r; }
   GO.forEach(function (g) { g.k.forEach(function (k) { moved[k] = 1; }); Object.keys(g.f || {}).forEach(function (k) { moved[k] = 1; }); });
   // durations sit after the effects they time; a lone "Debuff Duration" with nothing to time is dropped
   function arrange(html) {
@@ -787,7 +794,7 @@ function tooltipHtml(it) {
           return;
         }
         var key = pp.important_property || pp.property; if (!key) return;
-        var r = propRec(it, key); if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = allSig[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
+        var r = withDur(key, propRec(it, key)); if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = allSig[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
       });
       tiles += extraHtml(place[bi]);
       if ((tiles || (hadMoved && place[-1])) && !tilesDone) { tiles += extraHtml(place[-1]); tilesDone = true; } // other upgrade-added stats sit with the main tiles
