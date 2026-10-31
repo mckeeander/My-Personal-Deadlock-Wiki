@@ -31,7 +31,10 @@ header .tabs{margin:8px 0 0;gap:4px;background:var(--panel);border:1px solid var
 header .tab{border:0;border-radius:7px;background:transparent;padding:9px 4px;color:var(--dim)}
 header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--nav)}
 header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .tab[data-c=vitality].on{box-shadow:inset 0 -3px 0 var(--vital)} header .tab[data-c=spirit].on{box-shadow:inset 0 -3px 0 var(--spirit)}
-header .bar{padding-top:8px}
+header .bar{padding:8px 0 0 6px}
+.brand .logo{display:block;height:26px;width:auto;max-width:100%}
+header .tab.gtab{flex:0 0 46px;display:flex;align-items:center;justify-content:center}
+header .tab.gtab.on{box-shadow:inset 0 -3px 0 var(--gold)}
 input[type=search]:focus,#gq:focus{outline:none;border-color:var(--nav);box-shadow:0 0 0 1px var(--nav) inset}
 :root{--nav:#4f8fe8}
 input:focus{outline:none;border-color:var(--gold)}
@@ -310,9 +313,8 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <body>
 <header>
   <div class="bar">
-    <div class="brand" id="brand">DEADLOCK CODEX</div>
+    <div class="brand" id="brand" role="button" aria-label="Deadlock Codex: all heroes"><img class="logo" src="logo.png" alt="Deadlock" onerror="this.replaceWith(document.createTextNode('DEADLOCK CODEX'))"></div>
     <button class="ibtn" id="sbtn" aria-label="Search everything"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button>
-    <button class="ibtn" id="gbtn" aria-label="Glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button>
     <button class="ibtn" id="refresh" aria-label="Refresh data">⟳ Refresh</button>
   </div>
   <div class="tabs" id="tabs">
@@ -320,6 +322,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     <button class="tab" data-c="weapon">Weapon</button>
     <button class="tab" data-c="vitality">Vitality</button>
     <button class="tab" data-c="spirit">Spirit</button>
+    <button class="tab gtab" data-c="glossary" id="gbtn" aria-label="Glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button>
   </div>
 </header>
 <main id="main"></main>
@@ -1708,7 +1711,7 @@ function sheetBack() {
   if (top.indexOf("g:") === 0) glossSheet(top.slice(2), true); else itemSheet(top, true);
 }
 function openGlossary(k) {
-  state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI(null); renderGlossary();
+  state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI("glossary"); renderGlossary();
   var el = k && $("g-" + k);
   if (el) { scrollToEl(el); el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100); } else window.scrollTo(0, 0);
 }
@@ -1740,6 +1743,7 @@ function showError(e) {
 /* ---------- wiring ---------- */
 $("tabs").onclick = function (e) {
   var b = e.target.closest(".tab"); if (!b) return; hideBack();
+  if (b.getAttribute("data-c") === "glossary") return; // has its own handler
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
   state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; state.from = null; render(); window.scrollTo(0, 0);
 };
