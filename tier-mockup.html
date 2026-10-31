@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tier Styles Mockup</title>
+<style id="base"></style>
+<style>
+body{padding:16px 12px 40px;max-width:600px;margin:0 auto}
+h1{font-size:18px;margin:0 0 6px}
+.lead{color:var(--dim);font-size:13px;margin:0 0 18px;line-height:1.4}
+.ab{margin:0 0 26px}
+.ab h2{font-size:14px;margin:0 0 4px;color:var(--fg)}
+.var{margin:10px 0 0}
+.var h3{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--dim);margin:0 0 -4px}
+.up .pg{display:block;height:4px}
+.up img.mi{width:1.05em;height:1.05em;vertical-align:-.18em;margin:0 3px 0 1px}
+.up .x{font-weight:400}
+nav.pick{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 18px}
+nav.pick button{font:inherit;font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--fg)}
+nav.pick button.on{background:var(--panel2);border-color:var(--nav)}
+</style></head>
+<body>
+<h1>Tier box styles</h1>
+<p class="lead">The same tier boxes in four treatments. All four already include the line-break fix ("Burst Damage" and "On Backblast Hit" on separate lines). Tap a style to show only that one.</p>
+<nav class="pick" id="pick"></nav>
+<div id="out">Loading…</div>
+<iframe id="src" src="index.html" style="display:none"></iframe>
+<script>
+var PICKS = ["Chain Gang", "Rising Ram", "Jettison Fuel", "Siphon Life", "Card Trick", "Frozen Shelter", "Concussive Combustion"];
+var B = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/";
+var SP = "#CE90FF", WP = "#EC9719", VT = "#0F9", NE = "#FFEFD7";
+// longest phrases first; colour follows the game's own inline labels (spirit purple, weapon orange, vitality green)
+var STATS = [
+  ["spirit lifesteal", SP, "heal.svg"], ["bullet lifesteal", WP, "heal.svg"], ["spirit resist", SP, "armor_spirit_color.svg"],
+  ["bullet resist shred", WP, "armor_bullet_color.svg"], ["bullet resist", WP, "armor_bullet_color.svg"], ["spirit damage", SP, "damage_magic_color.svg"],
+  ["spirit power", SP, "damage_magic_color.svg"], ["spirit scaling", SP, "damage_magic_color.svg"], ["weapon damage", WP, "damage_bullet_color.svg"],
+  ["bullet damage", WP, "damage_bullet_color.svg"], ["burst damage", SP, "damage_magic_color.svg"], ["melee damage", WP, "melee.svg"],
+  ["bonus fire rate", WP, "condition_slow.svg"], ["fire rate", WP, "condition_slow.svg"], ["bonus move speed", VT, "move_speed.svg"], ["move speed", VT, "move_speed.svg"],
+  ["sprint speed", VT, "move_speed.svg"], ["max health", VT, "health.svg"], ["health regen", VT, "health.svg"], ["heal", VT, "heal.svg"],
+  ["barrier", NE, "armor_bullet_color.svg"], ["stun duration", NE, "duration.svg"], ["dps", SP, "damage_magic_color.svg"], ["damage", SP, "damage_magic_color.svg"],
+  ["radius", "", "range.svg"], ["range", "", "range.svg"], ["cooldown", "", "cooldown.svg"]
+];
+var V = [
+  ["As it is now", "now"],
+  ["Plain — no colour, no icons", "plain"],
+  ["Colour only", "color"],
+  ["Colour and icon on every stat", "both"]
+];
+function strip(box) { box.querySelectorAll("img,svg:not(.key)").forEach(function (n) { n.remove(); }); box.querySelectorAll("[style]").forEach(function (n) { n.removeAttribute("style"); }); }
+function mark(box, icons) {
+  var walker = document.createTreeWalker(box, NodeFilter.SHOW_TEXT), nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(function (t) {
+    var s = t.nodeValue, low = s.toLowerCase(), out = "", i = 0;
+    while (i < s.length) {
+      var hit = null;
+      if (i === 0 || /[^a-z]/i.test(s.charAt(i - 1))) for (var k = 0; k < STATS.length; k++) { var p = STATS[k][0]; if (low.substr(i, p.length) === p && !/[a-z]/i.test(s.charAt(i + p.length) || "")) { hit = STATS[k]; break; } }
+      if (hit) {
+        var word = s.substr(i, hit[0].length).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }).replace(/^Dps$/, "DPS");
+        out += (icons && hit[2] ? '<img class="mi" alt="" src="' + B + hit[2] + '">' : "") + '<span style="' + (hit[1] ? "color:" + hit[1] : "") + '">' + word + "</span>";
+        i += hit[0].length;
+      } else { out += s.charAt(i).replace(/&/g, "&amp;").replace(/</g, "&lt;"); i++; }
+    }
+    var span = document.createElement("span"); span.innerHTML = out; t.parentNode.replaceChild(span, t);
+  });
+}
+function build(W) {
+  var css = W.document.querySelector("style"); document.getElementById("base").textContent = css ? css.textContent : "";
+  var html = "";
+  PICKS.forEach(function (name) {
+    var it = W.state.byName && W.state.byName[name.toLowerCase()];
+    if (!it) it = (W.state.items || []).filter(function (x) { return x && x.name === name; })[0];
+    if (!it) return;
+    var h = (W.state.heroes || []).filter(function (x) { return x.items && Object.keys(x.items).some(function (k) { return x.items[k] === it.class_name; }); })[0];
+    W.HERO_NAME = h ? h.name : "";
+    var ups = W.upgradesHtml(it, 0);
+    html += '<section class="ab"><h2>' + (h ? h.name + " · " : "") + name + "</h2>";
+    V.forEach(function (v) { html += '<div class="var" data-v="' + v[1] + '"><h3>' + v[0] + "</h3>" + ups + "</div>"; });
+    html += "</section>";
+  });
+  var out = document.getElementById("out"); out.innerHTML = html;
+  out.querySelectorAll(".var").forEach(function (d) {
+    var m = d.dataset.v; if (m === "now") return;
+    d.querySelectorAll(".up div:last-child").forEach(function (box) { strip(box); if (m !== "plain") mark(box, m === "both"); });
+  });
+  var pick = document.getElementById("pick");
+  pick.innerHTML = '<button class="on" data-v="">All</button>' + V.map(function (v) { return '<button data-v="' + v[1] + '">' + v[0].split(" —")[0] + "</button>"; }).join("");
+  pick.onclick = function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    pick.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+    out.querySelectorAll(".var").forEach(function (d) { d.hidden = !!b.dataset.v && d.dataset.v !== b.dataset.v; });
+  };
+}
+var tries = 0;
+(function wait() {
+  var W = document.getElementById("src").contentWindow;
+  try { if (W && W.state && W.state.heroes && W.state.heroes.length && W.upgradesHtml) return build(W); } catch (e) {}
+  if (++tries < 150) setTimeout(wait, 100); else document.getElementById("out").textContent = "Couldn't load the site data.";
+})();
+</script>
+</body></html>
