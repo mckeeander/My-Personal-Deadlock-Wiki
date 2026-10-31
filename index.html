@@ -32,7 +32,7 @@ header .tab{border:0;border-radius:7px;background:transparent;padding:9px 4px;co
 header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--nav)}
 header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .tab[data-c=vitality].on{box-shadow:inset 0 -3px 0 var(--vital)} header .tab[data-c=spirit].on{box-shadow:inset 0 -3px 0 var(--spirit)}
 header .bar{padding:8px 0 0 6px}
-.brand .logo{display:block;height:20px;width:auto;max-width:100%}
+.brand .logo{display:block;height:25px;width:auto;max-width:100%}
 header .tab.gtab{flex:0 0 46px;display:flex;align-items:center;justify-content:center}
 header .tab.gtab.on{box-shadow:inset 0 -3px 0 var(--gold)}
 input[type=search]:focus,#gq:focus{outline:none;border-color:var(--nav);box-shadow:0 0 0 1px var(--nav) inset}
@@ -313,7 +313,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <body>
 <header>
   <div class="bar">
-    <div class="brand" id="brand" role="button" aria-label="Deadlock Codex: all heroes"><img class="logo" src="logo.png" alt="Deadlock" onerror="this.replaceWith(document.createTextNode('DEADLOCK CODEX'))"></div>
+    <div class="brand" id="brand" role="button" aria-label="Deadlock Codex: all heroes"><img class="logo" src="wordmark.png" alt="Deadlock" onerror="this.replaceWith(document.createTextNode('DEADLOCK CODEX'))"></div>
     <button class="ibtn" id="sbtn" aria-label="Search everything"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button>
     <button class="ibtn" id="gbtn" aria-label="Glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button>
   </div>
@@ -1751,7 +1751,15 @@ $("brand").onclick = function () { // the title goes home: the hero list
   hideBack(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
 };
 $("gbtn").onclick = function () { hideBack(); openGlossary(); };
+var PRE_SEARCH = null;
 $("sbtn").onclick = function () { hideBack();
+  if (state.tab === "search") { // a second tap closes search and goes back to where you were
+    var ps = PRE_SEARCH || { tab: "heroes", hero: null, y: 0 }; PRE_SEARCH = null;
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    state.tab = ps.tab; state.hero = ps.hero; state.from = null; setTabsUI(ps.tab === "glossary" ? null : ps.tab); render(); window.scrollTo(0, ps.y);
+    return;
+  }
+  PRE_SEARCH = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0 };
   state.tab = "search"; state.hero = null; state.from = null; setTabsUI(null); renderSearch(); window.scrollTo(0, 0);
   var i = $("sq"); if (i) i.focus();
 };
