@@ -25,10 +25,14 @@ img{max-width:100%}
 /* the title, buttons and tabs sit at the bottom, within thumb reach */
 header{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);display:flex;flex-direction:column-reverse;
   padding:0 max(12px,calc((100% - 600px)/2)) calc(env(safe-area-inset-bottom,0) + 6px);transition:transform .15s ease-out}
-header{background:linear-gradient(to bottom,rgba(0,0,0,0) 46px,var(--bg) 46px) !important;box-shadow:none !important}
-header .tabs{margin:0;height:46px;align-items:flex-end}
-header .tab{box-shadow:0 -4px 12px rgba(0,0,0,.35)}
+/* bottom navigation: one solid bar, tabs as a segmented row with no gaps to see through */
+header{border-top:1px solid var(--line);box-shadow:0 -8px 20px rgba(0,0,0,.45)}
+header .tabs{margin:8px 0 0;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px}
+header .tab{border:0;border-radius:7px;background:transparent;padding:9px 4px;color:var(--dim)}
+header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--gold)}
+header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .tab[data-c=vitality].on{box-shadow:inset 0 -3px 0 var(--vital)} header .tab[data-c=spirit].on{box-shadow:inset 0 -3px 0 var(--spirit)}
 header .bar{padding-top:8px}
+input[type=search]:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
 input:focus{outline:none;border-color:var(--gold)}
 header::after{content:"";position:absolute;left:0;right:0;top:100%;height:160px;background:var(--bg)} /* fills any gap above the keyboard */
 header.kb{padding-bottom:6px}
