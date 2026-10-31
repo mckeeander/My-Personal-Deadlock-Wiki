@@ -1083,17 +1083,19 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
 // tier text: every stat name in its type's colour (spirit purple, weapon orange, vitality green), Title Case, no inline icons,
 // so the game's own coloured labels and our plain ones read the same
 var TIER_SP = "#CE90FF", TIER_WP = "#EC9719", TIER_VT = "#0F9", TIER_NE = "#FFEFD7", TIER_RD = "#FF5C4D";
-var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_WP], ["spirit lifesteal", TIER_SP], ["bullet lifesteal", TIER_WP], ["melee lifesteal", TIER_VT],
+var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_WP], ["spirit lifesteal", TIER_VT], ["bullet lifesteal", TIER_VT], ["melee lifesteal", TIER_VT],
   ["explosion lifesteal", TIER_VT], ["lifesteal", TIER_VT], ["spirit resist", TIER_SP], ["bullet resist shred", TIER_WP], ["bullet resist", TIER_WP],
   ["spirit damage", TIER_SP], ["spirit power", TIER_SP], ["spirit scaling", TIER_SP], ["spirit amp", TIER_SP], ["weapon damage", TIER_WP], ["bullet damage", TIER_WP],
   ["burst damage", TIER_SP], ["melee damage", TIER_WP], ["bonus fire rate", TIER_WP], ["fire rate", TIER_WP], ["bullet speed", TIER_WP], ["bullet evasion", TIER_WP],
   ["evasion", TIER_WP], ["per bullet", TIER_WP], ["ammo", TIER_WP], ["bullet amp", TIER_WP],
   ["bonus move speed", TIER_VT], ["move speed", TIER_VT], ["sprint speed", TIER_VT], ["flight speed", TIER_VT], ["dash speed", TIER_VT], ["rush speed", TIER_VT],
-  ["ghoul speed", TIER_VT], ["lunge speed", TIER_VT], ["max health", TIER_VT], ["bonus health", TIER_VT], ["health regen", TIER_VT], ["max hp regen", TIER_VT],
+  ["ghoul speed", TIER_VT], ["movespeed", TIER_VT], ["lunge speed", TIER_VT], ["max health", TIER_VT], ["bonus health", TIER_VT], ["health regen", TIER_VT], ["max hp regen", TIER_VT],
   ["total hp regen", TIER_VT], ["hp regen", TIER_VT], ["regen", TIER_VT], ["stamina", TIER_VT],
   ["incoming healing", "heal"], ["healing", "heal"], ["heal", "heal"], // green when it adds healing, red when it cuts it
   ["movement slow", TIER_RD], ["fading slow", TIER_RD], ["max slow", TIER_RD], ["dash slow", TIER_RD], ["slow", TIER_RD],
-  ["barrier", TIER_NE], ["stun duration", TIER_NE], ["radius", ""], ["range", ""], ["cooldown", ""]];
+  ["barrier", TIER_NE], ["stun duration", TIER_RD], ["sleep duration", TIER_RD], ["immobilize duration", TIER_RD],
+  ["immobilizes", TIER_RD], ["immobilized", TIER_RD], ["immobilize", TIER_RD], ["stuns", TIER_RD], ["stunned", TIER_RD], ["stun", TIER_RD], ["sleeps", TIER_RD], ["sleep", TIER_RD],
+  ["spirit", TIER_SP], ["damage", "dmg"], ["dps", "dmg"], ["radius", ""], ["range", ""], ["cooldown", ""]];
 // named damage ("Impact Damage", "Detonation Damage") takes the colour of that stat's own damage type when the ability says which
 function tierDmg(it) {
   var m = {}, P = (it && it.properties) || {};
@@ -1105,10 +1107,20 @@ function tierDmg(it) {
   return Object.keys(m).filter(function (l) { return m[l]; }).sort(function (a, b) { return b.length - a.length; }).map(function (l) { return [l, m[l]]; });
 }
 // stats whose name reads as a buff but here is done to the enemy (opposite colour)
-var TIER_OV = { "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]] };
+var TIER_OV = { "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_VT]] };
+// wording fixes for a single tier line: [ability, tier 1-3, from, to]
+var TIER_TXT = [["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"]];
+// a bare "Damage" or "DPS" takes the ability's damage type when all its damage is one type
+function tierBase(it) {
+  var sp = 0, wp = 0, P = (it && it.properties) || {};
+  Object.keys(P).forEach(function (k) { var c = String(P[k].css_class || ""); if (/tech_damage/.test(c)) sp++; else if (/bullet_damage|melee_damage/.test(c)) wp++; });
+  return sp && !wp ? TIER_SP : wp && !sp ? TIER_WP : "";
+}
 function tierColor(h, it) {
   h = String(h).replace(/<img\b[^>]*>/g, "").replace(/<svg class="ic(?! key)[^"]*"[\s\S]*?<\/svg>/g, "").replace(/(<span\b[^>]*?)\s+style="color:[^"]*"/g, "$1");
-  var list = (TIER_OV[it && it.name] || []).concat(tierDmg(it), TIER_STATS), seen = "";
+  var list = (TIER_OV[it && it.name] || []).concat(tierDmg(it), TIER_STATS), seen = "", base = tierBase(it);
+  // no sentence periods in tier boxes: a mid-line one becomes a line break, a closing one goes
+  h = h.replace(/([A-Za-z%)>])\.\s+(?=[^\s<]|<b)/g, '$1<span class="pg"></span>').replace(/([A-Za-z%)>])\.\s*(?=<span class="pg"><\/span>|<br>|<\/span>\s*$|$)/g, "$1");
   return h.split(/(<[^>]*>)/).map(function (p) {
     if (!p || p.charAt(0) === "<") return p;
     var low = p.toLowerCase(), out = "", i = 0;
@@ -1116,7 +1128,8 @@ function tierColor(h, it) {
       var hit = null;
       if (i === 0 || /[^a-z]/i.test(p.charAt(i - 1))) for (var k = 0; k < list.length; k++) { var w = list[k][0]; if (low.substr(i, w.length) === w && !/[a-z]/i.test(p.charAt(i + w.length) || "")) { hit = list[k]; break; } }
       if (hit) {
-        var word = p.substr(i, hit[0].length).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }), col = hit[1];
+        var word = p.substr(i, hit[0].length).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }).replace(/^Dps$/, "DPS").replace(/ And /g, " and "), col = hit[1];
+        if (col === "dmg") col = base;
         if (col === "heal") col = /(-[\d.]+%?\s*|reduc\w*\s+(?:\w+\s+)?|prevents?\s+(?:all\s+)?|less\s+|no\s+)$/i.test((seen + p.slice(0, i)).slice(-30)) ? TIER_RD : TIER_VT;
         out += col ? '<span style="color:' + col + '">' + word + "</span>" : word; i += hit[0].length;
       } else { out += p.charAt(i); i++; }
@@ -1126,7 +1139,7 @@ function tierColor(h, it) {
 }
 function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
-  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierColor(unitDim(t[i]), it) + "</div></div>";
+  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, t[i])), it) + "</div></div>";
   return html + "</div>";
 }
 function bulletOf(h) {
