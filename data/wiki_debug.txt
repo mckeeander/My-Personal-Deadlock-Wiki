@@ -42,8 +42,8 @@ McGinnis: fetched via api; abilities-section, found headings: Mini Turret, Medic
   Heavy Barrage: 3 notes, 0 interactions, items=['Unstoppable', 'Enduring Speed'], notes-label=True
   [weapon] name='Services Rendered', 3 notes, notes-label=True
 Paradox: fetched via api; abilities-section, found headings: Pulse Grenade, Time Wall, Kinetic Carbine, Paradoxical Swap
-  Pulse Grenade: 4 notes, 1 interactions, items=['Dispel Magic', 'Echo Shard', 'Unstoppable'], notes-label=True
-  Time Wall: 3 notes, 2 interactions, items=['Dispel Magic', 'Unstoppable', 'Reactive Barrier', 'Indomitable'], notes-label=True
+  Pulse Grenade: 4 notes, 2 interactions, items=['Dispel Magic', 'Echo Shard', 'Unstoppable'], notes-label=True
+  Time Wall: 8 notes, 4 interactions, items=['Dispel Magic', 'Unstoppable', 'Reactive Barrier', 'Indomitable'], notes-label=True
   Kinetic Carbine: 8 notes, 3 interactions, items=['Dispel Magic', 'Veil Walker', 'Shadow Weave', 'Unstoppable', 'Plated Armor'], notes-label=True
   Paradoxical Swap: 7 notes, 1 interactions, items=['Reactive Barrier', 'Unstoppable', 'Indomitable', 'Cloak of Opportunity'], notes-label=True
   [weapon] name='Trade Secret', 0 notes, notes-label=False
@@ -218,13 +218,13 @@ Deadman Danny: fetched via api; abilities-section, found headings: Strix Salvo, 
 Rem: fetched via api; abilities-section, found headings: Pillow Toss, Tag Along, Lil Helpers, Naptime
   Pillow Toss: 3 notes, 0 interactions, items=['Dispel Magic', 'Unstoppable'], notes-label=True
   Tag Along: 9 notes, 1 interactions, items=['Healing Booster', 'Healing Tempo', 'Slowing Hex'], notes-label=True
-  Lil Helpers: 14 notes, 4 interactions, items=['Monster Rounds', 'Heroic Aura', 'Healing Booster', 'Healing Tempo', 'Echo Shard'], notes-label=True
+  Lil Helpers: 15 notes, 4 interactions, items=['Monster Rounds', 'Heroic Aura', 'Healing Booster', 'Healing Tempo', 'Echo Shard'], notes-label=True
   Naptime: 2 notes, 0 interactions, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
   [weapon] name='Long Night', 2 notes, notes-label=True
 Silver: fetched via api; abilities-section, found headings: Slam Fire, Boot Kick, Entangling Bola, Lycan Curse
   Slam Fire: 2 notes, 0 interactions, items=[], notes-label=True
   Boot Kick: 4 notes, 2 interactions, items=['Melee Lifesteal', 'Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Slowing Hex', 'Magic Carpet', 'Unstoppable'], notes-label=True
-  Entangling Bola: 14 notes, 1 interactions, items=['Dispel Magic', 'Unstoppable', 'Slowing Hex', 'Phantom Strike', 'Melee Lifesteal', 'Healing Booster', 'Close Quarters', 'Point Blank', 'Intensifying Magazine', 'Opening Rounds'], notes-label=True
+  Entangling Bola: 11 notes, 1 interactions, items=['Dispel Magic', 'Unstoppable', 'Slowing Hex', 'Phantom Strike', 'Melee Lifesteal', 'Healing Booster', 'Intensifying Magazine'], notes-label=True
   Lycan Curse: 19 notes, 2 interactions, items=['Healing Booster', 'Healing Tempo', 'Fleetfoot', 'Echo Shard'], notes-label=True
   [weapon] name='Hair of the Dog', 0 notes, notes-label=False
 Celeste: fetched via api; abilities-section, found headings: Light Eater, Dazzling Trick, Radiant Daggers, Shining Wonder
@@ -249,7 +249,7 @@ Violet: fetched via api; abilities-section, found headings: Living Ink, Flow Sta
   Living Ink: 17 notes, 0 interactions, items=['Headhunter', 'Siphon Bullets', 'Express Shot', 'Split Shot', 'Ricochet', 'Sharpshooter', 'Point Blank', 'Opening Rounds', 'Intensifying Magazine'], notes-label=True
   Flow State: 7 notes, 0 interactions, items=['Dispel Magic', 'Unstoppable'], notes-label=True
   Still Life: 6 notes, 0 interactions, items=['Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
-  Abstract Landscape: 5 notes, 0 interactions, items=['Healing Booster', 'Reactive Barrier', 'Indomitable', 'Unstoppable', 'Veil Walker', 'Refresher'], notes-label=True
+  Abstract Landscape: 6 notes, 0 interactions, items=['Healing Booster', 'Reactive Barrier', 'Indomitable', 'Unstoppable', 'Veil Walker', 'Refresher'], notes-label=True
   [weapon] name='Creative Solutions', 0 notes, notes-label=False
 Nurse Harrow: fetched via api; abilities-section, found headings: Leech Therapy, Wretched Vapors, Healing Needles, Lurking Terrors
   Leech Therapy: 5 notes, 0 interactions, items=[], notes-label=True
