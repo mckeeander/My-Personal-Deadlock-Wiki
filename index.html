@@ -29,10 +29,11 @@ header{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);dis
 header{border-top:1px solid var(--line);box-shadow:0 -8px 20px rgba(0,0,0,.45)}
 header .tabs{margin:8px 0 0;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px}
 header .tab{border:0;border-radius:7px;background:transparent;padding:9px 4px;color:var(--dim)}
-header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--gold)}
+header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--nav)}
 header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .tab[data-c=vitality].on{box-shadow:inset 0 -3px 0 var(--vital)} header .tab[data-c=spirit].on{box-shadow:inset 0 -3px 0 var(--spirit)}
 header .bar{padding-top:8px}
-input[type=search]:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+input[type=search]:focus,#gq:focus{outline:none;border-color:var(--nav);box-shadow:0 0 0 1px var(--nav) inset}
+:root{--nav:#4f8fe8}
 input:focus{outline:none;border-color:var(--gold)}
 header::after{content:"";position:absolute;left:0;right:0;top:100%;height:160px;background:var(--bg)} /* fills any gap above the keyboard */
 header.kb{padding-bottom:6px}
