@@ -441,6 +441,7 @@ function rich(s) {
     return gk ? '<span class="hl gl" data-g="' + gk + '"' + st + ">" + txt + "</span>" : m;
   });
   out = out.replace(/(?:\s*<br>\s*)+/g, '<span class="pg"></span>').replace(/^(<span class="pg"><\/span>)+|(<span class="pg"><\/span>)+$/g, ""); // every line break is the same short gap
+  out = autoGloss(out);
   return out.replace(/\u0001(\d+)\u0001/g, function (m, i) { return SVGS[+i] || ""; });
 }
 function descText(d) {
@@ -995,7 +996,7 @@ function upgradeTexts(it) {
     if (shortBits.length > 1 && shortBits.every(function (b) { return b.n === shortBits[0].n && b.w === shortBits[0].w; })) { shortBits = [shortBits[0]]; labelBits = [labelBits[0]]; }
     var extra = scaleBits.length ? '<br><span class="dm">' + scaleBits.join("<br>") + "</span>" : "";
     if (d[k]) {
-      var rd = rich(d[k]).replace(/<span class="pg"><\/span>/g, "<br>").replace(/^(\s*<br>)+/, "").replace(/\/\s+per\b/g, " per").replace(/( for )((?:<span[^>]*>)?)\+(?=[\d.]+s\b)/g, "$1$2"), merged = /scales? with (Spirit|Weapon)/i.test(rd); // the text already says what it scales with
+      var rd = unGloss(rich(d[k])).replace(/<span class="pg"><\/span>/g, "<br>").replace(/^(\s*<br>)+/, "").replace(/\/\s+per\b/g, " per").replace(/( for )((?:<span[^>]*>)?)\+(?=[\d.]+s\b)/g, "$1$2"), merged = /scales? with (Spirit|Weapon)/i.test(rd); // the text already says what it scales with
       if (shortBits.length === 1 && shortBits[0].w) { // a line that only states the scaling: use the real number
         rd = rd.replace(/(^|<br\s*\/?>)\s*(?:<span class="highlight">)?\+?[\d.]+(?:<\/span>)?\s+(Spirit|Weapon|Boon)\s+Scaling\s*(?=<br|$)/i, function (m0, br) {
           merged = true; return br + '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + shortBits[0].w + " scaling";
@@ -1083,7 +1084,8 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
 }
 // tier text: every stat name in its type's colour (spirit purple, weapon orange, vitality green), Title Case, no inline icons,
 // so the game's own coloured labels and our plain ones read the same
-var TIER_SP = "#CE90FF", TIER_WP = "#EC9719", TIER_VT = "#0F9", TIER_NE = "#FFEFD7", TIER_RD = "#FF5C4D";
+var TIER_KEEP = /^(heals|health|silences|silenced|stuns|stunned|immobilizes|immobilized|sleeps)$/; // verbs and plain words keep the sentence's own case
+var TIER_BL = "#6AA6FF", TIER_SP = "#CE90FF", TIER_WP = "#EC9719", TIER_VT = "#0F9", TIER_NE = "#FFEFD7", TIER_RD = "#FF5C4D";
 var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_WP], ["spirit lifesteal", TIER_VT], ["bullet lifesteal", TIER_VT], ["melee lifesteal", TIER_VT],
   ["explosion lifesteal", TIER_VT], ["lifesteal", TIER_VT], ["spirit resistance", TIER_SP], ["spirit resist", TIER_SP], ["bullet resistance", TIER_WP], ["bullet resist shred", TIER_WP], ["bullet resist", TIER_WP],
   ["spirit damage", TIER_SP], ["spirit power", TIER_SP], ["spirit scaling", TIER_SP], ["spirit amp", TIER_SP], ["weapon damage", TIER_WP], ["bullet damage", TIER_WP],
@@ -1092,12 +1094,14 @@ var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_W
   ["fading move speed", "mv"], ["bonus move speed", "mv"], ["move speed", "mv"], ["sprint speed", "mv"], ["flight speed", "mv"], ["dash speed", "mv"], ["rush speed", "mv"],
   ["ghoul speed", TIER_VT], ["movespeed", "mv"], ["lunge speed", "mv"], ["max health", TIER_VT], ["bonus health", TIER_VT], ["health regen", TIER_VT], ["max hp regen", TIER_VT],
   ["total hp regen", TIER_VT], ["hp regen", TIER_VT], ["regen", TIER_VT], ["stamina", "mv"],
-  ["incoming healing", "heal"], ["healing", "heal"], ["heal", "heal"], // green when it adds healing, red when it cuts it
+  ["incoming healing", "heal"], ["healing", "heal"], ["heals", "heal"], ["heal", "heal"],
+  ["burn damage", TIER_SP], ["burn dps", TIER_SP], // every burn in the game data is spirit damage // green when it adds healing, red when it cuts it
   ["movement slow", TIER_RD], ["fading slow", TIER_RD], ["max slow", TIER_RD], ["dash slow", TIER_RD], ["slow", TIER_RD],
   ["debuff resistance", TIER_VT], ["debuff resist", TIER_VT], ["melee resist", TIER_WP], ["weapon range", TIER_WP], ["dash distance", "mv"],
   ["silences", TIER_RD], ["silenced", TIER_RD], ["silence", TIER_RD], ["barrier", TIER_NE], ["stun duration", TIER_RD], ["sleep duration", TIER_RD], ["immobilize duration", TIER_RD],
   ["immobilizes", TIER_RD], ["immobilized", TIER_RD], ["immobilize", TIER_RD], ["stuns", TIER_RD], ["stunned", TIER_RD], ["stun", TIER_RD], ["sleeps", TIER_RD], ["sleep", TIER_RD],
-  ["spirit", TIER_SP], ["damage", "dmg"], ["dps", "dmg"], ["close range", null], ["radius", ""], ["range", ""], ["cooldown", ""]];
+  ["spirit", TIER_SP], ["damage", "dmg"], ["dps", "dmg"], ["close range", null], ["radius", TIER_BL], ["range", ""], ["cooldown", TIER_BL], ["duration", TIER_BL], ["charge time", TIER_BL], ["charge delay", TIER_BL],
+  ["charges", TIER_BL], ["charge", TIER_BL]];
 // named damage ("Impact Damage", "Detonation Damage") takes the colour of that stat's own damage type when the ability says which
 function tierDmg(it) {
   var m = {}, P = (it && it.properties) || {};
@@ -1110,7 +1114,7 @@ function tierDmg(it) {
 }
 // stats whose name reads as a buff but here is done to the enemy (opposite colour)
 var TIER_OV = { "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]],
-  "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""]], "Lycan Curse": [["bullet", TIER_WP]] };
+  "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]] };
 // wording fixes for a single tier line: [ability, tier 1-3, from, to]
 var TIER_TXT = [["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"], ["Exploding Uppercut", 3, /Set (<span[^>]*>)Grapple Arm cooldown to 0<\/span>/, "Resets $1Grapple Arm Cooldown</span>"]];
 // a bare "Damage" or "DPS" takes the ability's damage type when all its damage is one type
@@ -1119,9 +1123,18 @@ function tierBase(it) {
   Object.keys(P).forEach(function (k) { var c = String(P[k].css_class || ""); if (/tech_damage/.test(c)) sp++; else if (/bullet_damage|melee_damage/.test(c)) wp++; });
   return sp && !wp ? TIER_SP : wp && !sp ? TIER_WP : "";
 }
+// a barrier that grows with Spirit Power reads purple
+function tierBarrier(it) {
+  var P = (it && it.properties) || {};
+  var isB = function (k) { return /Barrier/i.test(propLabel(P[k] || {}, k) || ""); };
+  var sp = Object.keys(P).some(function (k) { return isB(k) && scaleOf(P[k]).kind === "spirit"; }) ||
+    (it && it.upgrades || []).some(function (u) { return ((u && u.property_upgrades) || []).some(function (pu) { return pu.upgrade_type === "EAddToScale" && isB(pu.name) && (!pu.scale_stat_filter || pu.scale_stat_filter === "ETechPower"); }); });
+  return sp ? [["barrier", TIER_SP]] : [];
+}
 function tierColor(h, it, ti) {
-  h = String(h).replace(/<img\b[^>]*>/g, "").replace(/<svg class="ic(?! key)[^"]*"[\s\S]*?<\/svg>/g, "").replace(/(<span\b[^>]*?)\s+style="color:[^"]*"/g, "$1");
-  var list = (TIER_OV[it && it.name] || []).concat(tierDmg(it), TIER_STATS), seen = "", base = tierBase(it);
+  h = unGlossAll(h); // unwrap glossary links so phrases stay whole
+  h = String(h).replace(/\s+data-g="[^"]*"/g, "").replace(/class="([^"]*)\bgl\b([^"]*)"/g, function (m, a, b) { return 'class="' + (a + b).trim() + '"'; }).replace(/<img\b[^>]*>/g, "").replace(/<svg class="ic(?! key)[^"]*"[\s\S]*?<\/svg>/g, "").replace(/(<span\b[^>]*?)\s+style="color:[^"]*"/g, "$1");
+  var list = (TIER_OV[it && it.name] || []).concat(tierDmg(it), tierBarrier(it), TIER_STATS), seen = "", base = tierBase(it);
   // the stat this tier actually upgrades decides a bare "Damage" (Rend T1 adds spirit damage to a melee ability)
   (((it && it.upgrades || [])[ti] || {}).property_upgrades || []).forEach(function (pu) {
     var pp = ((it.properties || {})[pu.name]) || {}; if (pu.upgrade_type || !/^(Damage|DPS|Damage Per Second)$/.test(propLabel(pp, pu.name) || "")) return;
@@ -1136,7 +1149,7 @@ function tierColor(h, it, ti) {
       var hit = null;
       if (i === 0 || /[^a-z]/i.test(p.charAt(i - 1))) for (var k = 0; k < list.length; k++) { var w = list[k][0]; if (low.substr(i, w.length) === w && !/[a-z]/i.test(p.charAt(i + w.length) || "")) { hit = list[k]; break; } }
       if (hit) {
-        var word = p.substr(i, hit[0].length).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }).replace(/^Dps$/, "DPS").replace(/ And /g, " and ").replace(/&Amp;/g, "&amp;"), col = hit[1];
+        var word = TIER_KEEP.test(hit[0]) ? p.substr(i, hit[0].length) : p.substr(i, hit[0].length).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }).replace(/^Dps$/, "DPS").replace(/ And /g, " and ").replace(/&Amp;/g, "&amp;"), col = hit[1];
         if (col === null) word = p.substr(i, hit[0].length); // a phrase kept as written
         if (col === "dmg") col = base;
         if (col === "mv") { // movement and stamina: green as a buff, red when the line takes it away (a slow on enemies)
@@ -1174,7 +1187,7 @@ function abilityMap() {
 // note text with an icon beside each ability it mentions (the wiki does this for linked abilities)
 function noteHtml(txt, own) {
   txt = String(txt); var m = abilityMap(), names = Object.keys(m).filter(function (n) { return m[n] && m[n].img && !(own && own.indexOf(n) >= 0); });
-  if (!names.length) return esc(txt);
+  if (!names.length) return autoGloss(esc(txt));
   names.sort(function (a, b) { return b.length - a.length; });
   var re = new RegExp("(^|[^A-Za-z])(" + names.map(function (n) { return n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")(?![A-Za-z])", "g");
   var out = "", last = 0, x;
@@ -1184,7 +1197,7 @@ function noteHtml(txt, own) {
     out += esc(txt.slice(last, start)) + '<span class="nref" role="link" data-rh="' + esc(m[nm].h) + '" data-ra="' + esc(m[nm].a) + '"><img class="nic" alt="" src="' + esc(m[nm].img) + '" onerror="this.style.display=\'none\'">' + esc(nm) + "</span>";
     last = start + nm.length; re.lastIndex = last;
   }
-  return out + esc(txt.slice(last));
+  return autoGloss(out + esc(txt.slice(last)));
 }
 function notesBlock(a, own) {
   var figs = (a && a.figs || []).filter(function (f) { return /^https:\/\/cdn\.deadlock\.wiki\//.test(f[0]); });
@@ -1250,10 +1263,10 @@ function abilityCard(it, h) {
   CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) };
   try {
     var CH = chipsHtml(it);
-    return '<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
+    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       CH +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: abilityDesc(it) } : it.description)) + "</div>" +
-      flagOnes(dropChipDupes(tooltipHtml(it), CH)) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>";
+      flagOnes(dropChipDupes(tooltipHtml(it), CH)) + upgradesHtml(it, sel) + wikiHtml(h, it) + "</section>");
   } finally { CTX = null; }
 }
 // a "1" that is really an on/off switch ("1 Purge Debuffs") reads better as plain text with the small stats
@@ -1610,6 +1623,7 @@ function itemSheet(cn, fromBack) {
     (comps.length ? '<div class="ihd">Builds from</div>' + comps.map(function (c) { return recipeRow(c, 0); }).join("") : "") +
     (into.length ? '<div class="ihd">Builds into</div>' + intoTree(cn, 0, (function () { var o = {}; o[cn] = 1; return o; })()) : "") +
     '<button class="ibtn" id="close" style="width:100%;margin-top:14px">Close</button>';
+  html = glossOnce(html);
   function bind() {
     $("close").onclick = closeSheet;
     var bk = $("ibk"); if (bk) bk.onclick = sheetBack;
@@ -1755,7 +1769,7 @@ var GLOSS = [
   { k: "spreadshot", c: "dmg", t: "Spreadshot", a: ["spreadshot"], d: "Weapons that fire several pellets per shot. Every bonus applies to each pellet on its own, which is why bullet damage shows as something like “3.6 ×9”." },
   { k: "fire-rate", c: "dmg", t: "Fire rate", a: ["fire rate"], d: "How fast your weapon shoots. Fire-rate bonuses raise your damage per second; fire-rate slows from enemies lower it." },
   { k: "melee", c: "dmg", t: "Light & heavy melee", a: ["melee", "melee damage", "light melee", "heavy melee"], d: "Tap melee for a quick light attack, or hold it for a heavy attack that lunges forward without spending [[stamina|stamina]]. Most heroes start at 63 light and 116 heavy, and both grow with [[boons|boons]]. Melee can be [[parry|parried]]." },
-  { k: "parry", c: "dmg", t: "Parry", a: ["parry", "parried", "parries"], d: "Press parry (F) to block incoming melee for a short window (about 0.75s). A successful parry stuns the attacker for 2.75s and makes them take 25% more damage from everyone; [[debuff-resist|Debuff Resist]] doesn’t shorten that stun. A missed parry goes on a 4.5s cooldown." },
+  { k: "parry", c: "dmg", t: "Parry", a: ["parry", "parried", "parries", "parrying"], d: "Press parry (F) to block incoming melee for a short window (about 0.75s). A successful parry stuns the attacker for 2.75s and makes them take 25% more damage from everyone; [[debuff-resist|Debuff Resist]] doesn’t shorten that stun. A missed parry goes on a 4.5s cooldown." },
 
   { k: "spirit-power", c: "scale", t: "Spirit Power", a: ["spirit power"], d: "The stat that makes abilities stronger. You gain it from [[boons|boons]], spirit items, [[investment|spirit shop spending]] and golden statues on the map. Any number with a ★ badge grows with it; see [[scaling|Scaling]]." },
   { k: "scaling", c: "scale", t: "Scaling (★ ×0.6)", a: ["scaling", "spirit scaling"], d: "The ★ ×N badge on a stat is its spirit scaling: final value = base + Spirit Power × N. For example, 22 damage per second with ×0.6 at 50 Spirit Power becomes 22 + 50 × 0.6 = 52. Some stats grow per [[boons|boon]] instead, shown as “+X / boon”." },
@@ -1781,9 +1795,9 @@ var GLOSS = [
   { k: "diminishing", c: "def", t: "Diminishing returns", a: ["diminishing returns"], d: "Being hit by crowd control again and again makes later effects weaker, so chained stuns can’t lock you down forever. The game does this by briefly giving you [[debuff-resist|Debuff Resist]] after you’re controlled; exact values aren’t documented." },
 
   { k: "stun", c: "cc", t: "Stun", a: ["stun", "stuns", "stunned", "stunning"], d: "The target can’t move, shoot, melee, or use abilities or items. A stun also [[interrupt|interrupts]] anything being cast or channeled." },
-  { k: "silence", c: "cc", t: "Silence", a: ["silence", "silences", "silenced"], d: "The target can’t use abilities but can still move, shoot and use items. It doesn’t cancel a cast already underway. Some effects silence items instead (“item silence”)." },
+  { k: "silence", c: "cc", t: "Silence", a: ["silence", "silences", "silenced", "silencing"], d: "The target can’t use abilities but can still move, shoot and use items. It doesn’t cancel a cast already underway. Some effects silence items instead (“item silence”)." },
   { k: "sleep", c: "cc", t: "Sleep", a: ["sleep", "asleep", "sleeping"], d: "The target can’t shoot or use abilities and moves very slowly. Any damage wakes them. Unlike a stun, it doesn’t [[interrupt|interrupt]]." },
-  { k: "immobilize", c: "cc", t: "Immobilize (root)", a: ["immobilize", "immobilizes", "immobilized", "root", "rooted", "roots"], d: "The target can’t move or use movement abilities but can still shoot and cast. Airborne targets drop to the ground." },
+  { k: "immobilize", c: "cc", t: "Immobilize (root)", a: ["immobilize", "immobilizes", "immobilized", "immobilizing", "root", "rooted", "roots"], d: "The target can’t move or use movement abilities but can still shoot and cast. Airborne targets drop to the ground." },
   { k: "disarm", c: "cc", t: "Disarm", a: ["disarm", "disarms", "disarmed"], d: "The target can’t fire their weapon. Melee and most abilities still work, but abilities that change the main gun’s fire are blocked." },
   { k: "slow", c: "cc", t: "Slow", a: ["slow", "slows", "slowed", "slowing", "movement slow", "move speed slow"], d: "Reduces movement speed by a percentage, but never below 2 m/s. Some slows also reduce dash speed. Fire-rate slows lower how fast the target shoots. [[slow-resist|Slow Resist]] weakens slows." },
   { k: "interrupt", c: "cc", t: "Interrupt", a: ["interrupt", "interrupts", "interrupted"], d: "Cancels anything currently being cast or channeled. On its own it doesn’t stop the target from using abilities again right after." },
@@ -1792,7 +1806,7 @@ var GLOSS = [
   { k: "bleed", c: "cc", t: "Bleed", a: ["bleed", "bleeding"], d: "A debuff that deals [[dot|damage over time]]. Like other debuffs, it can be removed by a [[purge|purge]]." },
 
   { k: "unstoppable", c: "buff", t: "Unstoppable", a: ["unstoppable"], d: "Immune to all crowd control (stuns, silences, sleeps, slows, displacement and so on). You can still take damage." },
-  { k: "purge", c: "buff", t: "Purge", a: ["purge", "purges", "dispel", "cleanse"], d: "Removes debuffs currently on a target. Delayed effects are cancelled too, so a purged bomb never goes off. A few effects can’t be purged." },
+  { k: "purge", c: "buff", t: "Purge", a: ["purge", "purges", "purged", "dispel", "dispels", "dispelled", "cleanse"], d: "Removes debuffs currently on a target. Delayed effects are cancelled too, so a purged bomb never goes off. A few effects can’t be purged." },
   { k: "invulnerable", c: "buff", t: "Invulnerable", a: ["invulnerable", "invulnerability", "invincible"], d: "Takes no damage for the duration." },
   { k: "untargetable", c: "buff", t: "Untargetable", a: ["untargetable"], d: "Can’t be hit or targeted: bullets and area effects pass through, and targeted abilities and items can’t select you." },
   { k: "invisible", c: "buff", t: "Invisible", a: ["invisible", "invisibility", "stealth"], d: "Enemies can’t see you. Many versions end early when you attack." },
@@ -1806,6 +1820,42 @@ var HINT_RX = [/^Hit the trap with a Charged Shot/i], GBY = {}, GAL = {}, ICON_S
 GLOSS.forEach(function (g) { GBY[g.k] = g; g.a.forEach(function (x) { GAL[x] = g.k; }); GAL[g.t.toLowerCase()] = g.k; });
 // the game's own keyword labels in ability text
 var GATTR = { SpiritDamage: "spirit-damage", BonusSpiritDamage: "bonus-damage", SpiritDPS: "dot", WeaponDamage: "weapon-damage", BonusWeaponDamage: "bonus-damage", BulletDamage: "weapon-damage", WeaponDPS: "dot", Slow: "slow", SlowResistance: "slow-resist", Stun: "stun" };
+// glossary links follow one rule everywhere: the first mention of a glossary term in a card links to it, whether or not
+// the game highlighted the word; later mentions in the same card stay plain. Everyday words that are rarely the game term stay unlinked.
+var GSKIP = { pull: 1, pulls: 1, dash: 1, dashes: 1, slide: 1, slides: 1, sliding: 1, charge: 1, charges: 1, cooldown: 1, scaling: 1, soul: 1, souls: 1, melee: 1,
+  boon: 1, boons: 1, root: 1, roots: 1, rooted: 1, regen: 1, regeneration: 1, crit: 1, stealth: 1, investment: 1, sprint: 1, "ability point": 1, "ability points": 1 };
+var GRX = null;
+function autoGloss(html) {
+  if (!GRX) {
+    var terms = Object.keys(GAL).filter(function (t) { return !GSKIP[t] && /^[a-z][a-z \-]*[a-z]$/.test(t); }).sort(function (a, b) { return b.length - a.length; });
+    GRX = new RegExp("(^|[^A-Za-z\\-])(" + terms.map(function (t) { return t.replace(/[-]/g, "\\-").replace(/ /g, "\\s+"); }).join("|") + ")(?![A-Za-z])", "gi");
+  }
+  var skip = 0, stack = [];
+  return String(html).split(/(<[^>]*>)/).map(function (p) {
+    if (p.charAt(0) === "<") {
+      var m = /^<\s*(\/?)\s*([a-zA-Z]+)/.exec(p); if (!m) return p;
+      var tag = m[2].toLowerCase(); if (/^(br|img|input|hr)$/.test(tag) || /\/>$/.test(p)) return p;
+      if (m[1]) { var top = stack.pop(); if (top) skip--; return p; }
+      var off = tag === "svg" || tag === "button" || tag === "a" || /\b(gl|nref|dm|diminish)\b/.test((/class="([^"]*)"/.exec(p) || [0, ""])[1]); // already a link, an icon or a how-to hint
+      stack.push(off); if (off) skip++; return p;
+    }
+    if (skip || !p) return p;
+    return p.replace(GRX, function (all, pre, term, off, str) {
+      var k = GAL[term.toLowerCase().replace(/\s+/g, " ")], after = str.slice(off + all.length);
+      if (/^[A-Z]/.test(term) && (/^\s+[A-Z][a-z]/.test(after) || /[A-Z][a-z']+\s+$/.test(str.slice(0, off + pre.length)) && !/[.!?:]\s+$/.test(str.slice(0, off + pre.length)))) return all; // part of a name ("Slowing Hex")
+      return k ? pre + '<span class="gl" data-g="' + k + '">' + term + "</span>" : all; });
+  }).join("");
+}
+// tier text gets no glossary links (the boxes are tap targets) and its rewrites need the plain words
+function unGloss(h) { for (var i = 0; i < 2; i++) h = String(h).replace(/<span class="gl" data-g="[^"]*">([^<]*)<\/span>/g, "$1"); return h; }
+function unGlossAll(h) { for (var i = 0; i < 2; i++) h = String(h).replace(/<span class="(?:hl )?gl" data-g="[^"]*"(?: style="[^"]*")?>([^<]*)<\/span>/g, "$1"); return h; }
+function glossOnce(html) {
+  var seen = {};
+  return String(html).replace(/<span class="([^"]*)\bgl\b([^"]*)" data-g="([a-z-]+)"([^>]*)>/g, function (m, a, b, k, rest) {
+    if (!seen[k]) { seen[k] = 1; return m; }
+    var cls = (a + b).replace(/\s+/g, " ").trim(); return "<span" + (cls ? ' class="' + cls + '"' : "") + rest + ">";
+  });
+}
 function glossBody(g) {
   return esc(g.d).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
 }
