@@ -1097,10 +1097,10 @@ var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_W
   ["incoming healing", "heal"], ["healing", "heal"], ["heals", "heal"], ["heal", "heal"],
   ["burn damage", TIER_SP], ["burn dps", TIER_SP], // every burn in the game data is spirit damage // green when it adds healing, red when it cuts it
   ["movement slow", TIER_RD], ["fading slow", TIER_RD], ["max slow", TIER_RD], ["dash slow", TIER_RD], ["slow", TIER_RD],
-  ["debuff resistance", TIER_VT], ["debuff resist", TIER_VT], ["melee resist", TIER_WP], ["weapon range", TIER_WP], ["dash distance", "mv"],
+  ["debuff resistance", TIER_VT], ["debuff resist", TIER_VT], ["melee resist", TIER_WP], ["weapon range", TIER_WP], ["dash distance", "mv"], ["dash range", "mv"], ["damage regenerated", TIER_VT],
   ["silences", TIER_RD], ["silenced", TIER_RD], ["silence", TIER_RD], ["barrier", TIER_NE], ["stun duration", TIER_RD], ["sleep duration", TIER_RD], ["immobilize duration", TIER_RD],
   ["immobilizes", TIER_RD], ["immobilized", TIER_RD], ["immobilize", TIER_RD], ["stuns", TIER_RD], ["stunned", TIER_RD], ["stun", TIER_RD], ["sleeps", TIER_RD], ["sleep", TIER_RD],
-  ["spirit", TIER_SP], ["damage", "dmg"], ["dps", "dmg"], ["close range", null], ["radius", TIER_BL], ["range", ""], ["cooldown", TIER_BL], ["duration", TIER_BL], ["charge time", TIER_BL], ["charge delay", TIER_BL],
+  ["spirit", TIER_SP], ["damage", "dmg"], ["dps", "dmg"], ["close range", null], ["impact radius", TIER_BL], ["cast range", TIER_BL], ["radius", TIER_BL], ["range", TIER_BL], ["cooldown", TIER_BL], ["duration", TIER_BL], ["charge time", TIER_BL], ["charge delay", TIER_BL],
   ["charges", TIER_BL], ["charge", TIER_BL]];
 // named damage ("Impact Damage", "Detonation Damage") takes the colour of that stat's own damage type when the ability says which
 function tierDmg(it) {
@@ -1114,7 +1114,7 @@ function tierDmg(it) {
 }
 // stats whose name reads as a buff but here is done to the enemy (opposite colour)
 var TIER_OV = { "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]],
-  "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]] };
+  "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""], ["debuff duration", TIER_RD]], "Granny Long Legs": [["resists", TIER_VT]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]] };
 // wording fixes for a single tier line: [ability, tier 1-3, from, to]
 var TIER_TXT = [["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"], ["Exploding Uppercut", 3, /Set (<span[^>]*>)Grapple Arm cooldown to 0<\/span>/, "Resets $1Grapple Arm Cooldown</span>"]];
 // a bare "Damage" or "DPS" takes the ability's damage type when all its damage is one type
@@ -1161,7 +1161,9 @@ function tierColor(h, it, ti) {
       } else { out += p.charAt(i); i++; }
     }
     seen += p; return out;
-  }).join("");
+  }).join("").replace(new RegExp("((?:[A-Z][a-z]+ ){1,2})<span style=\"color:" + TIER_BL + "\">(Range|Radius)</span>", "g"), function (m, w, r) { // "Flick Range", "Big Detonation Radius": the whole name in blue
+    return '<span style="color:' + TIER_BL + '">' + w + r + "</span>";
+  });
 }
 function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
