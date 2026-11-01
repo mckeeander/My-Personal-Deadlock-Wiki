@@ -118,7 +118,10 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hc span{position:absolute;left:0;right:0;bottom:0;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
-.repl{margin:18px 0 6px;font-size:13px;color:var(--dim)}.repl b{color:var(--fg);font-weight:600}
+#main:not(.alt) .f1,#main.alt .f0{display:none}
+.fsw{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;margin:0 0 10px}
+.fsw button{flex:1;border:0;border-radius:7px;background:transparent;padding:8px 4px;color:var(--dim);font-size:14px}
+#main:not(.alt) .fsw .fs0,#main.alt .fsw .fs1{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--gold)}
 .sbx{margin:18px 0 8px;border-top:1px solid var(--line);padding-top:12px}
 .sbx summary{display:flex;align-items:center;gap:8px;cursor:pointer;list-style:none;color:var(--dim);font-size:14px;margin-bottom:10px}
 .sbx summary::-webkit-details-marker{display:none}
@@ -192,9 +195,11 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .sblk{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:10px 12px}
 .sblk.vit{--c:var(--vital)}.sblk.wep{--c:var(--weapon)}.sblk.spi{--c:var(--spirit)}
 .sblk h4{margin:2px 0 6px;font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--c)}
-.srow{display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-items:center;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
+.srow{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);column-gap:12px;align-items:center;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
 .srow .l{text-align:right;color:var(--dim)}
-.srow .v{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.srow .v{display:flex;align-items:center;gap:6px;min-width:0}
+.srow .vv{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:6px;row-gap:0;min-width:0}
+.srow .vv em{line-height:1.25}
 .srow .v b{font-size:15px}
 .bon{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:12px}
 .bon summary{cursor:pointer;color:var(--gold);font-size:14px}
@@ -1276,9 +1281,16 @@ function notesBlock(a, own) {
   var html = '<details class="notes" open><summary>Notes</summary>';
   figs.forEach(function (f) { var orig = String(f[0]).replace(/\/thumb\/([^\/]+)\/[^\/]*$/, "/$1"); // the full-size file, if the resized copy won't load
     html += '<figure class="nfig"><img loading="lazy" alt="" referrerpolicy="no-referrer" src="' + esc(f[0]) + '"' + (orig !== f[0] ? ' data-o="' + esc(orig) + '"' : "") + ' onerror="if(this.dataset.o){this.src=this.dataset.o;this.dataset.o=\'\';return}var d=this.closest(\'details\');this.parentNode.remove();if(d&&!d.querySelector(\'li,figure\'))d.remove()">' + (f[1] ? "<figcaption>" + esc(f[1]) + "</figcaption>" : "") + "</figure>"; });
-  if ((a.notes || []).length) html += "<ul>";
-  (a.notes || []).forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; });
-  return html + ((a.notes || []).length ? "</ul>" : "") + "</details>";
+  // a note the wiki repeats is shown once (along with any sub-points under the repeat)
+  var seen = {}, skip = -1, notes = (a.notes || []).filter(function (n) {
+    if (skip >= 0 && n[0] > skip) return false; skip = -1;
+    var key = String(n[1]).replace(/\s+/g, " ").trim().toLowerCase();
+    if (seen[key]) { skip = n[0]; return false; }
+    seen[key] = 1; return true;
+  });
+  if (notes.length) html += "<ul>";
+  notes.forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; });
+  return html + (notes.length ? "</ul>" : "") + "</details>";
 }
 // the item a card is about; stat cards ("Ability Range") use the item the wiki pictures for them (Greater Expansion)
 function interItem(x) {
@@ -1379,23 +1391,28 @@ function gunImg(h) {
   var d = ((h.shop_stat_display || {}).weapon_stats_display) || {};
   return d.weapon_image_webp || d.weapon_image || "";
 }
-// an ultimate that swaps the hero's weapon (and maybe abilities) gets its own section listing what you have while it's active
-function formSection(h, abs) {
-  var ult = abs[3]; if (!ult || !ult.dependent_abilities) return "";
+// an ultimate that swaps the hero's weapon (Silver's claws, Venator's crossbow), and for Silver her whole kit: what changes while it's active
+function formParts(h, abs) {
+  var ult = abs[3]; if (!ult || !ult.dependent_abilities) return null;
   var dep = Object.keys(ult.dependent_abilities).map(function (c) { return state.byClass[c]; }).filter(Boolean);
   var wpn = dep.filter(function (d) { return d.type === "weapon" && d.weapon_info && d.weapon_info.bullet_damage; })[0];
-  if (!wpn) return "";
+  if (!wpn) return null;
   function real(d) { return d.type === "ability" && d.name && d.name !== d.class_name && d.description; }
-  var swaps = dep.filter(function (d) { return real(d) && d.ability_type !== "innate"; }), extra = dep.filter(function (d) { return real(d) && d.ability_type === "innate"; });
-  var html = '<div class="sec">During ' + esc(nameOf(ult)) + "</div>" + weaponCard(h, wpn);
-  function fromOf(d) { return abs.filter(function (a) { return a !== ult && a.dependent_abilities && d.class_name in a.dependent_abilities; })[0]; }
-  swaps.sort(function (a, b) { return abs.indexOf(fromOf(a)) - abs.indexOf(fromOf(b)); }); // same order as the abilities they replace
-  swaps.forEach(function (d) {
-    var from = fromOf(d);
-    html += (from ? '<p class="repl">Replaces <b>' + esc(nameOf(from)) + "</b></p>" : "") + abilityCard(d, h);
+  var swap = {};
+  dep.filter(real).forEach(function (d) {
+    if (d.ability_type === "innate") { swap[ult.class_name] = d; return; } // End the Curse sits where Lycan Curse does
+    var from = abs.filter(function (a) { return a !== ult && a.dependent_abilities && d.class_name in a.dependent_abilities; })[0];
+    if (from) swap[from.class_name] = d;
   });
-  extra.forEach(function (d) { html += abilityCard(d, h); });
-  return html;
+  return { ult: ult, wpn: wpn, swap: swap, label: nameOf(ult) };
+}
+function formSwitch(fp) {
+  return '<div class="fsw" role="tablist"><button class="fs0" data-fs="0">Normal</button><button class="fs1" data-fs="1">' + esc(fp.label) + "</button></div>";
+}
+function setForm(on, keepEl) { // keep the tapped switch where it is on screen while the content above it changes
+  var m = $("main"), y0 = keepEl ? keepEl.getBoundingClientRect().top : 0;
+  state.alt = !!on; m.classList.toggle("alt", state.alt);
+  if (keepEl) window.scrollBy(0, keepEl.getBoundingClientRect().top - y0);
 }
 function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver's claws, Venator's crossbow)
   var w = alt || state.byClass[(h.items || {}).weapon_primary];
@@ -1466,7 +1483,8 @@ function statBlock(h) {
   function v(k) { return s[k] && s[k].value != null ? s[k].value : null; }
   // wiki layout: label right-aligned to the centre line, icon + value left-aligned from it
   function row(l, val, extra) {
-    return '<div class="srow"><span class="l">' + esc(l) + '</span><span class="v">' + siIcon(SICON[l]) + (val !== "" ? "<b>" + esc(val) + "</b>" : "") + (extra ? "<em>" + esc(extra) + "</em>" : "") + "</span></div>";
+    // value and its note share one wrapping box beside the icon, so a note that drops to a second line lines up under the number
+    return '<div class="srow"><span class="l">' + esc(l) + '</span><span class="v">' + siIcon(SICON[l]) + '<span class="vv">' + (val !== "" ? "<b>" + esc(val) + "</b>" : "") + (extra ? "<em>" + esc(extra) + "</em>" : "") + "</span></span></div>";
   }
   function boon(k, mult) { var n = Number(up[k]) * (mult || 1); return n > 0 ? "+" + fmtNum(n) + " / boon" : ""; }
   var vit = "", wep = "", spi = "";
@@ -1501,8 +1519,12 @@ function statBlock(h) {
   Object.keys(sc).forEach(function (k) {
     var o = sc[k] || {}, who = o.scaling_stat === "ETechPower" ? "spirit" : o.scaling_stat === "EWeaponPower" ? "weapon" : nice(o.scaling_stat || "").toLowerCase();
     var AR = { ETechArmorDamageReduction: "Spirit resist", EBulletArmorDamageReduction: "Bullet resist" }; // "tech armor" is the game's internal name for spirit resist
-    if (AR[k]) spi += row(AR[k], "+" + fmtNum(o.scale) + "%", "per " + (who === "spirit" ? "Spirit Power" : who));
-    else spi += row(nice(k) + " scaling", "+" + fmtNum(o.scale), "per " + who);
+    var SN = { EBulletDamage: "Bullet damage", ESprintSpeed: "Sprint speed", EClipSize: "Ammo", EMaxMoveSpeed: "Move speed", ERoundsPerSecond: "Bullets per sec",
+      EFireRate: "Fire rate", EBaseHealthRegen: "Health regen", EHeavyMeleeDamage: "Heavy melee" };
+    var per = "/ " + (who === "spirit" ? "Spirit Power" : who);
+    var sv = Math.abs(o.scale) < 0.1 ? String(Number(Number(o.scale).toPrecision(2))) : fmtNum(o.scale);
+    if (AR[k]) spi += row(AR[k], "+" + sv + "%", per);
+    else spi += row(SN[k] || nice(k), "+" + sv, per);
   });
   function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
@@ -1651,14 +1673,18 @@ function renderHero(cn) {
   var html = '<button class="back" id="back">' + "‹ All heroes" + '</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   html += '<div class="stats1">' + statBlock(h) + "</div>";
-  var wc = weaponCard(h);
-  if (wc) html += '<div class="sec">Weapon</div>' + wc;
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
-  html += '<div class="sec">Abilities</div>';
+  var fp = formParts(h, abs);
+  if (state.altHero !== cn) { state.alt = false; state.altHero = cn; }
+  var wc = weaponCard(h);
+  if (wc) html += '<div class="sec">Weapon</div>' + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc);
+  html += '<div class="sec">Abilities</div>' + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
-  abs.forEach(function (a) { html += abilityCard(a, h); });
-  html += formSection(h, abs);
-  $("main").innerHTML = html; hydrateName();
+  abs.forEach(function (a) {
+    var alt = fp && fp.swap[a.class_name];
+    html += alt ? '<div class="f0">' + abilityCard(a, h) + '</div><div class="f1">' + abilityCard(alt, h) + "</div>" : abilityCard(a, h);
+  });
+  $("main").innerHTML = html; hydrateName(); setForm(state.alt);
   $("back").onclick = function () {
     state.hero = null;
     render(); window.scrollTo(0, state.listY || 0);
@@ -1816,8 +1842,8 @@ function buildSearch() {
     var sub = (h.tags || []).filter(Boolean).join(" · ");
     out.push({ k: "hero", cn: h.class_name, name: h.name, sub: sub, img: heroImg(h), text: "", hay: (h.name + " " + roleLabel(h) + " " + sub + " " + (h.gun_tag || "")).toLowerCase() });
     var sig = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[(h.items || {})[k]]; }).filter(Boolean);
-    var fx = document.createElement("div"); fx.innerHTML = formSection(h, sig); // abilities from an ultimate's alternate form are searchable too
-    Array.prototype.forEach.call(fx.querySelectorAll("[data-ab]"), function (el) { var b = state.byClass[el.getAttribute("data-ab")]; if (b && sig.indexOf(b) < 0) sig.push(b); });
+    var fp = formParts(h, sig); // abilities from an ultimate's alternate form are searchable too
+    if (fp) Object.keys(fp.swap).forEach(function (k) { if (sig.indexOf(fp.swap[k]) < 0) sig.push(fp.swap[k]); });
     sig.forEach(function (a) {
       var d = a.description && typeof a.description === "object" ? a.description : {}, parts = [d.desc, d.t1_desc, d.t2_desc, d.t3_desc];
       ((a.tooltip_details && a.tooltip_details.info_sections) || []).forEach(function (sec) { if (sec.loc_string) parts.push(sec.loc_string); });
@@ -1880,6 +1906,7 @@ function openResult(b) {
   renderHero(hero);
   if (kind === "ability") {
     var el = document.querySelector('[data-ab="' + cn + '"]');
+    if (el && el.closest(".f1")) setForm(true);
     if (el) scrollToEl(el);
   }
 }
@@ -2163,6 +2190,8 @@ function tapTip(e) { // touch screens have no hover, so a tap on a chip names it
   return true;
 }
 $("main").addEventListener("click", function (e) {
+  var fsb = e.target.closest ? e.target.closest("[data-fs]") : null;
+  if (fsb) { setForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
   if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1100); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;

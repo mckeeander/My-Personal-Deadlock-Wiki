@@ -354,6 +354,18 @@ jobs:
                       continue
                   name = h["name"]
                   abil = [by[h["items"][k]]["name"] for k in ("signature1", "signature2", "signature3", "signature4") if h.get("items", {}).get(k) in by]
+                  # an ultimate that swaps the hero's weapon and kit (Silver's wolf form): the wiki lists those abilities on the same page,
+                  # so their names are headings too; without them their notes pile onto the ability above
+                  sigs = [by[h["items"][k]] for k in ("signature1", "signature2", "signature3", "signature4") if h.get("items", {}).get(k) in by]
+                  ult = sigs[3] if len(sigs) == 4 else None
+                  deps = [by[c] for c in ((ult or {}).get("dependent_abilities") or {}) if c in by]
+                  if any(d.get("type") == "weapon" and (d.get("weapon_info") or {}).get("bullet_damage") for d in deps):
+                      for s0 in sigs:
+                          for c in (s0.get("dependent_abilities") or {}):
+                              d = by.get(c) or {}
+                              nm = d.get("name")
+                              if d.get("type") == "ability" and nm and nm != c and d.get("description") and nm not in abil:
+                                  abil.append(nm)
                   html, how, errs = page_html(name)
                   if not html:
                       fail += 1
