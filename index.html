@@ -117,6 +117,13 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hc span{position:absolute;left:0;right:0;bottom:0;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
+.sbx{margin:18px 0 8px;border-top:1px solid var(--line);padding-top:12px}
+.sbx summary{display:flex;align-items:center;gap:8px;cursor:pointer;list-style:none;color:var(--dim);font-size:14px;margin-bottom:10px}
+.sbx summary::-webkit-details-marker{display:none}
+.sbx summary::before{content:"›";display:inline-block;width:12px;color:var(--gold);font-size:18px;line-height:1;transition:transform .15s}
+.sbx[open] summary::before{transform:rotate(90deg)}
+.sbx summary span{color:var(--fg)}
+.sbx:not([open]) summary{margin-bottom:0}
 .tc{flex:none;width:58px;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--disp);font-weight:700;font-size:14px;color:#fff;padding:4px 2px}
 .tc.weapon{background:#a8651a}.tc.vitality{background:#3d7d3c}.tc.spirit{background:#6b45a8}
 .tl{flex:1;min-width:0;display:flex;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px}
@@ -188,6 +195,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .srow .v b{font-size:15px}
 .bon{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:12px}
 .bon summary{cursor:pointer;color:var(--gold);font-size:14px}
+.bon.s-weapon .bl{color:var(--weapon)}.bon.s-vitality .bl{color:var(--vital)}.bon.s-spirit .bl{color:var(--spirit)}
 .bg{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:8px}
 .bg div{background:var(--panel2);border-radius:6px;padding:6px 4px;text-align:center}
 .bg b{display:block;font-size:12px;color:var(--dim);font-weight:600}
@@ -312,6 +320,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .desc + .stats,.desc + .minor{margin-top:16px}
 .backpill{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0) + 84px);transform:translateX(-50%);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
 .backpill[hidden]{display:none}
+#toppill{padding:10px 18px;gap:6px}
 .backpill.in{animation:pillin .22s ease-out}
 .backpill .bx{display:inline-block;padding:0 8px;margin-left:4px;border-left:1px solid var(--line);color:var(--dim);font-size:18px;line-height:1}
 @keyframes pillin{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
@@ -1573,14 +1582,12 @@ function renderHero(cn) {
   var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
   if (!h) { state.hero = null; return renderHeroes(); }
   state.hero = cn; HERO_NAME = h.name; SEL = {};
-  var lore = h.description && typeof h.description === "object" ? (h.description.lore || "") : (h.description || "");
   var tags = (h.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("");
   var cxn = Math.max(0, Math.min(3, Number(h.complexity) || 0)), dots = "";
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
   var tagsA = (h.hero_type ? '<span class="tag role">' + esc(roleLabel(h)) + "</span>" : "") + (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
   var html = '<button class="back" id="back">' + "‹ All heroes" + '</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
-  if (lore) html += '<details class="lore"><summary>Lore</summary>' + rich(lore).replace(/(<br>)+/g, "<br><br>") + "</details>";
   html += '<div class="sec">Stats</div>' + statBlock(h);
   var wc = weaponCard(h);
   if (wc) html += '<div class="sec">Weapon</div>' + wc;
@@ -1608,7 +1615,7 @@ function bonusCard(slot) {
     html += '<div' + (sp ? ' class="spike"' : "") + ">" + (sp ? "<u>SPIKE</u>" : "") + "<b>$" + Number(r.gold_threshold).toLocaleString() + "</b><span>+" + esc(fmtNum(r.bonus)) + unit + "</span></div>";
     prev = r.bonus;
   });
-  return '<details class="bon s-' + slot + '"><summary>Category bonuses: ' + label + '</summary><div class="bg">' + html + "</div></details>";
+  return '<details class="bon s-' + slot + '"><summary>Category bonuses: <span class="bl">' + label + '</span></summary><div class="bg">' + html + "</div></details>";
 }
 function slotOf(it) { return String(it.item_slot_type || "").toLowerCase(); }
 function renderShop(slot) {
@@ -1620,17 +1627,22 @@ function renderShop(slot) {
     var t = it.item_tier || 0; (tiers[t] = tiers[t] || []).push(it);
   });
   var html = statusLine() + (q ? "" : bonusCard(slot));
+  var brawl = "", nb = 0; // $9,999 items only exist in Street Brawl, so they sit in a collapsed section at the end
   Object.keys(tiers).sort(function (a, b) { return a - b; }).forEach(function (t) {
     var arr = tiers[t].sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
     var cost = arr[0].cost ? "$" + Number(arr[0].cost).toLocaleString() : "T" + t;
+    var sb = Number(arr[0].cost) === 9999, out = html; if (sb) { html = ""; nb += arr.length; }
     html += '<div class="trow"><div class="tc ' + slot + '">' + esc(cost) + '</div><div class="tl ' + slot + '">';
     arr.forEach(function (it) {
       html += '<button class="it2" data-item="' + esc(it.class_name) + '">' + imgTag(itemArt(it), itemImg(it)) + "<div>" + esc(nameOf(it)) + (it.is_active_item ? "<em>ACTIVE</em>" : "") + "</div></button>";
     });
     html += "</div></div>";
+    if (sb) { brawl += html; html = out; }
   });
+  if (brawl) html += '<details class="sbx"' + (state.sbOpen ? " open" : "") + '><summary><span>Street Brawl only</span><small>' + nb + " item" + (nb === 1 ? "" : "s") + "</small></summary>" + brawl + "</details>";
   if (!Object.keys(tiers).length) html += '<p class="status">Nothing matched. If this stays empty, open “data check”.</p>';
   $("main").innerHTML = html;
+  var sbx = document.querySelector("#main .sbx"); if (sbx) sbx.addEventListener("toggle", function () { state.sbOpen = sbx.open; });
   bindCommon();
 }
 var ISTACK = [];
