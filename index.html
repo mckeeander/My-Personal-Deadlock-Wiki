@@ -32,6 +32,24 @@ header .tab{border:0;border-radius:7px;background:transparent;padding:9px 4px;co
 header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--nav)}
 header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .tab[data-c=vitality].on{box-shadow:inset 0 -3px 0 var(--vital)} header .tab[data-c=spirit].on{box-shadow:inset 0 -3px 0 var(--spirit)}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
+/* search: the magnifier opens a darkened overlay with the field across the top and live results under it */
+.sov{position:fixed;inset:0;z-index:30}
+.sov-bg{position:absolute;inset:0;background:rgba(8,6,12,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .18s ease-out}
+.sov.open .sov-bg{opacity:1}
+.sov-panel{position:relative;max-width:600px;margin:0 auto;padding:calc(env(safe-area-inset-top,0) + 14px) 12px 0;height:100%;display:flex;flex-direction:column;pointer-events:none}
+.sov-panel>*{pointer-events:auto}
+.sov-row{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.sov-field{display:flex;align-items:center;gap:8px;width:46px;height:44px;padding:0 13px;background:var(--panel);border:1px solid var(--nav);border-radius:10px;color:var(--dim);overflow:hidden;transition:width .22s cubic-bezier(.2,.8,.2,1)}
+.sov.open .sov-field{width:100%}
+.sov-field svg{flex:none}
+.sov-field input[type=search]:focus{border:0;box-shadow:none;outline:none}
+.sov-field input[type=search]{flex:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none;height:100%;outline:none}
+.sov-x{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:8px 2px;opacity:0;width:0;overflow:hidden;transition:opacity .18s}
+.sov.open .sov-x{opacity:1;width:auto}
+.sov .sfs{margin:10px 0 6px;opacity:0;transition:opacity .2s .08s}
+#sres{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:calc(env(safe-area-inset-bottom,0) + 24px);opacity:0;transition:opacity .2s .08s}
+.sov.open .sfs,.sov.open #sres{opacity:1}
+#sres .status{color:var(--fg);opacity:.75}
 .topbar{display:flex;align-items:center;gap:8px;max-width:600px;margin:0 auto;padding:2px 12px 0}
 .topbar .brand{flex:1}
 .topbar .ibtn{min-height:44px;min-width:46px;display:flex;align-items:center;justify-content:center}
@@ -332,6 +350,14 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     <button class="ibtn" id="gbtn" aria-label="Glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button>
   </div>
 <main id="main"></main>
+<div id="sov" class="sov" hidden>
+  <div class="sov-bg" id="sovbg"></div>
+  <div class="sov-panel">
+    <div class="sov-row"><div class="sov-field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input type="search" id="sq" placeholder="Search heroes, abilities, items" autocomplete="off" autocapitalize="off" enterkeyhint="search"></div><button class="sov-x" id="sovx">Cancel</button></div>
+    <div class="sfs" id="sfs"></div>
+    <div id="sres"></div>
+  </div>
+</div>
 <button class="backpill" id="backpill" hidden></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
@@ -734,7 +760,7 @@ function statusLine() {
 function renderHeroes() {
   var q = state.q.toLowerCase();
   var list = state.heroes.filter(function (h) { return !q || String(h.name).toLowerCase().indexOf(q) >= 0; });
-  var html = '<input type="search" id="q" placeholder="Search heroes" value="' + esc(state.q) + '">' + statusLine() + '<div class="hg">';
+  var html = statusLine() + '<div class="hg">';
   list.forEach(function (h) {
     html += '<button class="hc" data-hero="' + esc(h.class_name) + '"><img loading="lazy" alt="" src="' + esc(heroImg(h)) + '"><span>' + esc(h.name) + "</span></button>";
   });
@@ -1576,7 +1602,7 @@ function renderShop(slot) {
     if (q && String(it.name).toLowerCase().indexOf(q) < 0) return;
     var t = it.item_tier || 0; (tiers[t] = tiers[t] || []).push(it);
   });
-  var html = '<input type="search" id="q" placeholder="Search items" value="' + esc(state.q) + '">' + statusLine() + (q ? "" : bonusCard(slot));
+  var html = statusLine() + (q ? "" : bonusCard(slot));
   Object.keys(tiers).sort(function (a, b) { return a - b; }).forEach(function (t) {
     var arr = tiers[t].sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
     var cost = arr[0].cost ? "$" + Number(arr[0].cost).toLocaleString() : "T" + t;
@@ -1968,18 +1994,37 @@ $("brand").onclick = function () { // the title goes home: the hero list
   hideBack(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
 };
 $("gbtn").onclick = function () { hideBack(); openGlossary(); };
-var PRE_SEARCH = null;
-$("sbtn").onclick = function () { hideBack();
-  if (state.tab === "search") { // a second tap closes search and goes back to where you were
-    var ps = PRE_SEARCH || { tab: "heroes", hero: null, y: 0 }; PRE_SEARCH = null;
-    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-    state.tab = ps.tab; state.hero = ps.hero; state.from = null; setTabsUI(ps.tab === "glossary" ? null : ps.tab); render(); window.scrollTo(0, ps.y);
-    return;
-  }
-  PRE_SEARCH = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0 };
-  state.tab = "search"; state.hero = null; state.from = null; setTabsUI(null); renderSearch(); window.scrollTo(0, 0);
-  var i = $("sq"); if (i) i.focus();
-};
+// search lives in an overlay over whatever page you're on; closing it leaves that page exactly as it was
+function searchChips() {
+  $("sfs").innerHTML = [["all", "All"], ["hero", "Heroes"], ["ability", "Abilities"], ["item", "Items"], ["term", "Terms"]].map(function (c) {
+    return '<button class="sf' + (state.sf === c[0] ? " on" : "") + '" data-f="' + c[0] + '">' + c[1] + "</button>";
+  }).join("");
+}
+function openSearch() {
+  hideBack(); var ov = $("sov"), inp = $("sq");
+  inp.value = state.sq || ""; searchChips(); $("sres").innerHTML = searchResults(); $("sres").scrollTop = 0;
+  ov.hidden = false; lockBody();
+  inp.focus(); // focus inside the tap so the phone keyboard opens
+  requestAnimationFrame(function () { requestAnimationFrame(function () { ov.classList.add("open"); }); });
+  if (inp.value) inp.select();
+}
+function closeSearch(then) {
+  var ov = $("sov"); if (ov.hidden) { if (then) then(); return; }
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  ov.classList.remove("open");
+  setTimeout(function () { ov.hidden = true; unlockBody(); if (then) then(); }, 180);
+}
+$("sbtn").onclick = function () { if ($("sov").hidden) openSearch(); else closeSearch(); };
+$("sovx").onclick = function () { closeSearch(); };
+$("sovbg").onclick = function () { closeSearch(); };
+$("sq").oninput = function () { state.sq = $("sq").value; $("sres").innerHTML = searchResults(); $("sres").scrollTop = 0; };
+$("sq").onkeydown = function (e) { if (e.key === "Escape") closeSearch(); if (e.key === "Enter") $("sq").blur(); };
+$("sov").addEventListener("click", function (e) {
+  var sf = e.target.closest ? e.target.closest(".sf[data-f]") : null;
+  if (sf) { state.sf = sf.getAttribute("data-f"); searchChips(); $("sres").innerHTML = searchResults(); return; }
+  var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
+  if (sr) closeSearch(function () { openResult(sr); });
+});
 // A short burst on every stat that changed when a tier was tapped
 function statKey(el) {
   if (el.classList.contains("stat")) { var i = el.querySelector("i"); return "s:" + (i ? i.textContent : ""); }
