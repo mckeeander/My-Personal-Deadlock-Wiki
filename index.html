@@ -76,7 +76,7 @@ body{padding-top:calc(env(safe-area-inset-top,0) + 32px)}
 .tab[data-c=weapon].on{border-bottom-color:var(--weapon)} .tab[data-c=vitality].on{border-bottom-color:var(--vital)} .tab[data-c=spirit].on{border-bottom-color:var(--spirit)}
 main{padding:12px 12px 8px;max-width:600px;margin:0 auto}
 .credits{max-width:600px;margin:0 auto;padding:20px 12px calc(env(safe-area-inset-bottom,0) + 96px);font-size:11px;line-height:1.5;color:var(--dim);opacity:.8}
-.credits p{margin:0 0 6px}.credits a{color:inherit}
+.credits p{margin:0 0 12px}.credits a{color:inherit}
 html{-webkit-text-size-adjust:100%}
 body{overflow-x:hidden}
 html,body{overflow-x:clip}
@@ -384,13 +384,13 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   </div>
   <div class="sbar"><label class="gsearch"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input type="search" id="sq" placeholder="Search" aria-label="Search heroes, abilities, items and terms" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"><button type="button" class="sclr" id="sclr" aria-label="Clear search" hidden><span><svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true"><path d="M1 1L7 7M7 1L1 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button></label><button type="button" class="sx" id="sx" hidden>Cancel</button></div>
 </div>
-<div class="mwrap"><main id="main"></main></div>
+<div class="mwrap"><div id="slide"><main id="main"></main>
 <div id="sarea" hidden><div id="sres"></div></div>
 <footer class="credits">
   <p>This site is a personal study reference. It is not affiliated with or endorsed by Valve. Deadlock is a trademark of Valve Corporation; game data and art belong to Valve.</p>
   <p>Hero, ability and item data come from the game files via the <a href="https://deadlock-api.com" rel="noopener">Deadlock API</a>.</p>
   <p>Ability notes, interactions and some glossary definitions are adapted from the <a href="https://deadlock.wiki" rel="noopener">Deadlock Wiki</a> and its contributors, used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>. This content is shared under the same license.</p>
-</footer>
+</footer></div></div>
 <button class="backpill" id="backpill" hidden></button>
 <button class="backpill" id="toppill" hidden>↑ Back to top</button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
@@ -1567,7 +1567,7 @@ function statBlock(h) {
 }
 // swipe from the left edge on a hero page to go back (same as the back pill if one is showing, else the hero list at the spot you left)
 (function () {
-  var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("main");
+  var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("slide"); // the page and its footer slide together
   function ok() { return ((state.tab === "heroes" && state.hero) || state.tab === "glossary") && !searchOn() && $("sheet").hidden; }
   function goBack() {
     if (state.tab === "glossary") { $("brand").onclick(); return; }
