@@ -118,6 +118,7 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hc span{position:absolute;left:0;right:0;bottom:0;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
+.repl{margin:18px 0 6px;font-size:13px;color:var(--dim)}.repl b{color:var(--fg);font-weight:600}
 .sbx{margin:18px 0 8px;border-top:1px solid var(--line);padding-top:12px}
 .sbx summary{display:flex;align-items:center;gap:8px;cursor:pointer;list-style:none;color:var(--dim);font-size:14px;margin-bottom:10px}
 .sbx summary::-webkit-details-marker{display:none}
@@ -612,6 +613,7 @@ function modsFor(it, sel) {
       if (!P[nm]) { for (var pk in P) if (pk.toLowerCase() === String(nm).toLowerCase()) { nm = pk; break; } }
       var o = m[nm] = m[nm] || { add: 0, mul: 1, addScale: 0, mulScale: null };
       var t = pu.upgrade_type;
+      var um = String(pu.bonus).match(/^[+-]?[\d.]+\s*(m|s)$/); if (um) o.unit = um[1];
       if (t === "EAddToScale") { o.addScale += b; if (pu.scale_stat_filter) o.filter = pu.scale_stat_filter; }
       else if (t === "EMultiplyScale") o.mulScale = (o.mulScale == null ? 1 : o.mulScale) * b;
       else if (t === "EMultiplyBase") o.mul *= 1 + b / 100; // percent increase (Ground Strike T3: +120% damage per meter)
@@ -731,6 +733,7 @@ function propRec(it, key) {
   if (v != null && /\bPercent(age)?\b/.test(label) && /^[+-]?[\d.]+$/.test(v)) { v += "%"; label = label.replace(/\s*\bPercent(age)?\b/, "").trim(); }
   if (v != null && /^[+-]?[\d.]+$/.test(v) && /(Stun|Cooldown|Window)$/.test(label)) v += "s";
   if (v != null && /^[+-]?[\d.]+$/.test(v) && /^Health Regen$/.test(label)) v += "/s";
+  if (v != null && m && m.unit && /^[+-]?[\d.]+$/.test(v)) v += m.unit;
   if (v != null && /^[+-]?[\d.]+$/.test(v) && /Resist( Debuff)?$/.test(label)) { v += "%"; label = label.replace(/ Debuff$/, ""); }
   if (v != null && /^[+-]?[\d.]+m$/.test(v) && /Speed$/.test(label)) v = v.slice(0, -1) + " m/s";
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
@@ -1376,21 +1379,39 @@ function gunImg(h) {
   var d = ((h.shop_stat_display || {}).weapon_stats_display) || {};
   return d.weapon_image_webp || d.weapon_image || "";
 }
-function weaponCard(h) {
-  var w = state.byClass[(h.items || {}).weapon_primary];
+// an ultimate that swaps the hero's weapon (and maybe abilities) gets its own section listing what you have while it's active
+function formSection(h, abs) {
+  var ult = abs[3]; if (!ult || !ult.dependent_abilities) return "";
+  var dep = Object.keys(ult.dependent_abilities).map(function (c) { return state.byClass[c]; }).filter(Boolean);
+  var wpn = dep.filter(function (d) { return d.type === "weapon" && d.weapon_info && d.weapon_info.bullet_damage; })[0];
+  if (!wpn) return "";
+  function real(d) { return d.type === "ability" && d.name && d.name !== d.class_name && d.description; }
+  var swaps = dep.filter(function (d) { return real(d) && d.ability_type !== "innate"; }), extra = dep.filter(function (d) { return real(d) && d.ability_type === "innate"; });
+  var html = '<div class="sec">During ' + esc(nameOf(ult)) + "</div>" + weaponCard(h, wpn);
+  function fromOf(d) { return abs.filter(function (a) { return a !== ult && a.dependent_abilities && d.class_name in a.dependent_abilities; })[0]; }
+  swaps.sort(function (a, b) { return abs.indexOf(fromOf(a)) - abs.indexOf(fromOf(b)); }); // same order as the abilities they replace
+  swaps.forEach(function (d) {
+    var from = fromOf(d);
+    html += (from ? '<p class="repl">Replaces <b>' + esc(nameOf(from)) + "</b></p>" : "") + abilityCard(d, h);
+  });
+  extra.forEach(function (d) { html += abilityCard(d, h); });
+  return html;
+}
+function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver's claws, Venator's crossbow)
+  var w = alt || state.byClass[(h.items || {}).weapon_primary];
   if (!w || !w.weapon_info) return "";
   var i = w.weapon_info, pel = i.bullets || 1;
-  var wk = state.wiki && state.wiki.heroes && state.wiki.heroes[h.name], wa = wk && wk.__weapon;
-  var attrs = (((h.shop_stat_display || {}).weapon_stats_display || {}).weapon_attributes || []).map(function (a) {
+  var wk = state.wiki && state.wiki.heroes && state.wiki.heroes[h.name], wa = alt ? null : wk && wk.__weapon;
+  var attrs = alt ? "" : (((h.shop_stat_display || {}).weapon_stats_display || {}).weapon_attributes || []).map(function (a) {
     return '<span class="chip">' + esc(String(a).replace(/^EWeaponAttribute_/, "").replace(/([a-z])([A-Z])/g, "$1 $2")) + "</span>";
   }).join("");
-  if (!attrs && h.gun_tag) attrs = '<span class="chip">' + esc(h.gun_tag) + "</span>";
+  if (!attrs && h.gun_tag && !alt) attrs = '<span class="chip">' + esc(h.gun_tag) + "</span>";
   var shots = i.shots_per_second || (i.cycle_time ? 1 / i.cycle_time : 0);
   var dps = i.damage_per_second || (shots && i.bullet_damage ? i.bullet_damage * pel * shots : 0);
   // everything the Stats block above already lists is left out here; this card adds what it doesn't
   function wc(v, l, ic) { return '<div class="wc"><b>' + siIcon(ic) + esc(v) + "</b><i>" + esc(l) + "</i></div>"; }
   var g = "";
-  if (pel > 1) g += wc(fmtNum(i.bullet_damage) + " ×" + pel, "Damage per shot", "dmg");
+  if (pel > 1) g += wc(fmtNum(i.bullet_damage) + " × " + pel, "Damage per shot", "dmg");
   if (i.damage_per_second_with_reload) g += wc(fmtNum(Math.round(i.damage_per_second_with_reload * 10) / 10), "DPS with reloads", "dps");
   if (i.damage_per_magazine) g += wc(fmtNum(i.damage_per_magazine), "Damage per magazine", "ammo");
   if ((i.burst_shot_count || 1) > 1) g += wc("×" + i.burst_shot_count, "Burst", "bps");
@@ -1408,7 +1429,7 @@ function weaponCard(h) {
   var title = (wa && wa.name) || nameOf(w);
   return '<section class="wpn"><h3>' + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
     (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" : "") +
-    '<div class="wimg">' + imgTag(gunImg(h) || itemImg(w)) + "</div>" + fo +
+    '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div>" + fo +
     (g ? '<div class="wg">' + g + "</div>" : "") + notesBlock(wa) + "</section>";
 }
 // Hand-drawn stat icons (the game's own files can't be recoloured from another site), tinted by section
@@ -1466,7 +1487,7 @@ function statBlock(h) {
   if (v("air_dash_distance_in_meters")) vit += row("Air dash", fmtNum(v("air_dash_distance_in_meters")) + "m", fmtNum(v("air_dash_duration")) + "s");
   var pel = wi.bullets || 1, bps = wi.bullets_per_second || wi.shots_per_second;
   if (wi.damage_per_second) wep += row("Damage per second", fmtNum(Math.round(wi.damage_per_second * 10) / 10));
-  if (wi.bullet_damage != null) wep += row("Bullet damage", fmtNum(wi.bullet_damage) + (pel > 1 ? " ×" + pel : ""), boon("MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL"));
+  if (wi.bullet_damage != null) wep += row("Bullet damage", fmtNum(wi.bullet_damage) + (pel > 1 ? " × " + pel : ""), boon("MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL"));
   if (wi.clip_size != null) wep += row("Ammo", fmtNum(wi.clip_size));
   if (bps) wep += row("Bullets per sec", fmtNum(bps));
   if (wi.reload_duration != null) wep += row("Reload time", fmtNum(wi.reload_duration) + "s");
@@ -1479,7 +1500,9 @@ function statBlock(h) {
   var sc = h.scaling_stats || {};
   Object.keys(sc).forEach(function (k) {
     var o = sc[k] || {}, who = o.scaling_stat === "ETechPower" ? "spirit" : o.scaling_stat === "EWeaponPower" ? "weapon" : nice(o.scaling_stat || "").toLowerCase();
-    spi += row(nice(k) + " scaling", "+" + fmtNum(o.scale), "per " + who);
+    var AR = { ETechArmorDamageReduction: "Spirit resist", EBulletArmorDamageReduction: "Bullet resist" }; // "tech armor" is the game's internal name for spirit resist
+    if (AR[k]) spi += row(AR[k], "+" + fmtNum(o.scale) + "%", "per " + (who === "spirit" ? "Spirit Power" : who));
+    else spi += row(nice(k) + " scaling", "+" + fmtNum(o.scale), "per " + who);
   });
   function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
@@ -1634,6 +1657,7 @@ function renderHero(cn) {
   html += '<div class="sec">Abilities</div>';
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
   abs.forEach(function (a) { html += abilityCard(a, h); });
+  html += formSection(h, abs);
   $("main").innerHTML = html; hydrateName();
   $("back").onclick = function () {
     state.hero = null;
@@ -1791,8 +1815,10 @@ function buildSearch() {
     HERO_NAME = h.name;
     var sub = (h.tags || []).filter(Boolean).join(" · ");
     out.push({ k: "hero", cn: h.class_name, name: h.name, sub: sub, img: heroImg(h), text: "", hay: (h.name + " " + roleLabel(h) + " " + sub + " " + (h.gun_tag || "")).toLowerCase() });
-    ["signature1", "signature2", "signature3", "signature4"].forEach(function (k) {
-      var a = state.byClass[(h.items || {})[k]]; if (!a) return;
+    var sig = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[(h.items || {})[k]]; }).filter(Boolean);
+    var fx = document.createElement("div"); fx.innerHTML = formSection(h, sig); // abilities from an ultimate's alternate form are searchable too
+    Array.prototype.forEach.call(fx.querySelectorAll("[data-ab]"), function (el) { var b = state.byClass[el.getAttribute("data-ab")]; if (b && sig.indexOf(b) < 0) sig.push(b); });
+    sig.forEach(function (a) {
       var d = a.description && typeof a.description === "object" ? a.description : {}, parts = [d.desc, d.t1_desc, d.t2_desc, d.t3_desc];
       ((a.tooltip_details && a.tooltip_details.info_sections) || []).forEach(function (sec) { if (sec.loc_string) parts.push(sec.loc_string); });
       var text = parts.filter(Boolean).map(plain).join(" ");
@@ -1867,7 +1893,7 @@ var GLOSS = [
   { k: "dot", c: "dmg", t: "Damage over time", a: ["damage over time", "spirit damage over time", "weapon damage over time"], d: "Damage dealt in small ticks across a duration instead of all at once. The number shown is usually damage per second. [[bleed|Bleed]] is a damage-over-time effect." },
   { k: "headshot", c: "dmg", t: "Headshot", a: ["headshot", "headshots", "critical hit", "crit"], d: "Bullets that hit the head deal 1.65× damage against heroes, troopers and guardians. Some heroes get a smaller headshot bonus or take less from headshots, and Graves can’t land critical hits at all." },
   { k: "falloff", c: "dmg", t: "Falloff", a: ["falloff", "falloff range"], d: "Bullets lose damage over distance. Up to the falloff start you deal full damage; from there it drops steadily to 10% at the falloff end and beyond. The bar on each weapon card shows this." },
-  { k: "spreadshot", c: "dmg", t: "Spreadshot", a: ["spreadshot"], d: "Weapons that fire several pellets per shot. Every bonus applies to each pellet on its own, which is why bullet damage shows as something like “3.6 ×9”." },
+  { k: "spreadshot", c: "dmg", t: "Spreadshot", a: ["spreadshot"], d: "Weapons that fire several pellets per shot. Every bonus applies to each pellet on its own, which is why bullet damage shows as something like “3.6 × 9”." },
   { k: "fire-rate", c: "dmg", t: "Fire rate", a: ["fire rate"], d: "How fast your weapon shoots. Fire-rate bonuses raise your damage per second; fire-rate slows from enemies lower it." },
   { k: "melee", c: "dmg", t: "Light & heavy melee", a: ["melee", "melee damage", "light melee", "heavy melee"], d: "Tap melee for a quick light attack, or hold it for a heavy attack that lunges forward without spending [[stamina|stamina]]. Most heroes start at 63 light and 116 heavy, and both grow with [[boons|boons]]. Melee can be [[parry|parried]]." },
   { k: "parry", c: "dmg", t: "Parry", a: ["parry", "parried", "parries", "parrying"], d: "Press parry (F) to block incoming melee for a short window (about 0.75s). A successful parry stuns the attacker for 2.75s and makes them take 25% more damage from everyone; [[debuff-resist|Debuff Resist]] doesn’t shorten that stun. A missed parry goes on a 4.5s cooldown." },
