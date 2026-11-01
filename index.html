@@ -1325,10 +1325,11 @@ function noteHtml(txt, own) {
   }
   return autoGloss(out + esc(txt.slice(last)));
 }
-function notesBlock(a, own) {
+// Notes start collapsed; "extra" (the Interacts-with items) sits inside them so it collapses too
+function notesBlock(a, own, extra) {
   var figs = (a && a.figs || []).filter(function (f) { return /^https:\/\/cdn\.deadlock\.wiki\//.test(f[0]); });
-  if (!a || !((a.notes && a.notes.length) || figs.length)) return "";
-  var html = '<details class="notes" open><summary>Notes</summary>';
+  if (!a || !((a.notes && a.notes.length) || figs.length || extra)) return "";
+  var html = '<details class="notes"><summary>Notes</summary>';
   figs.forEach(function (f) { var orig = String(f[0]).replace(/\/thumb\/([^\/]+)\/[^\/]*$/, "/$1"); // the full-size file, if the resized copy won't load
     html += '<figure class="nfig"><img loading="lazy" alt="" referrerpolicy="no-referrer" src="' + esc(f[0]) + '"' + (orig !== f[0] ? ' data-o="' + esc(orig) + '"' : "") + ' onerror="if(this.dataset.o){this.src=this.dataset.o;this.dataset.o=\'\';return}var d=this.closest(\'details\');this.parentNode.remove();if(d&&!d.querySelector(\'li,figure\'))d.remove()">' + (f[1] ? "<figcaption>" + esc(f[1]) + "</figcaption>" : "") + "</figure>"; });
   // a note the wiki repeats is shown once (along with any sub-points under the repeat)
@@ -1340,7 +1341,7 @@ function notesBlock(a, own) {
   });
   if (notes.length) html += "<ul>";
   notes.forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; });
-  return html + (notes.length ? "</ul>" : "") + "</details>";
+  return html + (notes.length ? "</ul>" : "") + (extra || "") + "</details>";
 }
 // the item a card is about; stat cards ("Ability Range") use the item the wiki pictures for them (Greater Expansion)
 function interItem(x) {
@@ -1362,7 +1363,7 @@ function shortTip(tip, nm) {
 function interBlock(a, own) {
   var list = (a && a.inter) || []; if (!list.length) return "";
   var KL = { positive: "Helps", negative: "Hurts", info: "Note" };
-  var html = '<details class="notes" open><summary>Interactions</summary>';
+  var html = '<details class="notes"><summary>Interactions</summary>';
   list.forEach(function (x) {
     var cn = state.byName[String(x.t || "").toLowerCase()], item = cn && state.byClass[cn], rep = interItem(x);
     var icon = rep ? imgTag(itemArt(rep), itemImg(rep)) : (x.img && /^https:\/\/cdn\.deadlock\.wiki\//.test(x.img) ? '<img alt="" src="' + esc(x.img) + '" onerror="this.style.display=\'none\'">' : "");
@@ -1380,7 +1381,6 @@ function interBlock(a, own) {
 function wikiHtml(h, it) {
   var w = state.wiki && state.wiki.heroes && h && state.wiki.heroes[h.name], a = w && w[it.name];
   if (!a || (!(a.notes && a.notes.length) && !(a.items && a.items.length) && !(a.figs && a.figs.length) && !(a.inter && a.inter.length))) return "";
-  var html = '<div class="wk">' + notesBlock(a, it.name) + interBlock(a, it.name);
   var carded = {}; (a.inter || []).forEach(function (x) { carded[String(x.t || "").toLowerCase()] = 1; var ri = interItem(x); if (ri && ri.name) carded[String(ri.name).toLowerCase()] = 1; });
   var hints = a.hints || {};
   var chips = (a.items || []).map(function (nm) {
@@ -1388,8 +1388,8 @@ function wikiHtml(h, it) {
     var tip = shortTip(hints[nm], nm);
     return '<button class="rc pitem cat-' + esc(slotOf(state.byClass[cn])) + '" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + (tip ? "<small>" + esc(tip) + "</small>" : "") + "</span></button>";
   }).join("");
-  if (chips) html += '<div class="ihd">Interacts with</div><div class="pgrid">' + chips + "</div>";
-  return html + "</div>";
+  var iw = chips ? '<div class="ihd">Interacts with</div><div class="pgrid">' + chips + "</div>" : "";
+  return '<div class="wk">' + notesBlock(a, it.name, iw) + interBlock(a, it.name) + "</div>";
 }
 var ABOPT = {}; // per-card tweaks, e.g. End the Curse borrows Lycan Curse's icon and has no tiers of its own
 function abilityCard(it, h) {
