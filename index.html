@@ -33,9 +33,15 @@ header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 
 header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .tab[data-c=vitality].on{box-shadow:inset 0 -3px 0 var(--vital)} header .tab[data-c=spirit].on{box-shadow:inset 0 -3px 0 var(--spirit)}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
 /* search: one full-width bar under the wordmark on every page; typing swaps the page for results, clearing brings the page back untouched */
-.gsearch{display:flex;align-items:center;gap:8px;height:44px;margin:8px 0 0;padding:0 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim)}
+.sbar{display:flex;align-items:center;gap:10px;margin:8px 0 0}
+.gsearch{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim)}
 .gsearch:focus-within{border-color:var(--nav)}
 .gsearch svg{flex:none}
+.gsearch input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;display:none}
+.sclr{flex:none;display:flex;align-items:center;justify-content:center;width:30px;height:30px;margin-right:-6px;border:0;border-radius:50%;background:transparent;color:var(--dim)}
+.sclr span{display:flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--dim);color:var(--panel);font-size:13px;font-weight:700;line-height:1}
+.sclr[hidden],.sx[hidden]{display:none}
+.sx{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:10px 2px;min-height:44px}
 .gsearch input[type=search],.gsearch input[type=search]:focus{flex:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none;height:100%;outline:none}
 #sarea{max-width:600px;margin:0 auto;padding:12px 12px calc(env(safe-area-inset-bottom,0) + 92px)}
 #sarea[hidden],main[hidden]{display:none}
@@ -339,10 +345,10 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     
     <button class="ibtn" id="gbtn" aria-label="Glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button>
   </div>
-  <label class="gsearch"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input type="search" id="sq" placeholder="Search" aria-label="Search heroes, abilities, items and terms" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"></label>
+  <div class="sbar"><label class="gsearch"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input type="search" id="sq" placeholder="Search" aria-label="Search heroes, abilities, items and terms" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"><button type="button" class="sclr" id="sclr" aria-label="Clear search" hidden><span>✕</span></button></label><button type="button" class="sx" id="sx" hidden>Cancel</button></div>
 </div>
 <main id="main"></main>
-<div id="sarea" hidden><div class="sfs" id="sfs"></div><div id="sres"></div></div>
+<div id="sarea" hidden><div id="sres"></div></div>
 <button class="backpill" id="backpill" hidden></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
@@ -1971,33 +1977,25 @@ $("brand").onclick = function () { // the title goes home: the hero list
 $("gbtn").onclick = function () { hideBack(); openGlossary(); };
 // search: the bar is always there; while it has text the page underneath is hidden (not re-rendered), so clearing it puts you back exactly where you were
 var SEARCH_Y = 0;
-function searchChips() {
-  $("sfs").innerHTML = [["all", "All"], ["hero", "Heroes"], ["ability", "Abilities"], ["item", "Items"], ["term", "Terms"]].map(function (c) {
-    return '<button class="sf' + (state.sf === c[0] ? " on" : "") + '" data-f="' + c[0] + '">' + c[1] + "</button>";
-  }).join("");
-}
 function searchOn() { return !$("sarea").hidden; }
-function showSearch(q) {
-  if (!searchOn()) { SEARCH_Y = window.pageYOffset || 0; hideBack(); $("main").hidden = true; $("sarea").hidden = false; }
+function drawResults() { state.sf = "all"; $("sres").innerHTML = searchResults(); $("sclr").hidden = !state.sq; }
+function showSearch(q) { // swap the page for the results area (the page is only hidden, not re-rendered)
+  if (!searchOn()) { SEARCH_Y = window.pageYOffset || 0; hideBack(); $("main").hidden = true; $("sarea").hidden = false; $("sx").hidden = false; window.scrollTo(0, 0); }
   state.sq = q; if ($("sq").value !== q) $("sq").value = q;
-  searchChips(); $("sres").innerHTML = searchResults(); window.scrollTo(0, 0);
+  drawResults();
 }
-function endSearch(keepScroll) { // hide results and show the page again
-  state.sq = ""; $("sq").value = "";
+function endSearch(keepScroll) { // close search: empty the bar and show the page again
+  state.sq = ""; $("sq").value = ""; $("sclr").hidden = true; $("sx").hidden = true;
   if (!searchOn()) return;
   $("sarea").hidden = true; $("main").hidden = false;
   if (keepScroll) window.scrollTo(0, SEARCH_Y);
 }
-function onSearchInput() {
-  var q = $("sq").value;
-  if (q.trim()) showSearch(q); else endSearch(true);
-}
-$("sq").addEventListener("input", onSearchInput);
-$("sq").addEventListener("search", onSearchInput); // the field's clear button
-$("sq").onkeydown = function (e) { if (e.key === "Escape") { endSearch(true); $("sq").blur(); } if (e.key === "Enter") $("sq").blur(); };
+$("sq").addEventListener("focus", function () { if (!searchOn()) showSearch($("sq").value); });
+$("sq").addEventListener("input", function () { showSearch($("sq").value); $("sres").scrollTop = 0; });
+$("sclr").onclick = function () { showSearch(""); $("sq").focus(); };
+$("sx").onclick = function () { $("sq").blur(); endSearch(true); };
+$("sq").onkeydown = function (e) { if (e.key === "Escape") { $("sq").blur(); endSearch(true); } if (e.key === "Enter") $("sq").blur(); };
 $("sarea").addEventListener("click", function (e) {
-  var sf = e.target.closest ? e.target.closest(".sf[data-f]") : null;
-  if (sf) { state.sf = sf.getAttribute("data-f"); searchChips(); $("sres").innerHTML = searchResults(); return; }
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
   if (!sr) return;
   var kind = sr.getAttribute("data-kind");
