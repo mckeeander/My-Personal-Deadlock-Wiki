@@ -54,7 +54,7 @@ header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .t
 .corner{position:absolute;top:-9px;right:-3px;display:flex;gap:4px}.corner .sc{position:static}
 .stat .dur{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid #4f6a8f;border-radius:6px;padding:1px 6px;background:#2b3442;color:#b9cdee}
 .stat .dur .si{width:11px;height:11px;color:#b9cdee}
-.brand .logo{display:block;margin-left:4px;height:36px;width:auto;max-width:100%}
+.brand .logo{display:block;margin-left:4px;transform:translateY(-4px);height:36px;width:auto;max-width:100%}
 header .tab.gtab{flex:0 0 46px;display:flex;align-items:center;justify-content:center}
 header .tab.gtab.on{box-shadow:inset 0 -3px 0 var(--gold)}
 input[type=search]:focus,#gq:focus{outline:none;border-color:var(--nav);box-shadow:0 0 0 1px var(--nav) inset}
@@ -141,6 +141,7 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .stat i{font-style:normal;font-size:12px;color:var(--dim)}
 .minor{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:6px;padding:8px;margin:6px 0}
 .minor b{color:var(--fg)}
+.minor .sc{position:static;display:inline-block;margin-left:6px;vertical-align:1px}
 .ups{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
 .up{background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px;text-align:center}
 .up div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
@@ -1486,8 +1487,9 @@ function statBlock(h) {
 // swipe from the left edge on a hero page to go back (same as the back pill if one is showing, else the hero list at the spot you left)
 (function () {
   var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("main");
-  function ok() { return state.tab === "heroes" && state.hero && !searchOn() && $("sheet").hidden; }
+  function ok() { return ((state.tab === "heroes" && state.hero) || state.tab === "glossary") && !searchOn() && $("sheet").hidden; }
   function goBack() {
+    if (state.tab === "glossary") { $("brand").onclick(); return; }
     if (!$("backpill").hidden) { $("backpill").click(); return; }
     var b = $("back"); if (b) b.onclick();
   }
@@ -1518,10 +1520,10 @@ function statBlock(h) {
     } else { m.style.transform = ""; m.style.opacity = ""; }
   });
 })();
-var EASE = 0;
+var EASE = 0, EASE_DUR = 0;
 function easeScroll(y) { // ease-in-out scroll; a touch or wheel cancels it so it never fights your finger
   var from = window.pageYOffset || 0, d = y - from, t0 = 0, id = ++EASE;
-  var dur = Math.min(1000, Math.max(380, Math.abs(d) * 0.3));
+  var dur = Math.min(1000, Math.max(380, Math.abs(d) * 0.3)); EASE_DUR = dur;
   function stop() { EASE++; }
   window.addEventListener("touchstart", stop, { once: true, passive: true }); window.addEventListener("wheel", stop, { once: true, passive: true });
   requestAnimationFrame(function step(t) {
@@ -2136,7 +2138,7 @@ function tapTip(e) { // touch screens have no hover, so a tap on a chip names it
 }
 $("main").addEventListener("click", function (e) {
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
-  if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { scrollToEl(t0); t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1100); return; } } glossSheet(gl.getAttribute("data-g")); return; }
+  if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1100); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
   if (gc) { var h0 = $("gc-" + gc.getAttribute("data-gc")); if (h0) scrollToEl(h0, true); return; }
   if (tapTip(e)) return;
