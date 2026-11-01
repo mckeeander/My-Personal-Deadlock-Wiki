@@ -314,6 +314,13 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .backpill .bx{display:inline-block;padding:0 8px;margin-left:4px;border-left:1px solid var(--line);color:var(--dim);font-size:18px;line-height:1}
 @keyframes pillin{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 .gl{text-decoration:underline dotted;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
+.gcats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
+.gcat{display:flex;align-items:center;gap:8px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 10px 10px 12px;color:var(--fg);min-height:56px}
+.gcat:active{background:var(--panel2);border-color:var(--gold)}
+.gcat span{flex:1;min-width:0}
+.gcat b{display:block;font-size:14px;line-height:1.25}
+.gcat small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
+.gcat i{font-style:normal;color:var(--gold);font-size:20px;line-height:1}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--disp);font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .gt{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:24px}
@@ -1460,9 +1467,10 @@ function statBlock(h) {
   function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
 }
-function scrollToEl(el) { // land near the top of the screen (the header now sits at the bottom)
-  var off = 12 + (parseFloat(getComputedStyle(document.body).paddingTop) || 0);
-  window.scrollTo(0, el.getBoundingClientRect().top + (window.pageYOffset || 0) - off);
+function scrollToEl(el, smooth) { // land near the top of the screen (the header now sits at the bottom)
+  var off = 12 + (parseFloat(getComputedStyle(document.body).paddingTop) || 0), y = el.getBoundingClientRect().top + (window.pageYOffset || 0) - off;
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (smooth && !calm) window.scrollTo({ top: y, behavior: "smooth" }); else window.scrollTo(0, y);
 }
 var NMC = {}, NMP = {};
 // The game's name art is a framed plate. Fetch it, drop the frame, and crop to the lettering; plain text if that isn't possible.
@@ -1907,12 +1915,13 @@ function glossList() {
   return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
 }
 function renderGlossary() {
-  var jump = GCATS.map(function (c) { return '<button class="sf" data-gc="' + c[0] + '">' + esc(c[1]) + "</button>"; }).join("");
+  state.gq = "";
+  var jump = GCATS.map(function (c) {
+    var n = GLOSS.filter(function (g) { return g.c === c[0]; }).length;
+    return '<button class="gcat" data-gc="' + c[0] + '"><span><b>' + esc(c[1]) + "</b><small>" + n + " term" + (n === 1 ? "" : "s") + '</small></span><i aria-hidden="true">›</i></button>';
+  }).join("");
   $("main").innerHTML = '<h1 class="gtitle">Glossary</h1><p class="status">What the game’s terms mean. Underlined words in ability and item text open these too. Numbers can shift with patches.</p>' +
-    '<input type="search" id="gq" placeholder="Find a term" value="' + esc(state.gq || "") + '" autocomplete="off" autocapitalize="off">' +
-    '<div class="sfs">' + jump + '</div><div id="glist">' + glossList() + "</div>";
-  var inp = $("gq");
-  inp.oninput = function () { state.gq = inp.value; $("glist").innerHTML = glossList(); };
+    '<div class="gcats">' + jump + '</div><div id="glist">' + glossList() + "</div>";
 }
 function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
@@ -1981,7 +1990,10 @@ $("tabs").onclick = function (e) {
 $("brand").onclick = function () { // the title goes home: the hero list
   hideBack(); endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
 };
-$("gbtn").onclick = function () { hideBack(); openGlossary(); };
+$("gbtn").onclick = function () { // a second tap while on the glossary goes home
+  if (state.tab === "glossary" && !searchOn()) { $("brand").onclick(); return; }
+  hideBack(); openGlossary();
+};
 // search: the bar is always there; while it has text the page underneath is hidden (not re-rendered), so clearing it puts you back exactly where you were
 var SEARCH_Y = 0;
 function searchOn() { return !$("sarea").hidden; }
@@ -2049,7 +2061,7 @@ $("main").addEventListener("click", function (e) {
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
   if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { scrollToEl(t0); t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1100); return; } } glossSheet(gl.getAttribute("data-g")); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
-  if (gc) { var h0 = $("gc-" + gc.getAttribute("data-gc")); if (h0) scrollToEl(h0); return; }
+  if (gc) { var h0 = $("gc-" + gc.getAttribute("data-gc")); if (h0) scrollToEl(h0, true); return; }
   if (tapTip(e)) return;
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
   if (sr) { openResult(sr); return; }
