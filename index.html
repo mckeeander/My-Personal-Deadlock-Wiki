@@ -26,26 +26,24 @@ img{max-width:100%}
 header{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);display:flex;flex-direction:column-reverse;
   padding:0 max(0px,calc((100% - 600px)/2)) 0;transition:transform .15s ease-out}
 /* bottom navigation: one solid bar, tabs as a segmented row with no gaps to see through */
-/* the bar is a step lighter than the cards, and the page fades to dark just above it, so the nav never reads as another card */
-header{--bar:#2c2539;border-top:2px solid #4a405a;background:var(--bar)}
-header::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:48px;margin-bottom:2px;pointer-events:none;background:linear-gradient(rgba(10,8,14,0),rgba(10,8,14,.85))}
+/* folder-tab bar: a dark base under the page; the active tab rises out of it and opens into the page, fading from its category colour */
+header{--bar:#0b0910;border-top:2px solid #2a2433;background:var(--bar)}
 body.kb header{padding-bottom:0}
 /* flat tab bar: full-height dividers make each tab a cell; the active cell gets a full-width top line and a tint fading down, in its category colour */
 header .tabs{margin:0;gap:0;background:none;border:0;border-radius:0;padding:0}
 /* the home-indicator space is part of each cell, so dividers and the active tint run to the bottom of the screen */
-header .tab{position:relative;border:0;border-radius:0;background:transparent;padding:18px 4px calc(env(safe-area-inset-bottom,0) + 16px);color:#c3bad0;font-size:15px}
-/* 1px light separators between tabs */
-header .tab+.tab{box-shadow:inset 1px 0 0 #4a405a;padding-left:5px}
+header .tab{position:relative;border:0;border-radius:0;background:transparent;padding:18px 4px calc(env(safe-area-inset-bottom,0) + 16px);color:#8a8098;font-size:15px}
+
 header .tabs{position:relative}
 header .tab{z-index:1;transition:color .3s ease}
 header .tab.on{color:var(--nav);font-weight:600;background:transparent;border-color:transparent}
 header .tab[data-c=weapon].on{color:var(--weapon)} header .tab[data-c=vitality].on{color:var(--vital)} header .tab[data-c=spirit].on{color:var(--spirit)}
 /* one shared highlight slides between tabs: its leading edge moves first and the trailing edge follows, so the colour drags across;
-   a straight line runs along the top */
-.tind{position:absolute;top:0;bottom:0;left:0;width:0;z-index:0;pointer-events:none;color:var(--nav);opacity:0;
+   it stands 10px above the bar with a line along its top */
+.tind{position:absolute;top:-12px;bottom:0;left:0;width:0;z-index:0;pointer-events:none;color:var(--nav);opacity:0;background:var(--bg);
   transition:left .3s cubic-bezier(.4,0,.2,1),right .3s cubic-bezier(.4,0,.2,1),color .3s ease,opacity .2s ease}
-.tind::before{content:"";position:absolute;top:-2px;left:0;right:0;height:4px;background:currentColor}
-.tind::after{content:"";position:absolute;inset:0;background:currentColor;opacity:.18;-webkit-mask:linear-gradient(#000,rgba(0,0,0,.2));mask:linear-gradient(#000,rgba(0,0,0,.2))}
+.tind::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:currentColor;z-index:1}
+.tind::after{content:"";position:absolute;inset:0;background:currentColor;opacity:.2;-webkit-mask:linear-gradient(#000,transparent 85%);mask:linear-gradient(#000,transparent 85%)}
 .tind.show{opacity:1}
 @media (prefers-reduced-motion:reduce){.tind{transition:none}}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
@@ -2316,7 +2314,7 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
   ind.className = "tind"; tabs.insertBefore(ind, tabs.firstChild);
   function move(anim) {
     var on = tabs.querySelector(".tab.on"); ind.classList.toggle("show", !!on); if (!on) { last = null; return; }
-    var i = Array.prototype.indexOf.call(tabs.querySelectorAll(".tab"), on), W = tabs.clientWidth, l = on.offsetLeft + (i > 0 ? 1 : 0), r = W - on.offsetLeft - on.offsetWidth; // skip the separator at a tab's left edge
+    var i = Array.prototype.indexOf.call(tabs.querySelectorAll(".tab"), on), W = tabs.clientWidth, l = on.offsetLeft, r = W - l - on.offsetWidth;
     var fast = ".3s cubic-bezier(.4,0,.2,1)", slow = ".3s cubic-bezier(.4,0,.2,1) .09s";
     if (!anim || last == null) ind.style.transition = "none";
     else ind.style.transition = (i > last ? "right " + fast + ",left " + slow : "left " + fast + ",right " + slow) + ",color .3s ease,opacity .2s ease";
