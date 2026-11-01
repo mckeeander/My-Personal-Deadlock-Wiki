@@ -45,7 +45,7 @@ header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .t
 .sclr[hidden],.sx[hidden]{display:none}
 .sx{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:10px 2px;min-height:44px}
 .gsearch input[type=search],.gsearch input[type=search]:focus{flex:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none;height:100%;outline:none}
-#sarea{max-width:600px;margin:0 auto;padding:12px 12px calc(env(safe-area-inset-bottom,0) + 92px)}
+#sarea{max-width:600px;margin:0 auto;padding:12px 12px 8px}
 #sarea[hidden],main[hidden]{display:none}
 .topbar{max-width:600px;margin:0 auto;padding:2px 12px 0}
 .toprow{display:flex;align-items:center;gap:8px}
@@ -54,7 +54,7 @@ header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .t
 .corner{position:absolute;top:-9px;right:-3px;display:flex;gap:4px}.corner .sc{position:static}
 .stat .dur{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid #4f6a8f;border-radius:6px;padding:1px 6px;background:#2b3442;color:#b9cdee}
 .stat .dur .si{width:11px;height:11px;color:#b9cdee}
-.brand .logo{display:block;margin-left:4px;transform:translateY(-4px);height:36px;width:auto;max-width:100%}
+.brand .logo{display:block;margin-left:8px;transform:translateY(-4px);height:36px;width:auto;max-width:100%}
 header .tab.gtab{flex:0 0 46px;display:flex;align-items:center;justify-content:center}
 header .tab.gtab.on{box-shadow:inset 0 -3px 0 var(--gold)}
 input[type=search]:focus,#gq:focus{outline:none;border-color:var(--nav);box-shadow:0 0 0 1px var(--nav) inset}
@@ -74,7 +74,9 @@ body{padding-top:calc(env(safe-area-inset-top,0) + 32px)}
 .tab{flex:1;padding:9px 4px;background:var(--panel);border:1px solid var(--line);border-bottom:3px solid var(--line);border-radius:8px 8px 0 0;font-size:14px}
 .tab.on{background:var(--panel2);border-bottom-color:var(--gold);font-weight:600}
 .tab[data-c=weapon].on{border-bottom-color:var(--weapon)} .tab[data-c=vitality].on{border-bottom-color:var(--vital)} .tab[data-c=spirit].on{border-bottom-color:var(--spirit)}
-main{padding:12px 12px calc(env(safe-area-inset-bottom,0) + 92px);max-width:600px;margin:0 auto}
+main{padding:12px 12px 8px;max-width:600px;margin:0 auto}
+.credits{max-width:600px;margin:0 auto;padding:20px 12px calc(env(safe-area-inset-bottom,0) + 96px);font-size:11px;line-height:1.5;color:var(--dim);opacity:.8}
+.credits p{margin:0 0 6px}.credits a{color:inherit}
 html{-webkit-text-size-adjust:100%}
 body{overflow-x:hidden}
 input[type=search]{width:100%;padding:11px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--fg);font-size:16px;margin-bottom:12px}
@@ -381,6 +383,11 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 </div>
 <main id="main"></main>
 <div id="sarea" hidden><div id="sres"></div></div>
+<footer class="credits">
+  <p>A personal study reference. Not affiliated with or endorsed by Valve. Deadlock is a trademark of Valve Corporation; game data and art belong to Valve.</p>
+  <p>Hero, ability and item data come from the game files via the <a href="https://deadlock-api.com" rel="noopener">Deadlock API</a>.</p>
+  <p>Ability notes, interactions and some glossary definitions are adapted from the <a href="https://deadlock.wiki" rel="noopener">Deadlock Wiki</a> and its contributors, used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>. That adapted text is shared here under the same license.</p>
+</footer>
 <button class="backpill" id="backpill" hidden></button>
 <button class="backpill" id="toppill" hidden>↑ Back to top</button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
@@ -1417,6 +1424,7 @@ function setForm(on, keepEl) { // keep the tapped switch where it is on screen w
   state.alt = !!on; m.classList.toggle("alt", state.alt);
   if (keepEl) window.scrollBy(0, keepEl.getBoundingClientRect().top - y0);
 }
+var NOGUN = { citadel_weapon_werewolf_claws: 1 };
 function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver's claws, Venator's crossbow)
   var w = alt || state.byClass[(h.items || {}).weapon_primary];
   if (!w || !w.weapon_info) return "";
@@ -1429,8 +1437,12 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
   var shots = i.shots_per_second || (i.cycle_time ? 1 / i.cycle_time : 0);
   var dps = i.damage_per_second || (shots && i.bullet_damage ? i.bullet_damage * pel * shots : 0);
   // everything the Stats block above already lists is left out here; this card adds what it doesn't
+  // Silver's claws carry the game's default gun fields (ammo, reload, headshots, falloff) that don't apply in play: no ammo, no reload, no headshots
+  var bare = !!NOGUN[w.class_name];
   function wc(v, l, ic) { return '<div class="wc"><b>' + siIcon(ic) + esc(v) + "</b><i>" + esc(l) + "</i></div>"; }
   var g = "";
+  if (bare) g += wc(fmtNum(i.bullet_damage), "Damage per hit", "dmg");
+  else {
   if (pel > 1) g += wc(fmtNum(i.bullet_damage) + " × " + pel, "Damage per shot", "dmg");
   if (i.damage_per_second_with_reload) g += wc(fmtNum(Math.round(i.damage_per_second_with_reload * 10) / 10), "DPS with reloads", "dps");
   if (i.damage_per_magazine) g += wc(fmtNum(i.damage_per_magazine), "Damage per magazine", "ammo");
@@ -1438,8 +1450,9 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
   if (i.crit_bonus_start > 1) g += wc("+" + fmtNum(Math.round((i.crit_bonus_start - 1) * 100)) + "%", "Headshot bonus", "crit");
   if (i.shoot_move_speed_percent != null && i.shoot_move_speed_percent !== 1) g += wc(fmtNum(Math.round(i.shoot_move_speed_percent * 100)) + "%", "Move speed while firing", "boot");
   if (i.can_zoom && i.zoom_fov) g += wc(fmtNum(i.zoom_fov) + "°", "Zoom FOV", "crit");
+  }
   var fo = "";
-  if (i.damage_falloff_start_range && i.damage_falloff_end_range) {
+  if (!bare && i.damage_falloff_start_range && i.damage_falloff_end_range) {
     var pct = Math.round(i.damage_falloff_start_range / i.damage_falloff_end_range * 100);
     fo = '<div class="fr"><i>Falloff range</i><b>' + meters(i.damage_falloff_start_range) + ' <span>→</span> ' + meters(i.damage_falloff_end_range) + "</b></div>" +
       '<div class="fobw"><div class="fob" style="background:linear-gradient(90deg,var(--weapon) 0%,var(--weapon) ' + pct + "%,#5a3a1a 100%)\"></div>" +
