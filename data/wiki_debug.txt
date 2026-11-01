@@ -1,4 +1,4 @@
-heroes ok=44 failed=0, abilities with notes/items=176
+heroes ok=44 failed=0, abilities with notes/items=179
 Infernus: fetched via api; abilities-section, found headings: Napalm, Flame Dash, Afterburn, Concussive Combustion
   Napalm: 0 notes, 0 interactions, items=['Healing Booster', 'Dispel Magic', 'Unstoppable'], notes-label=False
   Flame Dash: 7 notes, 0 interactions, items=['Dispel Magic', 'Slowing Hex', 'Debuff Reducer', 'Warp Stone', 'Majestic Leap', 'Ethereal Shift', 'Refresher'], notes-label=True
@@ -62,7 +62,7 @@ Kelvin: fetched via api; abilities-section, found headings: Frost Grenade, Ice P
 Haze: fetched via api; abilities-section, found headings: Sleep Dagger, Smoke Bomb, Fixation, Bullet Dance
   Sleep Dagger: 0 notes, 2 interactions, items=['Reactive Barrier', 'Veil Walker', 'Shadow Weave', 'Indomitable', 'Unstoppable'], notes-label=False
   Smoke Bomb: 3 notes, 0 interactions, items=[], notes-label=True
-  Fixation: 2 notes, 2 interactions, items=['Plated Armor', 'Unstoppable'], notes-label=True
+  Fixation: 2 notes, 3 interactions, items=['Plated Armor', 'Return Fire', 'Unstoppable'], notes-label=True
   Bullet Dance: 5 notes, 0 interactions, items=['Mystic Shot', 'Lucky Shot', 'Magic Carpet'], notes-label=True
   [weapon] name='Censure & Penance', 0 notes, notes-label=False
 Holliday: fetched via api; abilities-section, found headings: Powder Keg, Bounce Pad, Crackshot, Spirit Lasso
@@ -221,11 +221,15 @@ Rem: fetched via api; abilities-section, found headings: Pillow Toss, Tag Along,
   Lil Helpers: 15 notes, 4 interactions, items=['Monster Rounds', 'Heroic Aura', 'Healing Booster', 'Healing Tempo', 'Echo Shard'], notes-label=True
   Naptime: 2 notes, 0 interactions, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
   [weapon] name='Long Night', 2 notes, notes-label=True
-Silver: fetched via api; abilities-section, found headings: Slam Fire, Boot Kick, Entangling Bola, Lycan Curse
+Silver: fetched via api; abilities-section, found headings: Slam Fire, Boot Kick, Entangling Bola, Go For The Throat, Mauling Leap, Tail Whack, Lycan Curse
   Slam Fire: 2 notes, 0 interactions, items=[], notes-label=True
   Boot Kick: 4 notes, 2 interactions, items=['Melee Lifesteal', 'Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Slowing Hex', 'Magic Carpet', 'Unstoppable'], notes-label=True
-  Entangling Bola: 11 notes, 1 interactions, items=['Dispel Magic', 'Unstoppable', 'Slowing Hex', 'Phantom Strike', 'Melee Lifesteal', 'Healing Booster', 'Intensifying Magazine'], notes-label=True
+  Entangling Bola: 4 notes, 1 interactions, items=['Dispel Magic', 'Unstoppable', 'Slowing Hex', 'Phantom Strike'], notes-label=True
+  Go For The Throat: 3 notes, 0 interactions, items=['Melee Lifesteal', 'Healing Booster', 'Intensifying Magazine'], notes-label=True
+  Mauling Leap: 3 notes, 0 interactions, items=['Melee Lifesteal', 'Dispel Magic', 'Slowing Hex'], notes-label=True
+  Tail Whack: 1 notes, 0 interactions, items=['Dispel Magic', 'Unstoppable'], notes-label=True
   Lycan Curse: 19 notes, 2 interactions, items=['Healing Booster', 'Healing Tempo', 'Fleetfoot', 'Echo Shard'], notes-label=True
+  End the Curse: NOT FOUND on page
   [weapon] name='Hair of the Dog', 0 notes, notes-label=False
 Celeste: fetched via api; abilities-section, found headings: Light Eater, Dazzling Trick, Radiant Daggers, Shining Wonder
   Light Eater: 1 notes, 0 interactions, items=['Healing Booster', 'Dispel Magic', 'Plated Armor'], notes-label=True
