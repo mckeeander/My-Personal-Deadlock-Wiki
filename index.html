@@ -1622,7 +1622,7 @@ function renderHero(cn) {
   var tags = (h.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("");
   var cxn = Math.max(0, Math.min(3, Number(h.complexity) || 0)), dots = "";
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
-  var tagsA = (h.hero_type ? '<span class="tag role">' + esc(roleLabel(h)) + "</span>" : "") + (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
+  var tagsA = (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
   var html = '<button class="back" id="back">' + "‹ All heroes" + '</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   html += '<div class="stats1">' + statBlock(h) + "</div>";
