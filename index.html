@@ -27,6 +27,7 @@ header{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);dis
   padding:0 max(12px,calc((100% - 600px)/2)) calc(env(safe-area-inset-bottom,0) + 6px);transition:transform .15s ease-out}
 /* bottom navigation: one solid bar, tabs as a segmented row with no gaps to see through */
 header{border-top:1px solid var(--line);box-shadow:0 -8px 20px rgba(0,0,0,.45)}
+body.kb header{padding-bottom:0}
 header .tabs{margin:8px 0 0;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px}
 header .tab{border:0;border-radius:7px;background:transparent;padding:9px 4px;color:var(--dim)}
 header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--nav)}
@@ -53,7 +54,7 @@ header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .t
 .corner{position:absolute;top:-9px;right:-3px;display:flex;gap:4px}.corner .sc{position:static}
 .stat .dur{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid #4f6a8f;border-radius:6px;padding:1px 6px;background:#2b3442;color:#b9cdee}
 .stat .dur .si{width:11px;height:11px;color:#b9cdee}
-.brand .logo{display:block;height:36px;width:auto;max-width:100%}
+.brand .logo{display:block;margin-left:4px;height:36px;width:auto;max-width:100%}
 header .tab.gtab{flex:0 0 46px;display:flex;align-items:center;justify-content:center}
 header .tab.gtab.on{box-shadow:inset 0 -3px 0 var(--gold)}
 input[type=search]:focus,#gq:focus{outline:none;border-color:var(--nav);box-shadow:0 0 0 1px var(--nav) inset}
@@ -144,7 +145,7 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .up{background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px;text-align:center}
 .up div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
 .up div:last-child{padding:8px 4px;line-height:1.3;font-weight:400}
-.up .pg{display:block;height:9px} /* each line of a tier's text starts on its own line */
+.up .pg{display:block;height:7px} /* each line of a tier's text starts on its own line */
 .up b.v{font-weight:700;color:inherit}
 .up b.v .u{font-weight:inherit;font-size:1em;margin:0}
 .bonus{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
@@ -1482,6 +1483,41 @@ function statBlock(h) {
   function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
 }
+// swipe from the left edge on a hero page to go back (same as the back pill if one is showing, else the hero list at the spot you left)
+(function () {
+  var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("main");
+  function ok() { return state.tab === "heroes" && state.hero && !searchOn() && $("sheet").hidden; }
+  function goBack() {
+    if (!$("backpill").hidden) { $("backpill").click(); return; }
+    var b = $("back"); if (b) b.onclick();
+  }
+  document.addEventListener("touchstart", function (e) {
+    on = false; if (!ok() || e.touches.length !== 1) return;
+    var t = e.touches[0]; if (t.clientX > 36) return;
+    on = true; horiz = null; x0 = t.clientX; y0 = t.clientY; t0 = Date.now(); dx = 0;
+  }, { passive: true });
+  document.addEventListener("touchmove", function (e) {
+    if (!on) return;
+    var t = e.touches[0], ddx = t.clientX - x0, ddy = t.clientY - y0;
+    if (horiz === null && (Math.abs(ddx) > 8 || Math.abs(ddy) > 8)) horiz = Math.abs(ddx) > Math.abs(ddy) * 1.2 && ddx > 0;
+    if (!horiz) { if (horiz === false) on = false; return; }
+    e.preventDefault(); dx = Math.max(0, ddx);
+    m.style.transition = "none"; m.style.transform = "translateX(" + dx + "px)"; m.style.opacity = String(1 - Math.min(.5, dx / window.innerWidth));
+  }, { passive: false });
+  document.addEventListener("touchend", function () {
+    if (!on) return; on = false; if (!horiz) return;
+    var fast = dx > 40 && dx / Math.max(1, Date.now() - t0) > .5;
+    m.style.transition = "transform .18s ease-out, opacity .18s ease-out";
+    if (dx > window.innerWidth * .3 || fast) {
+      m.style.transform = "translateX(" + window.innerWidth + "px)"; m.style.opacity = "0";
+      setTimeout(function () {
+        m.style.transition = "none"; goBack();
+        m.style.transform = "translateX(-24px)"; m.style.opacity = "0"; void m.offsetWidth;
+        m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = "";
+      }, 170);
+    } else { m.style.transform = ""; m.style.opacity = ""; }
+  });
+})();
 var EASE = 0;
 function easeScroll(y) { // ease-in-out scroll; a touch or wheel cancels it so it never fights your finger
   var from = window.pageYOffset || 0, d = y - from, t0 = 0, id = ++EASE;
@@ -1599,7 +1635,7 @@ function renderHero(cn) {
   $("main").innerHTML = html; hydrateName();
   $("back").onclick = function () {
     state.hero = null;
-    render(); window.scrollTo(0, 0);
+    render(); window.scrollTo(0, state.listY || 0);
   };
   window.scrollTo(0, 0);
 }
@@ -1740,7 +1776,7 @@ function bindCommon() {
   var q = $("q");
   if (q) q.oninput = function () { state.q = q.value; var pos = q.selectionStart; render(); var n = $("q"); n.focus(); n.setSelectionRange(pos, pos); };
   var rf = $("rfr"); if (rf) rf.onclick = refreshNow;
-  Array.prototype.forEach.call(document.querySelectorAll("[data-hero]"), function (b) { b.onclick = function () { renderHero(b.getAttribute("data-hero")); }; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-hero]"), function (b) { b.onclick = function () { if (!state.hero) state.listY = window.pageYOffset || 0; renderHero(b.getAttribute("data-hero")); }; });
   Array.prototype.forEach.call(document.querySelectorAll("[data-item]"), function (b) { b.onclick = function () { itemSheet(b.getAttribute("data-item")); }; });
 }
 function plain(s) {
@@ -2048,6 +2084,8 @@ function endSearch(keepScroll) { // close search: empty the bar and show the pag
   $("sarea").hidden = true; $("main").hidden = false;
   if (keepScroll) window.scrollTo(0, SEARCH_Y);
 }
+$("sq").addEventListener("blur", function () { document.body.classList.remove("kb"); });
+$("sq").addEventListener("focus", function () { document.body.classList.add("kb"); });
 $("sq").addEventListener("focus", function () { if (!searchOn()) showSearch($("sq").value); });
 $("sq").addEventListener("input", function () { showSearch($("sq").value); $("sres").scrollTop = 0; });
 $("sclr").onclick = function () { showSearch(""); $("sq").focus(); };
