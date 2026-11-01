@@ -325,6 +325,8 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .gh{font-family:var(--disp);font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .gt{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:24px}
 .gt h3{margin:0 0 4px;font-size:16px}
+.gt h3,.gsh h3{display:flex;align-items:center;gap:8px}
+.gi{width:20px;height:20px;flex:none;object-fit:contain}
 .gt p,.gsh p{margin:0;line-height:1.5;font-size:15px}
 .gsh h3{font-size:20px;margin:10px 0 6px}
 .gt.pop{animation:boxup 1s ease-in-out both}
@@ -358,6 +360,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <main id="main"></main>
 <div id="sarea" hidden><div id="sres"></div></div>
 <button class="backpill" id="backpill" hidden></button>
+<button class="backpill" id="toppill" hidden>↑ Back to top</button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
 <script>
@@ -1467,10 +1470,23 @@ function statBlock(h) {
   function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
 }
+var EASE = 0;
+function easeScroll(y) { // ease-in-out scroll; a touch or wheel cancels it so it never fights your finger
+  var from = window.pageYOffset || 0, d = y - from, t0 = 0, id = ++EASE;
+  var dur = Math.min(1000, Math.max(380, Math.abs(d) * 0.3));
+  function stop() { EASE++; }
+  window.addEventListener("touchstart", stop, { once: true, passive: true }); window.addEventListener("wheel", stop, { once: true, passive: true });
+  requestAnimationFrame(function step(t) {
+    if (id !== EASE) return; if (!t0) t0 = t;
+    var p = Math.min(1, (t - t0) / dur), e = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+    window.scrollTo(0, from + d * e);
+    if (p < 1) requestAnimationFrame(step);
+  });
+}
 function scrollToEl(el, smooth) { // land near the top of the screen (the header now sits at the bottom)
   var off = 12 + (parseFloat(getComputedStyle(document.body).paddingTop) || 0), y = el.getBoundingClientRect().top + (window.pageYOffset || 0) - off;
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (smooth && !calm) window.scrollTo({ top: y, behavior: "smooth" }); else window.scrollTo(0, y);
+  if (smooth && !calm) easeScroll(y); else window.scrollTo(0, y);
 }
 var NMC = {}, NMP = {};
 // The game's name art is a framed plate. Fetch it, drop the frame, and crop to the lettering; plain text if that isn't possible.
@@ -1903,8 +1919,17 @@ function glossBody(g) {
   return esc(g.d).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
 }
 function glossCard(g) {
-  return '<section class="gt" id="g-' + g.k + '"><h3>' + esc(g.t) + "</h3><p>" + glossBody(g) + "</p></section>";
+  return '<section class="gt" id="g-' + g.k + '"><h3>' + gIcon(g.k) + esc(g.t) + "</h3><p>" + glossBody(g) + "</p></section>";
 }
+// the game's own property icons, for terms that have one
+var GA = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/", GP = GA + "icons/properties/";
+var GICON = { "weapon-damage": GP + "damage_bullet_color.svg", "spirit-damage": GP + "damage_magic_color.svg", "headshot": GP + "damage_crit.svg",
+  "fire-rate": GP + "fire_rate.svg", "melee": GP + "melee.svg", "spirit-power": GP + "spirit.svg", "souls": GA + "hud/icons/icon_soul.svg",
+  "cooldown": GP + "cooldown.svg", "charges": GP + "recharge.svg", "bullet-resist": GP + "armor_bullet_color.svg", "spirit-resist": GP + "armor_spirit_color.svg",
+  "melee-resist": GP + "armor_melee_color.svg", "barrier": GP + "armor_alt.svg", "lifesteal": GP + "heal.svg", "health-regen": GP + "heal.svg",
+  "slow-resist": GP + "move_speed.svg", "slow": GP + "condition_slow.svg", "time-slow": GP + "condition_slow.svg", "stamina": GP + "move_stamina_recharge.svg",
+  "sprint": GP + "move_speed.svg" };
+function gIcon(k) { return GICON[k] ? '<img class="gi" alt="" loading="lazy" src="' + GICON[k] + '" onerror="this.remove()">' : ""; }
 function glossList() {
   var q = (state.gq || "").toLowerCase().trim(), html = "", n = 0;
   GCATS.forEach(function (c) {
@@ -1920,7 +1945,7 @@ function renderGlossary() {
     var n = GLOSS.filter(function (g) { return g.c === c[0]; }).length;
     return '<button class="gcat" data-gc="' + c[0] + '"><span><b>' + esc(c[1]) + "</b><small>" + n + " term" + (n === 1 ? "" : "s") + '</small></span><i aria-hidden="true">›</i></button>';
   }).join("");
-  $("main").innerHTML = '<h1 class="gtitle">Glossary</h1><p class="status">What the game’s terms mean. Underlined words in ability and item text open these too. Numbers can shift with patches.</p>' +
+  $("main").innerHTML = '<h1 class="gtitle">Glossary</h1>' +
     '<div class="gcats">' + jump + '</div><div id="glist">' + glossList() + "</div>";
 }
 function glossSheet(k, fromBack) {
@@ -1928,7 +1953,7 @@ function glossSheet(k, fromBack) {
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); }
   var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
   var html = (ISTACK.length > 1 ? '<button class="back" id="ibk">‹ Back</button>' : "") +
-    '<div class="gsh"><span class="pill2">' + esc(cat ? cat[1] : "Glossary") + "</span><h3>" + esc(g.t) + "</h3><p>" + glossBody(g) + "</p></div>" +
+    '<div class="gsh"><span class="pill2">' + esc(cat ? cat[1] : "Glossary") + "</span><h3>" + gIcon(g.k) + esc(g.t) + "</h3><p>" + glossBody(g) + "</p></div>" +
     '<button class="ibtn" id="gall" style="width:100%;margin-top:14px">Open the glossary</button>' +
     '<button class="ibtn" id="close" style="width:100%;margin-top:8px">Close</button>';
   function bind() {
@@ -1990,6 +2015,15 @@ $("tabs").onclick = function (e) {
 $("brand").onclick = function () { // the title goes home: the hero list
   hideBack(); endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
 };
+function topPill() { // shows once you've scrolled past the glossary's category cards
+  var tp = $("toppill"), c = document.querySelector("#main .gcats");
+  var show = state.tab === "glossary" && !searchOn() && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0;
+  if (show === !tp.hidden) return;
+  tp.hidden = !show; if (show) { tp.classList.remove("in"); void tp.offsetWidth; tp.classList.add("in"); }
+}
+window.addEventListener("scroll", topPill, { passive: true });
+$("toppill").onclick = function () { easeScroll(0); };
+$("tabs").addEventListener("click", function () { setTimeout(topPill, 0); });
 $("gbtn").onclick = function () { // a second tap while on the glossary goes home
   if (state.tab === "glossary" && !searchOn()) { $("brand").onclick(); return; }
   hideBack(); openGlossary();
