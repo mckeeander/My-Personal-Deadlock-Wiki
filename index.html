@@ -34,8 +34,8 @@ body.kb header{padding-bottom:0}
 header .tabs{margin:0;gap:0;background:none;border:0;border-radius:0;padding:0}
 /* the home-indicator space is part of each cell, so dividers and the active tint run to the bottom of the screen */
 header .tab{position:relative;border:0;border-radius:0;background:transparent;padding:18px 4px calc(env(safe-area-inset-bottom,0) + 16px);color:#c3bad0;font-size:15px}
-/* 2px light separators between tabs, matching the bar's top border */
-header .tab+.tab{box-shadow:inset 2px 0 0 #4a405a;padding-left:6px}
+/* 1px light separators between tabs */
+header .tab+.tab{box-shadow:inset 1px 0 0 #4a405a;padding-left:5px}
 header .tabs{position:relative}
 header .tab{z-index:1;transition:color .3s ease}
 header .tab.on{color:var(--nav);font-weight:600;background:transparent;border-color:transparent}
@@ -2316,7 +2316,7 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
   ind.className = "tind"; tabs.insertBefore(ind, tabs.firstChild);
   function move(anim) {
     var on = tabs.querySelector(".tab.on"); ind.classList.toggle("show", !!on); if (!on) { last = null; return; }
-    var i = Array.prototype.indexOf.call(tabs.querySelectorAll(".tab"), on), W = tabs.clientWidth, l = on.offsetLeft + (i > 0 ? 2 : 0), r = W - on.offsetLeft - on.offsetWidth; // skip the 2px separator at a tab's left edge
+    var i = Array.prototype.indexOf.call(tabs.querySelectorAll(".tab"), on), W = tabs.clientWidth, l = on.offsetLeft + (i > 0 ? 1 : 0), r = W - on.offsetLeft - on.offsetWidth; // skip the separator at a tab's left edge
     var fast = ".3s cubic-bezier(.4,0,.2,1)", slow = ".3s cubic-bezier(.4,0,.2,1) .09s";
     if (!anim || last == null) ind.style.transition = "none";
     else ind.style.transition = (i > last ? "right " + fast + ",left " + slow : "left " + fast + ",right " + slow) + ",color .3s ease,opacity .2s ease";
