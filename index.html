@@ -34,18 +34,23 @@ header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .t
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
 /* search: the magnifier opens a darkened overlay with the field across the top and live results under it */
 .sov{position:fixed;inset:0;z-index:30}
-.sov-bg{position:absolute;inset:0;background:rgba(8,6,12,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .18s ease-out}
+.sov-bg{position:absolute;inset:0;background:rgba(4,3,7,.9);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;transition:opacity .22s ease-out}
 .sov.open .sov-bg{opacity:1}
-.sov-panel{position:relative;max-width:600px;margin:0 auto;padding:calc(env(safe-area-inset-top,0) + 14px) 12px 0;height:100%;display:flex;flex-direction:column;pointer-events:none}
+.sov-panel{position:relative;max-width:600px;margin:0 auto;padding:calc(env(safe-area-inset-top,0) + 58px) 12px 0;height:100%;display:flex;flex-direction:column;pointer-events:none}
 .sov-panel>*{pointer-events:auto}
-.sov-row{display:flex;align-items:center;justify-content:flex-end;gap:8px}
-.sov-field{display:flex;align-items:center;gap:8px;width:46px;height:44px;padding:0 13px;background:var(--panel);border:1px solid var(--nav);border-radius:10px;color:var(--dim);overflow:hidden;transition:width .22s cubic-bezier(.2,.8,.2,1)}
-.sov.open .sov-field{width:100%}
+.sov-row{position:relative;height:44px;display:flex;align-items:center;justify-content:flex-end}
+/* the field is placed with inline left/top/width/height: it starts exactly on the magnifier button and grows out of it */
+.sov-field{position:absolute;left:0;top:0;display:flex;align-items:center;gap:8px;width:46px;height:44px;padding:0 13px;background:var(--panel);border:1px solid var(--nav);border-radius:10px;color:var(--dim);overflow:hidden}
+.sov-field.anim{transition:left .26s cubic-bezier(.2,.8,.2,1),top .26s cubic-bezier(.2,.8,.2,1),width .26s cubic-bezier(.2,.8,.2,1),height .26s cubic-bezier(.2,.8,.2,1)}
+.sov-field input{opacity:0;transition:opacity .15s}
+.sov.open .sov-field input{opacity:1;transition-delay:.1s}
 .sov-field svg{flex:none}
 .sov-field input[type=search]:focus{border:0;box-shadow:none;outline:none}
 .sov-field input[type=search]{flex:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none;height:100%;outline:none}
-.sov-x{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:8px 2px;opacity:0;width:0;overflow:hidden;transition:opacity .18s}
-.sov.open .sov-x{opacity:1;width:auto}
+.sov-x{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:8px 2px;opacity:0;transform:translateX(10px);transition:opacity .18s,transform .26s cubic-bezier(.2,.8,.2,1)}
+.sov.open .sov-x{opacity:1;transform:none;transition-delay:.06s}
+@media (prefers-reduced-motion:reduce){.sov-field.anim{transition:none}}
+.sov.fade .sov-panel{opacity:0;transition:opacity .2s}
 .sov .sfs{margin:10px 0 6px;opacity:0;transition:opacity .2s .08s}
 #sres{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:calc(env(safe-area-inset-bottom,0) + 24px);opacity:0;transition:opacity .2s .08s}
 .sov.open .sfs,.sov.open #sres{opacity:1}
@@ -353,7 +358,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <div id="sov" class="sov" hidden>
   <div class="sov-bg" id="sovbg"></div>
   <div class="sov-panel">
-    <div class="sov-row"><div class="sov-field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input type="search" id="sq" placeholder="Search heroes, abilities, items" autocomplete="off" autocapitalize="off" enterkeyhint="search"></div><button class="sov-x" id="sovx">Cancel</button></div>
+    <div class="sov-row"><div class="sov-field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input type="search" id="sq" placeholder="Search" autocomplete="off" autocapitalize="off" enterkeyhint="search"></div><button class="sov-x" id="sovx">Cancel</button></div>
     <div class="sfs" id="sfs"></div>
     <div id="sres"></div>
   </div>
@@ -1775,7 +1780,7 @@ function snippet(e, words) {
   return (from > 0 ? "…" : "") + t + (to < e.text.length ? "…" : "");
 }
 function searchResults() {
-  var q = state.sq.trim(); if (!q) return '<p class="status">Search heroes, abilities and items. Try “silence”, “heal”, or an item name.</p>';
+  var q = state.sq.trim(); if (!q) return "";
   var res = runSearch(q, state.sf), words = q.toLowerCase().split(/\s+/).filter(Boolean);
   if (!res.length) return '<p class="status">Nothing matched “' + esc(q) + '”.</p>';
   var html = '<p class="status">' + res.length + " result" + (res.length === 1 ? "" : "s") + "</p>";
@@ -1791,7 +1796,7 @@ function renderSearch() {
   var chips = [["all", "All"], ["hero", "Heroes"], ["ability", "Abilities"], ["item", "Items"], ["term", "Terms"]].map(function (c) {
     return '<button class="sf' + (state.sf === c[0] ? " on" : "") + '" data-f="' + c[0] + '">' + c[1] + "</button>";
   }).join("");
-  $("main").innerHTML = '<input type="search" id="sq" placeholder="Search heroes, abilities, items" value="' + esc(state.sq) + '" autocomplete="off" autocapitalize="off">' +
+  $("main").innerHTML = '<input type="search" id="sq" placeholder="Search" value="' + esc(state.sq) + '" autocomplete="off" autocapitalize="off">' +
     '<div class="sfs">' + chips + '</div><div id="sres">' + searchResults() + "</div>";
   var inp = $("sq");
   inp.oninput = function () { state.sq = inp.value; $("sres").innerHTML = searchResults(); };
@@ -2000,20 +2005,37 @@ function searchChips() {
     return '<button class="sf' + (state.sf === c[0] ? " on" : "") + '" data-f="' + c[0] + '">' + c[1] + "</button>";
   }).join("");
 }
+// where the field sits: "from" is the magnifier button's box, "to" is the full-width row beside Cancel
+function sovBox(which) {
+  var row = document.querySelector(".sov-row").getBoundingClientRect(), b = $("sbtn").getBoundingClientRect();
+  if (which === "to") return { l: 0, t: 0, w: row.width - $("sovx").offsetWidth - 10, h: row.height };
+  // button scrolled out of view: grow from the right end of the row instead
+  if (b.bottom < 0 || b.top > window.innerHeight || !b.width) return { l: row.width - 46, t: 0, w: 46, h: row.height };
+  return { l: b.left - row.left, t: b.top - row.top, w: b.width, h: b.height };
+}
+function placeField(box, anim) {
+  var f = document.querySelector(".sov-field");
+  f.classList.toggle("anim", !!anim);
+  f.style.left = box.l + "px"; f.style.top = box.t + "px"; f.style.width = box.w + "px"; f.style.height = box.h + "px";
+}
 function openSearch() {
   hideBack(); var ov = $("sov"), inp = $("sq");
   inp.value = state.sq || ""; searchChips(); $("sres").innerHTML = searchResults(); $("sres").scrollTop = 0;
   ov.hidden = false; lockBody();
+  placeField(sovBox("from"), false); // sits exactly on the magnifier button
   inp.focus(); // focus inside the tap so the phone keyboard opens
-  requestAnimationFrame(function () { requestAnimationFrame(function () { ov.classList.add("open"); }); });
+  void ov.offsetWidth;
+  ov.classList.add("open"); placeField(sovBox("to"), true); // then grows out of it
   if (inp.value) inp.select();
 }
 function closeSearch(then) {
   var ov = $("sov"); if (ov.hidden) { if (then) then(); return; }
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   ov.classList.remove("open");
-  setTimeout(function () { ov.hidden = true; unlockBody(); if (then) then(); }, 180);
+  if (then) ov.classList.add("fade"); else placeField(sovBox("from"), true); // shrinks back into the button; opening a result just fades
+  setTimeout(function () { ov.hidden = true; ov.classList.remove("fade"); unlockBody(); if (then) then(); }, 260);
 }
+window.addEventListener("resize", function () { if ($("sov").classList.contains("open")) placeField(sovBox("to"), false); });
 $("sbtn").onclick = function () { if ($("sov").hidden) openSearch(); else closeSearch(); };
 $("sovx").onclick = function () { closeSearch(); };
 $("sovbg").onclick = function () { closeSearch(); };
