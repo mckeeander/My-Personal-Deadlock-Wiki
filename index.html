@@ -29,7 +29,9 @@ header{position:fixed;z-index:5;left:max(14px,calc((100% - 600px)/2));right:max(
   box-shadow:0 8px 24px rgba(0,0,0,.45);transition:transform .15s ease-out}
 header .tabs{margin:0;gap:2px;background:none;border:0;border-radius:0;padding:0}
 header .tab{border:0;border-radius:999px;background:transparent;padding:10px 4px;color:var(--dim);font-size:15px}
-header .tab.on{background:#2f2840;color:var(--fg);font-weight:600;box-shadow:none}
+/* active tab: an outline and text in its category colour (Heroes blue, Weapon orange, Vitality green, Spirit purple) */
+header .tab.on{--c:var(--nav);background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--c);font-weight:600;box-shadow:inset 0 0 0 1px var(--c)}
+header .tab[data-c=weapon].on{--c:var(--weapon)} header .tab[data-c=vitality].on{--c:var(--vital)} header .tab[data-c=spirit].on{--c:var(--spirit)}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
 /* search: one full-width bar under the wordmark on every page; typing swaps the page for results, clearing brings the page back untouched */
 .sbar{display:flex;align-items:center;gap:10px;margin:8px 0 0}
@@ -331,12 +333,12 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .hgap{display:none}
 .desc .pg{display:block;height:8px}
 .desc + .stats,.desc + .minor{margin-top:16px}
-.backpill{position:fixed;left:max(12px,calc((100% - 600px)/2));top:calc(env(safe-area-inset-top,0) + 14px);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.backpill{position:fixed;left:max(14px,calc((100% - 600px)/2));bottom:calc(env(safe-area-inset-bottom,0) + 72px);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
 .backpill[hidden]{display:none}
 #toppill{padding:10px 18px;gap:6px}
 .backpill.in{animation:pillin .22s ease-out}
 .backpill .bx{display:inline-block;padding:0 8px;margin-left:4px;border-left:1px solid var(--line);color:var(--dim);font-size:18px;line-height:1}
-@keyframes pillin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+@keyframes pillin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .gl{text-decoration:underline dotted;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
 .gcats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
 .gcat{display:flex;align-items:center;gap:8px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 10px 10px 12px;color:var(--fg);min-height:56px}
