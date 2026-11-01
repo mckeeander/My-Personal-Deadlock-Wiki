@@ -361,7 +361,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .hname .nimg{display:block;height:52px;width:auto;aspect-ratio:auto;object-fit:contain;border:0;border-radius:0;max-width:100%;filter:brightness(0) invert(1) sepia(.12)}
 .pron{font-size:12px;color:var(--dim);letter-spacing:.06em;margin:3px 0 6px}
 .nic{height:1.3em;width:auto;vertical-align:-.3em;margin:0 .2em 0 .1em;border-radius:4px}
-.nref{color:var(--vital);font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.nref{color:var(--fg);font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .swc{will-change:transform,opacity}
 </style>
 </head>
@@ -410,11 +410,22 @@ function prettify(k) {
   return String(k).replace(/^citadel_ability_|^citadel_weapon_|^ability_/, "").replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
 }
 function nameOf(it) { return it.name || prettify(it.class_name); }
-function colorFor(cls, style) {
-  var m = /color:\s*(#[0-9a-fA-F]{3,8})/.exec(style || "");
-  if (m) return m[1];
-  if (/Spirit/.test(cls)) return "var(--spirit)";
-  return "";
+// One colour rule for the whole site: a stat's category colour, and nothing else.
+// Orange = weapon (gun, melee, bullet resist, fire rate), purple = spirit, green = vitality (healing, health, movement).
+// Crowd control, barrier and the like stay the text colour; the game's own mixed colours are ignored.
+var ATTR_CAT = {
+  WeaponDamage: "w", BonusWeaponDamage: "w", BulletDamage: "w", WeaponDPS: "w", MeleeDamage: "w", BulletResist: "w", FireRate: "w", BonusFireRate: "w", ReducedFireRate: "w",
+  SpiritDamage: "s", BonusSpiritDamage: "s", SpiritDPS: "s", SpiritResist: "s", Spirit: "s",
+  Heal: "v", Heals: "v", Healing: "v", Regen: "v", MaxHealth: "v", MoveSpeed: "v", BonusMoveSpeed: "v", BonusSprintSpeed: "v" };
+var CAT_COL = { w: "var(--weapon)", s: "var(--spirit)", v: "var(--vital)" };
+function colorFor(cls) {
+  var at = /inline-attribute-label\s+(\w+)/.exec(cls || "");
+  return at ? CAT_COL[ATTR_CAT[at[1]]] || "" : "";
+}
+// damage types named in plain text (notes, item text, "Deals bonus Weapon Damage…") get the same colour
+function dmgCol(term) {
+  var m = /\b(spirit|weapon|bullet|melee)\s+damage\b/i.exec(term); if (!m) return "";
+  return /spirit/i.test(m[1]) ? CAT_COL.s : CAT_COL.w;
 }
 // Game text carries markup, inline SVG icons and {s:...} placeholders. Keep a small safe subset.
 function rich(s) {
@@ -461,7 +472,7 @@ function rich(s) {
       if (close) { out += "</span>"; return; }
       var cls = (/class="([^"]*)"/.exec(attrs) || [0, ""])[1];
       var style = (/style="([^"]*)"/.exec(attrs) || [0, ""])[1];
-      var col = colorFor(cls, style);
+      var col = colorFor(cls);
       var c = /highlight/.test(cls) ? "hl" : /diminish/.test(cls) ? "dm" : "", gk = "";
       if (/inline-attribute-label/.test(cls)) gk = GATTR[cls.replace(/inline-attribute-label/, "").trim().split(/\s+/)[0]] || "";
       if (gk) c = c ? c + " gl" : "gl";
@@ -1150,7 +1161,8 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
 // tier text: every stat name in its type's colour (spirit purple, weapon orange, vitality green), Title Case, no inline icons,
 // so the game's own coloured labels and our plain ones read the same
 var TIER_KEEP = /^(heals|health|knocked up|knocked back|slowed|bullets|silences|silenced|stuns|stunned|immobilizes|immobilized|sleeps)$/; // verbs and plain words keep the sentence's own case
-var TIER_BL = "#6AA6FF", TIER_SP = "#CE90FF", TIER_WP = "#EC9719", TIER_VT = "#0F9", TIER_NE = "#FFEFD7", TIER_RD = "#FF5C4D";
+// tier colours use the same shades as --spirit, --weapon and --vital
+var TIER_BL = "#6AA6FF", TIER_SP = "#b583f0", TIER_WP = "#e8a24a", TIER_VT = "#6fc56d", TIER_NE = "#FFEFD7", TIER_RD = "#FF5C4D";
 var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_WP], ["spirit lifesteal", TIER_VT], ["bullet lifesteal", TIER_VT], ["melee lifesteal", TIER_VT],
   ["explosion lifesteal", TIER_VT], ["lifesteal", TIER_VT], ["spirit resistance", TIER_SP], ["spirit resist", TIER_SP], ["bullet resistance", TIER_WP], ["bullet resist shred", TIER_WP], ["bullet resist", TIER_WP],
   ["spirit damage", TIER_SP], ["spirit power", TIER_SP], ["spirit scaling", TIER_SP], ["spirit amp", TIER_SP], ["weapon damage", TIER_WP], ["bullet damage", TIER_WP],
@@ -2015,7 +2027,8 @@ function autoGloss(html) {
     return p.replace(GRX, function (all, pre, term, off, str) {
       var k = GAL[term.toLowerCase().replace(/\s+/g, " ")], after = str.slice(off + all.length);
       if (/^[A-Z]/.test(term) && (/^\s+[A-Z][a-z]/.test(after) || /[A-Z][a-z']+\s+$/.test(str.slice(0, off + pre.length)) && !/[.!?:]\s+$/.test(str.slice(0, off + pre.length)))) return all; // part of a name ("Slowing Hex")
-      return k ? pre + '<span class="gl" data-g="' + k + '">' + term + "</span>" : all; });
+      var dc = dmgCol(term);
+      return k ? pre + '<span class="gl" data-g="' + k + '"' + (dc ? ' style="color:' + dc + '"' : "") + ">" + term + "</span>" : all; });
   }).join("");
 }
 // tier text gets no glossary links (the boxes are tap targets) and its rewrites need the plain words
