@@ -384,9 +384,9 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <main id="main"></main>
 <div id="sarea" hidden><div id="sres"></div></div>
 <footer class="credits">
-  <p>A personal study reference. Not affiliated with or endorsed by Valve. Deadlock is a trademark of Valve Corporation; game data and art belong to Valve.</p>
+  <p>This site is a personal study reference. It is not affiliated with or endorsed by Valve. Deadlock is a trademark of Valve Corporation; game data and art belong to Valve.</p>
   <p>Hero, ability and item data come from the game files via the <a href="https://deadlock-api.com" rel="noopener">Deadlock API</a>.</p>
-  <p>Ability notes, interactions and some glossary definitions are adapted from the <a href="https://deadlock.wiki" rel="noopener">Deadlock Wiki</a> and its contributors, used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>. That adapted text is shared here under the same license.</p>
+  <p>Ability notes, interactions and some glossary definitions are adapted from the <a href="https://deadlock.wiki" rel="noopener">Deadlock Wiki</a> and its contributors, used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>. This content is shared under the same license.</p>
 </footer>
 <button class="backpill" id="backpill" hidden></button>
 <button class="backpill" id="toppill" hidden>↑ Back to top</button>
@@ -1425,6 +1425,7 @@ function setForm(on, keepEl) { // keep the tapped switch where it is on screen w
   if (keepEl) window.scrollBy(0, keepEl.getBoundingClientRect().top - y0);
 }
 var NOGUN = { citadel_weapon_werewolf_claws: 1 };
+var WNAME = { citadel_weapon_werewolf_claws: "Loose Muzzle" }; // the game file still calls it Lycan Claws; in game it's Loose Muzzle
 function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver's claws, Venator's crossbow)
   var w = alt || state.byClass[(h.items || {}).weapon_primary];
   if (!w || !w.weapon_info) return "";
@@ -1459,10 +1460,10 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
       '<span class="fdot" style="left:' + pct + '%"></span><span class="flab" style="left:' + pct + '%">' + meters(i.damage_falloff_start_range) + "</span></div>" +
       '<div class="fo">Full damage out to <b>' + meters(i.damage_falloff_start_range) + "</b>, falling to <b>" + fmtNum(Math.round((i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0) * 100)) + "%</b> at <b>" + meters(i.damage_falloff_end_range) + "</b>.</div>";
   }
-  var title = (wa && wa.name) || nameOf(w);
+  var title = (wa && wa.name) || WNAME[w.class_name] || nameOf(w);
   return '<section class="wpn"><h3>' + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
     (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" : "") +
-    '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div>" + fo +
+    (bare ? "" : '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div>") + fo +
     (g ? '<div class="wg">' + g + "</div>" : "") + notesBlock(wa) + "</section>";
 }
 // Hand-drawn stat icons (the game's own files can't be recoloured from another site), tinted by section
