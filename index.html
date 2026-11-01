@@ -32,31 +32,16 @@ header .tab{border:0;border-radius:7px;background:transparent;padding:9px 4px;co
 header .tab.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -3px 0 var(--nav)}
 header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .tab[data-c=vitality].on{box-shadow:inset 0 -3px 0 var(--vital)} header .tab[data-c=spirit].on{box-shadow:inset 0 -3px 0 var(--spirit)}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
-/* search: the magnifier opens a darkened overlay with the field across the top and live results under it */
-.sov{position:fixed;inset:0;z-index:30}
-.sov-bg{position:absolute;inset:0;background:rgba(4,3,7,.9);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;transition:opacity .22s ease-out}
-.sov.open .sov-bg{opacity:1}
-.sov-panel{position:relative;max-width:600px;margin:0 auto;padding:calc(env(safe-area-inset-top,0) + 58px) 12px 0;height:100%;display:flex;flex-direction:column;pointer-events:none}
-.sov-panel>*{pointer-events:auto}
-.sov-row{position:relative;height:44px;display:flex;align-items:center;justify-content:flex-end}
-/* the field is placed with inline left/top/width/height: it starts exactly on the magnifier button and grows out of it */
-.sov-field{position:absolute;left:0;top:0;display:flex;align-items:center;gap:8px;width:46px;height:44px;padding:0 13px;background:var(--panel);border:1px solid var(--nav);border-radius:10px;color:var(--dim);overflow:hidden}
-.sov-field.anim{transition:left .26s cubic-bezier(.2,.8,.2,1),top .26s cubic-bezier(.2,.8,.2,1),width .26s cubic-bezier(.2,.8,.2,1),height .26s cubic-bezier(.2,.8,.2,1)}
-.sov-field input{opacity:0;transition:opacity .15s}
-.sov.open .sov-field input{opacity:1;transition-delay:.1s}
-.sov-field svg{flex:none}
-.sov-field input[type=search]:focus{border:0;box-shadow:none;outline:none}
-.sov-field input[type=search]{flex:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none;height:100%;outline:none}
-.sov-x{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:8px 2px;opacity:0;transform:translateX(10px);transition:opacity .18s,transform .26s cubic-bezier(.2,.8,.2,1)}
-.sov.open .sov-x{opacity:1;transform:none;transition-delay:.06s}
-@media (prefers-reduced-motion:reduce){.sov-field.anim{transition:none}}
-.sov.fade .sov-panel{opacity:0;transition:opacity .2s}
-.sov .sfs{margin:10px 0 6px;opacity:0;transition:opacity .2s .08s}
-#sres{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:calc(env(safe-area-inset-bottom,0) + 24px);opacity:0;transition:opacity .2s .08s}
-.sov.open .sfs,.sov.open #sres{opacity:1}
-#sres .status{color:var(--fg);opacity:.75}
-.topbar{display:flex;align-items:center;gap:8px;max-width:600px;margin:0 auto;padding:2px 12px 0}
-.topbar .brand{flex:1}
+/* search: one full-width bar under the wordmark on every page; typing swaps the page for results, clearing brings the page back untouched */
+.gsearch{display:flex;align-items:center;gap:8px;height:44px;margin:8px 0 0;padding:0 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim)}
+.gsearch:focus-within{border-color:var(--nav)}
+.gsearch svg{flex:none}
+.gsearch input[type=search],.gsearch input[type=search]:focus{flex:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none;height:100%;outline:none}
+#sarea{max-width:600px;margin:0 auto;padding:12px 12px calc(env(safe-area-inset-bottom,0) + 92px)}
+#sarea[hidden],main[hidden]{display:none}
+.topbar{max-width:600px;margin:0 auto;padding:2px 12px 0}
+.trow{display:flex;align-items:center;gap:8px}
+.trow .brand{flex:1}
 .topbar .ibtn{min-height:44px;min-width:46px;display:flex;align-items:center;justify-content:center}
 .corner{position:absolute;top:-9px;right:-3px;display:flex;gap:4px}.corner .sc{position:static}
 .stat .dur{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid #4f6a8f;border-radius:6px;padding:1px 6px;background:#2b3442;color:#b9cdee}
@@ -349,20 +334,15 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     <button class="tab" data-c="spirit">Spirit</button>
   </div>
 </header>
-<div class="topbar">
+<div class="topbar"><div class="trow">
     <div class="brand" id="brand" role="button" aria-label="Deadlock Codex: all heroes"><img class="logo" src="wordmark.png" alt="Deadlock" onerror="this.replaceWith(document.createTextNode('DEADLOCK CODEX'))"></div>
-    <button class="ibtn" id="sbtn" aria-label="Search everything"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button>
+    
     <button class="ibtn" id="gbtn" aria-label="Glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button>
   </div>
-<main id="main"></main>
-<div id="sov" class="sov" hidden>
-  <div class="sov-bg" id="sovbg"></div>
-  <div class="sov-panel">
-    <div class="sov-row"><div class="sov-field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input type="search" id="sq" placeholder="Search" autocomplete="off" autocapitalize="off" enterkeyhint="search"></div><button class="sov-x" id="sovx">Cancel</button></div>
-    <div class="sfs" id="sfs"></div>
-    <div id="sres"></div>
-  </div>
+  <label class="gsearch"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input type="search" id="sq" placeholder="Search" aria-label="Search heroes, abilities, items and terms" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"></label>
 </div>
+<main id="main"></main>
+<div id="sarea" hidden><div class="sfs" id="sfs"></div><div id="sres"></div></div>
 <button class="backpill" id="backpill" hidden></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
@@ -1578,7 +1558,7 @@ function renderHero(cn) {
   $("main").innerHTML = html; hydrateName();
   $("back").onclick = function () {
     state.hero = null;
-    if (state.from === "search") { state.from = null; state.tab = "search"; setTabsUI(null); }
+    if (state.from === "search") { state.from = null; showSearch(state.lastSq || ""); return; }
     render(); window.scrollTo(0, 0);
   };
   window.scrollTo(0, 0);
@@ -1792,15 +1772,6 @@ function searchResults() {
   if (res.length > 60) html += '<p class="status">Showing the first 60. Add a word to narrow it down.</p>';
   return html;
 }
-function renderSearch() {
-  var chips = [["all", "All"], ["hero", "Heroes"], ["ability", "Abilities"], ["item", "Items"], ["term", "Terms"]].map(function (c) {
-    return '<button class="sf' + (state.sf === c[0] ? " on" : "") + '" data-f="' + c[0] + '">' + c[1] + "</button>";
-  }).join("");
-  $("main").innerHTML = '<input type="search" id="sq" placeholder="Search" value="' + esc(state.sq) + '" autocomplete="off" autocapitalize="off">' +
-    '<div class="sfs">' + chips + '</div><div id="sres">' + searchResults() + "</div>";
-  var inp = $("sq");
-  inp.oninput = function () { state.sq = inp.value; $("sres").innerHTML = searchResults(); };
-}
 function openResult(b) {
   var kind = b.getAttribute("data-kind"), cn = b.getAttribute("data-cn");
   if (kind === "item") { itemSheet(cn); return; }
@@ -1959,7 +1930,7 @@ function sheetBack() {
   if (top.indexOf("g:") === 0) glossSheet(top.slice(2), true); else itemSheet(top, true);
 }
 function openGlossary(k) {
-  state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI("glossary"); renderGlossary();
+  endSearch(); state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI("glossary"); renderGlossary();
   var el = k && $("g-" + k);
   if (el) { scrollToEl(el); el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100); } else window.scrollTo(0, 0);
 }
@@ -1980,7 +1951,6 @@ $("backpill").onclick = function (e) {
 };
 function render() {
   if (state.tab === "glossary") return renderGlossary();
-  if (state.tab === "search") return renderSearch();
   if (state.tab === "heroes") { state.hero ? renderHero(state.hero) : renderHeroes(); } else renderShop(state.tab);
 }
 function showError(e) {
@@ -1993,59 +1963,46 @@ $("tabs").onclick = function (e) {
   var b = e.target.closest(".tab"); if (!b) return; hideBack();
   if (b.getAttribute("data-c") === "glossary") return; // has its own handler
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
-  state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; state.from = null; render(); window.scrollTo(0, 0);
+  endSearch(); state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; state.from = null; render(); window.scrollTo(0, 0);
 };
 $("brand").onclick = function () { // the title goes home: the hero list
-  hideBack(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
+  hideBack(); endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
 };
 $("gbtn").onclick = function () { hideBack(); openGlossary(); };
-// search lives in an overlay over whatever page you're on; closing it leaves that page exactly as it was
+// search: the bar is always there; while it has text the page underneath is hidden (not re-rendered), so clearing it puts you back exactly where you were
+var SEARCH_Y = 0;
 function searchChips() {
   $("sfs").innerHTML = [["all", "All"], ["hero", "Heroes"], ["ability", "Abilities"], ["item", "Items"], ["term", "Terms"]].map(function (c) {
     return '<button class="sf' + (state.sf === c[0] ? " on" : "") + '" data-f="' + c[0] + '">' + c[1] + "</button>";
   }).join("");
 }
-// where the field sits: "from" is the magnifier button's box, "to" is the full-width row beside Cancel
-function sovBox(which) {
-  var row = document.querySelector(".sov-row").getBoundingClientRect(), b = $("sbtn").getBoundingClientRect();
-  if (which === "to") return { l: 0, t: 0, w: row.width - $("sovx").offsetWidth - 10, h: row.height };
-  // button scrolled out of view: grow from the right end of the row instead
-  if (b.bottom < 0 || b.top > window.innerHeight || !b.width) return { l: row.width - 46, t: 0, w: 46, h: row.height };
-  return { l: b.left - row.left, t: b.top - row.top, w: b.width, h: b.height };
+function searchOn() { return !$("sarea").hidden; }
+function showSearch(q) {
+  if (!searchOn()) { SEARCH_Y = window.pageYOffset || 0; hideBack(); $("main").hidden = true; $("sarea").hidden = false; }
+  state.sq = q; if ($("sq").value !== q) $("sq").value = q;
+  searchChips(); $("sres").innerHTML = searchResults(); window.scrollTo(0, 0);
 }
-function placeField(box, anim) {
-  var f = document.querySelector(".sov-field");
-  f.classList.toggle("anim", !!anim);
-  f.style.left = box.l + "px"; f.style.top = box.t + "px"; f.style.width = box.w + "px"; f.style.height = box.h + "px";
+function endSearch(keepScroll) { // hide results and show the page again
+  state.sq = ""; $("sq").value = "";
+  if (!searchOn()) return;
+  $("sarea").hidden = true; $("main").hidden = false;
+  if (keepScroll) window.scrollTo(0, SEARCH_Y);
 }
-function openSearch() {
-  hideBack(); var ov = $("sov"), inp = $("sq");
-  inp.value = state.sq || ""; searchChips(); $("sres").innerHTML = searchResults(); $("sres").scrollTop = 0;
-  ov.hidden = false; lockBody();
-  placeField(sovBox("from"), false); // sits exactly on the magnifier button
-  inp.focus(); // focus inside the tap so the phone keyboard opens
-  void ov.offsetWidth;
-  ov.classList.add("open"); placeField(sovBox("to"), true); // then grows out of it
-  if (inp.value) inp.select();
+function onSearchInput() {
+  var q = $("sq").value;
+  if (q.trim()) showSearch(q); else endSearch(true);
 }
-function closeSearch(then) {
-  var ov = $("sov"); if (ov.hidden) { if (then) then(); return; }
-  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-  ov.classList.remove("open");
-  if (then) ov.classList.add("fade"); else placeField(sovBox("from"), true); // shrinks back into the button; opening a result just fades
-  setTimeout(function () { ov.hidden = true; ov.classList.remove("fade"); unlockBody(); if (then) then(); }, 260);
-}
-window.addEventListener("resize", function () { if ($("sov").classList.contains("open")) placeField(sovBox("to"), false); });
-$("sbtn").onclick = function () { if ($("sov").hidden) openSearch(); else closeSearch(); };
-$("sovx").onclick = function () { closeSearch(); };
-$("sovbg").onclick = function () { closeSearch(); };
-$("sq").oninput = function () { state.sq = $("sq").value; $("sres").innerHTML = searchResults(); $("sres").scrollTop = 0; };
-$("sq").onkeydown = function (e) { if (e.key === "Escape") closeSearch(); if (e.key === "Enter") $("sq").blur(); };
-$("sov").addEventListener("click", function (e) {
+$("sq").addEventListener("input", onSearchInput);
+$("sq").addEventListener("search", onSearchInput); // the field's clear button
+$("sq").onkeydown = function (e) { if (e.key === "Escape") { endSearch(true); $("sq").blur(); } if (e.key === "Enter") $("sq").blur(); };
+$("sarea").addEventListener("click", function (e) {
   var sf = e.target.closest ? e.target.closest(".sf[data-f]") : null;
   if (sf) { state.sf = sf.getAttribute("data-f"); searchChips(); $("sres").innerHTML = searchResults(); return; }
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
-  if (sr) closeSearch(function () { openResult(sr); });
+  if (!sr) return;
+  var kind = sr.getAttribute("data-kind");
+  if (kind === "item" || kind === "term") { openResult(sr); return; } // these open as a sheet over the results
+  state.lastSq = state.sq; $("sq").blur(); endSearch(false); openResult(sr);
 });
 // A short burst on every stat that changed when a tier was tapped
 function statKey(el) {
@@ -2091,8 +2048,6 @@ $("main").addEventListener("click", function (e) {
   if (tapTip(e)) return;
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
   if (sr) { openResult(sr); return; }
-  var sf = e.target.closest ? e.target.closest(".sf[data-f]") : null;
-  if (sf) { state.sf = sf.getAttribute("data-f"); renderSearch(); return; }
   var nr = e.target.closest ? e.target.closest(".nref[data-rh]") : null;
   if (nr) { // an ability mentioned in a note: open its hero and scroll to it, with a way back
     var fromHero = state.hero, fromY = window.pageYOffset || 0;
