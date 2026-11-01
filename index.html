@@ -188,7 +188,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .sgrid{display:grid;gap:8px}
 .sblk{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:10px 12px}
 .sblk.vit{--c:var(--vital)}.sblk.wep{--c:var(--weapon)}.sblk.spi{--c:var(--spirit)}
-.sblk h4{margin:0 0 4px;font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.sblk h4{margin:0 0 6px;font-family:var(--disp);font-size:19px;letter-spacing:.01em;line-height:1.2;color:var(--c)}
 .srow{display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-items:center;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
 .srow .l{text-align:right;color:var(--dim)}
 .srow .v{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
@@ -274,7 +274,7 @@ details.notes + details.notes{margin-top:12px}
 .chip.tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:0;background:#000;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:12px;white-space:nowrap;z-index:5}
 .chips .g:last-child .chip.tip::after{left:auto;right:0}
 details.lore:not([open]) summary{margin-bottom:0}
-.lore + .sec{margin-top:22px}
+.stats1{margin-top:20px}
 .sheet .in::before{content:"";display:block;width:42px;height:4px;border-radius:2px;background:var(--line);margin:-4px auto 10px}
 .bg div.spike{position:relative;border:2px solid var(--sp)}
 .bg div.spike u{position:absolute;top:-9px;left:50%;transform:translateX(-50%);text-decoration:none;font-size:9px;font-weight:700;letter-spacing:.12em;color:#1a1208;border-radius:6px;padding:1px 7px}
@@ -769,7 +769,7 @@ function fetchAll() {
 /* ---------- rendering ---------- */
 function statusLine() {
   var d = state.fetchedAt ? new Date(state.fetchedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "never";
-  return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + " heroes · " + state.items.length + ' entries · <button class="link" id="rfr">Refresh now</button> · <button class="link" id="dbg">data check</button></p>';
+  return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + " heroes · " + state.items.length + ' entries · <button class="link" id="rfr">Refresh now</button></p>';
 }
 function renderHeroes() {
   var q = state.q.toLowerCase();
@@ -1589,7 +1589,7 @@ function renderHero(cn) {
   var tagsA = (h.hero_type ? '<span class="tag role">' + esc(roleLabel(h)) + "</span>" : "") + (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
   var html = '<button class="back" id="back">' + "‹ All heroes" + '</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
-  html += '<div class="sec">Stats</div>' + statBlock(h);
+  html += '<div class="stats1">' + statBlock(h) + "</div>";
   var wc = weaponCard(h);
   if (wc) html += '<div class="sec">Weapon</div>' + wc;
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
@@ -1641,7 +1641,7 @@ function renderShop(slot) {
     if (sb) { brawl += html; html = out; }
   });
   if (brawl) html += '<details class="sbx"' + (state.sbOpen ? " open" : "") + '><summary><span>Street Brawl only</span><small>' + nb + " item" + (nb === 1 ? "" : "s") + "</small></summary>" + brawl + "</details>";
-  if (!Object.keys(tiers).length) html += '<p class="status">Nothing matched. If this stays empty, open “data check”.</p>';
+  if (!Object.keys(tiers).length) html += '<p class="status">Nothing matched. If this stays empty, tap Refresh now.</p>';
   $("main").innerHTML = html;
   var sbx = document.querySelector("#main .sbx"); if (sbx) sbx.addEventListener("toggle", function () { state.sbOpen = sbx.open; });
   bindCommon();
@@ -1736,19 +1736,9 @@ var LOCKY = 0;
 function lockBody() { if (document.body.classList.contains("lock")) return; LOCKY = window.pageYOffset || 0; document.body.style.top = -LOCKY + "px"; document.body.classList.add("lock"); }
 function unlockBody() { if (!document.body.classList.contains("lock")) return; document.body.classList.remove("lock"); document.body.style.top = ""; window.scrollTo(0, LOCKY); }
 function closeSheet() { clearTimeout(SWAPT); resetSwap(); $("sheet").hidden = true; ISTACK = []; unlockBody(); }
-function debugSheet() {
-  var h = state.heroes[0] || {}, it = state.items.filter(function (x) { return x.type === "ability"; })[0] || state.items[0] || {};
-  var types = {}; state.items.forEach(function (x) { types[x.type] = (types[x.type] || 0) + 1; });
-  var txt = "Heroes: " + state.heroes.length + "\nItems: " + state.items.length + "\nItem types: " + JSON.stringify(types) +
-    "\n\nHERO FIELDS: " + Object.keys(h).join(", ") + "\nHERO.items: " + JSON.stringify(h.items) +
-    "\n\nITEM FIELDS: " + Object.keys(it).join(", ") + "\n\nSAMPLE ITEM:\n" + JSON.stringify(it, null, 1).slice(0, 2500);
-  $("sheetin").innerHTML = "<h3>Data check</h3><pre>" + esc(txt) + '</pre><button class="ibtn" id="close" style="width:100%">Close</button>';
-  lockBody(); $("sheet").hidden = false; $("close").onclick = closeSheet;
-}
 function bindCommon() {
   var q = $("q");
   if (q) q.oninput = function () { state.q = q.value; var pos = q.selectionStart; render(); var n = $("q"); n.focus(); n.setSelectionRange(pos, pos); };
-  var d = $("dbg"); if (d) d.onclick = debugSheet;
   var rf = $("rfr"); if (rf) rf.onclick = refreshNow;
   Array.prototype.forEach.call(document.querySelectorAll("[data-hero]"), function (b) { b.onclick = function () { renderHero(b.getAttribute("data-hero")); }; });
   Array.prototype.forEach.call(document.querySelectorAll("[data-item]"), function (b) { b.onclick = function () { itemSheet(b.getAttribute("data-item")); }; });
