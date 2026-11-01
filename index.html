@@ -33,10 +33,19 @@ header .tabs{margin:0;gap:0;background:none;border:0;border-radius:0;padding:0}
 /* the home-indicator space is part of each cell, so dividers and the active tint run to the bottom of the screen */
 header .tab{position:relative;border:0;border-radius:0;background:transparent;padding:18px 4px calc(env(safe-area-inset-bottom,0) + 16px);color:var(--dim);font-size:15px}
 header .tab+.tab{box-shadow:inset 1px 0 0 #322b3d}
-header .tab::before{content:"";position:absolute;top:-1px;left:0;right:0;height:3px;background:transparent}
-header .tab.on{--c:var(--nav);color:var(--c);font-weight:600;background:linear-gradient(color-mix(in srgb,var(--c) 18%,transparent),color-mix(in srgb,var(--c) 4%,transparent))}
-header .tab[data-c=weapon].on{--c:var(--weapon)} header .tab[data-c=vitality].on{--c:var(--vital)} header .tab[data-c=spirit].on{--c:var(--spirit)}
-header .tab.on::before{background:var(--c)}
+header .tabs{position:relative}
+header .tab{z-index:1;transition:color .3s ease}
+header .tab.on{color:var(--nav);font-weight:600;background:transparent;border-color:transparent}
+header .tab[data-c=weapon].on{color:var(--weapon)} header .tab[data-c=vitality].on{color:var(--vital)} header .tab[data-c=spirit].on{color:var(--spirit)}
+/* one shared highlight slides between tabs: its leading edge moves first and the trailing edge follows, so the colour drags across;
+   the top line bends down a little at both sides */
+.tind{position:absolute;top:0;bottom:0;left:0;width:0;z-index:0;pointer-events:none;color:var(--nav);opacity:0;
+  transition:left .3s cubic-bezier(.4,0,.2,1),right .3s cubic-bezier(.4,0,.2,1),color .3s ease,opacity .2s ease}
+.tind::before{content:"";position:absolute;top:-1px;left:0;right:0;height:16px;border:3px solid currentColor;border-bottom:0;border-radius:10px 10px 0 0;
+  -webkit-mask:linear-gradient(#000 30%,transparent);mask:linear-gradient(#000 30%,transparent)}
+.tind::after{content:"";position:absolute;inset:0;background:currentColor;opacity:.18;-webkit-mask:linear-gradient(#000,rgba(0,0,0,.2));mask:linear-gradient(#000,rgba(0,0,0,.2))}
+.tind.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.tind{transition:none}}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
 /* search: one full-width bar under the wordmark on every page; typing swaps the page for results, clearing brings the page back untouched */
 .sbar{display:flex;align-items:center;gap:10px;margin:8px 0 0}
@@ -2299,6 +2308,23 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
     var kb = typing ? Math.max(0, window.innerHeight - vv.height - Math.max(0, vv.offsetTop)) : 0, up = kb > 60; hd.classList.toggle("kb", up); hd.style.transform = up ? "translateY(" + -kb + "px)" : ""; }
   vv.addEventListener("resize", place); vv.addEventListener("scroll", place);
   document.addEventListener("focusout", function () { setTimeout(place, 50); });
+})();
+(function () { // the sliding highlight under the bottom tabs
+  var tabs = $("tabs"), ind = document.createElement("span"), last = null, COL = { heroes: "var(--nav)", weapon: "var(--weapon)", vitality: "var(--vital)", spirit: "var(--spirit)" };
+  ind.className = "tind"; tabs.insertBefore(ind, tabs.firstChild);
+  function move(anim) {
+    var on = tabs.querySelector(".tab.on"); ind.classList.toggle("show", !!on); if (!on) { last = null; return; }
+    var W = tabs.clientWidth, l = on.offsetLeft, r = W - l - on.offsetWidth, i = Array.prototype.indexOf.call(tabs.querySelectorAll(".tab"), on);
+    var fast = ".3s cubic-bezier(.4,0,.2,1)", slow = ".3s cubic-bezier(.4,0,.2,1) .09s";
+    if (!anim || last == null) ind.style.transition = "none";
+    else ind.style.transition = (i > last ? "right " + fast + ",left " + slow : "left " + fast + ",right " + slow) + ",color .3s ease,opacity .2s ease";
+    ind.style.left = l + "px"; ind.style.right = r + "px"; ind.style.width = "auto"; ind.style.color = COL[on.getAttribute("data-c")] || "var(--nav)";
+    if (!anim || last == null) { void ind.offsetWidth; ind.style.transition = ""; }
+    last = i;
+  }
+  new MutationObserver(function (ms) { if (ms.some(function (m) { return m.target !== ind; })) move(true); }).observe(tabs, { subtree: true, attributes: true, attributeFilter: ["class"] });
+  window.addEventListener("resize", function () { move(false); });
+  move(false);
 })();
 function refreshNow() {
   fetchAll().then(render).catch(function (e) {
