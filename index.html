@@ -38,11 +38,10 @@ header .tab{z-index:1;transition:color .3s ease}
 header .tab.on{color:var(--nav);font-weight:600;background:transparent;border-color:transparent}
 header .tab[data-c=weapon].on{color:var(--weapon)} header .tab[data-c=vitality].on{color:var(--vital)} header .tab[data-c=spirit].on{color:var(--spirit)}
 /* one shared highlight slides between tabs: its leading edge moves first and the trailing edge follows, so the colour drags across;
-   the top line bends down a little at both sides */
+   a straight line runs along the top */
 .tind{position:absolute;top:0;bottom:0;left:0;width:0;z-index:0;pointer-events:none;color:var(--nav);opacity:0;
   transition:left .3s cubic-bezier(.4,0,.2,1),right .3s cubic-bezier(.4,0,.2,1),color .3s ease,opacity .2s ease}
-.tind::before{content:"";position:absolute;top:-1px;left:0;right:0;height:16px;border:3px solid currentColor;border-bottom:0;border-radius:10px 10px 0 0;
-  -webkit-mask:linear-gradient(#000 30%,transparent);mask:linear-gradient(#000 30%,transparent)}
+.tind::before{content:"";position:absolute;top:-1px;left:0;right:0;height:3px;background:currentColor}
 .tind::after{content:"";position:absolute;inset:0;background:currentColor;opacity:.18;-webkit-mask:linear-gradient(#000,rgba(0,0,0,.2));mask:linear-gradient(#000,rgba(0,0,0,.2))}
 .tind.show{opacity:1}
 @media (prefers-reduced-motion:reduce){.tind{transition:none}}
