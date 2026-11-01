@@ -47,8 +47,8 @@ header .tab[data-c=weapon].on{box-shadow:inset 0 -3px 0 var(--weapon)} header .t
 #sarea{max-width:600px;margin:0 auto;padding:12px 12px calc(env(safe-area-inset-bottom,0) + 92px)}
 #sarea[hidden],main[hidden]{display:none}
 .topbar{max-width:600px;margin:0 auto;padding:2px 12px 0}
-.trow{display:flex;align-items:center;gap:8px}
-.trow .brand{flex:1}
+.toprow{display:flex;align-items:center;gap:8px}
+.toprow .brand{flex:1}
 .topbar .ibtn{min-height:44px;min-width:46px;display:flex;align-items:center;justify-content:center}
 .corner{position:absolute;top:-9px;right:-3px;display:flex;gap:4px}.corner .sc{position:static}
 .stat .dur{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid #4f6a8f;border-radius:6px;padding:1px 6px;background:#2b3442;color:#b9cdee}
@@ -121,7 +121,7 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .tc.weapon{background:#a8651a}.tc.vitality{background:#3d7d3c}.tc.spirit{background:#6b45a8}
 .tl{flex:1;min-width:0;display:flex;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px}
 .it2{width:50%;display:flex;align-items:center;gap:8px;padding:5px 4px;background:none;border:0;text-align:left;font-size:13px;line-height:1.15;border-radius:6px;min-width:0}
-.it2 img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:4px;background:var(--panel2)}
+.it2 img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:6px;background:var(--panel2);border:1px solid var(--line)}
 .it2 em{font-style:normal;color:var(--gold);font-size:10px;letter-spacing:.06em;margin-left:4px}
 .chips{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;flex-wrap:wrap}
 .chips .g{display:flex;gap:6px;flex-wrap:wrap}
@@ -350,7 +350,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     <button class="tab" data-c="spirit">Spirit</button>
   </div>
 </header>
-<div class="topbar"><div class="trow">
+<div class="topbar"><div class="toprow">
     <div class="brand" id="brand" role="button" aria-label="Deadlock Codex: all heroes"><img class="logo" src="wordmark.png" alt="Deadlock" onerror="this.replaceWith(document.createTextNode('DEADLOCK CODEX'))"></div>
     
     <button class="ibtn" id="gbtn" aria-label="Glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button>
@@ -1606,7 +1606,7 @@ function bonusCard(slot) {
     html += '<div' + (sp ? ' class="spike"' : "") + ">" + (sp ? "<u>SPIKE</u>" : "") + "<b>$" + Number(r.gold_threshold).toLocaleString() + "</b><span>+" + esc(fmtNum(r.bonus)) + unit + "</span></div>";
     prev = r.bonus;
   });
-  return '<details class="bon s-' + slot + '"><summary>Category bonuses: ' + label + '</summary><div class="bg">' + html + "</div><p>Total spent in this category unlocks these bonuses." + esc(spike) + "</p></details>";
+  return '<details class="bon s-' + slot + '"><summary>Category bonuses: ' + label + '</summary><div class="bg">' + html + "</div></details>";
 }
 function slotOf(it) { return String(it.item_slot_type || "").toLowerCase(); }
 function renderShop(slot) {
