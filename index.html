@@ -121,7 +121,9 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .tc.weapon{background:#a8651a}.tc.vitality{background:#3d7d3c}.tc.spirit{background:#6b45a8}
 .tl{flex:1;min-width:0;display:flex;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px}
 .it2{width:50%;display:flex;align-items:center;gap:8px;padding:5px 4px;background:none;border:0;text-align:left;font-size:13px;line-height:1.15;border-radius:6px;min-width:0}
-.it2 img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:6px;background:var(--panel2);border:1px solid var(--line)}
+.it2 img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:4px;background:var(--panel2)}
+/* category-coloured ring on each item, matching item references on hero pages */
+.tl.weapon .it2 img{box-shadow:0 0 0 1.5px var(--weapon)}.tl.vitality .it2 img{box-shadow:0 0 0 1.5px var(--vital)}.tl.spirit .it2 img{box-shadow:0 0 0 1.5px var(--spirit)}
 .it2 em{font-style:normal;color:var(--gold);font-size:10px;letter-spacing:.06em;margin-left:4px}
 .chips{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;flex-wrap:wrap}
 .chips .g{display:flex;gap:6px;flex-wrap:wrap}
@@ -1621,7 +1623,7 @@ function renderShop(slot) {
   Object.keys(tiers).sort(function (a, b) { return a - b; }).forEach(function (t) {
     var arr = tiers[t].sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
     var cost = arr[0].cost ? "$" + Number(arr[0].cost).toLocaleString() : "T" + t;
-    html += '<div class="trow"><div class="tc ' + slot + '">' + esc(cost) + '</div><div class="tl">';
+    html += '<div class="trow"><div class="tc ' + slot + '">' + esc(cost) + '</div><div class="tl ' + slot + '">';
     arr.forEach(function (it) {
       html += '<button class="it2" data-item="' + esc(it.class_name) + '">' + imgTag(itemArt(it), itemImg(it)) + "<div>" + esc(nameOf(it)) + (it.is_active_item ? "<em>ACTIVE</em>" : "") + "</div></button>";
     });
