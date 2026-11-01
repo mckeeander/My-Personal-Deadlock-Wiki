@@ -44,11 +44,14 @@ header .tab[data-c=weapon].on{color:var(--weapon)} header .tab[data-c=vitality].
 /* one shared highlight slides between tabs: its leading edge moves first and the trailing edge follows, so the colour drags across;
    it stands 10px above the bar with a line along its top */
 .tind{position:absolute;top:-12px;bottom:0;left:0;width:0;z-index:0;pointer-events:none;color:var(--nav);opacity:0;background:var(--bar);box-shadow:inset 1px 0 0 var(--edge),inset -1px 0 0 var(--edge);
-  transition:left .3s cubic-bezier(.4,0,.2,1),right .3s cubic-bezier(.4,0,.2,1),color .3s ease,opacity .2s ease}
+  transition:left .3s cubic-bezier(.4,0,.2,1),right .3s cubic-bezier(.4,0,.2,1),color .3s ease,opacity .2s ease,transform .25s ease}
 .tind::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:currentColor;z-index:1}
 .tind::after{content:"";position:absolute;inset:0;background:currentColor;opacity:.2;-webkit-mask:linear-gradient(#000,transparent 85%);mask:linear-gradient(#000,transparent 85%)}
 .tind.first{box-shadow:inset -1px 0 0 var(--edge)}.tind.last{box-shadow:inset 1px 0 0 var(--edge)} /* no border against the screen edge */
 .tind.show{opacity:1}
+body.srch .tind{opacity:0;transform:translateY(14px)}
+body.srch header .tab.on{color:#d6cee2;font-weight:400}
+body.srch .credits{display:none}
 @media (prefers-reduced-motion:reduce){.tind{transition:none}}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
 /* search: one full-width bar under the wordmark on every page; typing swaps the page for results, clearing brings the page back untouched */
@@ -2185,14 +2188,14 @@ var SEARCH_Y = 0;
 function searchOn() { return !$("sarea").hidden; }
 function drawResults() { state.sf = "all"; $("sres").innerHTML = searchResults(); $("sclr").hidden = !state.sq; }
 function showSearch(q) { // swap the page for the results area (the page is only hidden, not re-rendered)
-  if (!searchOn()) { SEARCH_Y = window.pageYOffset || 0; hideBack(); $("main").hidden = true; $("sarea").hidden = false; $("sx").hidden = false; window.scrollTo(0, 0); }
+  if (!searchOn()) { SEARCH_Y = window.pageYOffset || 0; hideBack(); $("main").hidden = true; $("sarea").hidden = false; $("sx").hidden = false; document.body.classList.add("srch"); window.scrollTo(0, 0); }
   state.sq = q; if ($("sq").value !== q) $("sq").value = q;
   drawResults();
 }
 function endSearch(keepScroll) { // close search: empty the bar and show the page again
   state.sq = ""; $("sq").value = ""; $("sclr").hidden = true; $("sx").hidden = true;
   if (!searchOn()) return;
-  $("sarea").hidden = true; $("main").hidden = false;
+  $("sarea").hidden = true; $("main").hidden = false; document.body.classList.remove("srch");
   if (keepScroll) window.scrollTo(0, SEARCH_Y);
 }
 $("sq").addEventListener("blur", function () { document.body.classList.remove("kb"); });
@@ -2321,7 +2324,7 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
     var i = Array.prototype.indexOf.call(tabs.querySelectorAll(".tab"), on), W = tabs.clientWidth, l = on.offsetLeft, r = W - l - on.offsetWidth;
     var fast = ".3s cubic-bezier(.4,0,.2,1)", slow = ".3s cubic-bezier(.4,0,.2,1) .09s";
     if (!anim || last == null) ind.style.transition = "none";
-    else ind.style.transition = (i > last ? "right " + fast + ",left " + slow : "left " + fast + ",right " + slow) + ",color .3s ease,opacity .2s ease";
+    else ind.style.transition = (i > last ? "right " + fast + ",left " + slow : "left " + fast + ",right " + slow) + ",color .3s ease,opacity .2s ease,transform .25s ease";
     var n = tabs.querySelectorAll(".tab").length; ind.classList.toggle("first", i === 0); ind.classList.toggle("last", i === n - 1);
     ind.style.left = l + "px"; ind.style.right = r + "px"; ind.style.width = "auto"; ind.style.color = COL[on.getAttribute("data-c")] || "var(--nav)";
     if (!anim || last == null) { void ind.offsetWidth; ind.style.transition = ""; }
