@@ -35,7 +35,12 @@ header .tabs{margin:0;gap:0;background:none;border:0;border-radius:0;padding:0}
 /* the home-indicator space is part of each cell, so dividers and the active tint run to the bottom of the screen */
 header .tab{position:relative;border:0;border-radius:0;background:transparent;padding:18px 4px calc(env(safe-area-inset-bottom,0) + 16px);color:#d6cee2;font-size:15px}
 /* 1px light separators between tabs */
-header .tab+.tab{box-shadow:inset 1px 0 0 var(--edge);padding-left:5px}
+header .tab+.tab{box-shadow:inset 1px 0 0 var(--edge)}
+/* the four tabs line up with the four hero columns: each separator sits in the middle of a 6px column gap, and the
+   outer tabs also take the 12px page margin; labels are nudged so they centre over their column */
+header .tabs{display:grid;grid-template-columns:calc((100% - 42px)/4 + 15px) calc((100% - 42px)/4 + 6px) calc((100% - 42px)/4 + 6px) calc((100% - 42px)/4 + 15px)}
+header .tab{padding-left:0;padding-right:0;min-width:0}
+header .tab:first-of-type{padding-left:9px} header .tab:last-of-type{padding-right:9px}
 
 header .tabs{position:relative}
 header .tab{z-index:1;transition:color .3s ease}
