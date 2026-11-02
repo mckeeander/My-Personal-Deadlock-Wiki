@@ -2561,14 +2561,14 @@ function snapStats(card) {
     var sc = dv ? x[0].querySelector(".sc") : null; if (sc) { m[x[1] + "|sc"] = sc.textContent; m[x[1] + "|scw"] = sc.offsetWidth; } });
   return m;
 }
-var COUNT_TEST = true; // trial: numbers count up/down to their new value (only on Siphon Life while we try it)
+var COUNT_TEST = true; // numbers count up/down to their new value when a tier is tapped
 function lastTextNode(root) {
   var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false), n, last = null;
   while ((n = w.nextNode())) if (/\d/.test(n.nodeValue)) last = n;
   return last;
 }
-var COUNT_MS = 900;
-function easeIO(k) { return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; } // slow start, fast middle, slow finish
+var COUNT_MS = 1000;
+function easeIO(k) { return k < .5 ? 16 * Math.pow(k, 5) : 1 - Math.pow(-2 * k + 2, 5) / 2; } // quintic: a long, gentle start and finish with a fast middle
 function animNum(root, beforeTxt) { // put the number (and its unit) in a slot whose width follows the digits, and count it from its old value to the new one
   if (!root || beforeTxt == null) return null;
   var tn = lastTextNode(root); if (!tn) return null;
@@ -2653,7 +2653,7 @@ function rollNum(root, beforeTxt) { // elevator roll: each changed digit rides a
 }
 function countTo(el, bef, k) {
   var card = el.closest ? el.closest(".ab") : null, h = card && card.querySelector("h3"), nm = h && h.textContent.replace(/\s+/g, " ").trim();
-  var mode = nm === "Siphon Life" || nm === "Flawless Advance" || nm === "Ground Strike" ? animNum : null; // trial: these abilities count their numbers
+  var mode = animNum; // every ability card counts its numbers
   if (!mode) return;
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var isStat = el.tagName === "DIV", go = [];
