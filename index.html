@@ -55,7 +55,7 @@ header .tabs{position:relative}
 body.srch .tind{opacity:0}
 body.srch header .tab.on{color:#9a90aa;font-weight:500}
 body.srch header .tab.on .i1{display:none} body.srch header .tab.on .i0{display:block}
-body.srch .credits{display:none}
+body.srch .credits,body.boot .credits{display:none} /* the credits wait for the first screen so they never sit at the top of an empty page */
 body.srch #sarea{padding-bottom:calc(env(safe-area-inset-bottom,0) + 96px)}
 @media (prefers-reduced-motion:reduce){header .tab.pop svg{animation:none!important}.tind{transition:none}}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
@@ -158,7 +158,9 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .sc.bn{background:#1f3320;color:var(--vital)}
 .hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .hc{position:relative;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel2);aspect-ratio:3/4}
-.hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.05);transition:opacity .26s ease-out var(--d,0ms),transform .36s ease-out var(--d,0ms)}
+.hc img.ld{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.hc img{transition:none;transform:none}}
 .hc span{position:absolute;left:0;right:0;bottom:0;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
@@ -428,7 +430,7 @@ html.lock,html.lock body{overflow:hidden}
 .swc{will-change:transform,opacity}
 </style>
 </head>
-<body>
+<body class="boot">
 <header>
   <div class="tabs" id="tabs">
     <button class="tab on" data-c="heroes"><svg class="i0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><svg class="i1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4.5"/><path d="M3.5 21.5c0-4.8 3.8-7.6 8.5-7.6s8.5 2.8 8.5 7.6z"/></svg><span>Heroes</span></button>
@@ -873,14 +875,16 @@ function statusLine() {
   var d = state.fetchedAt ? new Date(state.fetchedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "never";
   return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + " heroes · " + state.items.length + ' entries · <button class="link" id="rfr">Refresh now</button></p>';
 }
+var FIRSTLIST = true;
 function renderHeroes() {
   SEL = {}; SELS = {}; OPENS = {}; // returning to the hero list forgets all chosen tiers
   var q = state.q.toLowerCase();
   var list = state.heroes.filter(function (h) { return !q || String(h.name).toLowerCase().indexOf(q) >= 0; });
   var html = statusLine() + '<div class="hg">';
-  list.forEach(function (h) {
-    html += '<button class="hc" data-hero="' + esc(h.class_name) + '"><img loading="lazy" alt="" src="' + esc(heroImg(h)) + '"><span>' + esc(h.name) + "</span></button>";
+  list.forEach(function (h, i) { // portraits fade in as they arrive; on the first screen after opening they also ripple in a few ms apart
+    html += '<button class="hc" data-hero="' + esc(h.class_name) + '"><img decoding="async" alt="" src="' + esc(heroImg(h)) + '"' + (FIRSTLIST ? ' style="--d:' + Math.min(i * 14, 220) + 'ms"' : "") + ' onload="this.classList.add(\'ld\')" onerror="this.classList.add(\'ld\')"><span>' + esc(h.name) + "</span></button>";
   });
+  FIRSTLIST = false;
   $("main").innerHTML = html + "</div>";
   bindCommon();
 }
@@ -2352,10 +2356,12 @@ $("backpill").onclick = function (e) {
   state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(bk.hero); window.scrollTo(0, bk.y);
 };
 function render() {
+  document.body.classList.remove("boot");
   if (state.tab === "glossary") return renderGlossary();
   if (state.tab === "heroes") { state.hero ? renderHero(state.hero) : renderHeroes(); } else renderShop(state.tab);
 }
 function showError(e) {
+  document.body.classList.remove("boot");
   $("main").innerHTML = '<div class="err"><b>Couldn’t load game data.</b><br>' + esc(e && e.message ? e.message : e) +
     "<br><br>Check your connection and tap Refresh. If it keeps failing, the data service may be down or its address may have changed.</div>";
 }
@@ -2606,6 +2612,7 @@ function refreshNow() {
 };
 if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {} }
 
+setTimeout(function () { document.body.classList.remove("boot"); }, 6000); // failsafe: the credits always appear
 load().then(function (had) {
 if (had) render(); else $("main").innerHTML = '<p class="status">Loading game data…</p>';
 if (!had || Date.now() - state.fetchedAt > MAX_AGE) {
