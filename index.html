@@ -274,7 +274,7 @@ details.notes.anim[open] > :not(summary){animation:nopen .22s ease-out}
 @media (prefers-reduced-motion:reduce){details.notes.anim[open] > :not(summary){animation:none}}
 details.notes ul{margin:4px 0 0;padding-left:18px;font-size:14px;line-height:1.45;color:var(--fg)}
 details.notes li{margin-bottom:4px}
-details.notes > ul:first-of-type,details.notes > .nfig:first-of-type{margin-top:2px}
+details.notes > summary + *{margin-top:2px} /* content starts the same distance below every row */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px}
 .pgrid .rc{margin-top:0}
 .isec{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
@@ -1391,7 +1391,7 @@ function interBlock(a, own, items, itemsN) {
   var list = (a && a.inter) || []; if (!list.length && !items) return "";
   var KL = { positive: "Helps", negative: "Hurts", info: "Note" };
   var html = '<details class="notes">' + nsum("Interactions", "inter", list.length + (itemsN || 0));
-  if (items) html += (list.length ? '<div class="ihd">Items</div>' : "") + items; // items first, then the effect cards
+  if (items) html += items; // items first, then the effect cards
   if (items && list.length) html += '<div class="ihd">Effects</div>';
   list.forEach(function (x) {
     var cn = state.byName[String(x.t || "").toLowerCase()], item = cn && state.byClass[cn], rep = interItem(x);
