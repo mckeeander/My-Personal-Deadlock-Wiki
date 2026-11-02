@@ -252,6 +252,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .sr b{display:block;font-size:15px}
 .sr small{display:block;color:var(--dim);font-size:12px;margin-top:1px}
 .sr em{display:block;font-style:normal;color:var(--fg);font-size:13px;line-height:1.35;margin-top:4px;opacity:.85}
+.sr.cat-weapon img{box-shadow:0 0 0 1.5px var(--weapon)}.sr.cat-vitality img{box-shadow:0 0 0 1.5px var(--vital)}.sr.cat-spirit img{box-shadow:0 0 0 1.5px var(--spirit)} /* items keep their shop colour in search */
 .sr mark{background:#5a4318;color:#fff;border-radius:3px;padding:0 1px}
 /* Notes and Interactions: one row each under a divider (icon, label, count, chevron); the chevron turns a quarter when open */
 .wk{margin-top:12px;border-top:1px solid var(--line)}
@@ -2036,7 +2037,7 @@ function buildSearch() {
     (it.tooltip_sections || []).forEach(function (sec) { (sec.section_attributes || []).forEach(function (a) { if (a.loc_string) parts.push(a.loc_string); }); });
     var text = parts.filter(Boolean).map(plain).join(" "), slot = slotOf(it);
     out.push({ k: "item", cn: it.class_name, name: nameOf(it), sub: (slot ? slot.charAt(0).toUpperCase() + slot.slice(1) : "Item") + (it.item_tier ? " · Tier " + it.item_tier : "") + (it.is_active_item ? " · Active" : ""),
-      img: itemArt(it), fb: itemImg(it), text: text, hay: (nameOf(it) + " " + text).toLowerCase() });
+      img: itemArt(it), fb: itemImg(it), slot: slot, text: text, hay: (nameOf(it) + " " + text).toLowerCase() });
   });
   return (state.sidx = out);
 }
@@ -2068,7 +2069,7 @@ function searchResults() {
   var html = '<p class="status">' + res.length + " result" + (res.length === 1 ? "" : "s") + "</p>";
   res.slice(0, 60).forEach(function (r) {
     var e = r.e;
-    html += '<button class="sr ' + e.k + '" data-kind="' + e.k + '" data-cn="' + esc(e.cn) + '" data-h="' + esc(e.hero || "") + '">' + (e.k === "term" ? '<span class="gico">Aa</span>' : imgTag(e.img, e.fb)) +
+    html += '<button class="sr ' + e.k + (e.k === "item" && e.slot ? " cat-" + esc(e.slot) : "") + '" data-kind="' + e.k + '" data-cn="' + esc(e.cn) + '" data-h="' + esc(e.hero || "") + '">' + (e.k === "term" ? '<span class="gico">Aa</span>' : imgTag(e.img, e.fb)) +
       "<div><b>" + esc(e.name) + "</b><small>" + esc(e.sub) + "</small>" + (r.sc >= 3 ? "<em>" + snippet(e, words) + "</em>" : "") + "</div></button>";
   });
   if (res.length > 60) html += '<p class="status">Showing the first 60. Add a word to narrow it down.</p>';
