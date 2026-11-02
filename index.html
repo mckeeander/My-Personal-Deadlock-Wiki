@@ -459,7 +459,7 @@ function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function
 var HERO_NAME = "";
 var CTX = null;   // while drawing an ability card: {hero, mods, bullet}
 var SEL = {};     // chosen upgrade tier per ability (0-3)
-var SELHERO = ""; // the hero those choices belong to: kept while that hero's page stays open (even across tabs), cleared when you return to the hero list
+var SELS = {};    // every hero's choices, kept while you move between tabs, search and other heroes; all cleared when you return to the hero list (SEL points at the open hero's set)
 function prettify(k) {
   return String(k).replace(/^citadel_ability_|^citadel_weapon_|^ability_/, "").replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
 }
@@ -860,7 +860,7 @@ function statusLine() {
   return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + " heroes · " + state.items.length + ' entries · <button class="link" id="rfr">Refresh now</button></p>';
 }
 function renderHeroes() {
-  SEL = {}; SELHERO = ""; // leaving a hero page forgets its chosen tiers
+  SEL = {}; SELS = {}; // returning to the hero list forgets all chosen tiers
   var q = state.q.toLowerCase();
   var list = state.heroes.filter(function (h) { return !q || String(h.name).toLowerCase().indexOf(q) >= 0; });
   var html = statusLine() + '<div class="hg">';
@@ -1825,7 +1825,7 @@ function hydrateName() {
 function renderHero(cn) {
   var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
   if (!h) { state.hero = null; return renderHeroes(); }
-  state.hero = cn; HERO_NAME = h.name; if (SELHERO !== cn) { SEL = {}; SELHERO = cn; }
+  state.hero = cn; HERO_NAME = h.name; SEL = SELS[cn] || (SELS[cn] = {});
   var tags = (h.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("");
   var cxn = Math.max(0, Math.min(3, Number(h.complexity) || 0)), dots = "";
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
