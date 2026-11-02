@@ -2535,14 +2535,35 @@ function statEls(card) {
 }
 function snapStats(card) {
   var m = {};
-  statEls(card).forEach(function (x) { m[x[1]] = x[0].textContent.replace(/\s+/g, " ").trim(); });
+  statEls(card).forEach(function (x) { m[x[1]] = x[0].textContent.replace(/\s+/g, " ").trim(); var bb = x[0].tagName === "DIV" ? x[0].querySelector("b") : null; if (bb) m[x[1] + "|b"] = bb.textContent; });
   return m;
+}
+var COUNT_TEST = true; // trial: numbers count up/down to their new value (only on Siphon Life while we try it)
+function countTo(el, beforeTxt) {
+  var card = el.closest ? el.closest(".ab") : null, h = card && card.querySelector("h3");
+  if (!h || h.textContent.replace(/\s+/g, " ").trim() !== "Siphon Life") return;
+  var b = el.tagName === "DIV" ? el.querySelector("b") : null; if (!b) return;
+  var tn = null; for (var i = b.childNodes.length - 1; i >= 0; i--) if (b.childNodes[i].nodeType === 3) { tn = b.childNodes[i]; break; }
+  if (!tn) return;
+  var m = /^([^\d-]*)(-?[\d.]+)(.*)$/.exec(tn.nodeValue), o = /(-?[\d.]+)/.exec(beforeTxt || "");
+  if (!m || !o) return;
+  var to = parseFloat(m[2]), from = parseFloat(o[1]); if (isNaN(to) || isNaN(from) || from === to) return;
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var dec = (m[2].split(".")[1] || "").length, t0 = null, DUR = 800, final = tn.nodeValue;
+  tn.nodeValue = m[1] + from.toFixed(dec) + m[3];
+  function step(ts) {
+    if (t0 === null) t0 = ts;
+    var k = Math.min(1, (ts - t0) / DUR), e = 1 - Math.pow(1 - k, 3);
+    tn.nodeValue = k < 1 ? m[1] + (from + (to - from) * e).toFixed(dec) + m[3] : final;
+    if (k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
 }
 function pulseChanges(card, before, tier, down) {
   var n = 0;
   statEls(card).forEach(function (x) {
     var el = x[0], now = el.textContent.replace(/\s+/g, " ").trim();
-    if (before[x[1]] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); }
+    if (before[x[1]] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); if (COUNT_TEST) countTo(el, before[x[1] + "|b"]); }
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); }
   setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1100);
