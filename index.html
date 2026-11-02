@@ -206,7 +206,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .up>div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
 .up>div:last-child{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 5px}
 .up .ut{line-height:1.3;font-weight:400;min-width:0;overflow-wrap:anywhere}
-.odl{display:inline-block;white-space:nowrap}.odc{display:inline-block;position:relative;text-align:center}.odc .odp{visibility:hidden}.odc .odi{position:absolute;left:0;right:0;top:0}.odc.rr{padding:.3em 0;margin:-.3em 0;-webkit-mask-image:linear-gradient(transparent 0,#000 32%,#000 68%,transparent 100%);mask-image:linear-gradient(transparent 0,#000 32%,#000 68%,transparent 100%)}.odc.rr .odi{top:.3em}.odc.rr .odp{position:relative;top:0}.odc .odi>span{display:block}
+.odl{display:inline-block;white-space:nowrap;text-align:left}.odc{display:inline-block;position:relative;text-align:center}.odc .odp{visibility:hidden}.odc .odi{position:absolute;left:0;right:0;top:0}.odc.rr{padding:.3em 0;margin:-.3em 0;-webkit-mask-image:linear-gradient(transparent 0,#000 32%,#000 68%,transparent 100%);mask-image:linear-gradient(transparent 0,#000 32%,#000 68%,transparent 100%)}.odc.rr .odi{top:.3em}.odc.rr .odp{position:relative;top:0}.odc .odi>span{display:block}
 .cnt{display:inline-block;text-align:left;white-space:nowrap}
 .ss{color:transparent;-webkit-text-stroke:1px var(--spirit);font-weight:400;paint-order:stroke;display:inline-block;transform:translateY(-.02em)}
 .nw{white-space:nowrap}
@@ -2605,25 +2605,28 @@ function animNum(root, beforeTxt) { // put the number (and its unit) in a slot w
     requestAnimationFrame(step);
   };
 }
-function rollNum(root, beforeTxt) { // elevator roll: each changed digit rides a reel up (number rose) or down (fell) into place; trial on Siphon Life's Damage tile
+function rollNum(root, beforeTxt) { // elevator roll: each changed digit rides a reel up (number rose) or down (fell) into place; the slot glides to its new width (trial on Apollo's Flawless Advance)
   if (!root || beforeTxt == null || !root.animate) return null;
   var tn = lastTextNode(root); if (!tn) return null;
   var m = /^([^\d-]*)(-?[\d.]+)(.*)$/.exec(tn.nodeValue), o = /(-?[\d.]+)/.exec(beforeTxt);
   if (!m || !o || m[2] === o[1]) return null;
-  var up = parseFloat(m[2]) > parseFloat(o[1]);
-  var nw = m[2].split(""), od = o[1].split(""), off = nw.length - od.length, par = tn.parentNode, rl = document.createElement("span"), reels = [];
-  var lastD = -1; nw.forEach(function (c, i) { if (/\d/.test(c)) lastD = i; });
+  var to = parseFloat(m[2]), from = parseFloat(o[1]), up = to > from;
+  var nP = m[2].split("."), oP = o[1].split("."), dec = (nP[1] || "").length;
+  var lap = Math.abs(to - from) * Math.pow(10, dec) > 9.5; // the last place only spins a full lap when the value moves by 10 or more of it (5 → 6 just steps once, 5 → 16 laps)
+  var par = tn.parentNode, rl = document.createElement("span"), reels = [], cells = [];
+  nP[0].split("").forEach(function (c, i) { cells.push([c, oP[0].charAt(oP[0].length - nP[0].length + i) || null]); }); // whole part lines up from the right…
+  if (nP.length > 1) { cells.push([".", "."]); nP[1].split("").forEach(function (c, i) { cells.push([c, (oP[1] || "").charAt(i) || null]); }); } // …decimals from the point
+  var lastD = cells.length - 1;
   rl.className = "odl";
-  nw.forEach(function (ch, i) {
-    var oc = od[i - off], col = document.createElement("span"); col.className = "odc";
+  cells.forEach(function (cc, i) {
+    var ch = cc[0], oc = cc[1], col = document.createElement("span"); col.className = "odc";
     var ph = document.createElement("span"); ph.className = "odp"; ph.textContent = ch; col.appendChild(ph);
     if (/\d/.test(ch) && oc !== ch && (oc == null || /\d/.test(oc))) {
       var n = +ch, c0 = oc == null ? 0 : +oc, items = [];
       var steps = up ? ((n - c0) % 10 + 10) % 10 : ((c0 - n) % 10 + 10) % 10;
-      if (oc == null) steps = n; else if (i === lastD) steps += 10; // the last place spins a full lap; higher places only travel as far as they change
-      if (!steps) steps = 10;
+      if (oc == null) steps = n; else if (i === lastD && lap) steps += 10;
+      if (!steps) steps = lap && i === lastD ? 10 : 1;
       for (var k = 0; k <= steps; k++) { var v = up ? n - (steps - k) : n + k; items.push(oc == null && ((up && k === 0) || (!up && k === steps)) ? "" : String(((v % 10) + 10) % 10)); }
-      // items run top → bottom: rising number shows old … new (reel slides up), falling shows new … old (reel slides down)
       var ri = document.createElement("span"); ri.className = "odi";
       items.forEach(function (t) { var d = document.createElement("span"); d.textContent = t || " "; ri.appendChild(d); });
       col.classList.add("rr"); col.appendChild(ri); reels.push([ri, items.length]);
@@ -2633,25 +2636,29 @@ function rollNum(root, beforeTxt) { // elevator roll: each changed digit rides a
   par.insertBefore(document.createTextNode(m[1]), tn); par.insertBefore(rl, tn); par.removeChild(tn);
   if (m[3]) par.insertBefore(document.createTextNode(m[3]), rl.nextSibling);
   return function go() {
-    var done = 0;
+    var done = 0, meas = rl.cloneNode(false); meas.className = "odl"; meas.style.cssText = "position:absolute;visibility:hidden;left:0;top:0"; meas.textContent = o[1]; par.appendChild(meas);
+    var wOld = meas.offsetWidth; par.removeChild(meas);
+    reels.forEach(function (r) { var col = r[0].parentNode; col.style.width = col.offsetWidth + "px"; });
+    var wNew = rl.offsetWidth;
+    function finish() { if (rl.parentNode) par.replaceChild(document.createTextNode(m[2]), rl); }
+    if (wOld !== wNew) rl.animate([{ width: wOld + "px" }, { width: wNew + "px" }], { duration: COUNT_MS, easing: "cubic-bezier(.65,0,.35,1)" });
     reels.forEach(function (r, i) {
       var ri = r[0], col = ri.parentNode, h = col.querySelector(".odp").offsetHeight;
-      col.style.width = col.offsetWidth + "px";
       Array.prototype.forEach.call(ri.children, function (d) { d.style.height = h + "px"; });
       var far = "translateY(" + (-(r[1] - 1) * h) + "px)", home = "translateY(0)";
       var a = ri.animate(up ? [{ transform: home }, { transform: far }] : [{ transform: far }, { transform: home }], { duration: COUNT_MS, delay: i * 110, easing: "cubic-bezier(.65,0,.35,1)", fill: "both" });
-      a.onfinish = function () { if (++done === reels.length) par.replaceChild(document.createTextNode(m[2]), rl); };
+      a.onfinish = function () { if (++done === reels.length) finish(); };
     });
   };
 }
 function countTo(el, bef, k) {
-  var card = el.closest ? el.closest(".ab") : null, h = card && card.querySelector("h3");
-  if (!h || h.textContent.replace(/\s+/g, " ").trim() !== "Siphon Life") return;
+  var card = el.closest ? el.closest(".ab") : null, h = card && card.querySelector("h3"), nm = h && h.textContent.replace(/\s+/g, " ").trim();
+  var mode = nm === "Siphon Life" ? animNum : nm === "Flawless Advance" ? rollNum : null; // trials: Abrams counts, Apollo rolls
+  if (!mode) return;
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var isStat = el.tagName === "DIV", go = [];
-  var lab = isStat && el.querySelector("i"), roll = lab && /Damage/.test(lab.textContent);
-  go.push((roll ? rollNum : animNum)(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
-  if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(animNum(sc, bef[k + "|sc"])); }
+  go.push(mode(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
+  if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(mode(sc, bef[k + "|sc"])); }
   go.forEach(function (g) { if (g) g(); });
 }
 function pulseChanges(card, before, tier, down) {
