@@ -2387,7 +2387,10 @@ function sheetForward() { // undo a step back: bring back the card you just left
   FWD = true; try { if (nx.indexOf("g:") === 0) glossSheet(nx.slice(2)); else itemSheet(nx); } finally { FWD = false; }
 }
 function openGlossary(k) {
-  if (state.tab !== "glossary") state.glossFrom = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0 }; // swipe back returns here
+  if (state.tab !== "glossary") { // swipe back returns here; a Back pill showing on this page (Back to search) is put away and comes back with the page
+    state.glossFrom = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, back: $("backpill").hidden ? null : BACK };
+    if (state.glossFrom.back) hideBack();
+  }
   endSearch(); state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI("glossary"); renderGlossary();
   var el = k && $("g-" + k);
   if (el) { scrollToEl(el); el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100); } else window.scrollTo(0, 0);
@@ -2446,6 +2449,7 @@ $("brand").onclick = function () { // the title goes home: the hero list
 function glossBack() { // back to the page the glossary was opened from (Abrams, say), then the hero list
   var f = state.glossFrom; state.glossFrom = null; if (!f) { $("brand").onclick(); return; }
   state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y);
+  if (f.back) { if (f.back.search != null) showBackSearch(f.back.search); else showBack(f.back.hero, f.back.y); }
 }
 function topPill() { // glossary: a round ↑ on the right once you've scrolled past the category cards, and "‹ Back to Abrams" when you came from somewhere
   var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gcats"), inG = state.tab === "glossary" && !searchOn();
