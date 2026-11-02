@@ -206,7 +206,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .up>div:last-child{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 5px}
 .up .ut{line-height:1.3;font-weight:400;min-width:0;overflow-wrap:anywhere}
 .cnt{display:inline-block;text-align:left;white-space:nowrap}
-.ss{color:transparent;-webkit-text-stroke:1.3px var(--spirit);font-weight:400;paint-order:stroke;display:inline-block;transform:translateY(-.02em)}
+.ss{color:transparent;-webkit-text-stroke:1px var(--spirit);font-weight:400;paint-order:stroke;display:inline-block;transform:translateY(-.02em)}
 .nw{white-space:nowrap}
 .up .pg{display:block;height:7px} /* each line of a tier's text starts on its own line */
 .up b.v{font-weight:700;color:inherit}
@@ -966,7 +966,7 @@ var GROUP_OV = {
   "Dust Devil": [{ l: "Enemies Hit:", k: ["SlowPercent", "SlowDuration", "HoldInPlaceDuration"] }, { l: "After Emerging, You Gain:", k: ["WhirlwindEvasionChance"] }],
   "Traveler": [{ l: "You Gain:", k: ["BonusMoveSpeed", "BonusFireRate", "MovementSpeedBonusDuration", "CombatBarrier"] }],
   "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
-  "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }, { l: "On Hit, You Gain:", k: ["StaminaToRestore"], f: { ResetsAirLimit: "Reset Air Limit" } }],
+  "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }, { l: "On Hit, You Gain:", k: ["StaminaToRestore"], f: { ResetsAirLimit: "Reset Air Jump/Dash Limit" } }],
   "Baba's Brew": [{ l: "", k: [], f: { BrewEffectiveness: "" } }],
   "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
 };
@@ -988,6 +988,13 @@ function tooltipHtml(it) {
     function isDur(e) { return /<i>[^<]*(Duration|Time)<\/i>/.test(e); }
     var main = els.filter(function (e) { return !isDur(e); }), dur = els.filter(isDur);
     if (!main.length) dur = dur.filter(function (e) { return !/<i>(Debuff|Slow|Buff) Duration<\/i>/.test(e); });
+    // damage the ability deals leads its card; buffs, effects (Unstoppable) and timed extras follow, each group keeping data order
+    function isHit(e) {
+      var m = /<i>([^<]*)<\/i>/.exec(e), l = m ? m[1] : "";
+      if (/class="dur"/.test(e) || /Bonus|Reduction|Amp|Resist|Threshold|Taken|Penalty|Stolen|Deferred|Cleared|Ally|Self|Permanent|Stack|Weapon Damage$/i.test(l)) return false;
+      return /(Damage|DPS)$|Damage Per (Second|Bullet|Meter)|Damage \(|^Damage/i.test(l);
+    }
+    main = main.filter(isHit).concat(main.filter(function (e) { return !isHit(e); }));
     return main.concat(dur).join("");
   }
   var firstStats = -1;
@@ -1390,7 +1397,7 @@ function upgradesHtml(it, sel) {
     wts.push(Math.max(4, Math.sqrt(body.replace(/<[^>]+>/g, "").length))); // the tier with the most text gets the widest column
     cells += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + '</div><div><div class="ut">' + body + "</div></div></div>";
   }
-  return '<div class="ups" style="grid-template-columns:' + wts.map(function (w) { return "minmax(0," + w.toFixed(2) + "fr)"; }).join(" ") + '">' + cells + "</div>";
+  return '<div class="ups" style="grid-template-columns:' + wts.map(function (w) { return "minmax(min-content," + w.toFixed(2) + "fr)"; }).join(" ") + '">' + cells + "</div>";
 }
 function bulletOf(h) {
   var w = h && state.byClass[(h.items || {}).weapon_primary];
