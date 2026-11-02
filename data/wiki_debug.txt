@@ -36,9 +36,9 @@ Wraith: fetched via api; abilities-section, found headings: Card Trick, Project 
   Telekinesis: 2 notes, 0 interactions, items=['Reactive Barrier', 'Indomitable', 'Unstoppable', 'Slowing Hex'], notes-label=True
   [weapon] name='The Rake', 0 notes, notes-label=False
 McGinnis: fetched via api; abilities-section, found headings: Mini Turret, Medicinal Specter, Spectral Wall, Heavy Barrage
-  Mini Turret: 8 notes, 0 interactions, items=['Monster Rounds', 'Heroic Aura'], notes-label=True
+  Mini Turret: 8 notes, 0 interactions, items=['Monster Rounds', 'Cultist Sacrifice', 'Heroic Aura'], notes-label=True
   Medicinal Specter: 2 notes, 0 interactions, items=['Healing Booster', 'Healing Tempo'], notes-label=True
-  Spectral Wall: 4 notes, 1 interactions, items=['Monster Rounds', 'Heroic Aura', 'Dispel Magic', 'Unstoppable', 'Mystic Expansion', 'Arcane Surge'], notes-label=True
+  Spectral Wall: 4 notes, 1 interactions, items=['Monster Rounds', 'Cultist Sacrifice', 'Heroic Aura', 'Dispel Magic', 'Unstoppable', 'Mystic Expansion', 'Arcane Surge'], notes-label=True
   Heavy Barrage: 3 notes, 0 interactions, items=['Unstoppable', 'Enduring Speed'], notes-label=True
   [weapon] name='Services Rendered', 3 notes, notes-label=True
 Paradox: fetched via api; abilities-section, found headings: Pulse Grenade, Time Wall, Kinetic Carbine, Paradoxical Swap
@@ -57,7 +57,7 @@ Kelvin: fetched via api; abilities-section, found headings: Frost Grenade, Ice P
   Frost Grenade: 0 notes, 0 interactions, items=['Healing Booster', 'Dispel Magic', 'Healing Tempo', 'Unstoppable'], notes-label=False
   Ice Path: 2 notes, 0 interactions, items=['Slowing Hex', 'Greater Expansion', 'Boundless Spirit'], notes-label=True
   Arctic Beam: 2 notes, 1 interactions, items=['Dispel Magic', 'Unstoppable', 'Debuff Reducer', 'Greater Expansion'], notes-label=True
-  Frozen Shelter: 5 notes, 0 interactions, items=['Healing Booster', 'Healing Tempo', 'Unstoppable', 'Armor Piercer'], notes-label=True
+  Frozen Shelter: 25 notes, 0 interactions, items=['Healing Booster', 'Healing Tempo', 'Unstoppable', 'Armor Piercer'], notes-label=True
   [weapon] name="Expedition's End", 0 notes, notes-label=False
 Haze: fetched via api; abilities-section, found headings: Sleep Dagger, Smoke Bomb, Fixation, Bullet Dance
   Sleep Dagger: 0 notes, 2 interactions, items=['Reactive Barrier', 'Veil Walker', 'Shadow Weave', 'Indomitable', 'Unstoppable'], notes-label=False
@@ -198,10 +198,10 @@ Billy: fetched via api; abilities-section, found headings: Bashdown, Rising Ram,
   Chain Gang: 6 notes, 1 interactions, items=['Reactive Barrier', 'Unstoppable', 'Duration Extender', 'Ethereal Shift', 'Indomitable'], notes-label=True
   [weapon] name='Biquette', 0 notes, notes-label=False
 Graves: fetched via api; abilities-section, found headings: Jar of Dead, Grasping Hands, Essence Theft, Borrowed Decree
-  Jar of Dead: 5 notes, 0 interactions, items=['Monster Rounds', 'Heroic Aura', 'Dispel Magic', 'Unstoppable', 'Cultist Sacrifice'], notes-label=True
-  Grasping Hands: 4 notes, 0 interactions, items=['Monster Rounds', 'Heroic Aura', 'Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
+  Jar of Dead: 4 notes, 1 interactions, items=['Monster Rounds', 'Heroic Aura', 'Dispel Magic', 'Unstoppable', 'Cultist Sacrifice'], notes-label=True
+  Grasping Hands: 4 notes, 0 interactions, items=['Monster Rounds', 'Cultist Sacrifice', 'Heroic Aura', 'Reactive Barrier', 'Dispel Magic', 'Indomitable', 'Unstoppable'], notes-label=True
   Essence Theft: 6 notes, 0 interactions, items=['Dispel Magic', 'Plated Armor'], notes-label=True
-  Borrowed Decree: 8 notes, 0 interactions, items=['Monster Rounds', 'Heroic Aura', 'Unstoppable', 'Cultist Sacrifice'], notes-label=True
+  Borrowed Decree: 7 notes, 0 interactions, items=['Monster Rounds', 'Cultist Sacrifice', 'Heroic Aura', 'Unstoppable'], notes-label=True
   [weapon] name='The Teacher', 0 notes, notes-label=False
 Apollo: fetched via api; abilities-section, found headings: Disengaging Sigil, Riposte, Flawless Advance, Itani Lo Sahn
   Disengaging Sigil: 2 notes, 0 interactions, items=['Dispel Magic', 'Unstoppable', 'Slowing Hex'], notes-label=True
@@ -218,7 +218,7 @@ Deadman Danny: fetched via api; abilities-section, found headings: Strix Salvo, 
 Rem: fetched via api; abilities-section, found headings: Pillow Toss, Tag Along, Lil Helpers, Naptime
   Pillow Toss: 3 notes, 0 interactions, items=['Dispel Magic', 'Unstoppable'], notes-label=True
   Tag Along: 9 notes, 1 interactions, items=['Healing Booster', 'Healing Tempo', 'Slowing Hex'], notes-label=True
-  Lil Helpers: 15 notes, 4 interactions, items=['Monster Rounds', 'Heroic Aura', 'Healing Booster', 'Healing Tempo', 'Echo Shard'], notes-label=True
+  Lil Helpers: 15 notes, 6 interactions, items=['Heroic Aura', 'Healing Booster', 'Healing Tempo', 'Monster Rounds', 'Cultist Sacrifice', 'Echo Shard'], notes-label=True
   Naptime: 2 notes, 0 interactions, items=['Reactive Barrier', 'Indomitable', 'Unstoppable'], notes-label=True
   [weapon] name='Long Night', 2 notes, notes-label=True
 Silver: fetched via api; abilities-section, found headings: Slam Fire, Boot Kick, Entangling Bola, Go For The Throat, Mauling Leap, Tail Whack, Lycan Curse
@@ -239,7 +239,7 @@ Celeste: fetched via api; abilities-section, found headings: Light Eater, Dazzli
   [weapon] name='Carny Life', 0 notes, notes-label=False
 Rat King: fetched via api; abilities-section, found headings: Scrap Grenade, Rat Swarm, Royal Pestments, Rule, Ratannia!
   Scrap Grenade: 8 notes, 0 interactions, items=['Dispel Magic', 'Unstoppable', 'Long Range', 'Sharpshooter', 'Close Quarters', 'Point Blank', 'Opening Rounds', 'Intensifying Magazine'], notes-label=True
-  Rat Swarm: 3 notes, 0 interactions, items=['Dispel Magic'], notes-label=True
+  Rat Swarm: 3 notes, 1 interactions, items=['Dispel Magic', 'Heroic Aura'], notes-label=True
   Royal Pestments: 19 notes, 0 interactions, items=['Spellbreaker', 'Witchmail', 'Return Fire', 'Ricochet', 'Lucky Shot', 'Split Shot', 'Weakening Headshot', 'Crippling Headshot', 'Escalating Resilience', 'Hollow Point', 'Restorative Shot', 'Metal Skin'], notes-label=True
   Rule, Ratannia!: 7 notes, 0 interactions, items=['Unstoppable', 'Refresher'], notes-label=True
   [weapon] name="Sovereign's Decree", 0 notes, notes-label=False
