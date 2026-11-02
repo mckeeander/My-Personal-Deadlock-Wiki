@@ -203,6 +203,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .up>div:last-child{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 5px}
 .up .ut{line-height:1.3;font-weight:400;min-width:0;overflow-wrap:anywhere}
 .ss{color:var(--spirit);font-weight:700}
+.nw{white-space:nowrap}
 .up .pg{display:block;height:7px} /* each line of a tier's text starts on its own line */
 .up b.v{font-weight:700;color:inherit}
 .up b.v .u{font-weight:inherit;font-size:1em;margin:0}
@@ -349,8 +350,14 @@ details.notes > summary + *{margin-top:2px} /* content starts the same distance 
 .chip .pi{filter:brightness(0) invert(1);opacity:.85}
 .minor .fl{color:var(--fg);font-weight:600}
 .chip[data-tip]{position:relative;cursor:pointer}
-.chip.tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:0;background:#000;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:12px;white-space:nowrap;z-index:5}
+.chip.tip{background:#2f2840}
+.chip.tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 9px);left:0;background:#2f2840;color:var(--fg);border:1px solid #5a4d73;border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;letter-spacing:.02em;white-space:nowrap;z-index:5;box-shadow:0 6px 16px rgba(0,0,0,.5);pointer-events:none;animation:tipin .15s ease-out both}
+.chip.tip::before{content:"";position:absolute;bottom:calc(100% + 4px);left:14px;width:8px;height:8px;background:#2f2840;border-right:1px solid #5a4d73;border-bottom:1px solid #5a4d73;transform:rotate(45deg);z-index:6;pointer-events:none;animation:tipfade .15s ease-out both}
 .chips .g:last-child .chip.tip::after{left:auto;right:0}
+.chips .g:last-child .chip.tip::before{left:auto;right:14px}
+.chip[data-tip]{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+@keyframes tipin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes tipfade{from{opacity:0}to{opacity:1}}
 details.lore:not([open]) summary{margin-bottom:0}
 .stats1{margin-top:20px}
 .sheet .in::before{content:"";display:block;width:42px;height:4px;border-radius:2px;background:var(--line);margin:-4px auto 10px}
@@ -1369,7 +1376,9 @@ function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], cells = "", wts = [];
   for (var i = 0; i < 3; i++) {
     var raw = String(t[i]).replace(/\bSpirit\s+[Ss]caling\b/g, STAR); // the purple star says "Spirit scaling" in far fewer letters
-    var body = tierSplit(tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, raw)), it, i)).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>');
+    var body = tierSplit(tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, raw)), it, i)).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>')
+      .replace(/(<b class="v">(?:[^<]|<span[^>]*>[^<]*<\/span>)*<\/b>)\s+(<span class="ss"[^>]*>★<\/span>)/g, '<span class="nw">$1 $2</span>') // a ★ that wraps takes its number down with it
+      .replace(/(<span style="color:[^"]*">[^<]{1,16}<\/span>)\s+(<span class="ss"[^>]*>★<\/span>)/g, '<span class="nw">$1 $2</span>');
     wts.push(Math.max(4, Math.sqrt(body.replace(/<[^>]+>/g, "").length))); // the tier with the most text gets the widest column
     cells += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + '</div><div><div class="ut">' + body + "</div></div></div>";
   }
