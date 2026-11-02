@@ -2444,26 +2444,39 @@ $("sheetin").addEventListener("click", function (e) {
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
 $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); };
-// drag the sheet down to dismiss it (only when it is scrolled to the top)
+// drag the pop-up away to dismiss it, and it follows your finger: down (only when it is scrolled to the top) or right (like the back swipe)
 (function () {
-  var box = $("sheetin"), y0 = null, dy = 0;
-  box.addEventListener("touchstart", function (e) {
-    y0 = box.scrollTop <= 0 && e.touches.length === 1 ? e.touches[0].clientY : null; dy = 0; box.style.transition = "none";
+  var sh = $("sheet"), box = $("sheetin"), x0 = 0, y0 = 0, dx = 0, dy = 0, mode = null, act = false, RT = 0;
+  function reset() { box.style.transition = ""; box.style.transform = ""; }
+  function later(fn, ms) { clearTimeout(RT); RT = setTimeout(fn, ms); } // a new touch cancels any pending clean-up
+  sh.addEventListener("touchstart", function (e) {
+    clearTimeout(RT); act = e.touches.length === 1; mode = null; dx = 0; dy = 0;
+    if (act) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }
   }, { passive: true });
-  box.addEventListener("touchmove", function (e) {
-    if (y0 == null) return;
-    dy = e.touches[0].clientY - y0;
-    if (dy > 0 && box.scrollTop <= 0) { box.style.transform = "translateY(" + dy + "px)"; if (e.cancelable) e.preventDefault(); }
-    else { box.style.transform = ""; if (dy < 0) y0 = null; }
+  sh.addEventListener("touchmove", function (e) {
+    if (!act) return;
+    if (e.touches.length !== 1) { act = false; if (mode) { box.style.transition = "transform .18s ease-out"; box.style.transform = ""; later(reset, 200); } return; }
+    var ddx = e.touches[0].clientX - x0, ddy = e.touches[0].clientY - y0;
+    if (mode === null && (Math.abs(ddx) > 10 || Math.abs(ddy) > 10)) { // pick one direction for the whole drag
+      if (ddx > 0 && ddx > Math.abs(ddy) * 1.2) mode = "x";
+      else if (ddy > 0 && Math.abs(ddy) >= Math.abs(ddx) && box.scrollTop <= 0) mode = "y";
+      else { act = false; return; } // scrolling the card, or swiping the wrong way: leave it alone
+      box.style.transition = "none";
+    }
+    if (!mode) return;
+    if (e.cancelable) e.preventDefault();
+    if (mode === "x") { dx = Math.max(0, ddx); box.style.transform = "translateX(" + dx + "px)"; }
+    else { dy = Math.max(0, ddy); box.style.transform = "translateY(" + dy + "px)"; }
   }, { passive: false });
   function end() {
-    if (y0 == null) return;
+    if (!act) return; act = false; if (!mode) return;
     box.style.transition = "transform .18s ease-out";
-    if (dy > 110) { box.style.transform = "translateY(100%)"; setTimeout(function () { closeSheet(); box.style.transition = ""; box.style.transform = ""; }, 170); }
-    else box.style.transform = "";
-    y0 = null;
+    if ((mode === "x" ? dx : dy) > 110) {
+      box.style.transform = mode === "x" ? "translateX(" + window.innerWidth + "px)" : "translateY(100%)";
+      setTimeout(function () { closeSheet(); reset(); }, 170); // not cancelable: once it is sliding out it always closes
+    } else { box.style.transform = ""; later(reset, 200); }
   }
-  box.addEventListener("touchend", end); box.addEventListener("touchcancel", end);
+  sh.addEventListener("touchend", end); sh.addEventListener("touchcancel", end);
 })();
 (function () { // while typing, the bottom bar steps aside: Safari can't reliably place a fixed bar on top of its keyboard
   var hd = document.querySelector("header"); if (!hd) return;
