@@ -18,6 +18,7 @@
   --disp:"Cinzel","Trajan Pro",Georgia,serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box}
+html{min-height:100%}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);-webkit-text-size-adjust:100%}
 body{padding-bottom:env(safe-area-inset-bottom,0)}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -38,11 +39,11 @@ header .tab.on{color:var(--fg);font-weight:600;background:transparent;box-shadow
 header .tab[data-c=weapon].on{color:var(--weapon)} header .tab[data-c=vitality].on{color:var(--vital)} header .tab[data-c=spirit].on{color:var(--spirit)}
 /* on a switch each icon does its own small move: the hero hops, the bolt zaps, the heart beats, the star spins in */
 header .tab[data-c=heroes].pop svg{animation:tnod .5s ease}
-header .tab[data-c=weapon].pop svg{animation:tzap .45s ease}
+header .tab[data-c=weapon].pop svg{animation:tzap .5s ease-in both}
 header .tab[data-c=vitality].pop svg{animation:tbeat .6s ease}
 header .tab[data-c=spirit].pop svg{animation:tspin .6s cubic-bezier(.3,1.4,.5,1)}
 @keyframes tnod{0%,100%{transform:none}30%{transform:translateY(-4px)}60%{transform:translateY(1px)}}
-@keyframes tzap{0%,100%{transform:none}20%{transform:translateX(-2px) rotate(-8deg)}40%{transform:translateX(2px) rotate(8deg)}60%{transform:translateX(-1px) rotate(-4deg)}}
+@keyframes tzap{0%{clip-path:inset(0 0 100% 0);filter:none}55%{clip-path:inset(0 0 0 0);filter:brightness(1.6)}100%{clip-path:inset(0 0 0 0);filter:none}}
 @keyframes tbeat{0%,100%{transform:none}20%{transform:scale(1.22)}40%{transform:scale(.95)}60%{transform:scale(1.12)}}
 @keyframes tspin{0%{transform:rotate(-140deg) scale(.7)}100%{transform:none}}
 /* a short colour segment rides the bar's top border and slides to the active tab, overshooting a little and settling slowly */
@@ -54,6 +55,7 @@ body.srch .tind{opacity:0}
 body.srch header .tab.on{color:#9a90aa;font-weight:500}
 body.srch header .tab.on .i1{display:none} body.srch header .tab.on .i0{display:block}
 body.srch .credits{display:none}
+body.srch #sarea{padding-bottom:calc(env(safe-area-inset-bottom,0) + 96px)}
 @media (prefers-reduced-motion:reduce){header .tab.pop svg{animation:none!important}.tind{transition:none}}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
 /* search: one full-width bar under the wordmark on every page; typing swaps the page for results, clearing brings the page back untouched */
@@ -2384,7 +2386,11 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
   var hd = document.querySelector("header"); if (!hd) return;
   function typing() { return /^(INPUT|TEXTAREA)$/.test((document.activeElement || {}).tagName || ""); }
   document.addEventListener("focusin", function () { if (typing()) document.body.classList.add("typing"); });
-  document.addEventListener("focusout", function () { setTimeout(function () { if (!typing()) document.body.classList.remove("typing"); }, 30); });
+  function nudge() { var y = window.pageYOffset || 0, max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight); window.scrollTo(0, Math.min(y, max) + 1); window.scrollTo(0, Math.min(y, max)); }
+  document.addEventListener("focusout", function () {
+    setTimeout(function () { if (!typing()) { document.body.classList.remove("typing"); nudge(); } }, 30);
+    setTimeout(function () { if (!typing()) nudge(); }, 350);
+  });
 })();
 (function () { // the sliding top line and the icon moves on the bottom tabs
   var tabs = $("tabs"), ind = document.createElement("span"), cur = null, T = null;
