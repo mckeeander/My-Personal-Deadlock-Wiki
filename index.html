@@ -128,16 +128,16 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .ab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:18px}
 .abh{display:flex;gap:10px;align-items:center}
 /* jump to an ability: four icon buttons floating just above the bottom navigation for as long as a hero page is open; the one you are on is outlined in gold */
-#jbar{display:none;position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 82px);z-index:6;justify-content:center;gap:10px;pointer-events:none}
+#jbar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:6;justify-content:center;gap:10px;padding:6px;border-radius:18px;background:rgba(20,17,26,.82);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--line);box-shadow:0 6px 22px rgba(0,0,0,.7)}
 #jbar.show{display:flex}
 body.typing #jbar{display:none}
 #jbar:not(.alt) .f1,#jbar.alt .f0{display:none}
-.jb{pointer-events:auto;width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.55)}
+.jb{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:0;}
 .jb img{width:32px;height:32px;object-fit:contain}
 .jb:active{background:var(--panel)}
-.jb.on{border-color:var(--gold);box-shadow:0 0 0 .5px var(--gold),0 4px 14px rgba(0,0,0,.55);background:#2f2638}
-body.jump #slide{padding-bottom:58px}
-body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 138px)}
+.jb.on{border-color:var(--gold);box-shadow:0 0 0 .5px var(--gold);background:#2f2638}
+body.jump #slide{padding-bottom:66px}
+body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 146px)}
 .ab.pop{animation:boxup 1s ease-in-out both}
 .abh img{width:44px;height:44px;object-fit:contain;flex:none}
 .abh h3{margin:0;flex:1;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
