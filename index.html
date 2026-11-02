@@ -25,39 +25,23 @@ img{max-width:100%}
 /* the title, buttons and tabs sit at the bottom, within thumb reach */
 header{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);display:flex;flex-direction:column-reverse;
   padding:0 max(0px,calc((100% - 600px)/2)) 0;transition:transform .15s ease-out}
-/* bottom navigation: one solid bar, tabs as a segmented row with no gaps to see through */
-/* the bar is a step lighter than the cards, the page fades to dark just above it, and the active tab rises 10px above the bar */
-header{--bar:#332b42;--edge:#554a66;border-top:2px solid var(--edge);background:var(--bar)}
-header::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:48px;margin-bottom:2px;pointer-events:none;background:linear-gradient(rgba(10,8,14,0),rgba(10,8,14,.85))}
+/* bottom navigation: a plain bar with an icon over each label, like an iPhone tab bar; the active tab lights up in its colour */
+header{--bar:#1d1926;border-top:1px solid var(--line);background:var(--bar)}
 body.kb header{padding-bottom:0}
-/* flat tab bar: full-height dividers make each tab a cell; the active cell gets a full-width top line and a tint fading down, in its category colour */
-header .tabs{margin:0;gap:0;background:none;border:0;border-radius:0;padding:0}
-/* the home-indicator space is part of each cell, so dividers and the active tint run to the bottom of the screen */
-header .tab{position:relative;border:0;border-radius:0;background:transparent;padding:18px 4px calc(env(safe-area-inset-bottom,0) + 16px);color:#d6cee2;font-size:15px}
-/* 1px light separators between tabs */
-header .tab+.tab{box-shadow:inset 1px 0 0 var(--edge)}
-/* the four tabs line up with the four hero columns: each separator sits in the middle of a 6px column gap, and the
-   outer tabs also take the 12px page margin; labels are nudged so they centre over their column */
-header .tabs{display:grid;grid-template-columns:calc((100% - 42px)/4 + 15px) calc((100% - 42px)/4 + 6px) calc((100% - 42px)/4 + 6px) calc((100% - 42px)/4 + 15px)}
-header .tab{padding-left:0;padding-right:0;min-width:0}
-header .tab:first-of-type{padding-left:9px} header .tab:last-of-type{padding-right:9px}
-
-header .tabs{position:relative}
-header .tab{z-index:1;transition:color .3s ease}
-header .tab.on{color:var(--fg);font-weight:600;background:transparent;border-color:transparent}
+header .tabs{display:flex;margin:0;gap:0;background:none;border:0;border-radius:0;padding:0}
+header .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:0;background:transparent;box-shadow:none;
+  padding:8px 4px calc(env(safe-area-inset-bottom,0) + 6px);color:#9a90aa;font-size:11.5px;font-weight:500;transition:color .25s ease;-webkit-tap-highlight-color:transparent}
+header .tab svg{width:24px;height:24px}
+header .tab .i1{display:none} header .tab.on .i0{display:none} header .tab.on .i1{display:block}
+header .tab.on{color:var(--fg);font-weight:600;background:transparent;box-shadow:none}
 header .tab[data-c=weapon].on{color:var(--weapon)} header .tab[data-c=vitality].on{color:var(--vital)} header .tab[data-c=spirit].on{color:var(--spirit)}
-/* one shared highlight slides between tabs: its leading edge moves first and the trailing edge follows, so the colour drags across;
-   it stands 10px above the bar with a line along its top */
-.tind{position:absolute;top:-12px;bottom:0;left:0;width:0;z-index:0;pointer-events:none;color:var(--fg);opacity:0;background:var(--bar);box-shadow:inset 1px 0 0 var(--edge),inset -1px 0 0 var(--edge);
-  transition:left .3s cubic-bezier(.4,0,.2,1),right .3s cubic-bezier(.4,0,.2,1),color .3s ease,opacity .2s ease,transform .25s ease}
-.tind::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:currentColor;z-index:1}
-.tind::after{content:"";position:absolute;inset:0;background:currentColor;opacity:.2;-webkit-mask:linear-gradient(#000,transparent 85%);mask:linear-gradient(#000,transparent 85%)}
-.tind.first{box-shadow:inset -1px 0 0 var(--edge)}.tind.last{box-shadow:inset 1px 0 0 var(--edge)} /* no border against the screen edge */
-.tind.show{opacity:1}
-body.srch .tind{opacity:0;transform:translateY(14px)}
-body.srch header .tab.on{color:#d6cee2;font-weight:400}
+header .tab.on svg{animation:tabpop .28s ease-out}
+@keyframes tabpop{0%{transform:scale(.82)}60%{transform:scale(1.08)}100%{transform:none}}
+.tind{display:none}
+body.srch header .tab.on{color:#9a90aa;font-weight:500}
+body.srch header .tab.on .i1{display:none} body.srch header .tab.on .i0{display:block}
 body.srch .credits{display:none}
-@media (prefers-reduced-motion:reduce){.tind{transition:none}}
+@media (prefers-reduced-motion:reduce){header .tab.on svg{animation:none}}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
 /* search: one full-width bar under the wordmark on every page; typing swaps the page for results, clearing brings the page back untouched */
 .sbar{display:flex;align-items:center;gap:10px;margin:8px 0 0}
@@ -415,10 +399,10 @@ html.lock,html.lock body{overflow:hidden}
 <body>
 <header>
   <div class="tabs" id="tabs">
-    <button class="tab on" data-c="heroes">Heroes</button>
-    <button class="tab" data-c="weapon">Weapon</button>
-    <button class="tab" data-c="vitality">Vitality</button>
-    <button class="tab" data-c="spirit">Spirit</button>
+    <button class="tab on" data-c="heroes"><svg class="i0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><svg class="i1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4.5"/><path d="M3.5 21.5c0-4.8 3.8-7.6 8.5-7.6s8.5 2.8 8.5 7.6z"/></svg><span>Heroes</span></button>
+    <button class="tab" data-c="weapon"><svg class="i0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 1.5L4 13.5h6.2L8.8 22.5 20 9.5h-6.5z"/></svg><svg class="i1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 1.5L4 13.5h6.2L8.8 22.5 20 9.5h-6.5z"/></svg><span>Weapon</span></button>
+    <button class="tab" data-c="vitality"><svg class="i0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.5S3 16 1.8 10.2C1 6.5 3.3 3.5 6.7 3.5c2.1 0 3.9 1.1 5.3 3.1 1.4-2 3.2-3.1 5.3-3.1 3.4 0 5.7 3 4.9 6.7C21 16 12 21.5 12 21.5z"/></svg><svg class="i1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.5S3 16 1.8 10.2C1 6.5 3.3 3.5 6.7 3.5c2.1 0 3.9 1.1 5.3 3.1 1.4-2 3.2-3.1 5.3-3.1 3.4 0 5.7 3 4.9 6.7C21 16 12 21.5 12 21.5z"/></svg><span>Vitality</span></button>
+    <button class="tab" data-c="spirit"><svg class="i0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z"/></svg><svg class="i1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z"/></svg><span>Spirit</span></button>
   </div>
 </header>
 <div class="topbar"><div class="toprow">
