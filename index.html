@@ -151,10 +151,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .ic{height:1.1em;width:1.1em;vertical-align:-.2em;margin-right:4px}.ic.key{margin:0 2px 0 4px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
 .chip{background:var(--panel2);border-radius:5px;padding:4px 8px;font-size:13px}
-.chip.cd{background:rgba(230,180,90,.13);color:var(--gold);font-size:14px;font-weight:400;border-radius:7px;flex:none}
-.chip.cd .pi{filter:brightness(0) saturate(100%) invert(77%) sepia(40%) saturate(700%) hue-rotate(347deg) brightness(95%) contrast(90%);opacity:1}
-.abh .chip img{width:1.15em;height:1.15em} /* .abh img is the 44px ability icon; the chip icon must not inherit it */
-.abh .chip.tip::after{left:auto;right:0}
+.chip.cd{border:1px solid var(--gold);color:#fff;padding:3px 8px;flex:none} /* the cooldown leads the chip row: regular white text, a thin full-gold outline */
 .ab .chips{justify-content:flex-start}
 .ab .chips .g:last-child{margin-left:0} /* the cooldown moved up beside the name, so the remaining chips line up on the left */
 .uu{margin:18px 0 10px;border:1px solid rgba(230,180,90,.32);background:rgba(230,180,90,.05);border-radius:10px;padding:10px 10px 12px}
@@ -1114,6 +1111,7 @@ function chipsHtml(it) {
     var cb = effP(it, "AbilityCooldownBetweenCharge");
     if (cb && !isDisabled(cb) && parseFloat(cb.value) > 0 && !L.AbilityCooldownBetweenCharge) right += chip("AbilityCooldownBetweenCharge", "↻", fmtVal(cb), "Charge delay");
   }
+  left = cooldownChip(it) + left;
   if (!left && !right) return "";
   return '<div class="chips"><div class="g">' + left + '</div><div class="g">' + right + "</div></div>";
 }
@@ -1492,11 +1490,11 @@ function abilityCard(it, h) {
   var sel = SEL[it.class_name] || 0, op = ABOPT[it.class_name] || {};
   CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) };
   try {
-    var CH = chipsHtml(it), CD = cooldownChip(it);
-    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3>" + CD + "</div>" +
+    var CH = chipsHtml(it);
+    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       CH +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: abilityDesc(it) } : it.description)) + "</div>" +
-      flagOnes(dropChipDupes(tooltipHtml(it), CH + CD)) + (op.noTiers ? "" : upgradesHtml(it, sel)) + wikiHtml(h, it) + "</section>");
+      flagOnes(dropChipDupes(tooltipHtml(it), CH)) + (op.noTiers ? "" : upgradesHtml(it, sel)) + wikiHtml(h, it) + "</section>");
   } finally { CTX = null; }
 }
 // a "1" that is really an on/off switch ("1 Purge Debuffs") reads better as plain text with the small stats
