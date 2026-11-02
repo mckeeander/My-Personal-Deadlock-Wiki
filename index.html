@@ -1652,6 +1652,22 @@ function statBlock(h) {
   return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
 }
 // swipe from the left edge on a hero page to go back (same as the back pill if one is showing, else the hero list at the spot you left)
+// every way of going back (the back row, the pills, search Cancel, the edge swipe) plays the same exit: the page slides right and fades, the previous page slides in from the left
+var SLIDING = false, INSIDE = false;
+function slideBack(fn) {
+  var m = $("slide");
+  if (INSIDE) { fn(); return; } // a back inside a back (the swipe pressing the pill, say) runs plainly
+  if (SLIDING) return; // taps during the exit are ignored
+  if (!m || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) { fn(); return; }
+  SLIDING = true;
+  m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = "translateX(" + window.innerWidth + "px)"; m.style.opacity = "0";
+  setTimeout(function () {
+    m.style.transition = "none"; INSIDE = true; try { fn(); } finally { INSIDE = false; }
+    m.style.transform = "translateX(-24px)"; m.style.opacity = "0"; void m.offsetWidth;
+    m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = "";
+    SLIDING = false;
+  }, 170);
+}
 (function () {
   var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("slide"); // the page and its footer slide together
   function ok() { return (searchOn() || (state.tab === "heroes" && state.hero) || state.tab === "glossary") && $("sheet").hidden; }
@@ -1678,14 +1694,8 @@ function statBlock(h) {
     if (!on) return; on = false; if (!horiz) return;
     var fast = dx > 40 && dx / Math.max(1, Date.now() - t0) > .5;
     m.style.transition = "transform .18s ease-out, opacity .18s ease-out";
-    if (dx > window.innerWidth * .3 || fast) {
-      m.style.transform = "translateX(" + window.innerWidth + "px)"; m.style.opacity = "0";
-      setTimeout(function () {
-        m.style.transition = "none"; goBack();
-        m.style.transform = "translateX(-24px)"; m.style.opacity = "0"; void m.offsetWidth;
-        m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = "";
-      }, 170);
-    } else { m.style.transform = ""; m.style.opacity = ""; }
+    if (dx > window.innerWidth * .3 || fast) slideBack(goBack);
+    else { m.style.transform = ""; m.style.opacity = ""; }
   });
 })();
 // swipe anywhere to change tab: left = next (Heroes → Weapon → Vitality → Spirit), right = previous. It presses the tab for you, so each tab still remembers its hero and scroll spot.
@@ -1914,8 +1924,7 @@ function renderHero(cn) {
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : ""; updateJbar();
   $("back").onclick = function () {
-    state.hero = null;
-    render(); window.scrollTo(0, state.listY || 0);
+    slideBack(function () { state.hero = null; render(); window.scrollTo(0, state.listY || 0); });
   };
   window.scrollTo(0, 0);
 }
@@ -2355,8 +2364,10 @@ function hideBack() { BACK = null; var b = $("backpill"); if (b) b.hidden = true
 $("backpill").onclick = function (e) {
   if (e.target.classList && e.target.classList.contains("bx")) { hideBack(); return; }
   var bk = BACK; hideBack(); if (!bk) return;
-  if (bk.search != null) { showSearch(bk.search); return; }
-  state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(bk.hero); window.scrollTo(0, bk.y);
+  slideBack(function () {
+    if (bk.search != null) { showSearch(bk.search); return; }
+    state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(bk.hero); window.scrollTo(0, bk.y);
+  });
 };
 function render() {
   document.body.classList.remove("boot");
@@ -2400,7 +2411,7 @@ function topPill() { // glossary: a round ↑ on the right once you've scrolled 
   if (gshow !== !gb.hidden) { gb.hidden = !gshow; if (gshow) { gb.classList.remove("in"); void gb.offsetWidth; gb.classList.add("in"); } }
 }
 new MutationObserver(function () { topPill(); }).observe($("main"), { childList: true });
-$("glbpill").onclick = function () { $("glbpill").hidden = true; glossBack(); };
+$("glbpill").onclick = function () { $("glbpill").hidden = true; slideBack(glossBack); };
 window.addEventListener("scroll", topPill, { passive: true });
 $("toppill").onclick = function () { easeScroll(0); };
 $("tabs").addEventListener("click", function () { setTimeout(topPill, 0); });
@@ -2432,12 +2443,12 @@ function endSearch(keepScroll) { // close search: empty the bar and show the pag
   if (keepScroll) window.scrollTo(0, SEARCH_Y);
 }
 $("sq").addEventListener("blur", function () { document.body.classList.remove("kb"); });
-$("srchpill").onclick = function () { $("sq").blur(); endSearch(true); };
+$("srchpill").onclick = function () { slideBack(function () { $("sq").blur(); endSearch(true); }); };
 $("sq").addEventListener("focus", function () { document.body.classList.add("kb"); });
 $("sq").addEventListener("focus", function () { if (!searchOn()) showSearch($("sq").value); });
 $("sq").addEventListener("input", function () { showSearch($("sq").value); $("sres").scrollTop = 0; });
 $("sclr").onclick = function () { showSearch(""); $("sq").focus(); };
-$("sx").onclick = function () { $("sq").blur(); endSearch(true); };
+$("sx").onclick = function () { slideBack(function () { $("sq").blur(); endSearch(true); }); };
 $("sq").onkeydown = function (e) { if (e.key === "Escape") { $("sq").blur(); endSearch(true); } if (e.key === "Enter") $("sq").blur(); };
 $("sarea").addEventListener("click", function (e) {
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
