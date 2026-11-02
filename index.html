@@ -127,6 +127,25 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .sub{color:var(--dim);font-size:14px;line-height:1.4;margin:8px 0 14px}
 .ab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:18px}
 .abh{display:flex;gap:10px;align-items:center}
+/* jump to an ability: a row under the hero name, and a slim copy pinned to the top once you are down in the abilities */
+.jrow{margin:2px 0 14px}
+.jlab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--dim);margin:0 0 6px 2px}
+.jg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.jt{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 3px 7px;min-width:0;color:var(--fg);font-size:11px;line-height:1.2;text-align:center}
+.jt .ji{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex:none}
+.jt img{width:34px;height:34px;object-fit:contain}
+.jt .jl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding:0 2px;width:100%;min-height:2.4em}
+.jn{position:absolute;top:4px;left:7px;font-size:11px;color:var(--dim);line-height:1}
+.jt:active,.jm:active{background:var(--panel)}
+#main:not(.alt) .jg .f1,#main.alt .jg .f0{display:none}
+#jbar{display:none;position:fixed;left:12px;right:12px;max-width:576px;margin:0 auto;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:5;justify-content:center;gap:8px;padding:6px 8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.45)}
+#jbar.show{display:flex}
+#jbar:not(.alt) .f1,#jbar.alt .f0{display:none}
+.jm{position:relative;flex:1;max-width:78px;height:42px;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:0}
+.jm img{width:28px;height:28px;object-fit:contain}
+.jm .jn{top:2px;left:5px;font-size:10px}
+.jm.on{border:1.5px solid var(--gold);background:#2f2638}
+.ab.pop{animation:boxup 1s ease-in-out both}
 .abh img{width:44px;height:44px;object-fit:contain;flex:none}
 .abh h3{margin:0;flex:1;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
 .si{height:1.55em;width:1.55em;flex:none;color:var(--c,var(--weapon))}
@@ -425,6 +444,7 @@ html.lock,html.lock body{overflow:hidden}
     <button class="tab" data-c="spirit"><svg class="i0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z"/></svg><svg class="i1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z"/></svg><span>Spirit</span></button>
   </div>
 </header>
+<nav id="jbar" aria-label="Jump to ability"></nav>
 <div class="topbar"><div class="toprow">
     <div class="brand" id="brand" role="button" aria-label="Deadlock Codex: all heroes"><img class="logo" src="wordmark.png" alt="Deadlock" onerror="this.replaceWith(document.createTextNode('DEADLOCK CODEX'))"></div>
     
@@ -1505,7 +1525,7 @@ function formSwitch(fp) {
 }
 function setForm(on, keepEl) { // keep the tapped switch where it is on screen while the content above it changes
   var m = $("main"), y0 = keepEl ? keepEl.getBoundingClientRect().top : 0;
-  state.alt = !!on; m.classList.toggle("alt", state.alt);
+  state.alt = !!on; m.classList.toggle("alt", state.alt); $("jbar").classList.toggle("alt", state.alt);
   if (keepEl) window.scrollBy(0, keepEl.getBoundingClientRect().top - y0);
 }
 var NOGUN = { citadel_weapon_werewolf_claws: 1 };
@@ -1739,7 +1759,7 @@ function easeScroll(y) { // ease-in-out scroll; a touch or wheel cancels it so i
   });
 }
 function scrollToEl(el, smooth) { // land near the top of the screen (the header now sits at the bottom)
-  var off = 12 + (parseFloat(getComputedStyle(document.body).paddingTop) || 0), y = el.getBoundingClientRect().top + (window.pageYOffset || 0) - off;
+  var off = 12 + (parseFloat(getComputedStyle(document.body).paddingTop) || 0) + (el.classList && el.classList.contains("ab") ? 28 : 0), y = el.getBoundingClientRect().top + (window.pageYOffset || 0) - off;
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (smooth && !calm) easeScroll(y); else window.scrollTo(0, y);
 }
@@ -1822,6 +1842,42 @@ function hydrateName() {
     NMC[url] = svg; el.className = "hname"; el.setAttribute("role", "img"); el.setAttribute("aria-label", nm); el.innerHTML = svg;
   });
 }
+function jumpItems(abs, fp, mini) { // one button per ability (two when a hero has a second form: the one for the other form is hidden by .f0 / .f1)
+  return abs.map(function (a, i) {
+    function one(x, cls) {
+      var op = ABOPT[x.class_name] || {};
+      return '<button class="' + (mini ? "jm" : "jt") + cls + '" data-jump="' + esc(x.class_name) + '" aria-label="Jump to ' + esc(nameOf(x)) + '"><span class="jn">' + (i + 1) + "</span>" +
+        (mini ? imgTag(op.img || itemImg(x)) : '<span class="ji">' + imgTag(op.img || itemImg(x)) + "</span>") + (mini ? "" : '<span class="jl">' + esc(nameOf(x)) + "</span>") + "</button>";
+    }
+    var alt = fp && fp.swap[a.class_name];
+    return alt ? one(a, " f0") + one(alt, " f1") : one(a, "");
+  }).join("");
+}
+function updateJbar() { // the pinned bar shows once the abilities are reaching the top of the screen, and marks the one you are on
+  var bar = $("jbar"), show = false, cur = "", pt = parseFloat(getComputedStyle(document.body).paddingTop) || 32;
+  if (state.tab === "heroes" && state.hero && !$("main").hidden && $("jbar").firstChild) {
+    var cards = Array.prototype.filter.call(document.querySelectorAll("#main .ab"), function (c) { return c.offsetParent !== null; });
+    if (cards.length && cards[0].getBoundingClientRect().top < pt + 80) {
+      show = true; cur = cards[0].getAttribute("data-ab");
+      cards.forEach(function (c) { if (c.getBoundingClientRect().top < pt + 60) cur = c.getAttribute("data-ab"); });
+    }
+  }
+  bar.classList.toggle("show", show);
+  if (show) Array.prototype.forEach.call(bar.querySelectorAll(".jm"), function (b) { b.classList.toggle("on", b.getAttribute("data-jump") === cur); });
+}
+function jumpTo(cn) {
+  var el = document.querySelector('#main [data-ab="' + cn + '"]'); if (!el) return;
+  if (el.closest(".f1")) { if (!state.alt) setForm(true); } else if (el.closest(".f0") && state.alt) setForm(false);
+  scrollToEl(el, true);
+  el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100);
+}
+(function () {
+  var T = 0;
+  window.addEventListener("scroll", function () { if (!T) T = requestAnimationFrame(function () { T = 0; updateJbar(); }); }, { passive: true });
+  window.addEventListener("resize", updateJbar);
+  new MutationObserver(updateJbar).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // other tabs, search and the glossary replace or hide the hero page
+  document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-jump]") : null; if (b) jumpTo(b.getAttribute("data-jump")); });
+})();
 function renderHero(cn) {
   var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
   if (!h) { state.hero = null; return renderHeroes(); }
@@ -1832,9 +1888,11 @@ function renderHero(cn) {
   var tagsA = (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
   var html = '<button class="back" id="back">' + "‹ All heroes" + '</button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
+  var statsAt = html.length;
   html += '<div class="stats1">' + statBlock(h) + "</div>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
+  if (abs.length) html = html.slice(0, statsAt) + '<div class="jrow"><div class="jlab">Jump to ability</div><div class="jg">' + jumpItems(abs, fp, false) + "</div></div>" + html.slice(statsAt);
   if (state.altHero !== cn) { state.alt = false; state.altHero = cn; }
   var wc = weaponCard(h);
   if (wc) html += '<div class="sec">Weapon</div>' + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc);
@@ -1845,6 +1903,7 @@ function renderHero(cn) {
     html += alt ? '<div class="f0">' + abilityCard(a, h) + '</div><div class="f1">' + abilityCard(alt, h) + "</div>" : abilityCard(a, h);
   });
   $("main").innerHTML = html; hydrateName(); setForm(state.alt);
+  $("jbar").innerHTML = abs.length ? jumpItems(abs, fp, true) : ""; updateJbar();
   $("back").onclick = function () {
     state.hero = null;
     render(); window.scrollTo(0, state.listY || 0);
