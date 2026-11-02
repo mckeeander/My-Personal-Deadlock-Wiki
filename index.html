@@ -85,7 +85,7 @@ input[type=search]:focus,#gq:focus{outline:none;border-color:var(--nav);box-shad
 input:focus{outline:none;border-color:var(--gold)}
 header::after{content:"";position:absolute;left:0;right:0;top:100%;height:160px;background:var(--bar)} /* fills any gap above the keyboard */
 header.kb{padding-bottom:0}
-header.kb .tab{padding-bottom:16px}
+header.kb .tab{padding-bottom:4px}
 .brand{cursor:pointer}
 body::before{content:"";position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0) + 10px);background:linear-gradient(var(--bg) 70%,rgba(0,0,0,0));z-index:6;pointer-events:none}
 body{padding-top:calc(env(safe-area-inset-top,0) + 32px)}
@@ -2382,13 +2382,26 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
   }
   box.addEventListener("touchend", end); box.addEventListener("touchcancel", end);
 })();
-(function () { // when the keyboard opens, lift the bottom bar so it stays reachable
+(function () { // when the keyboard opens, keep the bottom bar sitting right on top of it
   var vv = window.visualViewport, hd = document.querySelector("header"); if (!vv || !hd) return;
+  var off = 0, raf = 0;
   function place() {
-    var typing = /^(INPUT|TEXTAREA)$/.test((document.activeElement || {}).tagName || ""); // scrolling and bounce also move the viewport
-    var kb = typing ? Math.max(0, window.innerHeight - vv.height - Math.max(0, vv.offsetTop)) : 0, up = kb > 60; hd.classList.toggle("kb", up); hd.style.transform = up ? "translateY(" + -kb + "px)" : ""; }
-  vv.addEventListener("resize", place); vv.addEventListener("scroll", place);
+    raf = 0;
+    var typing = /^(INPUT|TEXTAREA)$/.test((document.activeElement || {}).tagName || "");
+    var kb = typing ? window.innerHeight - vv.height - Math.max(0, vv.offsetTop) : 0;
+    if (!typing || kb < 60) { off = 0; hd.classList.remove("kb"); hd.style.transform = ""; hd.style.transition = ""; return; }
+    hd.classList.add("kb");
+    // measure where the bar actually ends up and correct toward the visible bottom edge; Safari's numbers shift
+    // when the page behind can scroll (long search results), so a fixed formula drifts and the bar sinks behind the keyboard
+    hd.style.transition = "none"; hd.style.transform = ""; // measure the bar at rest (a running transition would report a midway spot)
+    var bottom = hd.getBoundingClientRect().bottom, target = vv.offsetTop + vv.height;
+    off = Math.max(0, bottom - target); hd.style.transform = "translateY(" + -off + "px)";
+  }
+  function later() { if (!raf) raf = requestAnimationFrame(place); }
+  vv.addEventListener("resize", later); vv.addEventListener("scroll", later); window.addEventListener("scroll", later, { passive: true });
+  document.addEventListener("focusin", function () { setTimeout(later, 50); setTimeout(later, 350); });
   document.addEventListener("focusout", function () { setTimeout(place, 50); });
+  new MutationObserver(later).observe($("sres"), { childList: true }); // results appearing can make Safari re-scroll
 })();
 (function () { // the sliding top line and the icon moves on the bottom tabs
   var tabs = $("tabs"), ind = document.createElement("span"), cur = null, T = null;
