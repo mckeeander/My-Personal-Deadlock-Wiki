@@ -36,17 +36,25 @@ header .tab .i1{display:none} header .tab.on.lit .i0{display:none} header .tab.o
 header .tab svg,header .tab span{position:relative;z-index:1}
 header .tab.on{color:var(--fg);font-weight:600;background:transparent;box-shadow:none}
 header .tab[data-c=weapon].on{color:var(--weapon)} header .tab[data-c=vitality].on{color:var(--vital)} header .tab[data-c=spirit].on{color:var(--spirit)}
-header .tab.on.lit svg{animation:tabpop .28s ease-out}
-@keyframes tabpop{0%{transform:scale(.82)}60%{transform:scale(1.08)}100%{transform:none}}
-/* a soft circle of colour sits behind the active icon; on a switch it shrinks, hops to the new tab and grows back, changing colour */
+/* on a switch each icon does its own small move: the hero hops, the bolt zaps, the heart beats, the star spins in */
+header .tab[data-c=heroes].pop svg{animation:tnod .5s ease}
+header .tab[data-c=weapon].pop svg{animation:tzap .45s ease}
+header .tab[data-c=vitality].pop svg{animation:tbeat .6s ease}
+header .tab[data-c=spirit].pop svg{animation:tspin .6s cubic-bezier(.3,1.4,.5,1)}
+@keyframes tnod{0%,100%{transform:none}30%{transform:translateY(-4px)}60%{transform:translateY(1px)}}
+@keyframes tzap{0%,100%{transform:none}20%{transform:translateX(-2px) rotate(-8deg)}40%{transform:translateX(2px) rotate(8deg)}60%{transform:translateX(-1px) rotate(-4deg)}}
+@keyframes tbeat{0%,100%{transform:none}20%{transform:scale(1.22)}40%{transform:scale(.95)}60%{transform:scale(1.12)}}
+@keyframes tspin{0%{transform:rotate(-140deg) scale(.7)}100%{transform:none}}
+/* a short colour segment rides the bar's top border and slides to the active tab, overshooting a little and settling slowly */
 header .tabs{position:relative}
-.tind{display:none!important;position:absolute;top:6px;left:0;width:38px;height:38px;border-radius:50%;pointer-events:none;z-index:0;opacity:0;transition:opacity .2s ease}
+.tind{position:absolute;top:-3px;left:0;width:0;height:3px;border-radius:0 0 3px 3px;pointer-events:none;z-index:2;opacity:0;
+  transition:left .65s cubic-bezier(.3,1.3,.45,1),width .65s cubic-bezier(.3,1.3,.45,1),background-color .35s ease,opacity .2s ease}
 .tind.show{opacity:1}
 body.srch .tind{opacity:0}
 body.srch header .tab.on{color:#9a90aa;font-weight:500}
 body.srch header .tab.on .i1{display:none} body.srch header .tab.on .i0{display:block}
 body.srch .credits{display:none}
-@media (prefers-reduced-motion:reduce){header .tab.on.lit svg{animation:none}}
+@media (prefers-reduced-motion:reduce){header .tab.pop svg{animation:none!important}.tind{transition:none}}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
 /* search: one full-width bar under the wordmark on every page; typing swaps the page for results, clearing brings the page back untouched */
 .sbar{display:flex;align-items:center;gap:10px;margin:8px 0 0}
@@ -2382,37 +2390,26 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
   vv.addEventListener("resize", place); vv.addEventListener("scroll", place);
   document.addEventListener("focusout", function () { setTimeout(place, 50); });
 })();
-(function () { // the colour circle behind the active tab icon
-  var tabs = $("tabs"), ind = document.createElement("span"), last = null, cur = null, anim = null;
-  var COL = { heroes: "rgba(241,233,216,.16)", weapon: "rgba(232,162,74,.22)", vitality: "rgba(111,197,109,.22)", spirit: "rgba(181,131,240,.24)" };
+(function () { // the sliding top line and the icon moves on the bottom tabs
+  var tabs = $("tabs"), ind = document.createElement("span"), cur = null, T = null;
+  var COL = { heroes: "var(--fg)", weapon: "var(--weapon)", vitality: "var(--vital)", spirit: "var(--spirit)" };
   ind.className = "tind"; tabs.insertBefore(ind, tabs.firstChild);
-  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function xOf(t) { var ic = t.querySelector("svg"); return t.offsetLeft + t.offsetWidth / 2 - 19; }
-  function place(t) { ind.style.transform = "translateX(" + xOf(t) + "px)"; ind.style.background = COL[t.getAttribute("data-c")]; }
-  function move(animate) {
+  function place(t, anim) {
+    if (!anim) ind.style.transition = "none";
+    ind.style.left = (t.offsetLeft + t.offsetWidth * .2) + "px"; ind.style.width = (t.offsetWidth * .6) + "px"; ind.style.backgroundColor = COL[t.getAttribute("data-c")];
+    if (!anim) { void ind.offsetWidth; ind.style.transition = ""; }
+  }
+  function move(anim) {
     var on = tabs.querySelector(".tab.on");
-    Array.prototype.forEach.call(tabs.querySelectorAll(".tab"), function (t) { if (t !== on) t.classList.remove("lit"); });
-    ind.classList.toggle("show", !!on); if (!on) { last = null; return; }
-    if (on === cur && on.classList.contains("lit")) return;
-    var from = last; cur = on; last = on;
-    if (anim) { anim.cancel(); anim = null; }
-    place(on); on.classList.add("lit"); return; // circle animation removed; the icon fills right away
-    // shrink in place, hop (with a little lift) to the new tab, grow back; the new icon fills in as the circle lands
-    var x0 = xOf(from), x1 = xOf(on), c0 = COL[from.getAttribute("data-c")], c1 = COL[on.getAttribute("data-c")];
-    place(on);
-    anim = ind.animate([
-      { transform: "translateX(" + x0 + "px) scale(1)", background: c0 },
-      { transform: "translateX(" + x0 + "px) scale(.28)", background: c0, offset: .28 },
-      { transform: "translate(" + (x0 + x1) / 2 + "px,-7px) scale(.28)", offset: .52 },
-      { transform: "translateX(" + x1 + "px) scale(.28)", background: c1, offset: .74 },
-      { transform: "translateX(" + x1 + "px) scale(1)", background: c1 }
-    ], { duration: 520, easing: "cubic-bezier(.45,0,.25,1)" });
-    setTimeout(function () { if (cur === on) on.classList.add("lit"); }, 400);
-    anim.onfinish = function () { anim = null; };
+    Array.prototype.forEach.call(tabs.querySelectorAll(".tab"), function (t) { if (t !== on) t.classList.remove("lit", "pop"); });
+    ind.classList.toggle("show", !!on); if (!on) { cur = null; return; }
+    if (on === cur) return;
+    var first = !cur; cur = on; on.classList.add("lit"); place(on, anim && !first);
+    if (anim && !first) { on.classList.remove("pop"); void on.offsetWidth; on.classList.add("pop"); clearTimeout(T); T = setTimeout(function () { on.classList.remove("pop"); }, 700); }
   }
   new MutationObserver(function (ms) { if (ms.some(function (m) { return m.target !== ind && m.oldValue !== null && /\bon\b/.test(m.oldValue) !== m.target.classList.contains("on"); })) move(true); })
     .observe(tabs, { subtree: true, attributes: true, attributeFilter: ["class"], attributeOldValue: true });
-  window.addEventListener("resize", function () { var on = tabs.querySelector(".tab.on"); if (on) place(on); });
+  window.addEventListener("resize", function () { if (cur) place(cur, false); });
   move(false);
 })();
 function refreshNow() {
