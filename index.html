@@ -2653,11 +2653,11 @@ function rollNum(root, beforeTxt) { // elevator roll: each changed digit rides a
 }
 function countTo(el, bef, k) {
   var card = el.closest ? el.closest(".ab") : null, h = card && card.querySelector("h3"), nm = h && h.textContent.replace(/\s+/g, " ").trim();
-  var mode = nm === "Siphon Life" || nm === "Flawless Advance" ? animNum : null; // trials: both count; Apollo's big card numbers roll instead (below)
+  var mode = nm === "Siphon Life" || nm === "Flawless Advance" || nm === "Ground Strike" ? animNum : null; // trial: these abilities count their numbers
   if (!mode) return;
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var isStat = el.tagName === "DIV", go = [];
-  go.push((isStat && nm === "Flawless Advance" ? rollNum : mode)(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
+  go.push(mode(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
   if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(mode(sc, bef[k + "|sc"])); }
   go.forEach(function (g) { if (g) g(); });
 }
