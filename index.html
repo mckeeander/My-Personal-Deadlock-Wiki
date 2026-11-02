@@ -720,7 +720,7 @@ function scaleOf(p, m) {
 }
 function fmtRate(v) { var n = Number(v); if (isNaN(n)) return String(v); if (n && Math.abs(n) < 0.01) return String(Number(n.toPrecision(2))); return String(Math.round(n * 1000) / 1000); }
 var WSCALE = '<svg class="wsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-label="Weapon scaling" role="img"><path d="M21.50 11.75A9.5 9.5 0 0 1 15.01 21.01M12.25 21.50A9.5 9.5 0 0 1 2.99 15.01M2.50 12.25A9.5 9.5 0 0 1 8.99 2.99M11.75 2.50A9.5 9.5 0 0 1 21.01 8.99"/><circle cx="12" cy="12" r="4.6"/></svg>';
-var BSCALE = '<svg class="wsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Boon scaling" role="img"><path d="M4.5 10V4.5H10M4.5 4.5L12 12 8 14.5 19.5 20"/></svg>';
+var BSCALE = '<svg class="wsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Boon scaling" role="img"><path d="M4.5 10V4.5H10M4.5 4.5L13 13 8.5 15 19.5 20"/></svg>';
 function scaleBadge(r) {
   if (!r || !r.kind) return "";
   var n = fmtRate(r.rate);
@@ -728,7 +728,7 @@ function scaleBadge(r) {
   if (r.kind === "weapon") return '<em class="sc wp">' + WSCALE + "×" + esc(n) + "</em>";
   if (r.kind === "range") return '<em class="sc">Ability Range ×' + esc(n) + "</em>";
   if (r.kind === "melee") return '<em class="sc wp">' + esc(r.sub) + " ×" + esc(n) + "</em>";
-  return '<em class="sc bn">' + BSCALE + "+" + esc(n) + "</em>";
+  return '<em class="sc bn">' + BSCALE + "×" + esc(n) + "</em>";
 }
 // Turn the chosen upgrade tiers (cumulative) into per-property changes.
 function modsFor(it, sel) {
@@ -995,7 +995,10 @@ function tooltipHtml(it) {
       if (/class="dur"/.test(e) || /Bonus|Reduction|Amp|Resist|Threshold|Taken|Penalty|Stolen|Deferred|Cleared|Ally|Self|Permanent|Stack|Weapon Damage$/i.test(l)) return false;
       return /(Damage|DPS)$|Damage Per (Second|Bullet|Meter)|Damage \(|^Damage/i.test(l);
     }
-    main = main.filter(isHit).concat(main.filter(function (e) { return !isHit(e); }));
+    function lbl(e) { var m = /<i>([^<]*)<\/i>/.exec(e); return m ? m[1] : ""; }
+    var hits = main.filter(isHit);
+    hits = hits.filter(function (e) { return /^Damage$/i.test(lbl(e)); }).concat(hits.filter(function (e) { return !/^Damage$/i.test(lbl(e)); })); // the hit itself before bonus-while-active damage (Threadsap's 50 before its per-bullet)
+    main = hits.concat(main.filter(function (e) { return !isHit(e); }));
     return main.concat(dur).join("");
   }
   var firstStats = -1;
@@ -1065,6 +1068,11 @@ function tooltipHtml(it) {
     });
     if (promo) {
       var lastStats = -1; for (var pi2 = parts.length - 1; pi2 >= secStart; pi2--) if (/<div class="stats">/.test(parts[pi2])) { lastStats = pi2; break; }
+      var pTiles = promo.match(/<div class="stat[^"]*">[\s\S]*?<\/div>/g) || [], pFront = "", pRest = "";
+      pTiles.forEach(function (e) { if (/<i>Damage<\/i>/.test(e) && !/class="dur"/.test(e)) pFront += e; else pRest += e; });
+      var firstSt = -1; for (var pi3 = secStart; pi3 < parts.length; pi3++) if (/<div class="stats">/.test(parts[pi3])) { firstSt = pi3; break; }
+      if (pFront && firstSt >= 0) { parts[firstSt] = parts[firstSt].replace('<div class="stats">', '<div class="stats">' + pFront); promo = pRest; } // the ability's own hit leads the card
+      if (!promo) { /* all placed up front */ } else
       if (lastStats >= 0) parts[lastStats] = parts[lastStats].replace(/<\/div>$/, promo + "</div>"); else parts.push('<div class="stats">' + promo + "</div>");
     }
     if (minor) { parts.push('<div class="minor">' + minor + "</div>"); if (firstMinor < 0) firstMinor = parts.length - 1; }
