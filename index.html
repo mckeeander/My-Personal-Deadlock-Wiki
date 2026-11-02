@@ -2236,11 +2236,17 @@ function showError(e) {
 $("tabs").onclick = function (e) {
   var b = e.target.closest(".tab"); if (!b) return; hideBack();
   if (b.getAttribute("data-c") === "glossary") return; // has its own handler
+  // each tab remembers where you were (the hero you had open, the scroll spot); tapping the tab you're already on goes to its top level
+  var to = b.getAttribute("data-c"), same = to === state.tab && !searchOn();
+  TABMEM[state.tab] = { hero: state.hero, y: searchOn() ? SEARCH_Y : (window.pageYOffset || 0) };
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
-  endSearch(); state.tab = b.getAttribute("data-c"); state.q = ""; state.hero = null; state.from = null; render(); window.scrollTo(0, 0);
+  var m = same ? null : TABMEM[to];
+  endSearch(); state.tab = to; state.q = ""; state.hero = m ? m.hero : null; state.from = null; render();
+  window.scrollTo(0, same && state.tab === "heroes" ? 0 : m ? m.y : 0);
 };
+var TABMEM = {};
 $("brand").onclick = function () { // the title goes home: the hero list
-  hideBack(); endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
+  hideBack(); TABMEM.heroes = null; endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
 };
 function topPill() { // shows once you've scrolled past the glossary's category cards
   var tp = $("toppill"), c = document.querySelector("#main .gcats");
