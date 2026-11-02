@@ -1386,11 +1386,13 @@ function shortTip(tip, nm) {
     .replace(/\s+/g, " ").trim();
 }
 // the wiki's Interactions tab: one card per item or stat, tagged good / bad / info like the wiki
-// Interactions: the wiki's interaction cards, then the other items that interact with the ability
+// Interactions: the items that interact with the ability, then the wiki's effect cards (Ability Range and the like)
 function interBlock(a, own, items, itemsN) {
   var list = (a && a.inter) || []; if (!list.length && !items) return "";
   var KL = { positive: "Helps", negative: "Hurts", info: "Note" };
   var html = '<details class="notes">' + nsum("Interactions", "inter", list.length + (itemsN || 0));
+  if (items) html += (list.length ? '<div class="ihd">Items</div>' : "") + items; // items first, then the effect cards
+  if (items && list.length) html += '<div class="ihd">Effects</div>';
   list.forEach(function (x) {
     var cn = state.byName[String(x.t || "").toLowerCase()], item = cn && state.byClass[cn], rep = interItem(x);
     var icon = rep ? imgTag(itemArt(rep), itemImg(rep)) : (x.img && /^https:\/\/cdn\.deadlock\.wiki\//.test(x.img) ? '<img alt="" src="' + esc(x.img) + '" onerror="this.style.display=\'none\'">' : "");
@@ -1403,7 +1405,6 @@ function interBlock(a, own, items, itemsN) {
       "<ul>" + lines.map(function (n) { return '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; }).join("") + "</ul>";
     html += '<div class="ibox ' + k + (/disabled/.test(st) ? " off" : "") + '">' + head + body + "</div>";
   });
-  if (items) html += (list.length ? '<div class="ihd">Items</div>' : "") + items;
   return html + "</details>";
 }
 function wikiHtml(h, it) {
