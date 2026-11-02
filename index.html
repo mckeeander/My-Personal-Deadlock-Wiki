@@ -151,6 +151,15 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .ic{height:1.1em;width:1.1em;vertical-align:-.2em;margin-right:4px}.ic.key{margin:0 2px 0 4px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .chip{background:var(--panel2);border-radius:5px;padding:4px 8px;font-size:13px}
+.chip.cd{background:rgba(230,180,90,.13);color:var(--gold);font-size:14px;font-weight:700;border-radius:7px;flex:none}
+.chip.cd .pi{filter:none;opacity:1}
+.abh .chip.tip::after{left:auto;right:0}
+.ab .chips{justify-content:flex-start}
+.ab .chips .g:last-child{margin-left:0} /* the cooldown moved up beside the name, so the remaining chips line up on the left */
+.uu{margin:14px 0 8px;border:1px solid rgba(230,180,90,.32);background:rgba(230,180,90,.05);border-radius:10px;padding:8px 10px 10px}
+.uu .uuh{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.uu .desc{margin:6px 0}
+.uu .stats{margin-bottom:2px}
 .desc{font-size:15px;line-height:1.45;margin:8px 0}
 .desc b,.desc .hl{color:#fff;font-weight:700}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:13px 6px;margin:10px 0}
@@ -190,10 +199,12 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .minor{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:6px;padding:8px;margin:6px 0}
 .minor b{color:var(--fg)}
 .minor .sc{position:static;display:inline-block;margin-left:6px;vertical-align:1px}
-.ups{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-.up{background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px;text-align:center}
-.up div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
-.up div:last-child{padding:8px 4px;line-height:1.3;font-weight:400}
+.ups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px} /* the tier with the most text gets the widest column (set inline) */
+.up{background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px;text-align:center;display:flex;flex-direction:column}
+.up>div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
+.up>div:last-child{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 5px}
+.up .ut{line-height:1.3;font-weight:400;min-width:0;overflow-wrap:anywhere}
+.ss{color:var(--spirit);font-weight:700}
 .up .pg{display:block;height:7px} /* each line of a tier's text starts on its own line */
 .up b.v{font-weight:700;color:inherit}
 .up b.v .u{font-weight:inherit;font-size:1em;margin:0}
@@ -223,7 +234,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .stat.big.wtile{border-color:var(--weapon);background:#3a2814}
 .up{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
 .up.on{border-color:var(--spirit)}
-.up.on div:first-child{background:#6b45a8;color:#fff}
+.up.on>div:first-child{background:#6b45a8;color:#fff}
 .uphint{font-size:11px;color:var(--dim);margin:8px 0 0;text-align:center}
 .wpn{background:linear-gradient(160deg,#2e1f12,var(--panel) 60%);border:1px solid #6b4a22;border-radius:12px;padding:12px;margin-bottom:12px}
 .wh{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -1001,7 +1012,9 @@ function tooltipHtml(it) {
   bi = 0;
   secs.forEach(function (sec, si) {
     var secStart = parts.length;
-    if (si > 0 && sec.loc_string && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc">' + rich(sec.loc_string) + "</div>");
+    var isUU = si > 0 && /Ultimate Unlock\s*:/i.test(sec.loc_string || ""), locText = sec.loc_string;
+    if (isUU) { locText = String(locText).replace(/^(\s*<br\s*\/?>)+/i, "").replace(/Ultimate Unlock\s*:\s*/i, ""); parts.push('<div class="uu"><div class="uuh">Ultimate unlock</div>'); } // what the ultimate adds sits in its own tinted block
+    if (si > 0 && locText && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc">' + rich(locText) + "</div>");
     (sec.properties_block || []).forEach(function (blk) {
       var tiles = "", seen = {}, hadMoved = false;
       (blk.properties || []).forEach(function (pp) {
@@ -1042,6 +1055,7 @@ function tooltipHtml(it) {
       var html = '<div class="blk">' + esc(g.l) + "</div>" + (t ? '<div class="stats">' + t + "</div>" : "") + (mx ? '<div class="minor">' + mx + "</div>" : "");
       if (g.top && firstStats >= 0) { parts.splice(firstStats + 1, 0, html); if (firstMinor > firstStats) firstMinor++; } else parts.push(html);
     });
+    if (isUU) parts.push("</div>");
   });
   if (place[-1] && !tilesDone) parts.push('<div class="stats">' + extraHtml(place[-1]) + "</div>");
   var cd0 = parseFloat(((it.properties || {}).AbilityCooldown || {}).value), cdN = parseFloat((effP(it, "AbilityCooldown") || {}).value);
@@ -1067,6 +1081,12 @@ function listedKeys(it) {
   return s;
 }
 var HEADER_KEYS = { AbilityDuration: 1, AbilityCastRange: 1, AbilityCooldown: 1, Radius: 1, AbilityCharges: 1, AbilityCooldownBetweenCharge: 1 };
+function cooldownChip(it) { // the cooldown matters on almost every ability, so it gets its own gold chip beside the name
+  var cd = effP(it, "AbilityCooldown"), P = it.properties || {};
+  if (!cd || isDisabled(cd) || parseFloat(cd.value) === 0) return "";
+  var ic = P.AbilityCooldown && P.AbilityCooldown.icon ? pIcon(P.AbilityCooldown.icon) : "⟳ ";
+  return '<span class="chip cd" data-tip="Cooldown">' + ic + esc(fmtVal(cd)) + "</span>";
+}
 function chipsHtml(it) {
   var left = "", right = "", seen = {}, L = listedKeys(it), P = it.properties || {};
   // icon + number, like the wiki; the long-press title carries the name
@@ -1093,8 +1113,6 @@ function chipsHtml(it) {
     var cb = effP(it, "AbilityCooldownBetweenCharge");
     if (cb && !isDisabled(cb) && parseFloat(cb.value) > 0 && !L.AbilityCooldownBetweenCharge) right += chip("AbilityCooldownBetweenCharge", "↻", fmtVal(cb), "Charge delay");
   }
-  var cd = effP(it, "AbilityCooldown");
-  if (!isDisabled(cd) && parseFloat(cd.value) !== 0) right += chip("AbilityCooldown", "⟳", fmtVal(cd), "Cooldown");
   if (!left && !right) return "";
   return '<div class="chips"><div class="g">' + left + '</div><div class="g">' + right + "</div></div>";
 }
@@ -1135,6 +1153,14 @@ function upgradeExtras(it) {
   });
   return res;
 }
+var STAR = '<span class="ss" title="spirit scaling">★</span>'; // the purple star stands for "Spirit scaling" in tier text
+function scaledList(sb, lb, text, fb) { // "+0.07 ★ and +0.01 Current Health Damage ★": a stat already named in the tier text is not repeated
+  var plain = String(text).replace(/<[^>]+>/g, "").toLowerCase();
+  return sb.map(function (b, bi) {
+    var head = String(lb[bi] || "").split(/\s+per\s+/i)[0].trim(), skip = bi === 0 && head && plain.indexOf(head.toLowerCase()) >= 0, w = b.w || fb || "";
+    return '<span class="highlight">' + esc(b.n) + "</span> " + (skip ? "" : esc(lb[bi]) + " ") + (w === "Spirit" ? STAR : (w ? esc(w) + " " : "") + "scaling");
+  }).join(" and ");
+}
 function upgradeTexts(it) {
   var d = it.description && typeof it.description === "object" ? it.description : {}, ups = it.upgrades || [], out = [];
   var KW = { ETechRange: "Ability Range", ETechPower: "Spirit", EWeaponPower: "Weapon", EBaseWeaponDamageIncrease: "Weapon", ELevelUpBoons: "Boon" };
@@ -1162,7 +1188,7 @@ function upgradeTexts(it) {
         rd = rd.replace(/(?:improved|increased|increases)\s+(Spirit\s+|Weapon\s+)?scaling/i, function (m0, wd) {
           merged = true;
           var w1 = (wd || (shortBits[0].w ? shortBits[0].w + " " : "")).trim();
-          return shortBits.map(function (b, bi) { return '<span class="highlight">' + esc(b.n) + "</span> " + (bi === 0 ? (w1 ? w1 + " " : "") + "scaling " : "") + "on " + esc(labelBits[bi]); }).join(" and ");
+          return scaledList(shortBits, labelBits, rd, w1);
         });
       }
       if (!merged && shortBits.length === 1) { // "improved Spirit scaling" + a separate line -> one phrase with the number in it
@@ -1198,7 +1224,7 @@ function upgradeTexts(it) {
       }
       if (!merged && shortBits.length) { // other ways the game says "better scaling": put the real numbers in their place
         var wdn = shortBits[0].w ? shortBits[0].w + " " : "";
-        var named = shortBits.length > 1 ? shortBits.map(function (b, bi) { return '<span class="highlight">' + esc(b.n) + "</span> " + (bi === 0 ? wdn + "scaling " : "") + "on " + esc(labelBits[bi]); }).join(" and ")
+        var named = shortBits.length > 1 ? scaledList(shortBits, labelBits, rd, "")
           : '<span class="highlight">' + esc(shortBits[0].n) + "</span> " + (shortBits[0].w ? "" : esc(labelBits[0]) + " ") + wdn + "scaling";
         var nr = rd.replace(/(?:improved?|increased?|increases)\s+(?:[\w]+\s+){0,4}?scaling|(?:[\w]+\s+){0,5}scaling\s+increased/i, function () { merged = true; return named; });
         if (merged) rd = nr;
@@ -1341,9 +1367,14 @@ function tierSplit(h) {
   }).join("");
 }
 function upgradesHtml(it, sel) {
-  var t = upgradeTexts(it), costs = ["1", "2", "5"], html = '<div class="ups">';
-  for (var i = 0; i < 3; i++) html += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + "</div><div>" + tierSplit(tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, t[i])), it, i)).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>') + "</div></div>";
-  return html + "</div>";
+  var t = upgradeTexts(it), costs = ["1", "2", "5"], cells = "", wts = [];
+  for (var i = 0; i < 3; i++) {
+    var raw = String(t[i]).replace(/\bSpirit\s+[Ss]caling\b/g, STAR); // the purple star says "Spirit scaling" in far fewer letters
+    var body = tierSplit(tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, raw)), it, i)).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>');
+    wts.push(Math.max(4, Math.sqrt(body.replace(/<[^>]+>/g, "").length))); // the tier with the most text gets the widest column
+    cells += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + '</div><div><div class="ut">' + body + "</div></div></div>";
+  }
+  return '<div class="ups" style="grid-template-columns:' + wts.map(function (w) { return "minmax(0," + w.toFixed(2) + "fr)"; }).join(" ") + '">' + cells + "</div>";
 }
 function bulletOf(h) {
   var w = h && state.byClass[(h.items || {}).weapon_primary];
@@ -1460,11 +1491,11 @@ function abilityCard(it, h) {
   var sel = SEL[it.class_name] || 0, op = ABOPT[it.class_name] || {};
   CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) };
   try {
-    var CH = chipsHtml(it);
-    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
+    var CH = chipsHtml(it), CD = cooldownChip(it);
+    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3>" + CD + "</div>" +
       CH +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: abilityDesc(it) } : it.description)) + "</div>" +
-      flagOnes(dropChipDupes(tooltipHtml(it), CH)) + (op.noTiers ? "" : upgradesHtml(it, sel)) + wikiHtml(h, it) + "</section>");
+      flagOnes(dropChipDupes(tooltipHtml(it), CH + CD)) + (op.noTiers ? "" : upgradesHtml(it, sel)) + wikiHtml(h, it) + "</section>");
   } finally { CTX = null; }
 }
 // a "1" that is really an on/off switch ("1 Purge Debuffs") reads better as plain text with the small stats
