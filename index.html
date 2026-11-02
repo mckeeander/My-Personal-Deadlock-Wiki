@@ -151,9 +151,8 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .ic{height:1.1em;width:1.1em;vertical-align:-.2em;margin-right:4px}.ic.key{margin:0 2px 0 4px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
 .chip{background:var(--panel2);border-radius:5px;padding:4px 8px;font-size:13px}
-.chip.cd{background:rgba(106,166,255,.45);color:#fff;padding:4px 8px;flex:none} /* the cooldown leads the chip row: a light-blue pill with white text, set apart from the other pills by a divider */
-.chip.cd .pi{opacity:1}
-.cdsep{width:1px;height:20px;background:#4a4058;margin:0 4px;flex:none}
+.chip.cd{border-left:3px solid var(--gold);color:#fff;padding:4px 10px 4px 8px;flex:none} /* the cooldown leads the chip row: a gold edge on the left of a normal rounded pill, set apart from the other pills by a divider */
+.cdsep{width:1px;height:20px;background:#4a4058;margin:0 4px;flex:none;align-self:center}
 .cdsep:last-child{display:none}
 .ab .chips{justify-content:flex-start}
 .ab .chips .g:last-child{margin-left:0} /* the cooldown moved up beside the name, so the remaining chips line up on the left */
