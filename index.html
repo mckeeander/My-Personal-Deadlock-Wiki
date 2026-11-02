@@ -26,22 +26,27 @@ img{max-width:100%}
 header{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);display:flex;flex-direction:column-reverse;
   padding:0 max(0px,calc((100% - 600px)/2)) 0;transition:transform .15s ease-out}
 /* bottom navigation: a plain bar with an icon over each label, like an iPhone tab bar; the active tab lights up in its colour */
-header{--bar:#1d1926;border-top:1px solid var(--line);background:var(--bar)}
+header{--bar:#1d1926;border-top:2px solid var(--line);background:var(--bar)}
 body.kb header{padding-bottom:0}
 header .tabs{display:flex;margin:0;gap:0;background:none;border:0;border-radius:0;padding:0}
 header .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:0;background:transparent;box-shadow:none;
-  padding:8px 4px calc(env(safe-area-inset-bottom,0) + 6px);color:#9a90aa;font-size:11.5px;font-weight:500;transition:color .25s ease;-webkit-tap-highlight-color:transparent}
+  padding:13px 4px calc(env(safe-area-inset-bottom,0) + 6px);color:#9a90aa;font-size:11.5px;font-weight:500;transition:color .25s ease;-webkit-tap-highlight-color:transparent}
 header .tab svg{width:24px;height:24px}
-header .tab .i1{display:none} header .tab.on .i0{display:none} header .tab.on .i1{display:block}
+header .tab .i1{display:none} header .tab.on.lit .i0{display:none} header .tab.on.lit .i1{display:block}
+header .tab svg,header .tab span{position:relative;z-index:1}
 header .tab.on{color:var(--fg);font-weight:600;background:transparent;box-shadow:none}
 header .tab[data-c=weapon].on{color:var(--weapon)} header .tab[data-c=vitality].on{color:var(--vital)} header .tab[data-c=spirit].on{color:var(--spirit)}
-header .tab.on svg{animation:tabpop .28s ease-out}
+header .tab.on.lit svg{animation:tabpop .28s ease-out}
 @keyframes tabpop{0%{transform:scale(.82)}60%{transform:scale(1.08)}100%{transform:none}}
-.tind{display:none}
+/* a soft circle of colour sits behind the active icon; on a switch it shrinks, hops to the new tab and grows back, changing colour */
+header .tabs{position:relative}
+.tind{position:absolute;top:6px;left:0;width:38px;height:38px;border-radius:50%;pointer-events:none;z-index:0;opacity:0;transition:opacity .2s ease}
+.tind.show{opacity:1}
+body.srch .tind{opacity:0}
 body.srch header .tab.on{color:#9a90aa;font-weight:500}
 body.srch header .tab.on .i1{display:none} body.srch header .tab.on .i0{display:block}
 body.srch .credits{display:none}
-@media (prefers-reduced-motion:reduce){header .tab.on svg{animation:none}}
+@media (prefers-reduced-motion:reduce){header .tab.on.lit svg{animation:none}}
 /* the wordmark, search and glossary sit at the top of the page and scroll away; only the tabs stay pinned at the bottom */
 /* search: one full-width bar under the wordmark on every page; typing swaps the page for results, clearing brings the page back untouched */
 .sbar{display:flex;align-items:center;gap:10px;margin:8px 0 0}
@@ -2377,22 +2382,37 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
   vv.addEventListener("resize", place); vv.addEventListener("scroll", place);
   document.addEventListener("focusout", function () { setTimeout(place, 50); });
 })();
-(function () { // the sliding highlight under the bottom tabs
-  var tabs = $("tabs"), ind = document.createElement("span"), last = null, COL = { heroes: "var(--fg)", weapon: "var(--weapon)", vitality: "var(--vital)", spirit: "var(--spirit)" };
+(function () { // the colour circle behind the active tab icon
+  var tabs = $("tabs"), ind = document.createElement("span"), last = null, cur = null, anim = null;
+  var COL = { heroes: "rgba(241,233,216,.16)", weapon: "rgba(232,162,74,.22)", vitality: "rgba(111,197,109,.22)", spirit: "rgba(181,131,240,.24)" };
   ind.className = "tind"; tabs.insertBefore(ind, tabs.firstChild);
-  function move(anim) {
-    var on = tabs.querySelector(".tab.on"); ind.classList.toggle("show", !!on); if (!on) { last = null; return; }
-    var i = Array.prototype.indexOf.call(tabs.querySelectorAll(".tab"), on), W = tabs.clientWidth, l = on.offsetLeft, r = W - l - on.offsetWidth;
-    var fast = ".3s cubic-bezier(.4,0,.2,1)", slow = ".3s cubic-bezier(.4,0,.2,1) .09s";
-    if (!anim || last == null) ind.style.transition = "none";
-    else ind.style.transition = (i > last ? "right " + fast + ",left " + slow : "left " + fast + ",right " + slow) + ",color .3s ease,opacity .2s ease,transform .25s ease";
-    var n = tabs.querySelectorAll(".tab").length; ind.classList.toggle("first", i === 0); ind.classList.toggle("last", i === n - 1);
-    ind.style.left = l + "px"; ind.style.right = r + "px"; ind.style.width = "auto"; ind.style.color = COL[on.getAttribute("data-c")] || "var(--fg)";
-    if (!anim || last == null) { void ind.offsetWidth; ind.style.transition = ""; }
-    last = i;
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function xOf(t) { var ic = t.querySelector("svg"); return t.offsetLeft + t.offsetWidth / 2 - 19; }
+  function place(t) { ind.style.transform = "translateX(" + xOf(t) + "px)"; ind.style.background = COL[t.getAttribute("data-c")]; }
+  function move(animate) {
+    var on = tabs.querySelector(".tab.on");
+    Array.prototype.forEach.call(tabs.querySelectorAll(".tab"), function (t) { if (t !== on) t.classList.remove("lit"); });
+    ind.classList.toggle("show", !!on); if (!on) { last = null; return; }
+    if (on === cur && on.classList.contains("lit")) return;
+    var from = last; cur = on; last = on;
+    if (anim) { anim.cancel(); anim = null; }
+    if (!animate || !from || from === on || calm || !ind.animate) { place(on); on.classList.add("lit"); return; }
+    // shrink in place, hop (with a little lift) to the new tab, grow back; the new icon fills in as the circle lands
+    var x0 = xOf(from), x1 = xOf(on), c0 = COL[from.getAttribute("data-c")], c1 = COL[on.getAttribute("data-c")];
+    place(on);
+    anim = ind.animate([
+      { transform: "translateX(" + x0 + "px) scale(1)", background: c0 },
+      { transform: "translateX(" + x0 + "px) scale(.28)", background: c0, offset: .28 },
+      { transform: "translate(" + (x0 + x1) / 2 + "px,-7px) scale(.28)", offset: .52 },
+      { transform: "translateX(" + x1 + "px) scale(.28)", background: c1, offset: .74 },
+      { transform: "translateX(" + x1 + "px) scale(1)", background: c1 }
+    ], { duration: 520, easing: "cubic-bezier(.45,0,.25,1)" });
+    setTimeout(function () { if (cur === on) on.classList.add("lit"); }, 400);
+    anim.onfinish = function () { anim = null; };
   }
-  new MutationObserver(function (ms) { if (ms.some(function (m) { return m.target !== ind; })) move(true); }).observe(tabs, { subtree: true, attributes: true, attributeFilter: ["class"] });
-  window.addEventListener("resize", function () { move(false); });
+  new MutationObserver(function (ms) { if (ms.some(function (m) { return m.target !== ind && m.oldValue !== null && /\bon\b/.test(m.oldValue) !== m.target.classList.contains("on"); })) move(true); })
+    .observe(tabs, { subtree: true, attributes: true, attributeFilter: ["class"], attributeOldValue: true });
+  window.addEventListener("resize", function () { var on = tabs.querySelector(".tab.on"); if (on) place(on); });
   move(false);
 })();
 function refreshNow() {
