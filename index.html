@@ -40,11 +40,11 @@ header .tab.on{color:var(--fg);font-weight:600;background:transparent;box-shadow
 header .tab[data-c=weapon].on{color:var(--weapon)} header .tab[data-c=vitality].on{color:var(--vital)} header .tab[data-c=spirit].on{color:var(--spirit)}
 /* on a switch each icon does its own small move: the hero hops, the bolt zaps, the heart beats, the star spins in */
 header .tab[data-c=heroes].pop svg{animation:tnod .5s ease}
-header .tab[data-c=weapon].pop svg{animation:tzap .55s linear}
+header .tab[data-c=weapon].pop svg{animation:tzap .45s cubic-bezier(.3,.7,.4,1);transform-origin:50% 100%}
 header .tab[data-c=vitality].pop svg{animation:tbeat .6s ease}
 header .tab[data-c=spirit].pop svg{animation:tspin .6s cubic-bezier(.3,1.4,.5,1)}
 @keyframes tnod{0%,100%{transform:none}30%{transform:translateY(-4px)}60%{transform:translateY(1px)}}
-@keyframes tzap{0%{transform:scale(.9);filter:none}12%{transform:scale(1.12);filter:brightness(1.9)}24%{filter:brightness(.9)}36%{filter:brightness(1.7)}50%{transform:scale(1.04);filter:brightness(1)}64%{filter:brightness(1.4)}100%{transform:none;filter:none}}
+@keyframes tzap{0%{transform:translateY(-9px) scaleY(1.15);filter:brightness(1.7)}35%{transform:translateY(1px) scaleY(.88)}55%{transform:translateY(-1px) scaleY(1.04);filter:brightness(1.2)}100%{transform:none;filter:none}}
 @keyframes tbeat{0%,100%{transform:none}20%{transform:scale(1.22)}40%{transform:scale(.95)}60%{transform:scale(1.12)}}
 @keyframes tspin{0%{transform:rotate(-140deg) scale(.7)}100%{transform:none}}
 /* a short colour segment rides the bar's top border and slides to the active tab, overshooting a little and settling slowly */
