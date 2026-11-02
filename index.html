@@ -158,9 +158,9 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .sc.bn{background:#1f3320;color:var(--vital)}
 .hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .hc{position:relative;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel2);aspect-ratio:3/4}
-.hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.05);transition:opacity .26s ease-out var(--d,0ms),transform .36s ease-out var(--d,0ms)}
-.hc img.ld{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.hc img{transition:none;transform:none}}
+.hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .28s ease-out var(--d,0ms)} /* fade only: a scaling image inside the rounded, clipped card made Safari clip the card border and the grid look like it jumped */
+.hc img.ld{opacity:1}
+@media (prefers-reduced-motion:reduce){.hc img{transition:none}}
 .hc span{position:absolute;left:0;right:0;bottom:0;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
