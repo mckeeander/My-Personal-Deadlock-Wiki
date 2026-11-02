@@ -2564,7 +2564,8 @@ function animNum(root, beforeTxt) { // put the number (and its unit) in a slot w
     var meas = span.cloneNode(false), cache = {};
     meas.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;white-space:nowrap"; par.appendChild(meas);
     function nat(str) { if (cache[str] == null) { meas.textContent = str; cache[str] = meas.offsetWidth; meas.textContent = ""; } return cache[str]; }
-    var wFrom = nat(o[1] + unit), wTo = nat(finalS + unit), wMax = Math.max(nat(fromS + unit), nat(toS + unit)), t0 = null, last = null, w = wFrom, finished = false, minLen = Math.min((o[1] + unit).length, (finalS + unit).length);
+    // wMax: the wider of the old and new real values (not the zero-padded count strings)
+    var wFrom = nat(o[1] + unit), wTo = nat(finalS + unit), wMax = Math.max(wFrom, wTo), t0 = null, last = null, w = wFrom, finished = false, minLen = Math.min((o[1] + unit).length, (finalS + unit).length);
     span.style.transition = "none"; span.style.width = wFrom + "px"; span.textContent = fromS + unit;
     function step(ts) {
       if (t0 === null) { t0 = ts; last = ts; }
