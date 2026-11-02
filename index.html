@@ -151,7 +151,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .ic{height:1.1em;width:1.1em;vertical-align:-.2em;margin-right:4px}.ic.key{margin:0 2px 0 4px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
 .chip{background:var(--panel2);border-radius:5px;padding:4px 8px;font-size:13px}
-.chip.cd{border:1px solid var(--gold);color:#fff;padding:3px 8px;flex:none} /* the cooldown leads the chip row: regular white text, a thin full-gold outline */
+.chip.cd{border:1px solid #6AA6FF;color:#fff;padding:3px 8px;flex:none} /* the cooldown leads the chip row: regular white text, a thin blue outline (same blue as the Cooldown text in the tiers) */
 .ab .chips{justify-content:flex-start}
 .ab .chips .g:last-child{margin-left:0} /* the cooldown moved up beside the name, so the remaining chips line up on the left */
 .uu{margin:18px 0 10px;border:1px solid rgba(230,180,90,.32);background:rgba(230,180,90,.05);border-radius:10px;padding:10px 10px 12px}
@@ -393,6 +393,7 @@ html.lock,html.lock body{overflow:hidden}
  40%{box-shadow:0 0 0 2px rgba(84,112,238,.92),0 0 16px 3px rgba(68,104,242,.42),inset 0 0 12px rgba(68,104,242,.16)}}
 .stat.pop,.chips .chip.pop,.up.pop{animation:boxup 1s ease-in-out both}
 .stat.pop.dn,.chips .chip.pop.dn,.up.pop.dn{animation-name:boxdown}
+.chips .chip.cd.pop{animation-name:boxdown} /* the blue-outlined cooldown pill glows blue both ways */
 .minor span.pop{animation:popup 1s ease-in-out both}
 .minor span.pop.dn{animation-name:popdown}
 .minor span.pop .si,.minor span.pop img{animation:iconup 1s ease-in-out both}
