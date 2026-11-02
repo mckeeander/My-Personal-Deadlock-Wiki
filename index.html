@@ -372,7 +372,10 @@ html.lock,html.lock body{overflow:hidden}
 .desc + .stats,.desc + .minor{margin-top:16px}
 .backpill{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0) + 82px);transform:translateX(-50%);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
 .backpill[hidden]{display:none}
-#toppill{padding:10px 18px;gap:6px}
+#toppill{left:auto;right:max(16px,calc((100% - 600px)/2 + 16px));transform:none;width:46px;height:46px;padding:0;justify-content:center;border-radius:50%}
+#toppill.in{animation:topin .22s ease-out}
+@keyframes topin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#glbpill{padding:10px 18px}
 .backpill.in{animation:pillin .22s ease-out}
 .backpill .bx{display:inline-block;padding:0 8px;margin-left:4px;border-left:1px solid var(--line);color:var(--dim);font-size:18px;line-height:1}
 @keyframes pillin{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
@@ -437,7 +440,8 @@ html.lock,html.lock body{overflow:hidden}
 </footer></div></div>
 <button class="backpill" id="backpill" hidden></button>
 <button class="backpill" id="srchpill" hidden></button>
-<button class="backpill" id="toppill" hidden>↑ Back to top</button>
+<button class="backpill" id="glbpill" hidden></button>
+<button class="backpill" id="toppill" hidden aria-label="Back to top"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
 <script>
@@ -1629,10 +1633,7 @@ function statBlock(h) {
   function ok() { return (searchOn() || (state.tab === "heroes" && state.hero) || state.tab === "glossary") && $("sheet").hidden; }
   function goBack() {
     if (searchOn()) { $("sq").blur(); endSearch(true); return; } // swiping out of search works like Cancel
-    if (state.tab === "glossary") { // back to the page the glossary was opened from (Abrams, say), then the hero list
-      var f = state.glossFrom; state.glossFrom = null; if (!f) { $("brand").onclick(); return; }
-      state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y); return;
-    }
+    if (state.tab === "glossary") { glossBack(); return; }
     if (!$("backpill").hidden) { $("backpill").click(); return; }
     var b = $("back"); if (b) b.onclick();
   }
@@ -2245,12 +2246,22 @@ var TABMEM = {};
 $("brand").onclick = function () { // the title goes home: the hero list
   hideBack(); TABMEM.heroes = null; endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
 };
-function topPill() { // shows once you've scrolled past the glossary's category cards
-  var tp = $("toppill"), c = document.querySelector("#main .gcats");
-  var show = state.tab === "glossary" && !searchOn() && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0;
-  if (show === !tp.hidden) return;
-  tp.hidden = !show; if (show) { tp.classList.remove("in"); void tp.offsetWidth; tp.classList.add("in"); }
+function glossBack() { // back to the page the glossary was opened from (Abrams, say), then the hero list
+  var f = state.glossFrom; state.glossFrom = null; if (!f) { $("brand").onclick(); return; }
+  state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y);
 }
+function topPill() { // glossary: a round ↑ on the right once you've scrolled past the category cards, and "‹ Back to Abrams" when you came from somewhere
+  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gcats"), inG = state.tab === "glossary" && !searchOn();
+  var show = inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0;
+  if (show !== !tp.hidden) { tp.hidden = !show; if (show) { tp.classList.remove("in"); void tp.offsetWidth; tp.classList.add("in"); } }
+  var f = inG && state.glossFrom, nm = "";
+  if (f) { var h = f.tab === "heroes" && f.hero && state.heroes.filter(function (x) { return x.class_name === f.hero; })[0]; nm = h ? h.name : { heroes: "Heroes", weapon: "Weapon", vitality: "Vitality", spirit: "Spirit" }[f.tab] || "page"; }
+  var gshow = !!f && $("backpill").hidden;
+  if (gshow) gb.textContent = "‹ Back to " + nm;
+  if (gshow !== !gb.hidden) { gb.hidden = !gshow; if (gshow) { gb.classList.remove("in"); void gb.offsetWidth; gb.classList.add("in"); } }
+}
+new MutationObserver(function () { topPill(); }).observe($("main"), { childList: true });
+$("glbpill").onclick = function () { $("glbpill").hidden = true; glossBack(); };
 window.addEventListener("scroll", topPill, { passive: true });
 $("toppill").onclick = function () { easeScroll(0); };
 $("tabs").addEventListener("click", function () { setTimeout(topPill, 0); });
