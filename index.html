@@ -206,6 +206,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .up>div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
 .up>div:last-child{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 5px}
 .up .ut{line-height:1.3;font-weight:400;min-width:0;overflow-wrap:anywhere}
+.odl{display:inline-block;white-space:nowrap}.odc{display:inline-block;position:relative;clip-path:inset(0);text-align:center}.odc .odp{visibility:hidden}.odc .odi{position:absolute;left:0;right:0;top:0}.odc .odi>span{display:block}
 .cnt{display:inline-block;text-align:left;white-space:nowrap}
 .ss{color:transparent;-webkit-text-stroke:1px var(--spirit);font-weight:400;paint-order:stroke;display:inline-block;transform:translateY(-.02em)}
 .nw{white-space:nowrap}
@@ -2604,12 +2605,45 @@ function animNum(root, beforeTxt) { // put the number (and its unit) in a slot w
     requestAnimationFrame(step);
   };
 }
+function rollNum(root, beforeTxt) { // elevator roll: each changed digit rides a reel of digits down into place (trial: Siphon Life's Damage tile)
+  if (!root || beforeTxt == null || !root.animate) return null;
+  var tn = lastTextNode(root); if (!tn) return null;
+  var m = /^([^\d-]*)(-?[\d.]+)(.*)$/.exec(tn.nodeValue), o = /(-?[\d.]+)/.exec(beforeTxt);
+  if (!m || !o || m[2] === o[1]) return null;
+  var nw = m[2].split(""), od = o[1].split(""), off = nw.length - od.length, par = tn.parentNode, rl = document.createElement("span"), reels = [];
+  rl.className = "odl";
+  nw.forEach(function (ch, i) {
+    var oc = od[i - off], col = document.createElement("span"); col.className = "odc";
+    var ph = document.createElement("span"); ph.className = "odp"; ph.textContent = ch; col.appendChild(ph);
+    if (/\d/.test(ch) && oc !== ch && (oc == null || /\d/.test(oc))) {
+      var items = [], n = +ch, steps = oc == null ? n : ((n - +oc) % 10 + 10) % 10 + 10; // one extra lap, so the reel is plainly moving
+      for (var k = 0; k <= steps; k++) items.push(oc == null && k === steps ? "" : String(((n - k) % 10 + 10) % 10));
+      var ri = document.createElement("span"); ri.className = "odi";
+      items.forEach(function (t) { var d = document.createElement("span"); d.textContent = t || " "; ri.appendChild(d); });
+      col.appendChild(ri); reels.push([ri, items.length]);
+    } else { var st = document.createElement("span"); st.className = "odi"; st.textContent = ch; col.appendChild(st); }
+    rl.appendChild(col);
+  });
+  par.insertBefore(document.createTextNode(m[1]), tn); par.insertBefore(rl, tn); par.removeChild(tn);
+  var suf = m[3] ? document.createTextNode(m[3]) : null; if (suf) par.insertBefore(suf, rl.nextSibling);
+  return function go() {
+    var done = 0, finalTxt = m[2];
+    reels.forEach(function (r, i) {
+      var ri = r[0], col = ri.parentNode, h = col.offsetHeight, w = col.offsetWidth;
+      col.style.width = w + "px"; col.style.height = h + "px";
+      Array.prototype.forEach.call(ri.children, function (d) { d.style.height = h + "px"; });
+      var a = ri.animate([{ transform: "translateY(" + (-(r[1] - 1) * h) + "px)" }, { transform: "translateY(0)" }], { duration: COUNT_MS, delay: i * 110, easing: "cubic-bezier(.65,0,.35,1)", fill: "both" });
+      a.onfinish = function () { if (++done === reels.length) { var t = document.createTextNode(finalTxt); par.replaceChild(t, rl); } };
+    });
+  };
+}
 function countTo(el, bef, k) {
   var card = el.closest ? el.closest(".ab") : null, h = card && card.querySelector("h3");
   if (!h || h.textContent.replace(/\s+/g, " ").trim() !== "Siphon Life") return;
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var isStat = el.tagName === "DIV", go = [];
-  go.push(animNum(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
+  var lab = isStat && el.querySelector("i"), roll = lab && /Damage/.test(lab.textContent);
+  go.push((roll ? rollNum : animNum)(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
   if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(animNum(sc, bef[k + "|sc"])); }
   go.forEach(function (g) { if (g) g(); });
 }
