@@ -131,8 +131,8 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .ab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:18px}
 .abh{display:flex;gap:10px;align-items:center}
 /* jump to an ability: four icon buttons floating just above the bottom navigation for as long as a hero page is open; the one you are on is outlined in gold */
-#jbar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:6;justify-content:center;gap:10px;padding:8px;border-radius:19px;background:rgba(20,17,26,.82);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--line);box-shadow:0 6px 22px rgba(0,0,0,.7)}
-#jbar.show{display:flex}
+#jbar{display:flex;visibility:hidden;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:6;justify-content:center;gap:10px;padding:8px;border-radius:19px;background:rgba(20,17,26,.82);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--line);box-shadow:0 6px 22px rgba(0,0,0,.7)}
+#jbar.show{visibility:visible}
 body.typing #jbar{display:none}
 #jbar:not(.alt) .f1,#jbar.alt .f0{display:none}
 .jb{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:0;}
@@ -1668,14 +1668,20 @@ function slideBack(fn) {
     SLIDING = false;
   }, 170);
 }
-(function () { // the pinned ability buttons are fixed to the screen, so they copy the page's slide (swipes, back buttons, tab changes) to travel with it
-  var m = $("slide"), j = $("jbar");
-  function mirror() {
-    var mm = /translateX\((-?[\d.]+)px\)/.exec(m.style.transform || "");
+(function () { // the pinned ability buttons are fixed to the screen, so they replay the page's slide (swipes, back buttons, tab changes) step by step to travel with it
+  var m = $("slide"), j = $("jbar"), tmp = document.createElement("div");
+  function apply(css) {
+    tmp.style.cssText = css || "";
+    var mm = /translateX\((-?[\d.]+)px\)/.exec(tmp.style.transform || "");
     j.style.transform = mm ? "translateX(calc(-50% + " + mm[1] + "px))" : "";
-    j.style.opacity = m.style.opacity; j.style.transition = m.style.transition;
+    j.style.opacity = tmp.style.opacity; j.style.transition = tmp.style.transition;
   }
-  new MutationObserver(mirror).observe(m, { attributes: true, attributeFilter: ["style"] });
+  new MutationObserver(function (recs) { // several changes in one go (jump to the start, reflow, glide to rest) are replayed in order so the bar gets the same start point
+    var states = [recs[0].oldValue];
+    for (var i = 1; i < recs.length; i++) states.push(recs[i].oldValue);
+    states.push(m.getAttribute("style"));
+    states.forEach(function (st, i) { apply(st); if (i < states.length - 1) void j.offsetWidth; });
+  }).observe(m, { attributes: true, attributeFilter: ["style"], attributeOldValue: true });
 })();
 (function () {
   var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("slide"); // the page and its footer slide together
