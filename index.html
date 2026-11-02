@@ -395,12 +395,12 @@ html.lock,html.lock body{overflow:hidden}
 .sheet .in{position:relative}
 .swc{position:relative}
 .gcat2{font-size:11px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--gold)}
-.grh{font-size:11px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--dim);margin:18px 0 8px;padding-top:14px;border-top:1px solid #3d344c}
+.grh{padding-left:3px;font-size:11px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--dim);margin:18px 0 8px;padding-top:14px;border-top:1px solid #3d344c}
 .grels{display:flex;flex-wrap:wrap;gap:6px}
 .grel{background:var(--panel2);border:1px solid #4a405a;border-radius:8px;padding:6px 10px;font-size:14px;color:var(--fg)}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
-.gt{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:24px}
+.gt{cursor:pointer;-webkit-tap-highlight-color:transparent;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:24px}
 .gt h3{margin:0 0 4px;font-size:16px}
 .gt h3,.gsh h3{display:flex;align-items:center;gap:8px}
 .gi{width:20px;height:20px;flex:none;object-fit:contain}
@@ -1632,7 +1632,10 @@ function statBlock(h) {
   var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("slide"); // the page and its footer slide together
   function ok() { return ((state.tab === "heroes" && state.hero) || state.tab === "glossary") && !searchOn() && $("sheet").hidden; }
   function goBack() {
-    if (state.tab === "glossary") { $("brand").onclick(); return; }
+    if (state.tab === "glossary") { // back to the page the glossary was opened from (Abrams, say), then the hero list
+      var f = state.glossFrom; state.glossFrom = null; if (!f) { $("brand").onclick(); return; }
+      state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y); return;
+    }
     if (!$("backpill").hidden) { $("backpill").click(); return; }
     var b = $("back"); if (b) b.onclick();
   }
@@ -2193,6 +2196,7 @@ function sheetBack() {
   if (top.indexOf("g:") === 0) glossSheet(top.slice(2), true); else itemSheet(top, true);
 }
 function openGlossary(k) {
+  if (state.tab !== "glossary") state.glossFrom = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0 }; // swipe back returns here
   endSearch(); state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI("glossary"); renderGlossary();
   var el = k && $("g-" + k);
   if (el) { scrollToEl(el); el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100); } else window.scrollTo(0, 0);
@@ -2323,6 +2327,8 @@ $("main").addEventListener("click", function (e) {
   if (fsb) { setForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
   if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1100); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
+  var gt = state.tab === "glossary" && e.target.closest ? e.target.closest(".gt[id^='g-']") : null;
+  if (gt && !(e.target.closest && e.target.closest("a,button"))) { glossSheet(gt.id.slice(2)); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
   if (gc) { var h0 = $("gc-" + gc.getAttribute("data-gc")); if (h0) scrollToEl(h0, true); return; }
   if (tapTip(e)) return;
