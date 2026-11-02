@@ -203,8 +203,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .up>div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
 .up>div:last-child{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 5px}
 .up .ut{line-height:1.3;font-weight:400;min-width:0;overflow-wrap:anywhere}
-.cnt{display:inline-block;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums}
-.cnt.done{font-variant-numeric:normal}
+.cnt{display:inline-block;text-align:left;white-space:nowrap}
 .ss{color:transparent;-webkit-text-stroke:1.3px var(--spirit);font-weight:400;paint-order:stroke;display:inline-block;transform:translateY(-.02em)}
 .nw{white-space:nowrap}
 .up .pg{display:block;height:7px} /* each line of a tier's text starts on its own line */
@@ -2562,27 +2561,25 @@ function animNum(root, beforeTxt) { // put the number (and its unit) in a slot w
   span.className = "cnt"; span.textContent = finalS + unit;
   par.insertBefore(document.createTextNode(m[1]), tn); par.insertBefore(span, tn); par.removeChild(tn);
   return function go() {
-    var meas = span.cloneNode(false), measP = span.cloneNode(false); // measure with equal-width digits (while counting) and with normal digits (at rest)
-    measP.className = "cnt done";
-    meas.style.cssText = measP.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;white-space:nowrap"; par.appendChild(meas); par.appendChild(measP);
-    var cache = {}, cacheP = {};
-    function nat(str, P) { var c = P ? cacheP : cache, mm = P ? measP : meas, key = P ? str : str.length + (str.indexOf(".") >= 0 ? "." : ""); if (c[key] == null) { mm.textContent = str; c[key] = mm.offsetWidth; mm.textContent = ""; } return c[key]; }
-    var wFrom = nat(o[1] + unit, 1), wTo = nat(finalS + unit, 1), t0 = null, last = null, w = wFrom, finished = false, minLen = Math.min((o[1] + unit).length, (finalS + unit).length);
+    var meas = span.cloneNode(false), cache = {};
+    meas.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;white-space:nowrap"; par.appendChild(meas);
+    function nat(str) { if (cache[str] == null) { meas.textContent = str; cache[str] = meas.offsetWidth; meas.textContent = ""; } return cache[str]; }
+    var wFrom = nat(o[1] + unit), wTo = nat(finalS + unit), wMax = Math.max(nat(fromS + unit), nat(toS + unit)), t0 = null, last = null, w = wFrom, finished = false, minLen = Math.min((o[1] + unit).length, (finalS + unit).length);
     span.style.transition = "none"; span.style.width = wFrom + "px"; span.textContent = fromS + unit;
     function step(ts) {
       if (t0 === null) { t0 = ts; last = ts; }
       var k = Math.min(1, (ts - t0) / COUNT_MS), e = easeIO(k), target;
       if (k < 1) {
         var txt = (from + (to - from) * e).toFixed(dec) + unit; span.textContent = txt;
-        target = Math.max(wFrom + (wTo - wFrom) * e, txt.length > minLen ? nat(txt) : 0); // glides over the whole count; a value with an extra digit/decimal gets its room, and no narrower than it needs while it still has it
+        target = Math.max(wFrom + (wTo - wFrom) * e, txt.length > minLen ? wMax : 0); // glides over the whole count, so same-length numbers never nudge their pill; an extra digit/decimal gets its room
       } else {
-        if (!finished) { finished = true; span.className = "cnt done"; span.textContent = finalS + unit; } // back to the normal digit spacing; drops any extra decimal only now
+        if (!finished) { finished = true; span.textContent = finalS + unit; } // drops any extra decimal only now
         target = wTo;
       }
       w += (target - w) * (1 - Math.exp(-(ts - last) / 60)); last = ts; // soft-follow, so a sudden extra digit eases in instead of jumping
       span.style.width = w + "px";
       if (k < 1 || Math.abs(target - w) > .4) requestAnimationFrame(step);
-      else { if (meas.parentNode) par.removeChild(meas); if (measP.parentNode) par.removeChild(measP); span.style.width = ""; }
+      else { if (meas.parentNode) par.removeChild(meas); span.style.width = ""; }
     }
     requestAnimationFrame(step);
   };
