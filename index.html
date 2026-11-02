@@ -1664,6 +1664,64 @@ function statBlock(h) {
     } else { m.style.transform = ""; m.style.opacity = ""; }
   });
 })();
+// swipe anywhere to change tab: left = next (Heroes → Weapon → Vitality → Spirit), right = previous. It presses the tab for you, so each tab still remembers its hero and scroll spot.
+// Stays out of the way of: the left-edge back swipe, Safari's own edge swipes, the pop-up sheets, search, the glossary, typing, pinch-zoom, text selection and anything that scrolls sideways.
+(function () {
+  var ORDER = ["heroes", "weapon", "vitality", "spirit"], m = $("slide");
+  var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, busy = false;
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function typing() { return /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || ""); }
+  function sideScroller(el) { // a row that scrolls sideways owns horizontal drags
+    for (; el && el !== document.body && el.nodeType === 1; el = el.parentElement) {
+      var o = getComputedStyle(el).overflowX;
+      if ((o === "auto" || o === "scroll") && el.scrollWidth > el.clientWidth + 1) return true;
+    }
+    return false;
+  }
+  function ok() {
+    return ORDER.indexOf(state.tab) > -1 && !searchOn() && $("sheet").hidden && !busy && !typing() &&
+      !(window.visualViewport && window.visualViewport.scale > 1.02);
+  }
+  function settle() { m.style.transition = calm ? "none" : "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = ""; }
+  document.addEventListener("touchstart", function (e) {
+    on = false; if (!ok() || e.touches.length !== 1) return;
+    var t = e.touches[0]; if (t.clientX <= 40 || t.clientX >= window.innerWidth - 24) return; // the edges belong to the back swipe and Safari
+    if (sideScroller(e.target)) return;
+    on = true; horiz = null; x0 = t.clientX; y0 = t.clientY; t0 = Date.now(); dx = 0;
+  }, { passive: true });
+  document.addEventListener("touchmove", function (e) {
+    if (!on) return;
+    if (e.touches.length !== 1) { on = false; if (horiz) settle(); return; }
+    var t = e.touches[0], ddx = t.clientX - x0, ddy = t.clientY - y0;
+    if (horiz === null && (Math.abs(ddx) > 12 || Math.abs(ddy) > 12)) horiz = Math.abs(ddx) > Math.abs(ddy) * 1.5; // clearly sideways, or it's a scroll
+    if (horiz === false) { on = false; return; }
+    if (!horiz) return;
+    if (e.cancelable) e.preventDefault();
+    dx = ddx;
+    if (calm) return;
+    var has = ORDER[ORDER.indexOf(state.tab) + (dx < 0 ? 1 : -1)] != null; // at either end the page only gives a little, like a rubber band
+    m.style.transition = "none"; m.style.transform = "translateX(" + (dx * (has ? .35 : .12)) + "px)";
+    m.style.opacity = has ? String(1 - Math.min(.3, Math.abs(dx) / window.innerWidth)) : "";
+  }, { passive: false });
+  function cancel() { if (on && horiz) settle(); on = false; }
+  document.addEventListener("touchcancel", cancel);
+  document.addEventListener("touchend", function () {
+    if (!on) return; on = false; if (!horiz) return;
+    var dir = dx < 0 ? 1 : -1, to = ORDER[ORDER.indexOf(state.tab) + dir], sel = window.getSelection ? String(window.getSelection()) : "";
+    var fast = Math.abs(dx) > 45 && Math.abs(dx) / Math.max(1, Date.now() - t0) > .45;
+    var btn = to && document.querySelector('#tabs .tab[data-c="' + to + '"]');
+    if (!btn || sel || !(Math.abs(dx) > window.innerWidth * .22 || fast)) { settle(); return; }
+    if (calm) { btn.click(); settle(); return; }
+    busy = true; // old page slides off, the new one comes in from the far side
+    m.style.transition = "transform .12s ease-out, opacity .12s ease-out"; m.style.transform = "translateX(" + (-dir * 40) + "px)"; m.style.opacity = "0";
+    setTimeout(function () {
+      m.style.transition = "none"; btn.click();
+      m.style.transform = "translateX(" + (dir * 40) + "px)"; m.style.opacity = "0"; void m.offsetWidth;
+      m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = "";
+      setTimeout(function () { m.style.transition = ""; busy = false; }, 200);
+    }, 120);
+  });
+})();
 var EASE = 0, EASE_DUR = 0;
 function easeScroll(y) { // ease-in-out scroll; a touch or wheel cancels it so it never fights your finger
   var from = window.pageYOffset || 0, d = y - from, t0 = 0, id = ++EASE;
