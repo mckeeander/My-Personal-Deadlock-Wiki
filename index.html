@@ -155,13 +155,7 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .fsw button{flex:none;border:1px solid var(--line);border-radius:999px;background:transparent;padding:6px 14px;color:var(--dim);font-size:13px;font-weight:600;line-height:1.2}
 #main:not(.alt) .fsw .fs0{border-color:var(--nav);color:#a9c8f5;background:rgba(79,143,232,.16)}
 #main.alt .fsw .fs1{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.14)}
-.sbx{margin:18px 0 8px;border-top:1px solid var(--line);padding-top:12px}
-.sbx summary{display:flex;align-items:center;gap:8px;cursor:pointer;list-style:none;color:var(--dim);font-size:14px;margin-bottom:10px}
-.sbx summary::-webkit-details-marker{display:none}
-.sbx summary::before{content:"›";display:inline-block;width:12px;color:var(--gold);font-size:18px;line-height:1;transition:transform .15s}
-.sbx[open] summary::before{transform:rotate(90deg)}
-.sbx summary span{color:var(--fg)}
-.sbx:not([open]) summary{margin-bottom:0}
+.sbx{margin:18px 0 8px;border-top:1px solid var(--line)}
 .tc{flex:none;width:58px;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--disp);font-weight:700;font-size:14px;color:#fff;padding:4px 2px}
 .tc.weapon{background:#a8651a}.tc.vitality{background:#3d7d3c}.tc.spirit{background:#6b45a8}
 .tl{flex:1;min-width:0;display:flex;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px}
@@ -1355,6 +1349,7 @@ function noteHtml(txt, own) {
 }
 var NICON = {
   notes: '<path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM9 8h6M9 12h6M9 16h4"/>',
+  brawl: '<path d="M21 3v5l-11 9-4 4-3-3 4-4 9-11zM5 13l6 6M14.3 17.3L18 21l3-3-3.7-3.7M10 5.5L8 3H3v5l3 2.5"/>',
   inter: '<path d="M4 7h3a1 1 0 0 0 1-1V5a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-1a2 2 0 0 0-4 0v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a2 2 0 0 0 0-4H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/>' };
 function nsum(label, kind, n) {
   var sv = function (d, c) { return '<svg class="' + c + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + "</svg>"; };
@@ -1829,7 +1824,7 @@ function renderShop(slot) {
     html += "</div></div>";
     if (sb) { brawl += html; html = out; }
   });
-  if (brawl) html += '<details class="sbx"' + (state.sbOpen ? " open" : "") + '><summary><span>Street Brawl only</span><small>' + nb + " item" + (nb === 1 ? "" : "s") + "</small></summary>" + brawl + "</details>";
+  if (brawl) html += '<details class="notes sbx"' + (state.sbOpen ? " open" : "") + ">" + nsum("Street Brawl only", "brawl", nb) + brawl + "</details>"; // same row style as Notes and Interactions
   if (!Object.keys(tiers).length) html += '<p class="status">Nothing matched. If this stays empty, tap Refresh now.</p>';
   $("main").innerHTML = html;
   var sbx = document.querySelector("#main .sbx"); if (sbx) sbx.addEventListener("toggle", function () { state.sbOpen = sbx.open; });
