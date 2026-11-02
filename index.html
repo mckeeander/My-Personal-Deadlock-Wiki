@@ -1859,18 +1859,18 @@ function jumpItems(abs, fp) { // one icon button per ability (two when a hero ha
     return alt ? one(a, " f0") + one(alt, " f1") : one(a, "");
   }).join("");
 }
-var JLOCK = false, JT = 0; // while a tapped jump is scrolling, the highlight stays off so it does not flash through the abilities on the way
+var JLOCK = false, JT = 0, JTO = ""; // while a tapped jump is scrolling, the tapped ability stays highlighted so it does not flash through the abilities on the way; once the scroll stops (or you touch the screen) it follows where you actually are
 function jumpUnlock() { clearTimeout(JT); if (JLOCK) { JLOCK = false; updateJbar(); } }
 function updateJbar() { // shown for the whole hero page; outlines the ability you are on (the last card whose top has passed the upper part of the screen)
   var bar = $("jbar"), show = state.tab === "heroes" && !!state.hero && !$("main").hidden && !!bar.firstChild, cur = "";
-  if (show && !JLOCK) Array.prototype.forEach.call(document.querySelectorAll("#main .ab"), function (c) { if (c.offsetParent !== null && c.getBoundingClientRect().top < window.innerHeight * .4) cur = c.getAttribute("data-ab"); });
+  if (show && JLOCK) cur = JTO; else if (show) Array.prototype.forEach.call(document.querySelectorAll("#main .ab"), function (c) { if (c.offsetParent !== null && c.getBoundingClientRect().top < window.innerHeight * .4) cur = c.getAttribute("data-ab"); });
   bar.classList.toggle("show", show); document.body.classList.toggle("jump", show);
   Array.prototype.forEach.call(bar.querySelectorAll(".jb"), function (b) { b.classList.toggle("on", show && b.getAttribute("data-jump") === cur); });
 }
 function jumpTo(cn) {
   var el = document.querySelector('#main [data-ab="' + cn + '"]'); if (!el) return;
   if (el.closest(".f1")) { if (!state.alt) setForm(true); } else if (el.closest(".f0") && state.alt) setForm(false);
-  JLOCK = true; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar();
+  JLOCK = true; JTO = cn; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar();
   scrollToEl(el, true);
   el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100);
 }
