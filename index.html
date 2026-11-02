@@ -372,7 +372,7 @@ html.lock,html.lock body{overflow:hidden}
 .desc + .stats,.desc + .minor{margin-top:16px}
 .backpill{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0) + 82px);transform:translateX(-50%);z-index:8;background:var(--panel2);color:var(--fg);border:1px solid var(--gold);border-radius:999px;padding:10px 8px 10px 16px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
 .backpill[hidden]{display:none}
-#toppill{left:auto;right:max(16px,calc((100% - 600px)/2 + 16px));transform:none;width:46px;height:46px;padding:0;justify-content:center;border-radius:50%}
+#toppill{left:auto;right:max(16px,calc((100% - 600px)/2 + 16px));transform:none;width:41px;height:41px;padding:0;justify-content:center;border-radius:50%}
 #toppill.in{animation:topin .22s ease-out}
 @keyframes topin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 #glbpill{padding:10px 18px}
@@ -2256,7 +2256,7 @@ function topPill() { // glossary: a round ↑ on the right once you've scrolled 
   if (show !== !tp.hidden) { tp.hidden = !show; if (show) { tp.classList.remove("in"); void tp.offsetWidth; tp.classList.add("in"); } }
   var f = inG && state.glossFrom, nm = "";
   if (f) { var h = f.tab === "heroes" && f.hero && state.heroes.filter(function (x) { return x.class_name === f.hero; })[0]; nm = h ? h.name : { heroes: "Heroes", weapon: "Weapon", vitality: "Vitality", spirit: "Spirit" }[f.tab] || "page"; }
-  var gshow = !!f && $("backpill").hidden;
+  var gshow = !!f && !f.quiet && $("backpill").hidden;
   if (gshow) gb.textContent = "‹ Back to " + nm;
   if (gshow !== !gb.hidden) { gb.hidden = !gshow; if (gshow) { gb.classList.remove("in"); void gb.offsetWidth; gb.classList.add("in"); } }
 }
@@ -2267,7 +2267,9 @@ $("toppill").onclick = function () { easeScroll(0); };
 $("tabs").addEventListener("click", function () { setTimeout(topPill, 0); });
 $("gbtn").onclick = function () { // a second tap while on the glossary goes home
   if (state.tab === "glossary" && !searchOn()) { $("brand").onclick(); return; }
-  hideBack(); openGlossary();
+  hideBack(); var top = !(state.tab === "heroes" && state.hero); openGlossary();
+  if (top && state.glossFrom) state.glossFrom.quiet = true; // from a main page: swipe still goes back, but no Back pill
+  topPill();
 };
 // search: the bar is always there; while it has text the page underneath is hidden (not re-rendered), so clearing it puts you back exactly where you were
 var SEARCH_Y = 0;
