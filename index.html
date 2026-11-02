@@ -1668,6 +1668,15 @@ function slideBack(fn) {
     SLIDING = false;
   }, 170);
 }
+(function () { // the pinned ability buttons are fixed to the screen, so they copy the page's slide (swipes, back buttons, tab changes) to travel with it
+  var m = $("slide"), j = $("jbar");
+  function mirror() {
+    var mm = /translateX\((-?[\d.]+)px\)/.exec(m.style.transform || "");
+    j.style.transform = mm ? "translateX(calc(-50% + " + mm[1] + "px))" : "";
+    j.style.opacity = m.style.opacity; j.style.transition = m.style.transition;
+  }
+  new MutationObserver(mirror).observe(m, { attributes: true, attributeFilter: ["style"] });
+})();
 (function () {
   var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("slide"); // the page and its footer slide together
   function ok() { return (searchOn() || (state.tab === "heroes" && state.hero) || state.tab === "glossary") && $("sheet").hidden; }
