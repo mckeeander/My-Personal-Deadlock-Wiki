@@ -26,7 +26,7 @@ img{max-width:100%}
 header{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);display:flex;flex-direction:column-reverse;
   padding:0 max(0px,calc((100% - 600px)/2)) 0;transition:transform .15s ease-out}
 /* bottom navigation: a plain bar with an icon over each label, like an iPhone tab bar; the active tab lights up in its colour */
-header{--bar:#1d1926;border-top:2px solid var(--line);background:var(--bar)}
+header{--bar:#1d1926;border-top:3px solid var(--line);background:var(--bar)}
 body.kb header{padding-bottom:0}
 header .tabs{display:flex;margin:0;gap:0;background:none;border:0;border-radius:0;padding:0}
 header .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:0;background:transparent;box-shadow:none;
@@ -40,7 +40,7 @@ header .tab.on.lit svg{animation:tabpop .28s ease-out}
 @keyframes tabpop{0%{transform:scale(.82)}60%{transform:scale(1.08)}100%{transform:none}}
 /* a soft circle of colour sits behind the active icon; on a switch it shrinks, hops to the new tab and grows back, changing colour */
 header .tabs{position:relative}
-.tind{position:absolute;top:6px;left:0;width:38px;height:38px;border-radius:50%;pointer-events:none;z-index:0;opacity:0;transition:opacity .2s ease}
+.tind{display:none!important;position:absolute;top:6px;left:0;width:38px;height:38px;border-radius:50%;pointer-events:none;z-index:0;opacity:0;transition:opacity .2s ease}
 .tind.show{opacity:1}
 body.srch .tind{opacity:0}
 body.srch header .tab.on{color:#9a90aa;font-weight:500}
@@ -2396,7 +2396,7 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
     if (on === cur && on.classList.contains("lit")) return;
     var from = last; cur = on; last = on;
     if (anim) { anim.cancel(); anim = null; }
-    if (!animate || !from || from === on || calm || !ind.animate) { place(on); on.classList.add("lit"); return; }
+    place(on); on.classList.add("lit"); return; // circle animation removed; the icon fills right away
     // shrink in place, hop (with a little lift) to the new tab, grow back; the new icon fills in as the circle lands
     var x0 = xOf(from), x1 = xOf(on), c0 = COL[from.getAttribute("data-c")], c1 = COL[on.getAttribute("data-c")];
     place(on);
