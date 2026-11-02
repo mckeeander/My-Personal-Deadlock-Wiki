@@ -336,7 +336,7 @@ details.lore:not([open]) summary{margin-bottom:0}
 .bg div.spike{position:relative;border:2px solid var(--sp)}
 .bg div.spike u{position:absolute;top:-9px;left:50%;transform:translateX(-50%);text-decoration:none;font-size:9px;font-weight:700;letter-spacing:.12em;color:#1a1208;border-radius:6px;padding:1px 7px}
 .bg div.spike span{color:var(--fg)}
-body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+html.lock,html.lock body{overflow:hidden}
 .sheet .in{overscroll-behavior:contain}
 .wc i,.stat i{line-height:1.25}
 .wc i{display:block;margin-top:2px}
@@ -392,6 +392,11 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .gcat i{font-style:normal;color:var(--gold);font-size:20px;line-height:1}
 .gsbtns{display:flex;gap:8px;margin-top:22px}.gsbtns #gall{flex:0 0 52px;display:flex;align-items:center;justify-content:center}.gsbtns #close{flex:1}
 .gsbtns .ibtn{border-radius:14px;min-height:46px}
+.sheet .in{position:relative}
+.swc{position:relative}
+.sbk{position:absolute;top:-34px;left:-4px;display:inline-flex;align-items:center;gap:2px;max-width:60%;height:28px;padding:0 10px 0 6px;border:0;border-radius:999px;background:var(--panel2);color:var(--dim);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbk svg{width:15px;height:15px;flex:none}
+#sheetin:has(.sbk)::before{margin-bottom:30px}
 .gcat2{font-size:11px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--gold)}
 .grh{font-size:11px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--dim);margin:18px 0 8px;padding-top:14px;border-top:1px solid #3d344c}
 .grels{display:flex;flex-wrap:wrap;gap:6px}
@@ -1881,7 +1886,7 @@ function itemSheet(cn, fromBack) {
   var hasText = (it.tooltip_sections || []).some(function (sec) { return (sec.section_attributes || []).some(function (a) { return a.loc_string; }); });
   var topDesc = !hasText ? rich(descText(it.description)) : "";
   var comps = it.component_items || [], into = (state.into || {})[cn] || [];
-  var html = (ISTACK.length > 1 ? '<button class="back" id="ibk">‹ Back</button>' : "") +
+  var html = backBtn() +
     '<div class="abh">' + imgTag(itemArt(it), itemImg(it)) + "<h3>" + esc(nameOf(it)) + '</h3><span class="cost">' + (it.cost ? "$" + Number(it.cost).toLocaleString() : "") + "</span></div>" +
     '<div class="pills">' + (slot ? '<span class="pill2 ' + esc(slot) + '">' + esc(slot.charAt(0).toUpperCase() + slot.slice(1)) + "</span>" : "") +
     (it.item_tier ? '<span class="pill2">Tier ' + esc(it.item_tier) + "</span>" : "") + (kind ? '<span class="pill2">' + kind + "</span>" : "") + "</div>" +
@@ -1896,7 +1901,7 @@ function itemSheet(cn, fromBack) {
   }
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!$("sheet").hidden && !calm && $("sheetin").firstChild) swapSheet(html, !!fromBack, bind);
-  else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = html; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
+  else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
 }
 var SWAPT = 0;
 function resetSwap() { var b = $("sheetin"); b.style.height = ""; b.style.overflow = ""; b.style.transition = ""; }
@@ -1916,9 +1921,27 @@ function swapSheet(html, back, bind) {
     SWAPT = setTimeout(function () { resetSwap(); }, 300);
   }, 200);
 }
+// while a pop-up is open the page behind can't scroll. Pinning the body with position:fixed made Safari shrink the
+// viewport (pop-ups sat too high and the nav was cut off), so instead block scrolling gestures outside the pop-up's own scroll area
+function backBtn() { // "‹ Stun": the previous pop-up in the stack, sitting beside the grab handle
+  if (ISTACK.length < 2) return "";
+  var pv = ISTACK[ISTACK.length - 2], nm = pv.indexOf("g:") === 0 ? (GBY[pv.slice(2)] || {}).t : nameOf(state.byClass[pv] || {});
+  return '<button class="sbk" id="ibk" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>' + esc(nm || "Back") + "</button>";
+}
 var LOCKY = 0;
-function lockBody() { if (document.body.classList.contains("lock")) return; LOCKY = window.pageYOffset || 0; document.body.style.top = -LOCKY + "px"; document.body.classList.add("lock"); }
-function unlockBody() { if (!document.body.classList.contains("lock")) return; document.body.classList.remove("lock"); document.body.style.top = ""; window.scrollTo(0, LOCKY); }
+function lockMove(e) {
+  var inn = e.target.closest ? e.target.closest(".sheet .in") : null;
+  if (!inn || inn.scrollHeight <= inn.clientHeight + 1) e.preventDefault();
+}
+function lockBody() {
+  if (document.documentElement.classList.contains("lock")) return; LOCKY = window.pageYOffset || 0;
+  document.documentElement.classList.add("lock"); document.addEventListener("touchmove", lockMove, { passive: false });
+}
+function unlockBody() {
+  if (!document.documentElement.classList.contains("lock")) return;
+  document.documentElement.classList.remove("lock"); document.removeEventListener("touchmove", lockMove, { passive: false });
+  if ((window.pageYOffset || 0) !== LOCKY) window.scrollTo(0, LOCKY);
+}
 function closeSheet() { clearTimeout(SWAPT); resetSwap(); $("sheet").hidden = true; ISTACK = []; unlockBody(); }
 function bindCommon() {
   var q = $("q");
@@ -2141,10 +2164,14 @@ function renderGlossary() {
   $("main").innerHTML = '<h1 class="gtitle">Glossary</h1>' +
     '<div class="gcats">' + jump + '</div><div id="glist">' + glossList() + "</div>";
 }
-// related terms: ones this definition links to, then ones whose definitions link back to it
+// related terms: ones whose definitions link to this one, minus any already linked or named in this definition
 function relatedHtml(g) {
-  var ks = [], add = function (k) { if (k && k !== g.k && GBY[k] && ks.indexOf(k) < 0) ks.push(k); };
-  String(g.d).replace(/\[\[([a-z-]+)\|/g, function (m, k) { add(k); return m; });
+  var inDef = {}, txt = String(g.d).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, t) { inDef[k] = 1; return t; }).toLowerCase();
+  var ks = [], add = function (k) {
+    var o = GBY[k]; if (!o || k === g.k || inDef[k] || ks.indexOf(k) >= 0) return;
+    if ([o.t].concat(o.a).some(function (w) { return new RegExp("\\b" + String(w).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b").test(txt); })) return; // already named in the text
+    ks.push(k);
+  };
   GLOSS.forEach(function (o) { if (o.d.indexOf("[[" + g.k + "|") >= 0) add(o.k); });
   ks = ks.slice(0, 6); if (!ks.length) return "";
   return '<div class="grh">Related</div><div class="grels">' + ks.map(function (k) { return '<button class="grel" data-g="' + k + '">' + esc(GBY[k].t) + "</button>"; }).join("") + "</div>";
@@ -2153,7 +2180,7 @@ function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); }
   var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
-  var html = (ISTACK.length > 1 ? '<button class="back" id="ibk">‹ Back</button>' : "") +
+  var html = backBtn() +
     '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + "</h3><p>" + glossBody(g) + "</p>" + relatedHtml(g) + "</div>" +
     // a small book button on the left opens the full glossary; Close stays the main action under the right thumb
     '<div class="gsbtns"><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button><button class="ibtn" id="close">Close</button></div>';
@@ -2164,7 +2191,7 @@ function glossSheet(k, fromBack) {
   }
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!$("sheet").hidden && !calm && $("sheetin").firstChild) swapSheet(html, !!fromBack, bind);
-  else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = html; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
+  else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
 }
 function sheetBack() {
   ISTACK.pop(); var top = ISTACK[ISTACK.length - 1]; if (!top) return closeSheet();
