@@ -257,15 +257,18 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .sr small{display:block;color:var(--dim);font-size:12px;margin-top:1px}
 .sr em{display:block;font-style:normal;color:var(--fg);font-size:13px;line-height:1.35;margin-top:4px;opacity:.85}
 .sr mark{background:#5a4318;color:#fff;border-radius:3px;padding:0 1px}
-/* Notes and Interactions: two compact toggles side by side under a divider; an opened one takes the full width below */
-.wk{margin-top:12px;border-top:1px solid var(--line);padding-top:2px;display:flex;flex-wrap:wrap;column-gap:22px;align-items:flex-start}
-.ab:has(> .wk){padding-bottom:4px}
-.wk > details.notes{flex:0 0 auto;min-width:0}
-.wk > details.notes[open]{flex-basis:100%;padding-bottom:10px}
-details.notes summary{cursor:pointer;color:var(--gold);font-size:14px;margin:0;padding:8px 0;list-style:none;display:inline-flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent}
+/* Notes and Interactions: one row each under a divider (icon, label, count, chevron); the chevron turns a quarter when open */
+.wk{margin-top:12px;border-top:1px solid var(--line)}
+.ab:has(> .wk){padding-bottom:2px}
+details.notes summary{cursor:pointer;color:var(--gold);font-size:14px;margin:0;padding:12px 0;list-style:none;display:flex;align-items:center;gap:9px;-webkit-tap-highlight-color:transparent}
 details.notes summary::-webkit-details-marker{display:none}
-details.notes summary::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .2s ease}
-details.notes[open] summary::after{transform:translateY(1px) rotate(-135deg)}
+details.notes + details.notes > summary{border-top:1px solid #2c2539}
+details.notes[open]{padding-bottom:10px}
+.nsi{width:18px;height:18px;flex:none}
+.ncount{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--panel2);color:var(--dim);font-size:12px;line-height:1}
+.ncv{margin-left:auto;width:16px;height:16px;flex:none;color:var(--dim);transition:transform .2s ease}
+details.notes[open] .ncv{transform:rotate(90deg)}
+@media (prefers-reduced-motion:reduce){.ncv{transition:none}}
 details.notes.anim[open] > :not(summary){animation:nopen .22s ease-out}
 @keyframes nopen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){details.notes.anim[open] > :not(summary){animation:none}}
@@ -1340,11 +1343,18 @@ function noteHtml(txt, own) {
   }
   return autoGloss(out + esc(txt.slice(last)));
 }
+var NICON = {
+  notes: '<path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM9 8h6M9 12h6M9 16h4"/>',
+  inter: '<path d="M4 7h3a1 1 0 0 0 1-1V5a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-1a2 2 0 0 0-4 0v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a2 2 0 0 0 0-4H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/>' };
+function nsum(label, kind, n) {
+  var sv = function (d, c) { return '<svg class="' + c + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + "</svg>"; };
+  return "<summary>" + sv(NICON[kind], "nsi") + "<span>" + label + "</span>" + (n ? '<span class="ncount">' + n + "</span>" : "") + sv('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>";
+}
 // Notes start collapsed; "extra" (the Interacts-with items) sits inside them so it collapses too
-function notesBlock(a, own, extra) {
+function notesBlock(a, own, extra, extraN) {
   var figs = (a && a.figs || []).filter(function (f) { return /^https:\/\/cdn\.deadlock\.wiki\//.test(f[0]); });
   if (!a || !((a.notes && a.notes.length) || figs.length || extra)) return "";
-  var html = '<details class="notes"><summary>Notes</summary>';
+  var html = '<details class="notes">\u0002';
   figs.forEach(function (f) { var orig = String(f[0]).replace(/\/thumb\/([^\/]+)\/[^\/]*$/, "/$1"); // the full-size file, if the resized copy won't load
     html += '<figure class="nfig"><img loading="lazy" alt="" referrerpolicy="no-referrer" src="' + esc(f[0]) + '"' + (orig !== f[0] ? ' data-o="' + esc(orig) + '"' : "") + ' onerror="if(this.dataset.o){this.src=this.dataset.o;this.dataset.o=\'\';return}var d=this.closest(\'details\');this.parentNode.remove();if(d&&!d.querySelector(\'li,figure\'))d.remove()">' + (f[1] ? "<figcaption>" + esc(f[1]) + "</figcaption>" : "") + "</figure>"; });
   // a note the wiki repeats is shown once (along with any sub-points under the repeat)
@@ -1356,7 +1366,8 @@ function notesBlock(a, own, extra) {
   });
   if (notes.length) html += "<ul>";
   notes.forEach(function (n) { html += '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; });
-  return html + (notes.length ? "</ul>" : "") + (extra || "") + "</details>";
+  var cnt = notes.filter(function (n) { return !n[0]; }).length + (extraN || 0);
+  return html.replace("\u0002", nsum("Notes", "notes", cnt)) + (notes.length ? "</ul>" : "") + (extra || "") + "</details>";
 }
 // the item a card is about; stat cards ("Ability Range") use the item the wiki pictures for them (Greater Expansion)
 function interItem(x) {
@@ -1378,7 +1389,7 @@ function shortTip(tip, nm) {
 function interBlock(a, own) {
   var list = (a && a.inter) || []; if (!list.length) return "";
   var KL = { positive: "Helps", negative: "Hurts", info: "Note" };
-  var html = '<details class="notes"><summary>Interactions</summary>';
+  var html = '<details class="notes">' + nsum("Interactions", "inter", list.length);
   list.forEach(function (x) {
     var cn = state.byName[String(x.t || "").toLowerCase()], item = cn && state.byClass[cn], rep = interItem(x);
     var icon = rep ? imgTag(itemArt(rep), itemImg(rep)) : (x.img && /^https:\/\/cdn\.deadlock\.wiki\//.test(x.img) ? '<img alt="" src="' + esc(x.img) + '" onerror="this.style.display=\'none\'">' : "");
@@ -1404,7 +1415,8 @@ function wikiHtml(h, it) {
     return '<button class="rc pitem cat-' + esc(slotOf(state.byClass[cn])) + '" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + (tip ? "<small>" + esc(tip) + "</small>" : "") + "</span></button>";
   }).join("");
   var iw = chips ? '<div class="ihd">Interacts with</div><div class="pgrid">' + chips + "</div>" : "";
-  return '<div class="wk">' + notesBlock(a, it.name, iw) + interBlock(a, it.name) + "</div>";
+  var nChips = (chips.match(/class="rc pitem/g) || []).length;
+  return '<div class="wk">' + notesBlock(a, it.name, iw, nChips) + interBlock(a, it.name) + "</div>";
 }
 var ABOPT = {}; // per-card tweaks, e.g. End the Curse borrows Lycan Curse's icon and has no tiers of its own
 function abilityCard(it, h) {
