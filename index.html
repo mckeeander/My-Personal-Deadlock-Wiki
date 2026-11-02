@@ -1386,10 +1386,11 @@ function shortTip(tip, nm) {
     .replace(/\s+/g, " ").trim();
 }
 // the wiki's Interactions tab: one card per item or stat, tagged good / bad / info like the wiki
-function interBlock(a, own) {
-  var list = (a && a.inter) || []; if (!list.length) return "";
+// Interactions: the wiki's interaction cards, then the other items that interact with the ability
+function interBlock(a, own, items, itemsN) {
+  var list = (a && a.inter) || []; if (!list.length && !items) return "";
   var KL = { positive: "Helps", negative: "Hurts", info: "Note" };
-  var html = '<details class="notes">' + nsum("Interactions", "inter", list.length);
+  var html = '<details class="notes">' + nsum("Interactions", "inter", list.length + (itemsN || 0));
   list.forEach(function (x) {
     var cn = state.byName[String(x.t || "").toLowerCase()], item = cn && state.byClass[cn], rep = interItem(x);
     var icon = rep ? imgTag(itemArt(rep), itemImg(rep)) : (x.img && /^https:\/\/cdn\.deadlock\.wiki\//.test(x.img) ? '<img alt="" src="' + esc(x.img) + '" onerror="this.style.display=\'none\'">' : "");
@@ -1402,6 +1403,7 @@ function interBlock(a, own) {
       "<ul>" + lines.map(function (n) { return '<li style="margin-left:' + (n[0] * 16) + 'px">' + noteHtml(n[1], own) + "</li>"; }).join("") + "</ul>";
     html += '<div class="ibox ' + k + (/disabled/.test(st) ? " off" : "") + '">' + head + body + "</div>";
   });
+  if (items) html += (list.length ? '<div class="ihd">Items</div>' : "") + items;
   return html + "</details>";
 }
 function wikiHtml(h, it) {
@@ -1414,9 +1416,9 @@ function wikiHtml(h, it) {
     var tip = shortTip(hints[nm], nm);
     return '<button class="rc pitem cat-' + esc(slotOf(state.byClass[cn])) + '" data-pitem="' + esc(cn) + '">' + imgTag(itemArt(state.byClass[cn]), itemImg(state.byClass[cn])) + "<span>" + esc(nm) + (tip ? "<small>" + esc(tip) + "</small>" : "") + "</span></button>";
   }).join("");
-  var iw = chips ? '<div class="ihd">Interacts with</div><div class="pgrid">' + chips + "</div>" : "";
+  var iw = chips ? '<div class="pgrid">' + chips + "</div>" : "";
   var nChips = (chips.match(/class="rc pitem/g) || []).length;
-  return '<div class="wk">' + notesBlock(a, it.name, iw, nChips) + interBlock(a, it.name) + "</div>";
+  return '<div class="wk">' + notesBlock(a, it.name) + interBlock(a, it.name, iw, nChips) + "</div>";
 }
 var ABOPT = {}; // per-card tweaks, e.g. End the Curse borrows Lycan Curse's icon and has no tiers of its own
 function abilityCard(it, h) {
