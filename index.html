@@ -165,7 +165,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .sc{position:absolute;top:-9px;right:-3px;font-style:normal;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:600;border:1px solid;white-space:nowrap}
 .sc.sp{background:#3b2d55;color:var(--spirit)}
 .sc.wp{background:#3d2a14;color:var(--weapon)}
-.sc .wsi{width:16px;height:16px;vertical-align:-4px;margin:-2px 3px -2px 0}
+.sc .wsi{width:15px;height:15px;vertical-align:-3px;margin:-2px 4px -2px 0}
 .sc.bn{background:#1f3320;color:var(--vital)}
 .hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .hc{transform:translateZ(0);position:relative;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel2);aspect-ratio:3/4}
@@ -713,7 +713,7 @@ function scaleOf(p, m) {
   return { kind: kind, rate: st === "EWeaponPower" ? 1 + r / 100 : r, sub: sub }; // Carbine stores weapon scaling as a percentage
 }
 function fmtRate(v) { var n = Number(v); if (isNaN(n)) return String(v); if (n && Math.abs(n) < 0.01) return String(Number(n.toPrecision(2))); return String(Math.round(n * 1000) / 1000); }
-var WSCALE = '<svg class="wsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Weapon scaling" role="img"><circle cx="15" cy="13" r="7.5" stroke-dasharray="3.2 2.6"/><circle cx="15" cy="13" r="2.6"/><path d="M2.5 9.5 6 4l.5 3.5L10 7"/></svg>';
+var WSCALE = '<svg class="wsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="butt" aria-label="Weapon scaling" role="img"><circle cx="12" cy="12" r="9.6" stroke-dasharray="12.7 2.6" transform="rotate(-76 12 12)"/><circle cx="12" cy="12" r="5.3"/></svg>';
 function scaleBadge(r) {
   if (!r || !r.kind) return "";
   var n = fmtRate(r.rate);
