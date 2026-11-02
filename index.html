@@ -1958,23 +1958,26 @@ function itemSheet(cn, fromBack) {
   if (!$("sheet").hidden && !calm && $("sheetin").firstChild) swapSheet(html, !!fromBack, bind);
   else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
 }
-var SWAPT = 0;
+var SWAPT = 0, QUICK = false; // QUICK: the old content was already slid away by a swipe, so swapSheet skips its own fade-out
 function resetSwap() { var b = $("sheetin"); b.style.height = ""; b.style.overflow = ""; b.style.transition = ""; }
 // slide the old card out, grow/shrink the sheet, bring the new card in from the other side
 function swapSheet(html, back, bind) {
   clearTimeout(SWAPT); var box = $("sheetin"), dir = back ? -1 : 1, h0 = box.offsetHeight;
   var old = box.firstChild && box.firstChild.className === "swc" ? box.firstChild : null;
   if (!old) { old = document.createElement("div"); old.className = "swc"; while (box.firstChild) old.appendChild(box.firstChild); box.appendChild(old); }
+  var quick = QUICK; QUICK = false;
   box.style.height = h0 + "px"; box.style.overflow = "hidden";
-  old.style.transition = "transform .2s ease-in-out, opacity .2s ease-in-out";
-  old.style.transform = "translateX(" + (-dir * 36) + "px)"; old.style.opacity = "0";
+  if (!quick) {
+    old.style.transition = "transform .2s ease-in-out, opacity .2s ease-in-out";
+    old.style.transform = "translateX(" + (-dir * 36) + "px)"; old.style.opacity = "0";
+  }
   SWAPT = setTimeout(function () {
     box.innerHTML = '<div class="swc" style="opacity:0;transform:translateX(' + (dir * 36) + 'px)">' + html + "</div>"; box.scrollTop = 0; bind();
     var nu = box.firstChild; box.style.height = "auto"; var h1 = box.offsetHeight; box.style.height = h0 + "px"; void box.offsetHeight;
     box.style.transition = "height .26s ease-in-out"; box.style.height = h1 + "px";
     nu.style.transition = "transform .26s ease-in-out, opacity .26s ease-in-out"; nu.style.transform = "none"; nu.style.opacity = "1";
     SWAPT = setTimeout(function () { resetSwap(); }, 300);
-  }, 200);
+  }, quick ? 0 : 200);
 }
 // while a pop-up is open the page behind can't scroll. Pinning the body with position:fixed made Safari shrink the
 // viewport (pop-ups sat too high and the nav was cut off), so instead block scrolling gestures outside the pop-up's own scroll area
@@ -2444,37 +2447,53 @@ $("sheetin").addEventListener("click", function (e) {
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
 $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); };
-// drag the pop-up away to dismiss it, and it follows your finger: down (only when it is scrolled to the top) or right (like the back swipe)
+// drag the pop-up away to dismiss it. The card itself only ever moves up and down: swiping down, or right, lowers it and closes it.
+// Several cards deep, swiping right instead slides the content off the card and brings back the card you came from.
 (function () {
-  var sh = $("sheet"), box = $("sheetin"), x0 = 0, y0 = 0, dx = 0, dy = 0, mode = null, act = false, RT = 0;
-  function reset() { box.style.transition = ""; box.style.transform = ""; }
+  var sh = $("sheet"), box = $("sheetin"), x0 = 0, y0 = 0, dd = 0, mode = null, nested = false, act = false, RT = 0;
+  function content() { var c = box.firstChild; return c && c.className === "swc" ? c : null; }
+  function reset() {
+    box.style.transition = ""; box.style.transform = ""; box.style.overflow = "";
+    var c = content(); if (c) { c.style.transition = ""; c.style.transform = ""; c.style.opacity = ""; }
+  }
   function later(fn, ms) { clearTimeout(RT); RT = setTimeout(fn, ms); } // a new touch cancels any pending clean-up
+  function snap() {
+    var c = content();
+    if (nested && c) { c.style.transition = "transform .18s ease-out, opacity .18s ease-out"; c.style.transform = ""; c.style.opacity = ""; }
+    else { box.style.transition = "transform .18s ease-out"; box.style.transform = ""; }
+    later(reset, 200);
+  }
   sh.addEventListener("touchstart", function (e) {
-    clearTimeout(RT); act = e.touches.length === 1; mode = null; dx = 0; dy = 0;
+    clearTimeout(RT); act = e.touches.length === 1; mode = null; dd = 0;
     if (act) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }
   }, { passive: true });
   sh.addEventListener("touchmove", function (e) {
     if (!act) return;
-    if (e.touches.length !== 1) { act = false; if (mode) { box.style.transition = "transform .18s ease-out"; box.style.transform = ""; later(reset, 200); } return; }
+    if (e.touches.length !== 1) { act = false; if (mode) snap(); return; }
     var ddx = e.touches[0].clientX - x0, ddy = e.touches[0].clientY - y0;
     if (mode === null && (Math.abs(ddx) > 10 || Math.abs(ddy) > 10)) { // pick one direction for the whole drag
       if (ddx > 0 && ddx > Math.abs(ddy) * 1.2) mode = "x";
       else if (ddy > 0 && Math.abs(ddy) >= Math.abs(ddx) && box.scrollTop <= 0) mode = "y";
       else { act = false; return; } // scrolling the card, or swiping the wrong way: leave it alone
-      box.style.transition = "none";
+      nested = mode === "x" && ISTACK.length > 1 && !!content();
+      if (nested) { box.style.overflow = "hidden"; content().style.transition = "none"; } else box.style.transition = "none";
     }
     if (!mode) return;
     if (e.cancelable) e.preventDefault();
-    if (mode === "x") { dx = Math.max(0, ddx); box.style.transform = "translateX(" + dx + "px)"; }
-    else { dy = Math.max(0, ddy); box.style.transform = "translateY(" + dy + "px)"; }
+    dd = Math.max(0, mode === "x" ? ddx : ddy);
+    if (nested) { var c = content(); c.style.transform = "translateX(" + dd + "px)"; c.style.opacity = String(1 - Math.min(.6, dd / 260)); }
+    else box.style.transform = "translateY(" + dd + "px)";
   }, { passive: false });
   function end() {
     if (!act) return; act = false; if (!mode) return;
-    box.style.transition = "transform .18s ease-out";
-    if ((mode === "x" ? dx : dy) > 110) {
-      box.style.transform = mode === "x" ? "translateX(" + window.innerWidth + "px)" : "translateY(100%)";
+    if (dd <= 110) { snap(); return; }
+    if (nested) { // content leaves to the right; the previous card's content takes its place
+      var c = content(); c.style.transition = "transform .12s ease-out, opacity .12s ease-out"; c.style.transform = "translateX(" + Math.round(window.innerWidth * .5) + "px)"; c.style.opacity = "0";
+      setTimeout(function () { if (!sh.hidden) { QUICK = true; sheetBack(); QUICK = false; } }, 120);
+    } else { // the card sinks out of view
+      box.style.transition = "transform .18s ease-out"; box.style.transform = "translateY(100%)";
       setTimeout(function () { closeSheet(); reset(); }, 170); // not cancelable: once it is sliding out it always closes
-    } else { box.style.transform = ""; later(reset, 200); }
+    }
   }
   sh.addEventListener("touchend", end); sh.addEventListener("touchcancel", end);
 })();
