@@ -1891,7 +1891,7 @@ function renderShop(slot) {
   var sbx = document.querySelector("#main .sbx"); if (sbx) sbx.addEventListener("toggle", function () { state.sbOpen = sbx.open; });
   bindCommon();
 }
-var ISTACK = [];
+var ISTACK = [], FSTACK = [], FWD = false; // FSTACK: cards you stepped back from, so a swipe left can bring them back; opening anything new or closing the pop-up clears it
 function itemSecHtml(it, sec, used) {
   var type = sec.section_type || "passive", tiles = "", mini = "", chips = "", desc = "";
   (sec.section_attributes || []).forEach(function (a) {
@@ -1936,7 +1936,7 @@ function intoTree(cn, depth, seen) {
 function itemSheet(cn, fromBack) {
   var it = state.byClass[cn]; if (!it) return;
   HERO_NAME = ""; CTX = null;
-  if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== cn) ISTACK.push(cn); }
+  if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== cn) ISTACK.push(cn); if (!FWD) FSTACK = []; }
   var slot = slotOf(it), act = String(it.activation || ""), kind = act === "passive" ? "Passive" : act === "instant_cast_toggle" ? "Toggle" : act ? "Active" : (it.is_active_item ? "Active" : "");
   var used = {}, secs = (it.tooltip_sections || []).map(function (sec) { return itemSecHtml(it, sec, used); }).join("");
   var hasText = (it.tooltip_sections || []).some(function (sec) { return (sec.section_attributes || []).some(function (a) { return a.loc_string; }); });
@@ -2000,7 +2000,7 @@ function unlockBody() {
   document.documentElement.classList.remove("lock"); document.removeEventListener("touchmove", lockMove, { passive: false });
   if ((window.pageYOffset || 0) !== LOCKY) window.scrollTo(0, LOCKY);
 }
-function closeSheet() { clearTimeout(SWAPT); resetSwap(); $("sheet").hidden = true; ISTACK = []; unlockBody(); }
+function closeSheet() { clearTimeout(SWAPT); resetSwap(); $("sheet").hidden = true; ISTACK = []; FSTACK = []; unlockBody(); }
 function bindCommon() {
   var q = $("q");
   if (q) q.oninput = function () { state.q = q.value; var pos = q.selectionStart; render(); var n = $("q"); n.focus(); n.setSelectionRange(pos, pos); };
@@ -2236,7 +2236,7 @@ function relatedHtml(g) {
 }
 function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
-  if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); }
+  if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); if (!FWD) FSTACK = []; }
   var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
   var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + "</h3><p>" + glossBody(g) + "</p>" + relatedHtml(g) + "</div>" +
     // bottom row: back (when there is one), Close, then a small book button on the right that opens the full glossary
@@ -2251,8 +2251,13 @@ function glossSheet(k, fromBack) {
   else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
 }
 function sheetBack() {
-  ISTACK.pop(); var top = ISTACK[ISTACK.length - 1]; if (!top) return closeSheet();
+  var gone = ISTACK.pop(); if (gone) FSTACK.push(gone); // remembered, so swiping left can undo this
+  var top = ISTACK[ISTACK.length - 1]; if (!top) return closeSheet();
   if (top.indexOf("g:") === 0) glossSheet(top.slice(2), true); else itemSheet(top, true);
+}
+function sheetForward() { // undo a step back: bring back the card you just left
+  var nx = FSTACK.pop(); if (!nx) return;
+  FWD = true; try { if (nx.indexOf("g:") === 0) glossSheet(nx.slice(2)); else itemSheet(nx); } finally { FWD = false; }
 }
 function openGlossary(k) {
   if (state.tab !== "glossary") state.glossFrom = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0 }; // swipe back returns here
@@ -2473,23 +2478,24 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
     var ddx = e.touches[0].clientX - x0, ddy = e.touches[0].clientY - y0;
     if (mode === null && (Math.abs(ddx) > 10 || Math.abs(ddy) > 10)) { // pick one direction for the whole drag
       if (ddx > 0 && ddx > Math.abs(ddy) * 1.2) mode = "x";
+      else if (ddx < 0 && -ddx > Math.abs(ddy) * 1.2 && FSTACK.length && content()) mode = "l"; // left only means something right after stepping back
       else if (ddy > 0 && Math.abs(ddy) >= Math.abs(ddx) && box.scrollTop <= 0) mode = "y";
       else { act = false; return; } // scrolling the card, or swiping the wrong way: leave it alone
-      nested = mode === "x" && ISTACK.length > 1 && !!content();
+      nested = mode === "l" || (mode === "x" && ISTACK.length > 1 && !!content());
       if (nested) { box.style.overflow = "hidden"; content().style.transition = "none"; } else box.style.transition = "none";
     }
     if (!mode) return;
     if (e.cancelable) e.preventDefault();
-    dd = Math.max(0, mode === "x" ? ddx : ddy);
-    if (nested) { var c = content(); c.style.transform = "translateX(" + dd + "px)"; c.style.opacity = String(1 - Math.min(.6, dd / 260)); }
+    dd = Math.max(0, mode === "x" ? ddx : mode === "l" ? -ddx : ddy);
+    if (nested) { var c = content(); c.style.transform = "translateX(" + (mode === "l" ? -dd : dd) + "px)"; c.style.opacity = String(1 - Math.min(.6, dd / 260)); }
     else box.style.transform = "translateY(" + dd + "px)";
   }, { passive: false });
   function end() {
     if (!act) return; act = false; if (!mode) return;
     if (dd <= 110) { snap(); return; }
-    if (nested) { // content leaves to the right; the previous card's content takes its place
-      var c = content(); c.style.transition = "transform .12s ease-out, opacity .12s ease-out"; c.style.transform = "translateX(" + Math.round(window.innerWidth * .5) + "px)"; c.style.opacity = "0";
-      setTimeout(function () { if (!sh.hidden) { QUICK = true; sheetBack(); QUICK = false; } }, 120);
+    if (nested) { // content leaves sideways (right = back to the previous card, left = forward again) and the other card's content takes its place
+      var c = content(), fwd = mode === "l"; c.style.transition = "transform .12s ease-out, opacity .12s ease-out"; c.style.transform = "translateX(" + (fwd ? -1 : 1) * Math.round(window.innerWidth * .5) + "px)"; c.style.opacity = "0";
+      setTimeout(function () { if (!sh.hidden) { QUICK = true; if (fwd) sheetForward(); else sheetBack(); QUICK = false; } }, 120);
     } else { // the card sinks out of view
       box.style.transition = "transform .18s ease-out"; box.style.transform = "translateY(100%)";
       setTimeout(function () { closeSheet(); reset(); }, 170); // not cancelable: once it is sliding out it always closes
