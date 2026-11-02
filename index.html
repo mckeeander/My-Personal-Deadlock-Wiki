@@ -720,7 +720,7 @@ function scaleOf(p, m) {
 }
 function fmtRate(v) { var n = Number(v); if (isNaN(n)) return String(v); if (n && Math.abs(n) < 0.01) return String(Number(n.toPrecision(2))); return String(Math.round(n * 1000) / 1000); }
 var WSCALE = '<svg class="wsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-label="Weapon scaling" role="img"><path d="M21.50 11.75A9.5 9.5 0 0 1 15.01 21.01M12.25 21.50A9.5 9.5 0 0 1 2.99 15.01M2.50 12.25A9.5 9.5 0 0 1 8.99 2.99M11.75 2.50A9.5 9.5 0 0 1 21.01 8.99"/><circle cx="12" cy="12" r="4.6"/></svg>';
-var BSCALE = '<svg class="wsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Boon scaling" role="img"><path d="M5 3.8L11 5.4 4.6 9.6z" fill="currentColor" stroke-width="1"/><path d="M7.6 7.2L12.8 11.3 9.6 17 19.8 20.2" stroke-linecap="butt" stroke-linejoin="miter"/></svg>';
+var BSCALE = '<svg class="wsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Boon scaling" role="img"><g transform="rotate(10 12 12) translate(12 12) scale(.9) translate(-12.2 -12)"><path d="M5 3.8L11 5.4 4.6 9.6z" fill="currentColor" stroke-width="1"/><path d="M7.6 7.2L12.8 11.3 9.6 17 19.8 20.2" stroke-linecap="butt" stroke-linejoin="miter"/></g></svg>';
 function scaleBadge(r) {
   if (!r || !r.kind) return "";
   var n = fmtRate(r.rate);
