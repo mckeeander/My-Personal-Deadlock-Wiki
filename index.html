@@ -2535,35 +2535,56 @@ function statEls(card) {
 }
 function snapStats(card) {
   var m = {};
-  statEls(card).forEach(function (x) { m[x[1]] = x[0].textContent.replace(/\s+/g, " ").trim(); var bb = x[0].tagName === "DIV" ? x[0].querySelector("b") : null; if (bb) m[x[1] + "|b"] = bb.textContent; });
+  statEls(card).forEach(function (x) { m[x[1]] = x[0].textContent.replace(/\s+/g, " ").trim(); var dv = x[0].tagName === "DIV", bb = dv ? x[0].querySelector("b") : null;
+    m[x[1] + "|b"] = (bb || x[0]).textContent; m[x[1] + "|w"] = x[0].offsetWidth;
+    var sc = dv ? x[0].querySelector(".sc") : null; if (sc) { m[x[1] + "|sc"] = sc.textContent; m[x[1] + "|scw"] = sc.offsetWidth; } });
   return m;
 }
 var COUNT_TEST = true; // trial: numbers count up/down to their new value (only on Siphon Life while we try it)
-function countTo(el, beforeTxt) {
-  var card = el.closest ? el.closest(".ab") : null, h = card && card.querySelector("h3");
-  if (!h || h.textContent.replace(/\s+/g, " ").trim() !== "Siphon Life") return;
-  var b = el.tagName === "DIV" ? el.querySelector("b") : null; if (!b) return;
-  var tn = null; for (var i = b.childNodes.length - 1; i >= 0; i--) if (b.childNodes[i].nodeType === 3) { tn = b.childNodes[i]; break; }
-  if (!tn) return;
-  var m = /^([^\d-]*)(-?[\d.]+)(.*)$/.exec(tn.nodeValue), o = /(-?[\d.]+)/.exec(beforeTxt || "");
+function lastTextNode(root) {
+  var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false), n, last = null;
+  while ((n = w.nextNode())) if (/\d/.test(n.nodeValue)) last = n;
+  return last;
+}
+var COUNT_MS = 800;
+function animNum(root, beforeTxt) { // count the number inside root from its old value to the new one
+  if (!root || beforeTxt == null) return;
+  var tn = lastTextNode(root); if (!tn) return;
+  var m = /^([^\d-]*)(-?[\d.]+)(.*)$/.exec(tn.nodeValue), o = /(-?[\d.]+)/.exec(beforeTxt);
   if (!m || !o) return;
   var to = parseFloat(m[2]), from = parseFloat(o[1]); if (isNaN(to) || isNaN(from) || from === to) return;
-  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var dec = (m[2].split(".")[1] || "").length, t0 = null, DUR = 800, final = tn.nodeValue;
+  var dec = Math.max((m[2].split(".")[1] || "").length, (o[1].split(".")[1] || "").length), t0 = null, final = tn.nodeValue;
   tn.nodeValue = m[1] + from.toFixed(dec) + m[3];
   function step(ts) {
     if (t0 === null) t0 = ts;
-    var k = Math.min(1, (ts - t0) / DUR), e = 1 - Math.pow(1 - k, 3);
+    var k = Math.min(1, (ts - t0) / COUNT_MS), e = 1 - Math.pow(1 - k, 3);
     tn.nodeValue = k < 1 ? m[1] + (from + (to - from) * e).toFixed(dec) + m[3] : final;
     if (k < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
 }
+function animWidth(el, oldW) { // a pill or tag grows/shrinks smoothly when its text gets longer or shorter
+  if (!el || !(oldW > 0)) return;
+  var nw = el.offsetWidth; if (Math.abs(nw - oldW) < 1) return;
+  el.style.transition = "none"; el.style.flex = "none"; el.style.width = oldW + "px"; el.style.whiteSpace = "nowrap";
+  void el.offsetWidth;
+  el.style.transition = "width " + COUNT_MS + "ms cubic-bezier(.33,1,.68,1)"; el.style.width = nw + "px";
+  setTimeout(function () { el.style.transition = el.style.width = el.style.flex = el.style.whiteSpace = ""; }, COUNT_MS + 60);
+}
+function countTo(el, bef, k) {
+  var card = el.closest ? el.closest(".ab") : null, h = card && card.querySelector("h3");
+  if (!h || h.textContent.replace(/\s+/g, " ").trim() !== "Siphon Life") return;
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var isStat = el.tagName === "DIV";
+  animNum(isStat ? el.querySelector("b") : el, bef[k + "|b"]);
+  if (isStat) { var sc = el.querySelector(".sc"); if (sc) { animNum(sc, bef[k + "|sc"]); animWidth(sc, bef[k + "|scw"]); } }
+  else animWidth(el, bef[k + "|w"]);
+}
 function pulseChanges(card, before, tier, down) {
   var n = 0;
   statEls(card).forEach(function (x) {
     var el = x[0], now = el.textContent.replace(/\s+/g, " ").trim();
-    if (before[x[1]] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); if (COUNT_TEST) countTo(el, before[x[1] + "|b"]); }
+    if (before[x[1]] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); if (COUNT_TEST) countTo(el, before, x[1]); }
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); }
   setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1100);
