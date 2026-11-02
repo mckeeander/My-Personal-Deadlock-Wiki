@@ -128,7 +128,7 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .ab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:18px}
 .abh{display:flex;gap:10px;align-items:center}
 /* jump to an ability: four icon buttons floating just above the bottom navigation for as long as a hero page is open; the one you are on is outlined in gold */
-#jbar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:6;justify-content:center;gap:10px;padding:6px;border-radius:18px;background:rgba(20,17,26,.82);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--line);box-shadow:0 6px 22px rgba(0,0,0,.7)}
+#jbar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:6;justify-content:center;gap:10px;padding:8px;border-radius:19px;background:rgba(20,17,26,.82);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--line);box-shadow:0 6px 22px rgba(0,0,0,.7)}
 #jbar.show{display:flex}
 body.typing #jbar{display:none}
 #jbar:not(.alt) .f1,#jbar.alt .f0{display:none}
@@ -136,8 +136,8 @@ body.typing #jbar{display:none}
 .jb img{width:32px;height:32px;object-fit:contain}
 .jb:active{background:var(--panel)}
 .jb.on{border-color:var(--gold);box-shadow:0 0 0 .5px var(--gold);background:#2f2638}
-body.jump #slide{padding-bottom:66px}
-body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 146px)}
+body.jump #slide{padding-bottom:70px}
+body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .ab.pop{animation:boxup 1s ease-in-out both}
 .abh img{width:44px;height:44px;object-fit:contain;flex:none}
 .abh h3{margin:0;flex:1;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
@@ -472,6 +472,7 @@ function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function
 var HERO_NAME = "";
 var CTX = null;   // while drawing an ability card: {hero, mods, bullet}
 var SEL = {};     // chosen upgrade tier per ability (0-3)
+var OPENS = {}; // which Notes / Interactions rows are open on each hero page, kept like SELS until the hero list
 var SELS = {};    // every hero's choices, kept while you move between tabs, search and other heroes; all cleared when you return to the hero list (SEL points at the open hero's set)
 function prettify(k) {
   return String(k).replace(/^citadel_ability_|^citadel_weapon_|^ability_/, "").replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
@@ -873,7 +874,7 @@ function statusLine() {
   return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + " heroes · " + state.items.length + ' entries · <button class="link" id="rfr">Refresh now</button></p>';
 }
 function renderHeroes() {
-  SEL = {}; SELS = {}; // returning to the hero list forgets all chosen tiers
+  SEL = {}; SELS = {}; OPENS = {}; // returning to the hero list forgets all chosen tiers
   var q = state.q.toLowerCase();
   var list = state.heroes.filter(function (h) { return !q || String(h.name).toLowerCase().indexOf(q) >= 0; });
   var html = statusLine() + '<div class="hg">';
@@ -1835,6 +1836,19 @@ function hydrateName() {
     NMC[url] = svg; el.className = "hname"; el.setAttribute("role", "img"); el.setAttribute("aria-label", nm); el.innerHTML = svg;
   });
 }
+function openKey(d) { // an ability card's details row: ability + its position inside the card
+  var c = d.closest ? d.closest("#main .ab") : null; if (!c) return null;
+  return c.getAttribute("data-ab") + ":" + Array.prototype.indexOf.call(c.querySelectorAll("details"), d);
+}
+function restoreOpens() {
+  var m = OPENS[state.hero]; if (!m) return;
+  Array.prototype.forEach.call(document.querySelectorAll("#main .ab details"), function (d) { var k = openKey(d); if (k && m[k]) d.open = true; });
+}
+document.addEventListener("toggle", function (e) { // toggle does not bubble, so listen in the capture phase
+  var d = e.target; if (!state.hero || !d || d.tagName !== "DETAILS") return;
+  var k = openKey(d); if (!k) return;
+  (OPENS[state.hero] || (OPENS[state.hero] = {}))[k] = d.open;
+}, true);
 function jumpItems(abs, fp) { // one icon button per ability (two when a hero has a second form: the one for the other form is hidden by .f0 / .f1)
   return abs.map(function (a) {
     function one(x, cls) {
@@ -1845,22 +1859,26 @@ function jumpItems(abs, fp) { // one icon button per ability (two when a hero ha
     return alt ? one(a, " f0") + one(alt, " f1") : one(a, "");
   }).join("");
 }
+var JLOCK = false, JT = 0; // while a tapped jump is scrolling, the highlight stays off so it does not flash through the abilities on the way
+function jumpUnlock() { clearTimeout(JT); if (JLOCK) { JLOCK = false; updateJbar(); } }
 function updateJbar() { // shown for the whole hero page; outlines the ability you are on (the last card whose top has passed the upper part of the screen)
   var bar = $("jbar"), show = state.tab === "heroes" && !!state.hero && !$("main").hidden && !!bar.firstChild, cur = "";
-  if (show) Array.prototype.forEach.call(document.querySelectorAll("#main .ab"), function (c) { if (c.offsetParent !== null && c.getBoundingClientRect().top < window.innerHeight * .4) cur = c.getAttribute("data-ab"); });
+  if (show && !JLOCK) Array.prototype.forEach.call(document.querySelectorAll("#main .ab"), function (c) { if (c.offsetParent !== null && c.getBoundingClientRect().top < window.innerHeight * .4) cur = c.getAttribute("data-ab"); });
   bar.classList.toggle("show", show); document.body.classList.toggle("jump", show);
   Array.prototype.forEach.call(bar.querySelectorAll(".jb"), function (b) { b.classList.toggle("on", show && b.getAttribute("data-jump") === cur); });
 }
 function jumpTo(cn) {
   var el = document.querySelector('#main [data-ab="' + cn + '"]'); if (!el) return;
   if (el.closest(".f1")) { if (!state.alt) setForm(true); } else if (el.closest(".f0") && state.alt) setForm(false);
+  JLOCK = true; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar();
   scrollToEl(el, true);
   el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100);
 }
 (function () {
   var T = 0;
-  window.addEventListener("scroll", function () { if (!T) T = requestAnimationFrame(function () { T = 0; updateJbar(); }); }, { passive: true });
+  window.addEventListener("scroll", function () { if (JLOCK) { clearTimeout(JT); JT = setTimeout(jumpUnlock, 160); } if (!T) T = requestAnimationFrame(function () { T = 0; updateJbar(); }); }, { passive: true });
   window.addEventListener("resize", updateJbar);
+  window.addEventListener("touchstart", function () { jumpUnlock(); }, { passive: true });
   new MutationObserver(updateJbar).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // other tabs, search and the glossary replace or hide the hero page
   document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-jump]") : null; if (b) jumpTo(b.getAttribute("data-jump")); });
 })();
@@ -1886,7 +1904,7 @@ function renderHero(cn) {
     var alt = fp && fp.swap[a.class_name];
     html += alt ? '<div class="f0">' + abilityCard(a, h) + '</div><div class="f1">' + abilityCard(alt, h) + "</div>" : abilityCard(a, h);
   });
-  $("main").innerHTML = html; hydrateName(); setForm(state.alt);
+  $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : ""; updateJbar();
   $("back").onclick = function () {
     state.hero = null;
