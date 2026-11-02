@@ -151,15 +151,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .ic{height:1.1em;width:1.1em;vertical-align:-.2em;margin-right:4px}.ic.key{margin:0 2px 0 4px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
 .chip{background:var(--panel2);border-radius:5px;padding:4px 8px;font-size:13px}
-.chip.cd{border:1px solid var(--gold);color:#fff;padding:3px 8px;flex:none} /* the cooldown leads the chip row: regular white text, a thin full-gold outline */
-.cd-a .chip.cd{border:0;border-left:3px solid var(--gold);border-radius:0;padding:4px 10px 4px 8px}
-.cd-c .chip.cd,.cd-d .chip.cd{border:0;padding:4px 8px}
-.cd-d .chip.cd{background:rgba(230,180,90,.16)}
-.cd-c .chip.cd .pi,.cd-d .chip.cd .pi,.cd-f .chip.cd .pi{filter:brightness(0) invert(93%) sepia(37%) saturate(1006%) hue-rotate(320deg) brightness(96%) contrast(85%);opacity:1}
-.cd-f .chip.cd{background:none;border:0;padding:0 2px;font-size:15px;display:inline-flex;align-items:center;gap:6px;margin-right:4px}
-.cd-f .chip.cd .pi{height:1.15em;width:1.15em}
-.cd-f .chip.cd::after{content:"";width:1px;height:20px;background:var(--line);margin-left:10px}
-.cd-f .chips .chip.cd.pop{animation:none}
+.chip.cd{border:0;border-left:3px solid var(--gold);border-radius:0 5px 5px 0;color:#fff;padding:4px 10px 4px 8px;flex:none} /* the cooldown leads the chip row: a gold edge on the left (square), the other corners rounded like the other pills */
 .ab .chips{justify-content:flex-start}
 .ab .chips .g:last-child{margin-left:0} /* the cooldown moved up beside the name, so the remaining chips line up on the left */
 .uu{margin:18px 0 10px;border:1px solid rgba(230,180,90,.32);background:rgba(230,180,90,.05);border-radius:10px;padding:10px 10px 12px}
@@ -1100,7 +1092,6 @@ function listedKeys(it) {
   return s;
 }
 var HEADER_KEYS = { AbilityDuration: 1, AbilityCastRange: 1, AbilityCooldown: 1, Radius: 1, AbilityCharges: 1, AbilityCooldownBetweenCharge: 1 };
-var CD_LOOK = { "Siphon Life": "a", "Shoulder Charge": "c", "Seismic Impact": "d", "Entangling Thorns": "f" }; // trial looks for the cooldown pill, per ability
 function cooldownChip(it) { // the cooldown matters on almost every ability, so it gets its own gold chip beside the name
   var cd = effP(it, "AbilityCooldown"), P = it.properties || {};
   if (!cd || isDisabled(cd) || parseFloat(cd.value) === 0) return "";
@@ -1515,7 +1506,7 @@ function abilityCard(it, h) {
   CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) };
   try {
     var CH = chipsHtml(it);
-    return glossOnce('<section class="ab' + (CD_LOOK[nameOf(it)] ? " cd-" + CD_LOOK[nameOf(it)] : "") + '" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
+    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       CH +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: abilityDesc(it) } : it.description)) + "</div>" +
       flagOnes(dropChipDupes(tooltipHtml(it), CH)) + (op.noTiers ? "" : upgradesHtml(it, sel)) + wikiHtml(h, it) + "</section>");
