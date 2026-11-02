@@ -203,6 +203,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .up>div:first-child{background:#3b2d55;color:var(--spirit);font-weight:700;padding:4px}
 .up>div:last-child{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 5px}
 .up .ut{line-height:1.3;font-weight:400;min-width:0;overflow-wrap:anywhere}
+.cnt{display:inline-block;text-align:right;font-variant-numeric:tabular-nums}
 .ss{color:transparent;-webkit-text-stroke:1.3px var(--spirit);font-weight:400;paint-order:stroke;display:inline-block;transform:translateY(-.02em)}
 .nw{white-space:nowrap}
 .up .pg{display:block;height:7px} /* each line of a tier's text starts on its own line */
@@ -2546,39 +2547,48 @@ function lastTextNode(root) {
   while ((n = w.nextNode())) if (/\d/.test(n.nodeValue)) last = n;
   return last;
 }
-var COUNT_MS = 800;
-function animNum(root, beforeTxt) { // count the number inside root from its old value to the new one
-  if (!root || beforeTxt == null) return;
-  var tn = lastTextNode(root); if (!tn) return;
+var COUNT_MS = 900;
+function easeIO(k) { return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; } // slow start, fast middle, slow finish
+function animNum(root, beforeTxt) { // wrap the number in a fixed-width slot (equal-width digits) and count it from its old value to the new one
+  if (!root || beforeTxt == null) return null;
+  var tn = lastTextNode(root); if (!tn) return null;
   var m = /^([^\d-]*)(-?[\d.]+)(.*)$/.exec(tn.nodeValue), o = /(-?[\d.]+)/.exec(beforeTxt);
-  if (!m || !o) return;
-  var to = parseFloat(m[2]), from = parseFloat(o[1]); if (isNaN(to) || isNaN(from) || from === to) return;
-  var dec = Math.max((m[2].split(".")[1] || "").length, (o[1].split(".")[1] || "").length), t0 = null, final = tn.nodeValue;
-  tn.nodeValue = m[1] + from.toFixed(dec) + m[3];
-  function step(ts) {
-    if (t0 === null) t0 = ts;
-    var k = Math.min(1, (ts - t0) / COUNT_MS), e = 1 - Math.pow(1 - k, 3);
-    tn.nodeValue = k < 1 ? m[1] + (from + (to - from) * e).toFixed(dec) + m[3] : final;
-    if (k < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
+  if (!m || !o) return null;
+  var to = parseFloat(m[2]), from = parseFloat(o[1]); if (isNaN(to) || isNaN(from) || from === to) return null;
+  var dec = Math.max((m[2].split(".")[1] || "").length, (o[1].split(".")[1] || "").length), fromS = from.toFixed(dec);
+  var span = document.createElement("span"), par = tn.parentNode;
+  span.className = "cnt"; span.textContent = m[2];
+  par.insertBefore(document.createTextNode(m[1]), tn); par.insertBefore(span, tn); tn.nodeValue = m[3];
+  return function go() {
+    var longest = fromS.length > m[2].length ? fromS : m[2];
+    span.textContent = longest; span.style.minWidth = span.offsetWidth + "px"; // reserve room for the widest value up front
+    var t0 = null;
+    function step(ts) {
+      if (t0 === null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / COUNT_MS), e = easeIO(k);
+      span.textContent = k < 1 ? (from + (to - from) * e).toFixed(dec) : m[2];
+      if (k < 1) requestAnimationFrame(step); else span.style.minWidth = "";
+    }
+    span.textContent = fromS; requestAnimationFrame(step);
+  };
 }
 function animWidth(el, oldW) { // a pill or tag grows/shrinks smoothly when its text gets longer or shorter
   if (!el || !(oldW > 0)) return;
   var nw = el.offsetWidth; if (Math.abs(nw - oldW) < 1) return;
   el.style.transition = "none"; el.style.flex = "none"; el.style.width = oldW + "px"; el.style.whiteSpace = "nowrap";
   void el.offsetWidth;
-  el.style.transition = "width " + COUNT_MS + "ms cubic-bezier(.33,1,.68,1)"; el.style.width = nw + "px";
+  el.style.transition = "width " + COUNT_MS + "ms cubic-bezier(.65,0,.35,1)"; el.style.width = nw + "px";
   setTimeout(function () { el.style.transition = el.style.width = el.style.flex = el.style.whiteSpace = ""; }, COUNT_MS + 60);
 }
 function countTo(el, bef, k) {
   var card = el.closest ? el.closest(".ab") : null, h = card && card.querySelector("h3");
   if (!h || h.textContent.replace(/\s+/g, " ").trim() !== "Siphon Life") return;
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var isStat = el.tagName === "DIV";
-  animNum(isStat ? el.querySelector("b") : el, bef[k + "|b"]);
-  if (isStat) { var sc = el.querySelector(".sc"); if (sc) { animNum(sc, bef[k + "|sc"]); animWidth(sc, bef[k + "|scw"]); } }
+  var isStat = el.tagName === "DIV", go = [];
+  go.push(animNum(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
+  if (isStat) { var sc = el.querySelector(".sc"); if (sc) { go.push(animNum(sc, bef[k + "|sc"])); animWidth(sc, bef[k + "|scw"]); } }
   else animWidth(el, bef[k + "|w"]);
+  go.forEach(function (g) { if (g) g(); });
 }
 function pulseChanges(card, before, tier, down) {
   var n = 0;
