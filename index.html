@@ -191,7 +191,10 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .pill{display:inline-block;font-size:11px;padding:2px 6px;border-radius:4px;background:var(--panel2);color:var(--dim);margin-left:6px}
 dialog,.sheet{position:fixed;inset:0;background:rgba(10,8,14,.78);z-index:20;display:flex;align-items:flex-end;justify-content:center}
 .sheet[hidden]{display:none}
-.sheet .in{background:var(--bg);width:100%;max-width:600px;max-height:88vh;overflow:auto;border-radius:14px 14px 0 0;padding:14px 14px calc(env(safe-area-inset-bottom,0) + 18px);border:1px solid var(--line)}
+/* the panel runs 80px past the bottom of the overlay: on iPhone, while the page behind is locked, Safari can end the overlay
+   short of the screen edge, and this fills that strip with the panel instead of leaving a dark band under it */
+.sheet .in{background:var(--bg);width:100%;max-width:600px;max-height:88vh;overflow:auto;border-radius:14px 14px 0 0;
+  padding:14px 14px calc(env(safe-area-inset-bottom,0) + 10px + 80px);margin-bottom:-80px;border:1px solid var(--line);border-bottom:0}
 .err{background:#3a1d1f;border:1px solid var(--red);padding:12px;border-radius:8px;font-size:14px;line-height:1.4}
 pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--panel);padding:8px;border-radius:6px;max-height:50vh;overflow:auto}
 .link{color:var(--gold);background:none;border:0;padding:0;text-decoration:underline;font-size:12px}
@@ -388,7 +391,7 @@ body.lock{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .gcat b{display:block;font-size:14px;line-height:1.25}
 .gcat small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
 .gcat i{font-style:normal;color:var(--gold);font-size:20px;line-height:1}
-.gsbtns{display:flex;gap:8px;margin-top:14px}.gsbtns #gall{flex:0 0 52px;display:flex;align-items:center;justify-content:center}.gsbtns #close{flex:1}
+.gsbtns{display:flex;gap:8px;margin-top:24px}.gsbtns #gall{flex:0 0 52px;display:flex;align-items:center;justify-content:center}.gsbtns #close{flex:1}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .gt{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:24px}
