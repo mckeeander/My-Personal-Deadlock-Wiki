@@ -165,6 +165,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .sc{position:absolute;top:-9px;right:-3px;font-style:normal;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:600;border:1px solid;white-space:nowrap}
 .sc.sp{background:#3b2d55;color:var(--spirit)}
 .sc.wp{background:#3d2a14;color:var(--weapon)}
+.sc .wsi{width:16px;height:16px;vertical-align:-4px;margin:-2px 3px -2px 0}
 .sc.bn{background:#1f3320;color:var(--vital)}
 .hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .hc{transform:translateZ(0);position:relative;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel2);aspect-ratio:3/4}
@@ -712,11 +713,12 @@ function scaleOf(p, m) {
   return { kind: kind, rate: st === "EWeaponPower" ? 1 + r / 100 : r, sub: sub }; // Carbine stores weapon scaling as a percentage
 }
 function fmtRate(v) { var n = Number(v); if (isNaN(n)) return String(v); if (n && Math.abs(n) < 0.01) return String(Number(n.toPrecision(2))); return String(Math.round(n * 1000) / 1000); }
+var WSCALE = '<svg class="wsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Weapon scaling" role="img"><circle cx="15" cy="13" r="7.5" stroke-dasharray="3.2 2.6"/><circle cx="15" cy="13" r="2.6"/><path d="M2.5 9.5 6 4l.5 3.5L10 7"/></svg>';
 function scaleBadge(r) {
   if (!r || !r.kind) return "";
   var n = fmtRate(r.rate);
   if (r.kind === "spirit") return '<em class="sc sp">★ ×' + esc(n) + "</em>";
-  if (r.kind === "weapon") return '<em class="sc wp">Weapon ×' + esc(n) + "</em>";
+  if (r.kind === "weapon") return '<em class="sc wp">' + WSCALE + "×" + esc(n) + "</em>";
   if (r.kind === "range") return '<em class="sc">Ability Range ×' + esc(n) + "</em>";
   if (r.kind === "melee") return '<em class="sc wp">' + esc(r.sub) + " ×" + esc(n) + "</em>";
   return '<em class="sc bn">+' + esc(n) + "/boon</em>";
@@ -858,7 +860,7 @@ function propRec(it, key) {
   if (key === "RatSwarmCols") return null; // shown together with the rows
   if (key === "RatSwarmRows" && v != null) { var rc = parseFloat((effP(it, "RatSwarmCols") || {}).value) || 1, rr = parseFloat(v) || 0; v = String(rr * rc); label = "Rats (" + rc + " wide × " + rr + " deep)"; }
   if (key === "RatSwarmWidth" && v != null) { v = Math.round(parseFloat(v) / 39.37 * 10) / 10 + "m"; label = "Swarm Width"; } // game units: 39.37 per meter
-  var wpn = (sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label);
+  var wpn = ((sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label)) || /^(Bonus )?Weapon Damage$/i.test(label);
   return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label) || !!TECH_OV[it.name + "|" + key]) };
 }
 
