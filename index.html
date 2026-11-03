@@ -2808,10 +2808,10 @@ function animateLayout(fresh, snap) {
     });
     p.enter.forEach(function (n) {
       if (n.newRow) { Array.prototype.forEach.call(n.el.children, function (c) { run(c, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: dl + 200, easing: "ease-out" }); }); return; }
-      // B: the new tile grows rightward from its own left edge. It starts a beat after its neighbours begin to shrink and sits behind them, so the part still under a shrinking neighbour is hidden rather than overlapping it
+      // B, as in the mockup: the slot opens while the new tile is still invisible, then the whole tile (box, text and badge) fades in at nearly full size as its neighbour finishes narrowing. It sits behind its neighbours and grows from the edge facing them, so nothing overlaps while it is faint
       var cs = getComputedStyle(n.el), mw = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0) + (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0); // a box can't be narrower than its padding
-      run(n.el, [{ width: mw + "px", height: n.h + "px", boxSizing: "border-box" }, { width: n.w + "px", height: n.h + "px", boxSizing: "border-box" }], { delay: dl + 140 });
-      Array.prototype.forEach.call(n.el.children, function (c) { run(c, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: dl + 280, easing: "ease-out" }); }); // the contents fade in once there's room; the box and its glow are there from the start, in step with every other changed card
+      run(n.el, [{ left: ((n.w - mw) * n.f) + "px", width: mw + "px", height: n.h + "px", boxSizing: "border-box" }, { left: "0px", width: n.w + "px", height: n.h + "px", boxSizing: "border-box" }], { delay: dl });
+      run(n.el, [{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: dl + 170, easing: "ease-out" });
     });
     p.leave.forEach(function (o) {
       if (getComputedStyle(cont).position === "static") setS(cont, "position", "relative");
