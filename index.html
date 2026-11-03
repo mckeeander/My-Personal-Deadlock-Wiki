@@ -937,6 +937,7 @@ function statTiles(it) {
 }
 function pIcon(src) { return src ? imgTag(src).replace("<img ", '<img class="pi" ') : ""; }
 function tile(v, l, r) {
+  if (r && r.kind === "melee" && l === "Damage") l = "Melee Damage"; // the corner tag says light/heavy; the label stays "Melee Damage" at every tier
   var badge = scaleBadge(r);
   var dur = r && r.dur ? '<span class="dur">' + siIcon("hourglass") + esc(r.dur) + "</span>" : ""; // how long this effect lasts, tagged in the corner
   var corner = dur ? '<span class="corner">' + dur + badge + "</span>" : badge;
