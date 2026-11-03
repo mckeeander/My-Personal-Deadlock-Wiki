@@ -141,7 +141,7 @@ body.typing #jbar{display:none}
 .jb.on{border-color:var(--gold);box-shadow:0 0 0 .5px var(--gold);background:#2f2638}
 body.jump #slide{padding-bottom:70px}
 body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
-.ab.pop{animation:boxup 1s ease-in-out both}
+.ab.pop{animation:boxup 1.5s ease-in-out both}
 .abh img{width:44px;height:44px;object-fit:contain;flex:none}
 .abh h3{margin:0;flex:1;font-size:18px;font-family:var(--disp);letter-spacing:.03em}
 .si{height:1.55em;width:1.55em;flex:none;color:var(--c,var(--weapon))}
@@ -395,11 +395,11 @@ html.lock,html.lock body{overflow:hidden}
  40%{box-shadow:0 0 0 2px rgba(196,160,78,.9),0 0 16px 3px rgba(220,180,70,.4),inset 0 0 12px rgba(220,180,70,.14)}}
 @keyframes boxdown{0%,100%{box-shadow:0 0 0 0 rgba(90,125,255,0),0 0 0 rgba(90,125,255,0)}
  40%{box-shadow:0 0 0 2px rgba(84,112,238,.92),0 0 16px 3px rgba(68,104,242,.42),inset 0 0 12px rgba(68,104,242,.16)}}
-.stat.pop,.chips .chip.pop,.up.pop{animation:boxup 1s ease-in-out both}
+.stat.pop,.chips .chip.pop,.up.pop{animation:boxup 1.5s ease-in-out both}
 .stat.pop.dn,.chips .chip.pop.dn,.up.pop.dn{animation-name:boxdown}
-.minor span.pop{animation:popup 1s ease-in-out both}
+.minor span.pop{animation:popup 1.5s ease-in-out both}
 .minor span.pop.dn{animation-name:popdown}
-.minor span.pop .si,.minor span.pop img{animation:iconup 1s ease-in-out both}
+.minor span.pop .si,.minor span.pop img{animation:iconup 1.5s ease-in-out both}
 .minor span.pop.dn .si,.minor span.pop.dn img{animation-name:icondown}
 .minor span.pop .pi{animation-name:chipup}
 .minor span.pop.dn .pi{animation-name:chipdown}
@@ -446,7 +446,7 @@ html.lock,html.lock body{overflow:hidden}
 .gi{width:20px;height:20px;flex:none;object-fit:contain}
 .gt p,.gsh p{margin:0;line-height:1.5;font-size:15px}
 .gsh h3{font-size:20px;margin:6px 0 6px}
-.gt.pop{animation:boxup 1s ease-in-out both}
+.gt.pop{animation:boxup 1.5s ease-in-out both}
 #gq{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);font:inherit;margin:10px 0}
 .gico{width:40px;height:40px;flex:none;border-radius:4px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-family:var(--disp);color:var(--gold);font-size:16px}
 .hname svg{display:block;height:52px;width:auto;max-width:100%}
@@ -1994,7 +1994,7 @@ function jumpTo(cn) {
   if (el.closest(".f1")) { if (!state.alt) setForm(true); } else if (el.closest(".f0") && state.alt) setForm(false);
   JLOCK = true; JTO = cn; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar();
   scrollToEl(el, true);
-  el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100);
+  el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1700);
 }
 (function () {
   var T = 0;
@@ -2451,7 +2451,7 @@ function openGlossary(k) {
   }
   endSearch(); state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI("glossary"); renderGlossary();
   var el = k && $("g-" + k);
-  if (el) { scrollToEl(el); el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1100); } else window.scrollTo(0, 0);
+  if (el) { scrollToEl(el); el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1700); } else window.scrollTo(0, 0);
 }
 // "Back to Abrams" after following an ability link, so a quick look doesn't lose your place
 var BACK = null;
@@ -2821,7 +2821,7 @@ var GLOW_DN = ["0 0 0 2px rgba(84,112,238,.92),0 0 16px 3px rgba(68,104,242,.42)
 function glow(el, down, list) { // the same glow as the .pop class, run as a Web Animation too so it starts on the same frame as the layout animation and a tile that is still growing cannot lose it
   if (!el.animate) return;
   var g = down ? GLOW_DN : GLOW_UP;
-  try { list.push(el.animate([{ boxShadow: g[1], offset: 0 }, { boxShadow: g[0], offset: .4 }, { boxShadow: g[1], offset: 1 }], { duration: 1000, easing: "ease-in-out", fill: "both" })); } catch (e) {}
+  try { list.push(el.animate([{ boxShadow: g[1], offset: 0 }, { boxShadow: g[0], offset: .4 }, { boxShadow: g[1], offset: 1 }], { duration: 1500, easing: "ease-in-out", fill: "both" })); } catch (e) {}
 }
 function pulseChanges(card, before, tier, down) {
   var n = 0, gl = [];
@@ -2830,7 +2830,7 @@ function pulseChanges(card, before, tier, down) {
     if (before[x[1]] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); if (el.classList.contains("stat")) glow(el, down, gl); if (COUNT_TEST) countTo(el, before, x[1]); }
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); glow(box, down, gl); }
-  setTimeout(function () { gl.forEach(function (a) { try { a.cancel(); } catch (e) {} }); Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1100);
+  setTimeout(function () { gl.forEach(function (a) { try { a.cancel(); } catch (e) {} }); Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1700);
 }
 var TIPT = null;
 function tapTip(e) { // touch screens have no hover, so a tap on a chip names it for a moment
@@ -2847,7 +2847,7 @@ $("main").addEventListener("click", function (e) {
   var fsb = e.target.closest ? e.target.closest("[data-fs]") : null;
   if (fsb) { setForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
-  if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1100); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
+  if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
   var gt = state.tab === "glossary" && e.target.closest ? e.target.closest(".gt[id^='g-']") : null;
   if (gt && !(e.target.closest && e.target.closest("a,button"))) { glossSheet(gt.id.slice(2)); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
