@@ -2795,8 +2795,7 @@ function animateLayout(fresh, snap) {
     });
     p.enter.forEach(function (n) {
       run(n.el, [{ width: "0px", height: n.h + "px", boxSizing: "border-box" }, { width: n.w + "px", height: n.h + "px", boxSizing: "border-box" }], { delay: dl });
-      run(n.el, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: dl + 200, easing: "ease-out" });
-      if (n.el.classList.contains("pop")) { n.el.style.animationDelay = (dl + 440) + "ms"; } // its glow waits until the tile is fully visible, so a slow frame can't play it while the tile is still fading in
+      Array.prototype.forEach.call(n.el.children, function (c) { run(c, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: dl + 200, easing: "ease-out" }); }); // only the contents fade in: the box and its glow are there from the start, so the glow keeps the same timing as every other changed card
     });
     p.leave.forEach(function (o) {
       if (getComputedStyle(cont).position === "static") setS(cont, "position", "relative");
@@ -2816,7 +2815,7 @@ function pulseChanges(card, before, tier, down) {
     if (before[x[1]] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); if (COUNT_TEST) countTo(el, before, x[1]); }
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); }
-  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); el.style.animationDelay = ""; }); }, 1800);
+  setTimeout(function () { Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1100);
 }
 var TIPT = null;
 function tapTip(e) { // touch screens have no hover, so a tap on a chip names it for a moment
