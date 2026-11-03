@@ -973,6 +973,31 @@ var GROUP_OV = {
   "Baba's Brew": [{ l: "", k: [], f: { BrewEffectiveness: "" } }],
   "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
 };
+var TILE_RE = /<div class="stat(?:\s[^"]*)?">[\s\S]*?<\/div>/g; // one stat tile (the space keeps it from matching the "stats" block)
+function isHitLbl(l) { // the ability's own hit, not a bonus, a buff or a per-bullet extra
+  return !/Bonus|Reduction|Amp|Resist|Threshold|Taken|Penalty|Stolen|Deferred|Cleared|Ally|Self|Permanent|Stack|Weapon Damage$/i.test(l) && /(Damage|DPS)$|Damage Per (Second|Bullet|Meter)|Damage \(|^Damage/i.test(l);
+}
+function descPlain(it) { // the description as it reads on the card
+  var d = it.description;
+  return String(rich(descText(d && typeof d === "object" ? { desc: abilityDesc(it) } : d)) || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+}
+// An ability that deals two kinds of damage (Bashdown: a melee slam, then a spirit shockwave) lists their cards in the order the description mentions them, at every tier.
+function descOrderHits(it, html) {
+  var tiles = html.match(TILE_RE); if (!tiles || tiles.length < 2) return html;
+  var hits = [];
+  tiles.forEach(function (e, n) {
+    var m = /<i>([^<]*)<\/i>/.exec(e);
+    if (m && /class="stat[^"]*\bbig\b/.test(e) && !/class="dur"/.test(e) && isHitLbl(m[1])) hits.push({ n: n, e: e, k: /class="stat[^"]*\bwtile\b/.test(e) ? "w" : "s" });
+  });
+  if (hits.length < 2 || !hits.some(function (h) { return h.k === "w"; }) || !hits.some(function (h) { return h.k === "s"; })) return html;
+  try {
+    var d = descPlain(it), iw = d.search(/\b(melee|weapon|bullet)\s+damage/i), is = d.search(/\bspirit\s+damage/i);
+    if (iw < 0 || is < 0) return html;
+    var lead = iw < is ? "w" : "s", sorted = hits.slice().sort(function (a, b) { return (a.k === lead ? 0 : 1) - (b.k === lead ? 0 : 1) || a.n - b.n; }), put = {}, n = -1;
+    hits.forEach(function (h, i) { put[h.n] = sorted[i].e; }); // the damage cards swap among their own slots; every other card stays put
+    return html.replace(TILE_RE, function (e) { n++; return put[n] != null ? put[n] : e; });
+  } catch (err) { return html; }
+}
 function tooltipHtml(it) {
   var secs = it.tooltip_details && it.tooltip_details.info_sections, parts = [], ex = upgradeExtras(it), tilesDone = false, firstMinor = -1;
   if (!secs || !secs.length) secs = [];
@@ -994,8 +1019,7 @@ function tooltipHtml(it) {
     // damage the ability deals leads its card; buffs, effects (Unstoppable) and timed extras follow, each group keeping data order
     function isHit(e) {
       var m = /<i>([^<]*)<\/i>/.exec(e), l = m ? m[1] : "";
-      if (/class="dur"/.test(e) || /Bonus|Reduction|Amp|Resist|Threshold|Taken|Penalty|Stolen|Deferred|Cleared|Ally|Self|Permanent|Stack|Weapon Damage$/i.test(l)) return false;
-      return /(Damage|DPS)$|Damage Per (Second|Bullet|Meter)|Damage \(|^Damage/i.test(l);
+      return !/class="dur"/.test(e) && isHitLbl(l);
     }
     function lbl(e) { var m = /<i>([^<]*)<\/i>/.exec(e); return m ? m[1] : ""; }
     var hits = main.filter(isHit);
@@ -1097,7 +1121,7 @@ function tooltipHtml(it) {
     else if (firstStats >= 0) parts.splice(firstStats + 1, 0, '<div class="minor">' + fl + "</div>");
     else parts.push('<div class="minor">' + fl + "</div>");
   }
-  return parts.join("");
+  return parts.map(function (p) { return descOrderHits(it, p); }).join("");
 }
 // every property key the game's own tooltip already lists for this ability
 function listedKeys(it) {
@@ -2542,8 +2566,12 @@ $("sarea").addEventListener("click", function (e) {
   var q = state.sq; $("sq").blur(); endSearch(false); openResult(sr); showBackSearch(q);
 });
 // A short burst on every stat that changed when a tier was tapped
+function tileId(el) { // what a tile is, so it stays the same tile when an upgrade renames it ("Melee Damage" becomes "Damage") or the damage cards swap places
+  var i = el.querySelector("i"), l = (i || el).textContent.replace(/\s+/g, " ").trim();
+  return (el.classList.contains("wtile") ? "w" : el.classList.contains("big") ? "s" : "n") + ":" + l.replace(/^(Light |Heavy )?(Melee|Weapon)\s+/i, "");
+}
 function statKey(el) {
-  if (el.classList.contains("stat")) { var i = el.querySelector("i"); return "s:" + (i ? i.textContent : ""); }
+  if (el.classList.contains("stat")) return "s:" + tileId(el);
   if (el.classList.contains("chip")) return "c:" + (el.getAttribute("data-tip") || "");
   var b = el.querySelector("b"); return "m:" + (b ? el.textContent.replace(b.textContent, "").trim() : el.textContent.trim());
 }
@@ -2665,7 +2693,6 @@ function countTo(el, bef, k) {
 // then the tiles beside it widen into its place. A tile that wraps onto a new row, or a whole stat block that appears or vanishes, grows or shrinks the same way,
 // so everything below glides instead of jumping. The card is re-rendered as before; this only animates from the old layout to the new one.
 var LAY_MS = 380, LAY_EASE = "cubic-bezier(.4,0,.2,1)";
-function tileLabel(el) { var i = el.querySelector("i"); return (i || el).textContent.replace(/\s+/g, " ").trim(); }
 function blockList(card) { // the headings and stat blocks sitting directly in the card, each with a name so the old card and the new one can be lined up
   var out = [], head = "";
   Array.prototype.forEach.call(card.children, function (el) {
@@ -2685,7 +2712,7 @@ function tileData(cont, clone) { // every tile in a stat block: where it sits in
   var cr = cont.getBoundingClientRect(), seen = {}, m = {};
   Array.prototype.forEach.call(cont.children, function (el) {
     if (!el.classList.contains("stat") || el.hasAttribute("data-ghost")) return;
-    var l = tileLabel(el), r = el.getBoundingClientRect(); seen[l] = (seen[l] || 0) + 1;
+    var l = tileId(el), r = el.getBoundingClientRect(); seen[l] = (seen[l] || 0) + 1;
     m[l + "#" + seen[l]] = { el: el, node: clone ? calmClone(el) : null, l: r.left - cr.left, t: r.top - cr.top, w: r.width, h: r.height };
   });
   return m;
