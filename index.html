@@ -2661,6 +2661,124 @@ function countTo(el, bef, k) {
   if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(mode(sc, bef[k + "|sc"])); }
   go.forEach(function (g) { if (g) g(); });
 }
+// Tapping a tier can add or remove stat tiles. A new tile widens from nothing and its text fades in a beat later; a tile that goes fades out first,
+// then the tiles beside it widen into its place. A tile that wraps onto a new row, or a whole stat block that appears or vanishes, grows or shrinks the same way,
+// so everything below glides instead of jumping. The card is re-rendered as before; this only animates from the old layout to the new one.
+var LAY_MS = 380, LAY_EASE = "cubic-bezier(.4,0,.2,1)";
+function tileLabel(el) { var i = el.querySelector("i"); return (i || el).textContent.replace(/\s+/g, " ").trim(); }
+function blockList(card) { // the headings and stat blocks sitting directly in the card, each with a name so the old card and the new one can be lined up
+  var out = [], head = "";
+  Array.prototype.forEach.call(card.children, function (el) {
+    if (el.hasAttribute("data-ghost")) return;
+    var c = el.classList, sig = null;
+    if (c.contains("blk")) { head = el.textContent.trim(); sig = "b:" + head; }
+    else if (c.contains("stats")) { sig = "s:" + head; head = ""; }
+    else if (c.contains("minor")) { sig = "m"; head = ""; }
+    else head = "";
+    if (sig) out.push({ el: el, sig: sig });
+  });
+  return out;
+}
+function calmClone(el) { var n = el.cloneNode(true); n.classList.remove("pop", "dn"); Array.prototype.forEach.call(n.querySelectorAll(".pop"), function (x) { x.classList.remove("pop", "dn"); }); return n; }
+function boxOf(el) { var r = el.getBoundingClientRect(), cs = getComputedStyle(el); return { h: r.height, mt: cs.marginTop, mb: cs.marginBottom, pt: cs.paddingTop, pb: cs.paddingBottom }; }
+function tileData(cont, clone) { // every tile in a stat block: where it sits inside the block, keyed by its label
+  var cr = cont.getBoundingClientRect(), seen = {}, m = {};
+  Array.prototype.forEach.call(cont.children, function (el) {
+    if (!el.classList.contains("stat") || el.hasAttribute("data-ghost")) return;
+    var l = tileLabel(el), r = el.getBoundingClientRect(); seen[l] = (seen[l] || 0) + 1;
+    m[l + "#" + seen[l]] = { el: el, node: clone ? calmClone(el) : null, l: r.left - cr.left, t: r.top - cr.top, w: r.width, h: r.height };
+  });
+  return m;
+}
+function snapLayout(card) { // taken from the old card, just before it is swapped out
+  return blockList(card).map(function (b) {
+    var o = { sig: b.sig, box: boxOf(b.el), node: calmClone(b.el) };
+    if (b.sig.charAt(0) === "s") o.tiles = tileData(b.el, true);
+    return o;
+  });
+}
+function lcsOps(a, b) { // line the old blocks up with the new ones: matched, added, or removed
+  var n = a.length, m = b.length, d = [], i, j, ops = [];
+  for (i = 0; i <= n; i++) { d.push([]); for (j = 0; j <= m; j++) d[i].push(0); }
+  for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--) d[i][j] = a[i] === b[j] ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]);
+  i = 0; j = 0;
+  while (i < n || j < m) {
+    if (i < n && j < m && a[i] === b[j]) { ops.push({ t: "m", i: i, j: j }); i++; j++; }
+    else if (j < m && (i === n || d[i][j + 1] >= d[i + 1][j])) { ops.push({ t: "a", j: j }); j++; }
+    else { ops.push({ t: "r", i: i }); i++; }
+  }
+  return ops;
+}
+function statPlan(s, el) {
+  var nt = tileData(el), ot = s.tiles || {}, p = { cont: el, h0: s.box.h, h1: el.getBoundingClientRect().height, keep: [], enter: [], leave: [] };
+  Object.keys(nt).forEach(function (k) {
+    var n = nt[k], o = ot[k];
+    if (!o) { p.enter.push(n); return; }
+    var d = { el: n.el, dx: o.l - n.l, dy: o.t - n.t, w0: o.w, w1: n.w, h0: o.h, h1: n.h };
+    if (Math.abs(d.dx) > .5 || Math.abs(d.dy) > .5 || Math.abs(d.w0 - d.w1) > .5 || Math.abs(d.h0 - d.h1) > .5) p.keep.push(d);
+  });
+  Object.keys(ot).forEach(function (k) { if (!nt[k]) p.leave.push(ot[k]); });
+  return p;
+}
+function animateLayout(fresh, snap) {
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!snap || calm || !fresh.animate) return;
+  var nb = blockList(fresh), ops = lcsOps(snap.map(function (s) { return s.sig; }), nb.map(function (b) { return b.sig; }));
+  var plans = [], gone = [], prev = null, anims = [], undo = [];
+  function run(el, frames, opt) { var a = el.animate(frames, Object.assign({ duration: LAY_MS, easing: LAY_EASE, fill: "both" }, opt || {})); anims.push(a); return a; }
+  function setS(el, prop, val) { var old = el.style[prop]; el.style[prop] = val; undo.push(function () { el.style[prop] = old; }); }
+  function sized(b, h, zero) { var z = "0px"; return { height: (zero ? 0 : h) + "px", marginTop: zero ? z : b.mt, marginBottom: zero ? z : b.mb, paddingTop: zero ? z : b.pt, paddingBottom: zero ? z : b.pb, boxSizing: "border-box" }; }
+  // 1. measure everything in its final place before anything moves
+  ops.forEach(function (op, n) {
+    if (op.t === "r") { gone.push({ s: snap[op.i], after: prev, n: n }); return; }
+    var el = nb[op.j].el; prev = el;
+    if (op.t === "a") plans.push({ add: el, box: boxOf(el) });
+    else if (nb[op.j].sig.charAt(0) === "s") plans.push(statPlan(snap[op.i], el));
+  });
+  // 2. put blocks that are leaving back where they were, then start every animation
+  var tail = null, tailAfter = null; // blocks that leave together go back in their old order
+  gone.forEach(function (g) {
+    var node = g.s.node, ref = null, k;
+    if (g.after) ref = tail && tailAfter === g.after ? tail.nextSibling : g.after.nextSibling;
+    else {
+      for (k = g.n + 1; k < ops.length; k++) if (ops[k].t !== "r") { ref = nb[ops[k].j].el; break; }
+      if (!ref) ref = Array.prototype.filter.call(fresh.children, function (c) { return c.classList.contains("ups"); })[0] || null;
+    }
+    node.setAttribute("data-ghost", "1"); node.style.pointerEvents = "none"; node.style.overflow = "hidden";
+    fresh.insertBefore(node, ref); tail = node; tailAfter = g.after;
+    run(node, [sized(g.s.box, g.s.box.h, false), sized(g.s.box, g.s.box.h, true)], { delay: 100 });
+    run(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in" });
+    undo.push(function () { if (node.parentNode) node.parentNode.removeChild(node); });
+  });
+  plans.forEach(function (p) {
+    if (p.add) {
+      setS(p.add, "overflow", "hidden");
+      run(p.add, [sized(p.box, p.box.h, true), sized(p.box, p.box.h, false)]);
+      run(p.add, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 200, easing: "ease-out" });
+      return;
+    }
+    var cont = p.cont, dl = p.leave.length ? 120 : 0; // when a tile goes, its neighbours wait for it to fade before widening
+    if (Math.abs(p.h0 - p.h1) > 1) { setS(cont, "alignContent", "start"); run(cont, [{ height: p.h0 + "px" }, { height: p.h1 + "px" }], { delay: dl }); }
+    p.keep.forEach(function (k) {
+      var a = { transform: "translate(" + k.dx + "px," + k.dy + "px)", width: k.w0 + "px", boxSizing: "border-box" }, z = { transform: "translate(0px,0px)", width: k.w1 + "px", boxSizing: "border-box" };
+      if (Math.abs(k.h0 - k.h1) > .5) { a.height = k.h0 + "px"; z.height = k.h1 + "px"; }
+      run(k.el, [a, z], { delay: dl });
+    });
+    p.enter.forEach(function (n) {
+      run(n.el, [{ width: "0px", height: n.h + "px", boxSizing: "border-box" }, { width: n.w + "px", height: n.h + "px", boxSizing: "border-box" }], { delay: dl });
+      run(n.el, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: dl + 200, easing: "ease-out" });
+    });
+    p.leave.forEach(function (o) {
+      if (getComputedStyle(cont).position === "static") setS(cont, "position", "relative");
+      var g = o.node; g.setAttribute("data-ghost", "1");
+      g.style.cssText += ";position:absolute;margin:0;left:" + o.l + "px;top:" + o.t + "px;width:" + o.w + "px;height:" + o.h + "px;box-sizing:border-box;pointer-events:none;z-index:2";
+      cont.appendChild(g);
+      run(g, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in" });
+      undo.push(function () { if (g.parentNode) g.parentNode.removeChild(g); });
+    });
+  });
+  setTimeout(function () { anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); undo.forEach(function (f) { f(); }); }, LAY_MS + 420);
+}
 function pulseChanges(card, before, tier, down) {
   var n = 0;
   statEls(card).forEach(function (x) {
@@ -2709,13 +2827,14 @@ $("main").addEventListener("click", function (e) {
   var t = Number(u.getAttribute("data-t")), cur = SEL[key] || 0;
   SEL[key] = cur === t ? t - 1 : t; // tapping the top selected tier steps back one
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], tmp = document.createElement("div");
-  var before = snapStats(card);
+  var before = snapStats(card), lay = snapLayout(card);
   tmp.innerHTML = abilityCard(it, h);
   var fresh = tmp.firstChild;
   var openState = Array.prototype.map.call(card.querySelectorAll("details"), function (d) { return d.open; });
   Array.prototype.forEach.call(fresh.querySelectorAll("details"), function (d, i) { if (i < openState.length) d.open = openState[i]; });
   card.parentNode.replaceChild(fresh, card);
   pulseChanges(fresh, before, t, (SEL[key] || 0) < cur);
+  animateLayout(fresh, lay);
 });
 $("sheetin").addEventListener("click", function (e) {
   var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
