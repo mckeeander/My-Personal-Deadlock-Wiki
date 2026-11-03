@@ -2579,6 +2579,7 @@ function statKey(el) {
 function statEls(card) {
   var seen = {}, out = [];
   Array.prototype.forEach.call(card.querySelectorAll(".stat, .chips .chip, .minor span"), function (el) {
+    if (el.closest("[data-ghost]")) return; // a card still fading out from the last tap isn't on the card any more; counting it made a returning card look unchanged, so it didn't glow
     var k = statKey(el); seen[k] = (seen[k] || 0) + 1; out.push([el, k + "#" + seen[k]]);
   });
   return out;
