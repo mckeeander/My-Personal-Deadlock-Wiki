@@ -2750,6 +2750,7 @@ function statPlan(s, el) {
     var row = Object.keys(nt).map(function (k) { return nt[k]; }).filter(function (x) { return Math.abs(x.t - n.t) < 2; }), mn = 1e9, mx = -1e9;
     row.forEach(function (x) { mn = Math.min(mn, x.l); mx = Math.max(mx, x.l); });
     n.f = row.length < 2 ? 0 : n.l >= mx - .5 ? 1 : n.l <= mn + .5 ? 0 : .5;
+    n.newRow = row.every(function (x) { return p.enter.indexOf(x) >= 0; }); // every tile in its row is new: the row opens downward instead of tiles growing sideways
   });
   Object.keys(ot).forEach(function (k) { if (!nt[k]) p.leave.push(ot[k]); });
   return p;
@@ -2792,7 +2793,12 @@ function animateLayout(fresh, snap) {
       return;
     }
     var cont = p.cont, dl = p.leave.length ? 120 : 0; // when a tile goes, its neighbours wait for it to fade before widening
-    if (Math.abs(p.h0 - p.h1) > 1) { setS(cont, "alignContent", "start"); run(cont, [{ height: p.h0 + "px" }, { height: p.h1 + "px" }], { delay: dl }); }
+    if (Math.abs(p.h0 - p.h1) > 1) {
+      setS(cont, "alignContent", "start");
+      // while the block grows, clip at its bottom edge so a new row is uncovered as it opens instead of spilling over whatever sits below; the clip lifts the moment it is fully open, so glows aren't cut
+      var cl = "inset(-24px -24px 0px -24px)", op = "inset(-24px -24px -24px -24px)";
+      run(cont, p.h1 > p.h0 ? [{ height: p.h0 + "px", clipPath: cl }, { height: p.h1 + "px", clipPath: cl, offset: .999 }, { height: p.h1 + "px", clipPath: op }] : [{ height: p.h0 + "px" }, { height: p.h1 + "px" }], { delay: dl });
+    }
     p.keep.forEach(function (k) {
       // slide with left/top (tiles are position:relative), not transform: transform runs on its own thread in Safari and drifts a frame from the width, which pushed the right-hand tile past the card's edge
       var a = { left: k.dx + "px", top: k.dy + "px", width: k.w0 + "px", boxSizing: "border-box" }, z = { left: "0px", top: "0px", width: k.w1 + "px", boxSizing: "border-box" };
@@ -2801,6 +2807,7 @@ function animateLayout(fresh, snap) {
       run(k.el, [a, z], { delay: dl });
     });
     p.enter.forEach(function (n) {
+      if (n.newRow) { Array.prototype.forEach.call(n.el.children, function (c) { run(c, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: dl + 200, easing: "ease-out" }); }); return; }
       var cs = getComputedStyle(n.el), mw = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0) + (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0); // a box can't be narrower than its padding, so start that much further in
       run(n.el, [{ left: ((n.w - mw) * n.f) + "px", width: mw + "px", height: n.h + "px", boxSizing: "border-box" }, { left: "0px", width: n.w + "px", height: n.h + "px", boxSizing: "border-box" }], { delay: dl });
       Array.prototype.forEach.call(n.el.children, function (c) { run(c, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: dl + 200, easing: "ease-out" }); }); // only the contents fade in: the box and its glow are there from the start, so the glow keeps the same timing as every other changed card
