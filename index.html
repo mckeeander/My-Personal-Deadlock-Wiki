@@ -164,6 +164,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .desc b,.desc .hl{color:#fff;font-weight:700}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:15px 6px;margin:14px 0 12px}
 .stat{position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center}
+.ab .stat{will-change:opacity} /* keep ability tiles on their own layer at all times: Safari otherwise moves a tile onto a layer for each fade or slide and back off when it ends, and the text lands half a pixel over each time (a visible jitter) */
 .sc{position:absolute;top:-9px;right:-3px;font-style:normal;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:600;border:1px solid;white-space:nowrap}
 .sc.sp{background:#3b2d55;color:var(--spirit)}
 .sc.wp{background:#3d2a14;color:var(--weapon)}
