@@ -164,7 +164,6 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .desc b,.desc .hl{color:#fff;font-weight:700}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:15px 6px;margin:14px 0 12px}
 .stat{position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center}
-.ab .stat{will-change:opacity} /* keep ability tiles on their own layer at all times: Safari otherwise moves a tile onto a layer for each fade or slide and back off when it ends, and the text lands half a pixel over each time (a visible jitter) */
 .sc{position:absolute;top:-9px;right:-3px;font-style:normal;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:600;border:1px solid;white-space:nowrap}
 .sc.sp{background:#3b2d55;color:var(--spirit)}
 .sc.wp{background:#3d2a14;color:var(--weapon)}
@@ -2812,7 +2811,13 @@ function animateLayout(fresh, snap) {
       // B, as in the mockup: the slot opens while the new tile is still invisible, then the whole tile (box, text and badge) fades in at nearly full size as its neighbour finishes narrowing. It sits behind its neighbours and grows from the edge facing them, so nothing overlaps while it is faint
       var cs = getComputedStyle(n.el), mw = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0) + (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0); // a box can't be narrower than its padding
       run(n.el, [{ left: ((n.w - mw) * n.f) + "px", width: mw + "px", height: n.h + "px", boxSizing: "border-box" }, { left: "0px", width: n.w + "px", height: n.h + "px", boxSizing: "border-box" }], { delay: dl });
-      run(n.el, [{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: dl + 245, easing: "linear" }); // starts once the slot is ~90% open (measured against the mockup) and brightens evenly, with no first-frame jump
+      // fade in by fading away a veil the colour of the card behind it, not the tile's own opacity: Safari lifts a fading element onto its own layer and drops it back when the fade ends, and the text snapped half a pixel each time. The tile never changes layers this way. Starts once the slot is ~90% open (measured against the mockup) and clears evenly
+      var veil = document.createElement("span"); veil.setAttribute("aria-hidden", "true");
+      veil.style.cssText = "position:absolute;left:-8px;right:-10px;top:-11px;bottom:-12px;background:var(--panel);z-index:5;pointer-events:none;border-radius:10px";
+      Array.prototype.forEach.call(n.el.children, function (c) { run(c, [{ visibility: "hidden" }, { visibility: "hidden" }], { duration: dl + 245, fill: "none" }); }); // while the tile is narrow its text and badge would spill past the veil; they switch on under the still-opaque veil
+      n.el.appendChild(veil);
+      run(veil, [{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: dl + 245, easing: "linear" });
+      undo.push(function () { if (veil.parentNode) veil.parentNode.removeChild(veil); });
     });
     p.leave.forEach(function (o) {
       if (getComputedStyle(cont).position === "static") setS(cont, "position", "relative");
