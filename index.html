@@ -2811,7 +2811,7 @@ function animateLayout(fresh, snap) {
       // B, as in the mockup: the slot opens while the new tile is still invisible, then the whole tile (box, text and badge) fades in at nearly full size as its neighbour finishes narrowing. It sits behind its neighbours and grows from the edge facing them, so nothing overlaps while it is faint
       var cs = getComputedStyle(n.el), mw = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0) + (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0); // a box can't be narrower than its padding
       run(n.el, [{ left: ((n.w - mw) * n.f) + "px", width: mw + "px", height: n.h + "px", boxSizing: "border-box" }, { left: "0px", width: n.w + "px", height: n.h + "px", boxSizing: "border-box" }], { delay: dl });
-      run(n.el, [{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: dl + 170, easing: "ease-out" });
+      run(n.el, [{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: dl + 245, easing: "linear" }); // starts once the slot is ~90% open (measured against the mockup) and brightens evenly, with no first-frame jump
     });
     p.leave.forEach(function (o) {
       if (getComputedStyle(cont).position === "static") setS(cont, "position", "relative");
