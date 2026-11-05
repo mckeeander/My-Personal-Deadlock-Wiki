@@ -762,6 +762,8 @@ function effP(it, key) {
   return q;
 }
 // experiment: a duration shown on the card of the effect it times, instead of as its own stat
+// extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
+var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" } };
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
@@ -821,7 +823,7 @@ function durPairs(it, secs, GO, moved, extra) {
   });
   return out;
 }
-var ORDER_OV = { "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Move Speed"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Move Speed", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
+var ORDER_OV = { "Infernal Resilience": ["Damage Regenerated", "Max Health", "Debuff Resist", "Melee Lifesteal"], "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Move Speed"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Move Speed", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
   "Traveler": ["Move Speed", "Fire Rate", "Buff Duration", "Barrier"], "Crackshot": ["Damage", "Fading Move Speed", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
 var FLAG_OV = { SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
@@ -936,12 +938,14 @@ function statTiles(it) {
   return { big: big, small: small };
 }
 function pIcon(src) { return src ? imgTag(src).replace("<img ", '<img class="pi" ') : ""; }
+function isDmgLbl(l) { return /Damage|DPS|Burst|Health Steal/i.test(l) && !/Stolen/i.test(l); }
 function tile(v, l, r) {
   if (r && r.kind === "melee" && l === "Damage") l = "Melee Damage"; // the corner tag says light/heavy; the label stays "Melee Damage" at every tier
   var badge = scaleBadge(r);
   var dur = r && r.dur ? '<span class="dur">' + siIcon("hourglass") + esc(r.dur) + "</span>" : ""; // how long this effect lasts, tagged in the corner
   var corner = dur ? '<span class="corner">' + dur + badge + "</span>" : badge;
-  return '<div class="stat' + (r && r.wpn ? " big wtile" : r && r.tech ? " big" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
+  var tech = r && r.tech && isDmgLbl(l); // purple boxes are for damage; a spirit-scaling heal, barrier or buff keeps its purple ★ tag on a plain card
+  return '<div class="stat' + (r && r.wpn ? " big wtile" : tech ? " big" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
 }
 // abilities use tooltip_details.info_sections
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
@@ -983,6 +987,23 @@ function descPlain(it) { // the description as it reads on the card
   return String(rich(descText(d && typeof d === "object" ? { desc: abilityDesc(it) } : d)) || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 }
 // An ability that deals two kinds of damage (Bashdown: a melee slam, then a spirit shockwave) lists their cards in the order the description mentions them, at every tier.
+// lifesteal comes last in its set of cards: damage, health, effects, then lifesteal
+// an ability's explicit card order (ORDER_OV) applied once more at the end, so cards an upgrade adds later still land in their place (Infernal Resilience T3)
+function orderLast(it, html) {
+  var ord = ORDER_OV[it.name]; if (!ord) return html;
+  return html.replace(/(<div class="stats">)((?:<div class="stat(?:\s[^"]*)?">[\s\S]*?<\/div>)+)/g, function (m, a, body) {
+    var els = body.match(TILE_RE); if (!els) return m;
+    var pos = function (e) { var x = /<i>([^<]*)<\/i>/.exec(e), i = x ? ord.indexOf(x[1]) : -1; return i < 0 ? 99 : i; };
+    return a + els.map(function (e, i) { return [e, i]; }).sort(function (p, q) { return pos(p[0]) - pos(q[0]) || p[1] - q[1]; }).map(function (x) { return x[0]; }).join("");
+  });
+}
+function lifestealLast(html) {
+  return html.replace(/(<div class="stats">)((?:<div class="stat(?:\s[^"]*)?">[\s\S]*?<\/div>)+)/g, function (m, a, body) {
+    var els = body.match(TILE_RE); if (!els) return m;
+    var ls = els.filter(function (e) { return /<i>[^<]*Lifesteal[^<]*<\/i>/i.test(e); }); if (!ls.length || ls.length === els.length) return m;
+    return a + els.filter(function (e) { return ls.indexOf(e) < 0; }).concat(ls).join("");
+  });
+}
 function descOrderHits(it, html) {
   var tiles = html.match(TILE_RE); if (!tiles || tiles.length < 2) return html;
   var hits = [];
@@ -1056,7 +1077,7 @@ function tooltipHtml(it) {
     (place[tgt] = place[tgt] || []).push(r);
   });
   var at = {}; Object.keys(place).forEach(function (b) { place[b].forEach(function (r) { at[r.key] = +b; }); });
-  DO = DUR_OV[it.name] || durPairs(it, secs, GO, moved, at);
+  DO = DUR_OV[it.name] || Object.assign(durPairs(it, secs, GO, moved, at), DUR_ADD[it.name] || {});
   Object.keys(DO).forEach(function (k) { if (propRec(it, k) && propRec(it, DO[k])) durUsed[DO[k]] = 1; });
   var allSig = {};
   function extraHtml(list) { return (list || []).map(function (r) { if (durUsed[r.key]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, withDur(r.key, r)); }).join(""); }
@@ -1122,7 +1143,7 @@ function tooltipHtml(it) {
     else if (firstStats >= 0) parts.splice(firstStats + 1, 0, '<div class="minor">' + fl + "</div>");
     else parts.push('<div class="minor">' + fl + "</div>");
   }
-  return parts.map(function (p) { return descOrderHits(it, p); }).join("");
+  return parts.map(function (p) { return lifestealLast(orderLast(it, descOrderHits(it, p))); }).join("");
 }
 // every property key the game's own tooltip already lists for this ability
 function listedKeys(it) {
@@ -2588,7 +2609,8 @@ function snapStats(card) {
   var m = {};
   statEls(card).forEach(function (x) { m[x[1]] = x[0].textContent.replace(/\s+/g, " ").trim(); var dv = x[0].tagName === "DIV", bb = dv ? x[0].querySelector("b") : null;
     m[x[1] + "|b"] = (bb || x[0]).textContent; m[x[1] + "|w"] = x[0].offsetWidth;
-    var sc = dv ? x[0].querySelector(".sc") : null; if (sc) { m[x[1] + "|sc"] = sc.textContent; m[x[1] + "|scw"] = sc.offsetWidth; } });
+    var sc = dv ? x[0].querySelector(".sc") : null; if (sc) { m[x[1] + "|sc"] = sc.textContent; m[x[1] + "|scw"] = sc.offsetWidth; }
+    var du = dv ? x[0].querySelector(".dur") : null; if (du) m[x[1] + "|dur"] = du.textContent; });
   return m;
 }
 var COUNT_TEST = true; // numbers count up/down to their new value when a tier is tapped
@@ -2688,7 +2710,7 @@ function countTo(el, bef, k) {
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var isStat = el.tagName === "DIV", go = [];
   go.push(mode(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
-  if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(mode(sc, bef[k + "|sc"])); }
+  if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(mode(sc, bef[k + "|sc"])); var du = el.querySelector(".dur"); if (du) go.push(mode(du, bef[k + "|dur"])); } // the duration tag in the corner counts too (Threadsap T2)
   go.forEach(function (g) { if (g) g(); });
 }
 // Tapping a tier can add or remove stat tiles. A new tile widens from nothing and its text fades in a beat later; a tile that goes fades out first,
@@ -2720,11 +2742,23 @@ function tileData(cont, clone) { // every tile in a stat block: where it sits in
   return m;
 }
 function snapLayout(card) { // taken from the old card, just before it is swapped out
-  return blockList(card).map(function (b) {
+  var out = blockList(card).map(function (b) {
     var o = { sig: b.sig, box: boxOf(b.el), node: calmClone(b.el) };
     if (b.sig.charAt(0) === "s") o.tiles = tileData(b.el, true);
     return o;
   });
+  out.chips = chipData(card, true);
+  return out;
+}
+function chipData(card, clone) { // the header chips, keyed by name, with where each sits inside the chip row
+  var row = card.querySelector(".chips"), m = {}, seen = {}; if (!row) return m;
+  var cr = row.getBoundingClientRect();
+  Array.prototype.forEach.call(row.querySelectorAll(".chip"), function (el) {
+    if (el.closest("[data-ghost]")) return;
+    var k = el.getAttribute("data-tip") || el.textContent.replace(/[\d.]+/g, "#"), r = el.getBoundingClientRect(); seen[k] = (seen[k] || 0) + 1;
+    m[k + "#" + seen[k]] = { el: el, node: clone ? calmClone(el) : null, l: r.left - cr.left, t: r.top - cr.top, w: r.width, h: r.height };
+  });
+  return m;
 }
 function lcsOps(a, b) { // line the old blocks up with the new ones: matched, added, or removed
   var n = a.length, m = b.length, d = [], i, j, ops = [];
@@ -2828,6 +2862,37 @@ function animateLayout(fresh, snap) {
       undo.push(function () { if (g.parentNode) g.parentNode.removeChild(g); });
     });
   });
+  // header chips: the ones that stay slide to their new place, a new one fades in once they've (nearly) settled, one that goes fades out where it was
+  var oc = snap.chips || {}, row = fresh.querySelector(".chips");
+  if (row) {
+    var nc = chipData(fresh, false), cr = row.getBoundingClientRect(), slid = false;
+    Object.keys(nc).forEach(function (k) {
+      var n = nc[k], o = oc[k]; if (!o) return;
+      var dx = o.l - n.l, dy = o.t - n.t; if (Math.abs(dx) < .5 && Math.abs(dy) < .5) return;
+      slid = true; setS(n.el, "position", "relative");
+      run(n.el, [{ left: dx + "px", top: dy + "px" }, { left: "0px", top: "0px" }]);
+    });
+    Object.keys(nc).forEach(function (k) {
+      if (oc[k]) return;
+      var el = nc[k].el, dl2 = slid ? 245 : 80;
+      setS(el, "position", "relative");
+      // same trick as a new tile: a veil the colour of the card clears away (a colour fade, so nothing changes layers in Safari); the chip's own glow keeps its timing
+      var veil = document.createElement("span"); veil.setAttribute("aria-hidden", "true");
+      veil.style.cssText = "position:absolute;left:-4px;right:-4px;top:-4px;bottom:-4px;background:var(--panel);pointer-events:none;border-radius:7px;z-index:2";
+      el.appendChild(veil);
+      run(veil, [{ backgroundColor: "rgba(29,25,38,1)" }, { backgroundColor: "rgba(29,25,38,0)" }], { duration: 260, delay: dl2, easing: "linear" });
+      undo.push(function () { if (veil.parentNode) veil.parentNode.removeChild(veil); });
+    });
+    Object.keys(oc).forEach(function (k) {
+      if (nc[k] || !oc[k].node) return;
+      var o = oc[k], g = o.node; g.setAttribute("data-ghost", "1");
+      if (getComputedStyle(row).position === "static") setS(row, "position", "relative");
+      g.style.cssText += ";position:absolute;margin:0;left:" + o.l + "px;top:" + o.t + "px;width:" + o.w + "px;height:" + o.h + "px;box-sizing:border-box;pointer-events:none";
+      row.appendChild(g);
+      run(g, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in" });
+      undo.push(function () { if (g.parentNode) g.parentNode.removeChild(g); });
+    });
+  }
   setTimeout(function () { anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); undo.forEach(function (f) { f(); }); }, LAY_MS + 420);
 }
 var GLOW_UP = ["0 0 0 2px rgba(196,160,78,.9),0 0 16px 3px rgba(220,180,70,.4),inset 0 0 12px rgba(220,180,70,.14)", "0 0 0 0 rgba(255,200,60,0),0 0 0 rgba(255,200,60,0)"];
