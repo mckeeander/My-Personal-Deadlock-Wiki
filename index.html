@@ -927,7 +927,7 @@ function fetchAll() {
 /* ---------- rendering ---------- */
 function statusLine() {
   var d = state.fetchedAt ? new Date(state.fetchedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "never";
-  return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + " heroes · " + state.items.length + ' entries · <button class="link" id="rfr">Refresh now</button></p>';
+  return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + ' heroes · <button class="link" id="rfr">Refresh now</button></p>';
 }
 var FIRSTLIST = true;
 function renderHeroes() {
