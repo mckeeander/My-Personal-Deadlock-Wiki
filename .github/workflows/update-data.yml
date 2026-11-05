@@ -19,7 +19,8 @@ jobs:
 
       - name: Download data
         run: |
-          mkdir -p data
+          mkdir -p data prev
+          cp data/heroes.json data/items.json prev/ 2>/dev/null || true # the last saved snapshot, to compare against
           grab() {
             out="data/$1"; shift
             for u in "$@"; do
@@ -38,6 +39,12 @@ jobs:
           grab heroes.json "https://assets.deadlock-api.com/v2/heroes" "https://api.deadlock-api.com/v1/assets/heroes"
           grab items.json "https://assets.deadlock-api.com/v2/items" "https://api.deadlock-api.com/v1/assets/items"
           date -u +"%Y-%m-%dT%H:%M:%SZ" > data/updated.txt
+
+      - name: Record revisions
+        continue-on-error: true
+        run: |
+          # what changed for each hero since the last snapshot goes into data/revisions.json (shown under Revisions on hero pages)
+          if [ -f prev/heroes.json ] && [ -f prev/items.json ]; then python3 tools/revisions.py prev data; fi
 
       - name: Download wiki notes
         continue-on-error: true

@@ -233,6 +233,23 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 .desc + .blk{margin-top:22px}
 .blk + .stats{margin-top:10px}
 .stats + .ups,.minor + .ups{margin-top:22px}
+#revs .rpt{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:0 12px}
+#revs summary{display:flex;align-items:center;gap:8px;padding:11px 0;cursor:pointer;list-style:none}#revs summary::-webkit-details-marker{display:none}
+#revs .rd{font-weight:600;color:#fff}#revs .rcv{margin-left:auto;color:var(--dim);display:flex;transition:transform .2s}#revs .rpt:not([open]) .rcv{transform:rotate(-90deg)}
+#revs .rpt[open]{padding-bottom:8px}
+.rgrp{margin-top:6px}.rgrp+.rgrp{margin-top:12px}
+.rhd{display:flex;align-items:center;gap:8px;color:#c8bfd9;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.ric{width:24px;height:24px;border-radius:6px;background:var(--panel2);display:inline-flex;align-items:center;justify-content:center;flex:none;overflow:hidden}.ric img{width:20px;height:20px;object-fit:contain}.ric .si{width:15px;height:15px;color:#fff}
+.rch{margin-left:32px}
+.rrow{display:flex;align-items:baseline;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:14px}.rch>:first-child{border-top:0}
+.rl{flex:1;min-width:0}.rv{white-space:nowrap;font-variant-numeric:tabular-nums}.ro{color:var(--dim)}
+.rar{display:inline-block;font-size:10px;margin:0 6px;transform:translateY(-1px)}.rar.y{font-size:15px;transform:none;color:var(--gold)}
+#revs .g{color:#8fd6a0}#revs .r{color:#f19a9a}#revs .b{color:#8fb8f2}#revs .m{color:var(--dim)}.rs{text-decoration:line-through}
+.rtag{font-size:11px;border:1px solid #5b4a8f;color:#c7b6ff;border-radius:6px;padding:0 5px;margin-left:5px}.rti{color:#b9a8f0;font-size:12px}
+.rtiers{display:flex;align-items:center;gap:6px;padding:8px 0;border-top:1px solid var(--line)}.rsep{color:var(--gold);font-size:18px;flex:none}
+.rtb{flex:1;min-width:0;border:1px solid #5b4a8f;border-radius:7px;overflow:hidden;font-size:12px;text-align:center}.rth{background:#4b3d86;color:#fff;padding:2px 0;font-size:11px}.rtt{padding:6px 5px;line-height:1.35}
+.rtb.was{opacity:.55;border-color:var(--line)}.rtb.was .rth{background:var(--panel2)}
+.rtxt{padding:8px 0;border-top:1px solid var(--line);font-size:13px;color:#cfc7de;line-height:1.5}.rtxt del{color:#f19a9a;text-decoration:line-through}.rtxt ins{color:#8fd6a0;text-decoration:none;border-bottom:1px dotted #8fd6a0}
 .sec{font-family:var(--body);font-weight:700;color:var(--gold);font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;margin:36px 0 12px;padding-bottom:5px;border-bottom:1px solid var(--line)}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .tag{background:#3b2230;color:#f0b8b0;border-radius:4px;padding:3px 8px;font-size:12px;letter-spacing:.04em}
@@ -652,9 +669,10 @@ function idbSet(k, v) {
 }
 function save() { return idbSet(KEY, { t: state.fetchedAt, h: state.heroes, i: state.items }); }
 function load() {
-  return Promise.all([idbGet(KEY), idbGet(WKEY)]).then(function (r) {
+  return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
+    if (Array.isArray(r[2])) state.revs = r[2];
     if (d && d.h && d.i && d.h.length) { state.heroes = d.h; state.items = d.i; state.fetchedAt = d.t || 0; index(); return true; }
     return false;
   });
@@ -895,6 +913,9 @@ function fetchAll() {
     state.heroes.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
     state.fetchedAt = Date.now(); state.note = ""; index(); save();
     // community notes are optional: a failure here never blocks the main data
+    getJson("revisions.json").then(function (rv) { // optional, like the notes: the hero page simply has no Revisions section without it
+      if (Array.isArray(rv)) { state.revs = rv; idbSet("revs", rv); var w2 = $("revwrap"), h2 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w2 && h2) w2.innerHTML = revisionsHtml(h2); }
+    }, function () {});
     return getJson("wiki.json").then(function (w) {
       if (w && w.heroes) { state.wiki = w; idbSet(WKEY, w); }
       return true;
@@ -2025,6 +2046,106 @@ function jumpTo(cn) {
   new MutationObserver(updateJbar).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // other tabs, search and the glossary replace or hide the hero page
   document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-jump]") : null; if (b) jumpTo(b.getAttribute("data-jump")); });
 })();
+/* ---------- revisions: what changed for this hero, taken from comparing each data snapshot with the one before (data/revisions.json, written by tools/revisions.py) ---------- */
+var REV_LOWER = /Cooldown|Delay|Buildup ?Time|Reload|Cost|Window|Channel|Cast ?Time|Penalty|Lockout|Cycle|Fuse/i; // stats where a smaller number is the better one
+function revItem(cn) { return state.byClass[cn] || null; }
+function revFmt(it, key, raw, sign) { // a raw value formatted the way the ability cards show that stat (label and units from the current data)
+  if (raw == null || raw === "") return "—";
+  var P = it && it.properties || {}, p0 = P[key];
+  if (p0) {
+    var clone = {}, props = {}; for (var k in it) clone[k] = it[k]; for (var q in P) props[q] = P[q];
+    var pv = {}; for (var z in p0) pv[z] = p0[z]; pv.value = String(raw); props[key] = pv; clone.properties = props; clone.upgrades = [];
+    var keep = CTX; CTX = null; var r = null; try { r = propRec(clone, key); } catch (e) {} CTX = keep;
+    if (r && r.v != null) { var v = String(r.v); if (sign && parseFloat(raw) > 0 && v.charAt(0) !== "+") v = "+" + v; return v; }
+  }
+  var n = parseFloat(raw), s2 = String(raw); if (isNaN(n)) return s2;
+  s2 = fmtNum(n) + s2.replace(/^[+-]?[\d.]+/, ""); return (sign && n > 0 ? "+" : "") + s2;
+}
+function revLabel(it, key) {
+  var p0 = it && (it.properties || {})[key], l = propLabel(p0, key).replace(/\bTech\b/g, "Spirit").replace(/\bLife Steal\b/g, "Lifesteal");
+  if (it && LABEL_OV[it.name + "|" + key]) l = LABEL_OV[it.name + "|" + key];
+  return l;
+}
+function revDir(lbl, key, a, b) { // "up" = better, "dn" = worse
+  var x = Math.abs(parseFloat(a)), y = Math.abs(parseFloat(b)); if (isNaN(x) || isNaN(y) || x === y) return "nc";
+  var lower = REV_LOWER.test(key + " " + lbl); return (y > x) !== lower ? "up" : "dn";
+}
+var REV_WPN = { bullet_damage: "Bullet damage", bullets: "Bullets per shot", clip_size: "Ammo", cycle_time: "Time between shots", reload_duration: "Reload time", reload_single: "Reload per bullet",
+  bullet_speed: "Bullet velocity", falloff_start_range: "Falloff start", falloff_end_range: "Falloff end", spread: "Spread", burst_shot_count: "Shots per burst", intra_burst_cycle_time: "Time between burst shots" };
+var REV_HERO = { MODIFIER_VALUE_BASE_HEALTH_FROM_LEVEL: "Health per boon", MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL: "Bullet damage per boon", MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL: "Melee damage per boon",
+  MODIFIER_VALUE_TECH_POWER: "Spirit power per boon", MODIFIER_VALUE_BULLET_ARMOR_DAMAGE_RESIST: "Bullet resist per boon", MODIFIER_VALUE_TECH_RESIST: "Spirit resist per boon",
+  ETechArmorDamageReduction: "Spirit resist per Spirit Power", EBulletArmorDamageReduction: "Bullet resist per Spirit Power",
+  max_health: "Health", base_health_regen: "Health regen", max_move_speed: "Move speed", sprint_speed: "Sprint speed", stamina: "Stamina", light_melee_damage: "Light melee", heavy_melee_damage: "Heavy melee", crouch_speed: "Crouch speed" };
+function revWords(html) { return String(rich(html) || "").replace(/<br\s*\/?>/gi, " ").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().split(" "); }
+function revTextDiff(a, b) { // the changed stretch of a sentence, with a few words either side for context
+  var A = revWords(a), B = revWords(b), n = A.length, m = B.length, i = 0, ja = n - 1, jb = m - 1;
+  while (i < n && i < m && A[i] === B[i]) i++;
+  while (ja >= i && jb >= i && A[ja] === B[jb]) { ja--; jb--; }
+  var c0 = Math.max(0, i - 4), pre = (c0 > 0 ? "…" : "") + esc(A.slice(c0, i).join(" ")), post = esc(A.slice(ja + 1, ja + 5).join(" ")) + (ja + 5 < n ? "…" : "");
+  var del = esc(A.slice(i, ja + 1).join(" ")), ins = esc(B.slice(i, jb + 1).join(" "));
+  return pre + (del ? " <del>" + del + "</del>" : "") + (ins ? " <ins>" + ins + "</ins>" : "") + " " + post;
+}
+function revRich(t) { return String(t || "").split(/<br\s*\/?>/i).map(function (x) { return rich(x); }).join("<br>"); } // keep the tier text's line breaks
+function revMerge(it, cs) { // twin stats changed the same way (Baba's Brew's Barrier, Silence and Fire Window) read as one line
+  var out = [], at = {};
+  cs.forEach(function (c) {
+    if (c.kind !== "val") { out.push(c); return; }
+    var l = revLabel(it, c.key), w = l.split(" "), tail = w.length > 1 ? w[w.length - 1] : null, k = tail && (c.old + "|" + c.new + "|" + tail);
+    if (k && at[k] != null) { var m = out[at[k]]; m.lbl = m.lbl.replace(new RegExp(" " + tail + "$"), "") + " / " + w.slice(0, -1).join(" ") + " " + tail; return; }
+    var cc = {}; for (var z in c) cc[z] = c[z]; cc.lbl = l; if (k) at[k] = out.length; out.push(cc);
+  });
+  return out;
+}
+function revArrow(d) { return d === "up" ? '<span class="rar g">▲&#xFE0E;</span>' : d === "dn" ? '<span class="rar r">▼&#xFE0E;</span>' : '<span class="rar y">›</span>'; }
+function revRow(lbl, o, n, d, extra) {
+  return '<div class="rrow"><span class="rl">' + lbl + (extra || "") + '</span><span class="rv"><span class="ro">' + esc(o) + "</span>" + revArrow(d) + '<span class="rn ' + (d === "up" ? "g" : d === "dn" ? "r" : "") + '">' + esc(n) + "</span></span></div>";
+}
+function revChange(it, c, h) {
+  var star = '<span class="rtag">★&#xFE0E;</span>', tier = c.tier ? '<span class="rti">◆&#xFE0E;' + c.tier + "</span> " : "";
+  if (c.kind === "val" || c.kind === "tierval") {
+    var l = c.lbl || revLabel(it, c.key), sg = c.kind === "tierval";
+    if (c.kind === "tierval" && (c.old == null || c.new == null)) return '<div class="rrow"><span class="rl">' + tier + (c.old == null ? '<span class="b">New</span> · ' : '<span class="m">Removed</span> · ') + esc(l) + '</span><span class="rv ' + (c.old == null ? "b" : "m rs") + '">' + esc(revFmt(it, c.key, c.old == null ? c.new : c.old, true)) + "</span></div>";
+    return revRow(tier + esc(l), revFmt(it, c.key, c.old, sg), revFmt(it, c.key, c.new, sg), revDir(l, c.key, c.old, c.new));
+  }
+  if (c.kind === "scale" || c.kind === "tierscale") {
+    var p0 = it && (it.properties || {})[c.key], sf = p0 && p0.scale_function || {}, tech = !sf.specific_stat_scale_type || /Tech/.test(sf.specific_stat_scale_type);
+    return revRow(tier + esc(revLabel(it, c.key)) + " scaling", "×" + fmtNum(c.old), "×" + fmtNum(c.new), revDir("", "", c.old, c.new), tech ? star : "");
+  }
+  if (c.kind === "new" || c.kind === "rm") {
+    var nw = c.kind === "new";
+    return '<div class="rrow"><span class="rl">' + (nw ? '<span class="b">New</span> · ' : '<span class="m">Removed</span> · ') + esc(revLabel(it, c.key)) + '</span><span class="rv ' + (nw ? "b" : "m rs") + '">' + esc(revFmt(it, c.key, nw ? c.new : c.old)) + "</span></div>";
+  }
+  if (c.kind === "tier") return '<div class="rtiers"><div class="rtb was"><div class="rth">◆&#xFE0E; ' + c.tier + ' before</div><div class="rtt">' + revRich(c.old) + '</div></div><span class="rsep">›</span><div class="rtb"><div class="rth">◆&#xFE0E; ' + c.tier + ' now</div><div class="rtt">' + revRich(c.new) + "</div></div></div>";
+  if (c.kind === "desc") return '<div class="rtxt">' + revTextDiff(c.old, c.new) + "</div>";
+  if (c.kind === "wpn") {
+    var wl = REV_WPN[c.key] || prettify(c.key), f = function (v) { return v == null ? "—" : c.key === "bullet_speed" ? fmtNum(Math.round(v / 39.37)) + " m/s" : /time|duration|reload/.test(c.key) ? fmtNum(v) + "s" : fmtNum(v); };
+    return revRow(esc(wl), f(c.old), f(c.new), revDir(wl, c.key, c.old, c.new));
+  }
+  if (c.kind === "hero") {
+    var hl = REV_HERO[c.key] || nice(c.key), pct = /ArmorDamageReduction|RESIST/.test(c.key) ? "%" : "", g = function (v) { return v == null ? "—" : (Math.abs(v) < 0.1 && v ? String(Number(Number(v).toPrecision(2))) : fmtNum(v)) + pct; };
+    return revRow(esc(hl), g(c.old), g(c.new), revDir(hl, c.key, c.old, c.new));
+  }
+  return "";
+}
+function revDate(d) { var p = String(d).split("-"); try { return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" }); } catch (e) { return d; } }
+function revisionsHtml(h) {
+  var R = state.revs; if (!R || !R.length) return "";
+  var cards = R.map(function (e, ei) {
+    var gs = (e.heroes || {})[h.class_name]; if (!gs || !gs.length) return "";
+    var body = gs.map(function (g) {
+      var it = g.item ? revItem(g.item) : null, icon, name;
+      if (g.type === "hero") { icon = siIcon(SICON["Health"]); name = "Base stats"; }
+      else if (g.type === "weapon") { icon = siIcon(SICON["Bullet velocity"]); name = "Weapon"; }
+      else { var op = (ABOPT[g.item] || {}); icon = it ? imgTag(op.img || itemImg(it)) : ""; name = it ? nameOf(it) : g.name; }
+      var rows = revMerge(it, g.changes).map(function (c) { return revChange(it, c, h); }), seen = {};
+      rows = rows.filter(function (r) { if (seen[r]) return false; seen[r] = 1; return !!r; }); // the same change on twin stats (three "cycle" windows) shows once
+      return '<div class="rgrp"><div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + '</div><div class="rch">' + rows.join("") + "</div></div>";
+    }).join("");
+    return '<details class="rpt"' + (ei === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(e.date)) + '</span><span class="rcv">' + CHEV + "</span></summary>" + body + "</details>";
+  }).join("");
+  return cards ? '<div class="sec">Revisions</div><div id="revs">' + cards + "</div>" : "";
+}
+var CHEV = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
 function renderHero(cn) {
   var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
   if (!h) { state.hero = null; return renderHeroes(); }
@@ -2047,6 +2168,7 @@ function renderHero(cn) {
     var alt = fp && fp.swap[a.class_name];
     html += alt ? '<div class="f0">' + abilityCard(a, h) + '</div><div class="f1">' + abilityCard(alt, h) + "</div>" : abilityCard(a, h);
   });
+  html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : ""; updateJbar();
   $("back").onclick = function () {
