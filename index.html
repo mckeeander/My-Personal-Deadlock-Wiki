@@ -245,6 +245,7 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 .rl{flex:1;min-width:0}.rv{white-space:nowrap;font-variant-numeric:tabular-nums}.ro{color:var(--dim)}
 .rar{display:inline-block;font-size:10px;margin:0 6px;transform:translateY(-1px)}.rar.y{font-size:15px;transform:none;color:var(--gold)}
 #revs .g{color:#8fd6a0}#revs .r{color:#f19a9a}#revs .b{color:#8fb8f2}#revs .m{color:var(--dim)}.rs{text-decoration:line-through}
+.rsc{position:static;display:inline-block;vertical-align:1px}.rsc.was{opacity:.6}.rtt .rsc{margin:2px 0}
 .rtag{font-size:11px;border:1px solid #5b4a8f;color:#c7b6ff;border-radius:6px;padding:0 5px;margin-left:5px}.rti{color:#b9a8f0;font-size:12px}
 .rtiers{display:flex;align-items:center;gap:6px;padding:8px 0;border-top:1px solid var(--line)}.rsep{color:var(--gold);font-size:18px;flex:none}
 .rtb{flex:1;min-width:0;border:1px solid #5b4a8f;border-radius:7px;overflow:hidden;font-size:12px;text-align:center}.rth{background:#4b3d86;color:#fff;padding:2px 0;font-size:11px}.rtt{padding:6px 5px;line-height:1.35}
@@ -2056,7 +2057,7 @@ function revFmt(it, key, raw, sign) { // a raw value formatted the way the abili
     var clone = {}, props = {}; for (var k in it) clone[k] = it[k]; for (var q in P) props[q] = P[q];
     var pv = {}; for (var z in p0) pv[z] = p0[z]; pv.value = String(raw); props[key] = pv; clone.properties = props; clone.upgrades = [];
     var keep = CTX; CTX = null; var r = null; try { r = propRec(clone, key); } catch (e) {} CTX = keep;
-    if (r && r.v != null) { var v = String(r.v); if (sign && parseFloat(raw) > 0 && v.charAt(0) !== "+") v = "+" + v; return v; }
+    if (r && r.v != null) { var v = String(r.v); if (sign && parseFloat(raw) > 0 && !/^[+-]/.test(v)) v = "+" + v; return v; }
   }
   var n = parseFloat(raw), s2 = String(raw); if (isNaN(n)) return s2;
   s2 = fmtNum(n) + s2.replace(/^[+-]?[\d.]+/, ""); return (sign && n > 0 ? "+" : "") + s2;
@@ -2096,6 +2097,29 @@ function revMerge(it, cs) { // twin stats changed the same way (Baba's Brew's Ba
   });
   return out;
 }
+function revPlain(t) { return revWords(t).join(" "); }
+function revTierPlan(it, cs) { // per tier: one changed number with the same wording reads as one line (◆3 Bonus Damage +50% ▲ +60%); several changes, or new wording, show the tier boxes before and after
+  var byT = {}, out = [];
+  cs.forEach(function (c) { if (c.tier) (byT[c.tier] = byT[c.tier] || []).push(c); });
+  var done = {};
+  cs.forEach(function (c) {
+    if (!c.tier) { out.push(c); return; }
+    if (done[c.tier]) return; done[c.tier] = 1;
+    var g = byT[c.tier], rec = g.filter(function (x) { return x.kind === "tier"; })[0], nums = g.filter(function (x) { return x.kind !== "tier"; });
+    var o = rec ? revPlain(rec.old) : "", n = rec ? revPlain(rec.new) : "", wordsSame = !rec || o.replace(/[+-]?\d+(\.\d+)?/g, "#") === n.replace(/[+-]?\d+(\.\d+)?/g, "#");
+    var oneNum = nums.length === 1; // includes a lone stat that's new or gone (◆2 New · Cast Range +5m)
+    if (oneNum && wordsSame) { out.push(nums[0]); return; }
+    if (!nums.length && (!rec || o === n)) return;
+    if (rec && o && n && o !== n) { out.push({ kind: "tierbox", tier: c.tier, old: revRich(rec.old), new: revRich(rec.new) }); return; }
+    var line = function (x, v) { // the tier text didn't change (it doesn't spell out these numbers): list the changed stats instead
+      if (v == null) return "";
+      var l = esc(revLabel(it, x.key));
+      return x.kind === "tierscale" ? '<em class="sc sp rsc">★&#xFE0E; ×' + esc(fmtNum(v)) + "</em> " + l : "<b>" + esc(revFmt(it, x.key, v, true)) + "</b> " + l;
+    };
+    out.push({ kind: "tierbox", tier: c.tier, old: nums.map(function (x) { return line(x, x.old); }).filter(Boolean).join("<br>") || "—", new: nums.map(function (x) { return line(x, x.new); }).filter(Boolean).join("<br>") || "—" });
+  });
+  return out;
+}
 function revArrow(d) { return d === "up" ? '<span class="rar g">▲&#xFE0E;</span>' : d === "dn" ? '<span class="rar r">▼&#xFE0E;</span>' : '<span class="rar y">›</span>'; }
 function revRow(lbl, o, n, d, extra) {
   return '<div class="rrow"><span class="rl">' + lbl + (extra || "") + '</span><span class="rv"><span class="ro">' + esc(o) + "</span>" + revArrow(d) + '<span class="rn ' + (d === "up" ? "g" : d === "dn" ? "r" : "") + '">' + esc(n) + "</span></span></div>";
@@ -2109,13 +2133,17 @@ function revChange(it, c, h) {
   }
   if (c.kind === "scale" || c.kind === "tierscale") {
     var p0 = it && (it.properties || {})[c.key], sf = p0 && p0.scale_function || {}, tech = !sf.specific_stat_scale_type || /Tech/.test(sf.specific_stat_scale_type);
-    return revRow(tier + esc(revLabel(it, c.key)) + " scaling", "×" + fmtNum(c.old), "×" + fmtNum(c.new), revDir("", "", c.old, c.new), tech ? star : "");
+    if (!tech) return revRow(tier + esc(revLabel(it, c.key)) + " scaling", "×" + fmtNum(c.old), "×" + fmtNum(c.new), revDir("", "", c.old, c.new));
+    var d = revDir("", "", c.old, c.new); // spirit scaling reads like the cards' corner tag: ★ ×0.74 ▼ ★ ×0.68
+    return '<div class="rrow"><span class="rl">' + tier + esc(revLabel(it, c.key)) + ' scaling</span><span class="rv"><em class="sc sp rsc was">★&#xFE0E; ×' + esc(fmtNum(c.old)) + "</em>" + revArrow(d) + '<em class="sc sp rsc">★&#xFE0E; ×' + esc(fmtNum(c.new)) + "</em></span></div>";
   }
   if (c.kind === "new" || c.kind === "rm") {
     var nw = c.kind === "new";
     return '<div class="rrow"><span class="rl">' + (nw ? '<span class="b">New</span> · ' : '<span class="m">Removed</span> · ') + esc(revLabel(it, c.key)) + '</span><span class="rv ' + (nw ? "b" : "m rs") + '">' + esc(revFmt(it, c.key, nw ? c.new : c.old)) + "</span></div>";
   }
-  if (c.kind === "tier") return '<div class="rtiers"><div class="rtb was"><div class="rth">◆&#xFE0E; ' + c.tier + ' before</div><div class="rtt">' + revRich(c.old) + '</div></div><span class="rsep">›</span><div class="rtb"><div class="rth">◆&#xFE0E; ' + c.tier + ' now</div><div class="rtt">' + revRich(c.new) + "</div></div></div>";
+  if (c.kind === "tierbox") return '<div class="rtiers"><div class="rtb was"><div class="rth">◆&#xFE0E; ' + c.tier + ' before</div><div class="rtt">' + c.old + '</div></div><span class="rsep">›</span><div class="rtb"><div class="rth">◆&#xFE0E; ' + c.tier + ' now</div><div class="rtt">' + c.new + "</div></div></div>";
+  if (c.kind === "tier") return "";
+  if (c.kind === "tierold") return '<div class="rtiers"><div class="rtb was"><div class="rth">◆&#xFE0E; ' + c.tier + ' before</div><div class="rtt">' + revRich(c.old) + '</div></div><span class="rsep">›</span><div class="rtb"><div class="rth">◆&#xFE0E; ' + c.tier + ' now</div><div class="rtt">' + revRich(c.new) + "</div></div></div>";
   if (c.kind === "desc") return '<div class="rtxt">' + revTextDiff(c.old, c.new) + "</div>";
   if (c.kind === "wpn") {
     var wl = REV_WPN[c.key] || prettify(c.key), f = function (v) { return v == null ? "—" : c.key === "bullet_speed" ? fmtNum(Math.round(v / 39.37)) + " m/s" : /time|duration|reload/.test(c.key) ? fmtNum(v) + "s" : fmtNum(v); };
@@ -2137,11 +2165,11 @@ function revisionsHtml(h) {
       if (g.type === "hero") { icon = siIcon(SICON["Health"]); name = "Base stats"; }
       else if (g.type === "weapon") { icon = siIcon(SICON["Bullet velocity"]); name = "Weapon"; }
       else { var op = (ABOPT[g.item] || {}); icon = it ? imgTag(op.img || itemImg(it)) : ""; name = it ? nameOf(it) : g.name; }
-      var rows = revMerge(it, g.changes).map(function (c) { return revChange(it, c, h); }), seen = {};
+      var rows = revMerge(it, revTierPlan(it, g.changes)).map(function (c) { return revChange(it, c, h); }), seen = {};
       rows = rows.filter(function (r) { if (seen[r]) return false; seen[r] = 1; return !!r; }); // the same change on twin stats (three "cycle" windows) shows once
       return '<div class="rgrp"><div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + '</div><div class="rch">' + rows.join("") + "</div></div>";
     }).join("");
-    return '<details class="rpt"' + (ei === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(e.date)) + '</span><span class="rcv">' + CHEV + "</span></summary>" + body + "</details>";
+    return '<details class="rpt"><summary><span class="rd">' + esc(revDate(e.date)) + '</span><span class="rcv">' + CHEV + "</span></summary>" + body + "</details>";
   }).join("");
   return cards ? '<div class="sec">Revisions</div><div id="revs">' + cards + "</div>" : "";
 }

@@ -68,9 +68,8 @@ def ability_changes(a, b):
         dk = "t%d_desc" % (t + 1)
         if pua == pub and da.get(dk) == db.get(dk):
             continue
-        if da.get(dk) and db.get(dk) and da.get(dk) != db.get(dk):
-            out.append({"kind": "tier", "tier": t + 1, "old": da.get(dk), "new": db.get(dk)})
-            continue
+        # the tier's text, before and after (the site shows tier boxes when several things in a tier changed, or one line when only one number did)
+        out.append({"kind": "tier", "tier": t + 1, "old": da.get(dk) or "", "new": db.get(dk) or ""})
         for i in range(max(len(pua), len(pub))):
             x = pua[i] if i < len(pua) else {}
             y = pub[i] if i < len(pub) else {}
