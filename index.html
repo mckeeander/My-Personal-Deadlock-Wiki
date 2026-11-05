@@ -2816,7 +2816,7 @@ function animateLayout(fresh, snap) {
       veil.style.cssText = "position:absolute;left:-8px;right:-10px;top:-11px;bottom:-12px;background:var(--panel);z-index:5;pointer-events:none;border-radius:10px";
       Array.prototype.forEach.call(n.el.children, function (c) { run(c, [{ visibility: "hidden" }, { visibility: "hidden" }], { duration: dl + 245, fill: "none" }); }); // while the tile is narrow its text and badge would spill past the veil; they switch on under the still-opaque veil
       n.el.appendChild(veil);
-      run(veil, [{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: dl + 245, easing: "linear" });
+      run(veil, [{ backgroundColor: "rgba(29,25,38,1)" }, { backgroundColor: "rgba(29,25,38,0)" }], { duration: 260, delay: dl + 245, easing: "linear" }); // fade the veil's colour (= --panel), not its opacity: an opacity fade gets its own layer in Safari, which drags the overlapping neighbour onto one too and nudges it a pixel (its badge's top edge got clipped)
       undo.push(function () { if (veil.parentNode) veil.parentNode.removeChild(veil); });
     });
     p.leave.forEach(function (o) {
