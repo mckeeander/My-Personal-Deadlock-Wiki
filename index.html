@@ -2114,7 +2114,7 @@ function revTierPlan(it, cs) { // per tier: one changed number with the same wor
     var line = function (x, v) { // the tier text didn't change (it doesn't spell out these numbers): list the changed stats instead
       if (v == null) return "";
       var l = esc(revLabel(it, x.key));
-      return x.kind === "tierscale" ? '<em class="sc sp rsc">★&#xFE0E; ×' + esc(fmtNum(v)) + "</em> " + l : "<b>" + esc(revFmt(it, x.key, v, true)) + "</b> " + l;
+      return x.kind === "tierscale" ? '<em class="sc sp rsc">★ ×' + esc(fmtRate(v)) + "</em> " + l : "<b>" + esc(revFmt(it, x.key, v, true)) + "</b> " + l;
     };
     out.push({ kind: "tierbox", tier: c.tier, old: nums.map(function (x) { return line(x, x.old); }).filter(Boolean).join("<br>") || "—", new: nums.map(function (x) { return line(x, x.new); }).filter(Boolean).join("<br>") || "—" });
   });
@@ -2125,7 +2125,7 @@ function revRow(lbl, o, n, d, extra) {
   return '<div class="rrow"><span class="rl">' + lbl + (extra || "") + '</span><span class="rv"><span class="ro">' + esc(o) + "</span>" + revArrow(d) + '<span class="rn ' + (d === "up" ? "g" : d === "dn" ? "r" : "") + '">' + esc(n) + "</span></span></div>";
 }
 function revChange(it, c, h) {
-  var star = '<span class="rtag">★&#xFE0E;</span>', tier = c.tier ? '<span class="rti">◆&#xFE0E;' + c.tier + "</span> " : "";
+  var star = '<span class="rtag">★</span>', tier = c.tier ? '<span class="rti">◆&#xFE0E;' + c.tier + "</span> " : "";
   if (c.kind === "val" || c.kind === "tierval") {
     var l = c.lbl || revLabel(it, c.key), sg = c.kind === "tierval";
     if (c.kind === "tierval" && (c.old == null || c.new == null)) return '<div class="rrow"><span class="rl">' + tier + (c.old == null ? '<span class="b">New</span> · ' : '<span class="m">Removed</span> · ') + esc(l) + '</span><span class="rv ' + (c.old == null ? "b" : "m rs") + '">' + esc(revFmt(it, c.key, c.old == null ? c.new : c.old, true)) + "</span></div>";
@@ -2135,7 +2135,7 @@ function revChange(it, c, h) {
     var p0 = it && (it.properties || {})[c.key], sf = p0 && p0.scale_function || {}, tech = !sf.specific_stat_scale_type || /Tech/.test(sf.specific_stat_scale_type);
     if (!tech) return revRow(tier + esc(revLabel(it, c.key)) + " scaling", "×" + fmtNum(c.old), "×" + fmtNum(c.new), revDir("", "", c.old, c.new));
     var d = revDir("", "", c.old, c.new); // spirit scaling reads like the cards' corner tag: ★ ×0.74 ▼ ★ ×0.68
-    return '<div class="rrow"><span class="rl">' + tier + esc(revLabel(it, c.key)) + ' scaling</span><span class="rv"><em class="sc sp rsc was">★&#xFE0E; ×' + esc(fmtNum(c.old)) + "</em>" + revArrow(d) + '<em class="sc sp rsc">★&#xFE0E; ×' + esc(fmtNum(c.new)) + "</em></span></div>";
+    return '<div class="rrow"><span class="rl">' + tier + esc(revLabel(it, c.key)) + ' scaling</span><span class="rv"><em class="sc sp rsc was">★ ×' + esc(fmtRate(c.old)) + "</em>" + revArrow(d) + '<em class="sc sp rsc">★ ×' + esc(fmtRate(c.new)) + "</em></span></div>";
   }
   if (c.kind === "new" || c.kind === "rm") {
     var nw = c.kind === "new";
