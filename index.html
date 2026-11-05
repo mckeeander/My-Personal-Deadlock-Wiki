@@ -1434,7 +1434,7 @@ function tierIcons(it, body) {
     if (/_color\.svg$/.test(src)) return '<img class="tic" alt="' + esc(word) + '" title="' + esc(word) + '" src="' + esc(src) + '">'; // already drawn in its own colours
     // a plain white icon: use it as a mask over the word's colour, so it keeps the colour the word had
     // a plain white icon in the word's colour. It's an ordinary image (a CSS mask won't load from the icon host in Safari, which doesn't allow it), drawn off to the side with a drop shadow in that colour placed exactly where the icon belongs: the shadow takes the icon's shape, so only the coloured copy shows
-    return '<span class="tic" role="img" aria-label="' + esc(word) + '" title="' + esc(word) + '"><img alt="" src="' + esc(src) + '" style="filter:drop-shadow(200px 0 0 ' + col + ')"></span>';
+    return '<img class="tic" alt="' + esc(word) + '" title="' + esc(word) + '" src="' + esc(src) + '">'; // white for now, exactly like the chips' icons (colouring them didn't show in Safari)
   }).replace(/(<b class="v">(?:[^<]|<span[^>]*>[^<]*<\/span>)*<\/b>)\s+(<(?:span class="tic"[^>]*><img[^>]*><\/span>|img class="tic"[^>]*>))/g, '<span class="nw">$1 $2</span>'); // a number never wraps away from its icon
 }
 function upgradesHtml(it, sel) {
