@@ -38,6 +38,7 @@ jobs:
           }
           grab heroes.json "https://assets.deadlock-api.com/v2/heroes" "https://api.deadlock-api.com/v1/assets/heroes"
           grab items.json "https://assets.deadlock-api.com/v2/items" "https://api.deadlock-api.com/v1/assets/items"
+          python3 tools/keepdeps.py prev data
           date -u +"%Y-%m-%dT%H:%M:%SZ" > data/updated.txt
 
       - name: Record revisions

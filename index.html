@@ -189,9 +189,9 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .fsw{position:relative;display:flex;gap:3px;margin:0 0 12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:3px}
 .fsw button{position:relative;z-index:1;flex:1;border:0;border-radius:9px;background:transparent;padding:10px 4px;color:var(--dim);font-size:14px;font-weight:600;line-height:1.2}
 .fsw .fth{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc(50% - 4.5px);border-radius:9px;background:rgba(79,143,232,.22);box-shadow:inset 0 0 0 1px var(--nav)}
-#main.alt .fsw .fth{transform:translateX(calc(100% + 3px));background:rgba(230,180,90,.18);box-shadow:inset 0 0 0 1px var(--gold)}
-#main:not(.alt) .fsw .fs0{color:#bcd5f8}
-#main.alt .fsw .fs1{color:var(--gold)}
+#main.fbox .fsw .fth{transform:translateX(calc(100% + 3px));background:rgba(230,180,90,.18);box-shadow:inset 0 0 0 1px var(--gold)}
+#main:not(.fbox) .fsw .fs0{color:#bcd5f8}
+#main.fbox .fsw .fs1{color:var(--gold)}
 #main.fsanim .fsw .fth{transition:transform .6s cubic-bezier(.65,0,.35,1),background-color .6s ease-in-out,box-shadow .6s ease-in-out}
 #main.fsanim .fsw button{transition:color .6s ease-in-out}
 /* the same switch as a button at the left end of the floating ability bar: plain until Lycan is on, then gold */
@@ -1674,11 +1674,29 @@ function formParts(h, abs) {
 function formSwitch(fp) {
   return '<div class="fsw" role="tablist"><span class="fth"></span><button class="fs0" data-fs="0">Normal</button><button class="fs1" data-fs="1">' + esc(fp.label) + "</button></div>";
 }
-function userForm(toAlt, keepEl) { // a tap on a form switch: the sliding box and colours animate; opening a page never does
-  var m = $("main"), j = $("jbar"); m.classList.add("fsanim"); j.classList.add("fsanim"); void m.offsetWidth;
-  syncFormTiers(toAlt); setForm(toAlt, keepEl);
-  clearTimeout(userForm.t); userForm.t = setTimeout(function () { m.classList.remove("fsanim"); j.classList.remove("fsanim"); }, 750);
+function userForm(toAlt, keepEl) { // a tap on a form switch: the box slides at once; the old form's cards fade out to one side, the new form's slide in from the other
+  var m = $("main"), j = $("jbar"), d = toAlt ? -1 : 1, T = ++userForm.n;
+  if (!!toAlt === state.alt) { // tapped back before the swap happened: put everything back
+    if (userForm.busy) { clearTimeout(userForm.s); m.classList.toggle("fbox", state.alt); Array.prototype.forEach.call(m.querySelectorAll(".f0,.f1"), function (e) { e.getAnimations().forEach(function (a) { a.cancel(); }); }); }
+    return;
+  }
+  var out = Array.prototype.slice.call(m.querySelectorAll(toAlt ? ".f0" : ".f1"));
+  m.classList.add("fsanim"); j.classList.add("fsanim"); void m.offsetWidth;
+  m.classList.toggle("fbox", !!toAlt);
+  function swap() {
+    if (T !== userForm.n) return;
+    out.forEach(function (e) { e.getAnimations().forEach(function (a) { a.cancel(); }); });
+    syncFormTiers(toAlt); setForm(toAlt, keepEl);
+    Array.prototype.forEach.call(m.querySelectorAll(toAlt ? ".f1" : ".f0"), function (e) {
+      if (e.animate) e.animate([{ opacity: 0, transform: "translateX(" + (-d * 28) + "px)" }, { opacity: 1, transform: "none" }], { duration: 340, easing: "cubic-bezier(.2,.7,.3,1)" });
+    });
+  }
+  userForm.busy = true;
+  out.forEach(function (e) { if (e.animate) e.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(" + (d * 28) + "px)" }], { duration: 230, easing: "ease-in", fill: "forwards" }); });
+  clearTimeout(userForm.s); userForm.s = setTimeout(swap, out.length && out[0].animate ? 230 : 0);
+  clearTimeout(userForm.t); userForm.t = setTimeout(function () { m.classList.remove("fsanim"); j.classList.remove("fsanim"); userForm.busy = false; }, 750);
 }
+userForm.n = 0;
 function syncFormTiers(toAlt) { // switching between Normal and Lycan: each ability in the other form opens with the same number of tiers selected as its counterpart
   var from = document.querySelectorAll("#main " + (toAlt ? ".f0" : ".f1") + " .ab"), to = document.querySelectorAll("#main " + (toAlt ? ".f1" : ".f0") + " .ab");
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
@@ -1690,7 +1708,7 @@ function syncFormTiers(toAlt) { // switching between Normal and Lycan: each abil
 }
 function setForm(on, keepEl) { // keep the tapped switch where it is on screen while the content above it changes
   var m = $("main"), y0 = keepEl ? keepEl.getBoundingClientRect().top : 0;
-  state.alt = !!on; m.classList.toggle("alt", state.alt); $("jbar").classList.toggle("alt", state.alt);
+  state.alt = !!on; m.classList.toggle("alt", state.alt); m.classList.toggle("fbox", state.alt); $("jbar").classList.toggle("alt", state.alt);
   if (keepEl) window.scrollBy(0, keepEl.getBoundingClientRect().top - y0);
 }
 var NOGUN = { citadel_weapon_werewolf_claws: 1 };
