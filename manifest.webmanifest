@@ -1,6 +1,6 @@
 {
-  "name": "Deadlock Codex",
-  "short_name": "Codex",
+  "name": "Deadlock",
+  "short_name": "Deadlock",
   "description": "Personal Deadlock hero, ability and item reference",
   "start_url": "./",
   "scope": "./",
