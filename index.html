@@ -874,9 +874,9 @@ function propRec(it, key) {
   var sk = scaleOf(p0, m), shown = p, n = parseFloat(p.value), cn = (p0.scale_function || {}).class_name;
   if (!isNaN(n) && CTX && CTX.hero) {
     var nv = null;
-    if (sk.kind === "melee" && Math.abs(n) < 0.05) { // pure melee scaling: the game shows hero melee damage x rate
+    if (sk.kind === "melee" && Math.abs(parseFloat(p0.value)) < 0.05) { // pure melee scaling: the game shows hero melee damage x rate (plus any flat damage a tier adds)
       var ss = CTX.hero.starting_stats || {}, mm = ss[/Heavy/.test(sk.sub) ? "heavy_melee_damage" : "light_melee_damage"];
-      if (mm && mm.value != null) nv = mm.value * sk.rate;
+      if (mm && mm.value != null) nv = mm.value * sk.rate + (n >= 0.05 ? n : 0);
     } else if (cn === "scale_function_kinetic_carbine_damage" && CTX.bullet && sk.kind === "weapon") nv = n * CTX.bullet * sk.rate;
     if (nv != null) { shown = {}; for (var k in p) shown[k] = p[k]; shown.value = String(Math.round(nv * 10) / 10); }
   }
@@ -1668,6 +1668,15 @@ function formParts(h, abs) {
 }
 function formSwitch(fp) {
   return '<div class="fsw" role="tablist"><button class="fs0" data-fs="0">Normal</button><button class="fs1" data-fs="1">' + esc(fp.label) + "</button></div>";
+}
+function syncFormTiers(toAlt) { // switching between Normal and Lycan: each ability in the other form opens with the same number of tiers selected as its counterpart
+  var from = document.querySelectorAll("#main " + (toAlt ? ".f0" : ".f1") + " .ab"), to = document.querySelectorAll("#main " + (toAlt ? ".f1" : ".f0") + " .ab");
+  var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
+  Array.prototype.forEach.call(from, function (a, i) {
+    var b = to[i], ka = a.getAttribute("data-ab"), kb = b && b.getAttribute("data-ab"), it = kb && state.byClass[kb]; if (!it) return;
+    var n = SEL[ka] || 0; if ((SEL[kb] || 0) === n) return;
+    SEL[kb] = n; var tmp = document.createElement("div"); tmp.innerHTML = abilityCard(it, h); b.parentNode.replaceChild(tmp.firstChild, b);
+  });
 }
 function setForm(on, keepEl) { // keep the tapped switch where it is on screen while the content above it changes
   var m = $("main"), y0 = keepEl ? keepEl.getBoundingClientRect().top : 0;
@@ -3159,7 +3168,7 @@ $("main").addEventListener("click", function (e) {
   var ns = e.target.closest ? e.target.closest("details.notes > summary") : null; // only a tap animates opening; re-renders don't
   if (ns) { var nd = ns.parentNode; nd.classList.add("anim"); setTimeout(function () { nd.classList.remove("anim"); }, 300); }
   var fsb = e.target.closest ? e.target.closest("[data-fs]") : null;
-  if (fsb) { setForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
+  if (fsb) { var toAlt = fsb.getAttribute("data-fs") === "1"; syncFormTiers(toAlt); setForm(toAlt, fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
   if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
   var gt = state.tab === "glossary" && e.target.closest ? e.target.closest(".gt[id^='g-']") : null;
