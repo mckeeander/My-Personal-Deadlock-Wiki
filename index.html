@@ -192,14 +192,9 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 #main.alt .fsw .fth{transform:translateX(calc(100% + 3px));background:rgba(230,180,90,.18);box-shadow:inset 0 0 0 1px var(--gold)}
 #main:not(.alt) .fsw .fs0{color:#bcd5f8}
 #main.alt .fsw .fs1{color:var(--gold)}
-#main.fsanim .fsw .fth{transition:transform .3s cubic-bezier(.3,.8,.25,1),background-color .3s,box-shadow .3s}
-#main.fsanim .fsw button{transition:color .3s}
+#main.fsanim .fsw .fth{transition:transform .6s cubic-bezier(.65,0,.35,1),background-color .6s ease-in-out,box-shadow .6s ease-in-out}
+#main.fsanim .fsw button{transition:color .6s ease-in-out}
 /* the same switch as a button at the left end of the floating ability bar: plain until Lycan is on, then gold */
-.jf{width:56px;height:44px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-radius:9px;padding:0;font-size:10px;font-weight:700;letter-spacing:.04em;color:#fff;background:var(--panel2);border:1px solid var(--line)}
-.jf img{width:24px;height:24px;object-fit:contain}
-#jbar.alt .jf{color:var(--gold);background:rgba(230,180,90,.18);border-color:var(--gold)}
-#jbar.fsanim .jf{transition:color .3s,background-color .3s,border-color .3s}
-.jsep{width:1px;align-self:stretch;margin:4px 0;background:var(--line);flex:none}
 .sbx{margin:18px 0 8px;border-top:1px solid var(--line)}
 .tc{flex:none;width:58px;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--disp);font-weight:700;font-size:14px;color:#fff;padding:4px 2px}
 .tc.weapon{background:#a8651a}.tc.vitality{background:#3d7d3c}.tc.spirit{background:#6b45a8}
@@ -1682,7 +1677,7 @@ function formSwitch(fp) {
 function userForm(toAlt, keepEl) { // a tap on a form switch: the sliding box and colours animate; opening a page never does
   var m = $("main"), j = $("jbar"); m.classList.add("fsanim"); j.classList.add("fsanim"); void m.offsetWidth;
   syncFormTiers(toAlt); setForm(toAlt, keepEl);
-  clearTimeout(userForm.t); userForm.t = setTimeout(function () { m.classList.remove("fsanim"); j.classList.remove("fsanim"); }, 450);
+  clearTimeout(userForm.t); userForm.t = setTimeout(function () { m.classList.remove("fsanim"); j.classList.remove("fsanim"); }, 750);
 }
 function syncFormTiers(toAlt) { // switching between Normal and Lycan: each ability in the other form opens with the same number of tiers selected as its counterpart
   var from = document.querySelectorAll("#main " + (toAlt ? ".f0" : ".f1") + " .ab"), to = document.querySelectorAll("#main " + (toAlt ? ".f1" : ".f0") + " .ab");
@@ -2051,8 +2046,7 @@ document.addEventListener("toggle", function (e) { // toggle does not bubble, so
   (OPENS[state.hero] || (OPENS[state.hero] = {}))[k] = d.open;
 }, true);
 function jumpItems(abs, fp) { // one icon button per ability (two when a hero has a second form: the one for the other form is hidden by .f0 / .f1)
-  var sw = fp ? '<button class="jf" data-ftoggle="1" aria-label="Switch form">' + imgTag(itemImg(abs[3])) + "<span>" + esc(String(fp.label).split(" ")[0]) + '</span></button><span class="jsep"></span>' : "";
-  return sw + abs.map(function (a) {
+  return abs.map(function (a) {
     function one(x, cls) {
       var op = ABOPT[x.class_name] || {};
       return '<button class="jb' + cls + '" data-jump="' + esc(x.class_name) + '" aria-label="Jump to ' + esc(nameOf(x)) + '">' + imgTag(op.img || itemImg(x)) + "</button>";
@@ -2083,7 +2077,6 @@ function jumpTo(cn) {
   window.addEventListener("touchstart", function () { jumpUnlock(); }, { passive: true });
   new MutationObserver(updateJbar).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // other tabs, search and the glossary replace or hide the hero page
   document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-jump]") : null; if (b) jumpTo(b.getAttribute("data-jump")); });
-  document.addEventListener("click", function (e) { var t = e.target.closest ? e.target.closest("[data-ftoggle]") : null; if (t) userForm(!state.alt); });
 })();
 /* ---------- revisions: what changed for this hero, taken from comparing each data snapshot with the one before (data/revisions.json, written by tools/revisions.py) ---------- */
 var REV_LOWER = /Cooldown|Delay|Buildup ?Time|Reload|Cost|Window|Channel|Cast ?Time|Penalty|Lockout|Cycle|Fuse/i; // stats where a smaller number is the better one
