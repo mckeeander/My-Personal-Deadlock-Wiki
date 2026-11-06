@@ -2659,6 +2659,7 @@ function heroFromNews(cn, ab) { // a hero (or one of their abilities) tapped in 
   state.tab = "heroes"; state.hero = cn; state.from = null; setTabsUI("heroes"); renderHero(cn);
   var el = ab && document.querySelector('[data-ab="' + ab + '"]');
   if (el) { if (el.closest(".f1")) setForm(true); scrollToEl(el); } else window.scrollTo(0, 0);
+  showBackNews();
 }
 function renderNews() {
   $("main").innerHTML = '<h1 class="gtitle nt">What\u2019s New</h1>' + newsHtml();
@@ -2701,10 +2702,17 @@ function showBackSearch(q) { // after opening a hero or ability from search: a p
   b.innerHTML = "‹ Back to search" + '<span class="bx" aria-label="Dismiss">×</span>';
   b.hidden = false; b.classList.remove("in"); void b.offsetWidth; b.classList.add("in");
 }
+function showBackNews() { // after opening a hero or ability from What's New: a pill back to the changelog
+  var b = $("backpill"); if (!b) return;
+  BACK = { news: true };
+  b.innerHTML = "\u2039 Back to What\u2019s New" + '<span class="bx" aria-label="Dismiss">\u00d7</span>';
+  b.hidden = false; b.classList.remove("in"); void b.offsetWidth; b.classList.add("in");
+}
 function hideBack() { BACK = null; var b = $("backpill"); if (b) b.hidden = true; }
 $("backpill").onclick = function (e) {
   if (e.target.classList && e.target.classList.contains("bx")) { hideBack(); return; }
   var bk = BACK; hideBack(); if (!bk) return;
+  if (bk.news) { slideBack(backToNews); return; }
   slideBack(function () {
     if (bk.search != null) { showSearch(bk.search); return; }
     state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(bk.hero); window.scrollTo(0, bk.y);
