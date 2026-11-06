@@ -791,7 +791,7 @@ function effP(it, key) {
 }
 // experiment: a duration shown on the card of the effect it times, instead of as its own stat
 // extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
-var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" } };
+var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" } };
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
@@ -855,6 +855,7 @@ var ORDER_OV = { "Infernal Resilience": ["Damage Regenerated", "Max Health", "De
   "Traveler": ["Move Speed", "Fire Rate", "Buff Duration", "Barrier"], "Crackshot": ["Damage", "Fading Slow", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
 var FLAG_OV = { SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
+var PCT_ITEM = { "Scorn|DamageBonus": 1 }; // an unlabelled value that is a percentage on just this ability
 var PCT_KEYS = { AttackSpeedMult: 1, ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
 var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Turret|AttackSpeedMult": "Turret Fire Rate", "Spectral Wall|CreateTurrets": "Mini Turrets", "Spectral Wall|TurretLifeTime": "Turret Lifetime",
   "Djinn's Mark|MovementSpeedSlow": "Fading Slow", "Djinn's Mark|StunDuration": "Stun at Max Marks", "Dust Devil|HoldInPlaceDuration": "Lift Duration", "Dust Devil|WhirlwindEvasionChance": "Bullet Evasion",
@@ -865,7 +866,7 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
   "Ava|OutgoingDamagePercent": "Max Damage Amp", "Ava|DamageAmpBuildDuration": "Build-up Time", "Ava|DamageAmpDuration": "Lingers For", "Gloom Bombs|MeleeResistReductionDuration": "Debuff Duration", "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
   "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
-  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
+  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
 function propRec(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -884,7 +885,7 @@ function propRec(it, key) {
   var v = fmtVal(shown);
   var label = propLabel(p0, key);
   if (v != null && /(Duration|Time)$/.test(key) && /^[+-]?\d*\.?\d+$/.test(v)) v += "s"; // unitless durations (Dash Buff Duration)
-  if (v != null && !p0.postvalue_label && !p0.label && !p0.display_name && (/(Percent|Pct|Amp|Lifesteal)$/.test(key) || PCT_KEYS[key])) { // an unlabelled "...Percent" value: use a % sign, not the word
+  if (v != null && !p0.postvalue_label && !p0.label && !p0.display_name && (/(Percent|Pct|Amp|Lifesteal)$/.test(key) || PCT_KEYS[key] || PCT_ITEM[it.name + "|" + key])) { // an unlabelled "...Percent" value: use a % sign, not the word
     label = label.replace(/\s*(Percent|Pct)$/i, ""); v = v.replace(/s$/, ""); if (!/%$/.test(v)) v = v + "%";
     if (parseFloat(p0.value) === 0 && parseFloat(shown.value) > 0 && v.charAt(0) !== "+") v = "+" + v;
   }
@@ -982,6 +983,7 @@ function tile(v, l, r) {
 // abilities use tooltip_details.info_sections
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
 var GROUP_OV = {
+  "Burrow": [{ l: "On Jump Out:", k: ["TossDuration", "SpinDuration"] }],
   "Rain of Arrows": [{ l: "On Hit:", k: ["SlowPercent", "SlowDuration"] }],
   "Exploding Uppercut": [{ l: "On Hero Hit, You Gain:", k: ["MissingHPHeal", "BuffBaseWeaponPct", "UppercutBuffOnHit"],
     x: [{ k: "BuffBaseWeaponPct", t: "Fast spin-up" }, { k: "BuffBaseWeaponPct", t: "2× weapon range" }], f: { RestoreHookCooldown: "Grapple Arm cooldown reset" } }],
