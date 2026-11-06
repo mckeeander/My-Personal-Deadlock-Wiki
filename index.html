@@ -705,6 +705,7 @@ function unitFor(p) {
   if (/Seconds/.test(u)) return "s";
   if (/Percent/.test(u)) return "%";
   if (p.css_class === "cooldown" || p.css_class === "duration") return "s";
+  if (/(Duration|Time|Delay|Window)$/i.test(p.label || "")) return "s"; // the game sends some durations with no unit ("Max Linger Duration 3.25")
   return "";
 }
 function fmtVal(p) {
@@ -2098,6 +2099,7 @@ function revMerge(it, cs) { // twin stats changed the same way (Baba's Brew's Ba
   return out;
 }
 function revPlain(t) { return revWords(t).join(" "); }
+var REV_COST = [0, 1, 2, 5]; // the cards label the three upgrade tiers by their point cost
 function revTierPlan(it, cs) { // per tier: one changed number with the same wording reads as one line (◆3 Bonus Damage +50% ▲ +60%); several changes, or new wording, show the tier boxes before and after
   var byT = {}, out = [];
   cs.forEach(function (c) { if (c.tier) (byT[c.tier] = byT[c.tier] || []).push(c); });
@@ -2125,7 +2127,7 @@ function revRow(lbl, o, n, d, extra) {
   return '<div class="rrow"><span class="rl">' + lbl + (extra || "") + '</span><span class="rv"><span class="ro">' + esc(o) + "</span>" + revArrow(d) + '<span class="rn ' + (d === "up" ? "g" : d === "dn" ? "r" : "") + '">' + esc(n) + "</span></span></div>";
 }
 function revChange(it, c, h) {
-  var star = '<span class="rtag">★</span>', tier = c.tier ? '<span class="rti">◆&#xFE0E;' + c.tier + "</span> " : "";
+  var star = '<span class="rtag">★</span>', tier = c.tier ? '<span class="rti">◆ ' + REV_COST[c.tier] + "</span> " : "";
   if (c.kind === "val" || c.kind === "tierval") {
     var l = c.lbl || revLabel(it, c.key), sg = c.kind === "tierval";
     if (c.kind === "tierval" && (c.old == null || c.new == null)) return '<div class="rrow"><span class="rl">' + tier + (c.old == null ? '<span class="b">New</span> · ' : '<span class="m">Removed</span> · ') + esc(l) + '</span><span class="rv ' + (c.old == null ? "b" : "m rs") + '">' + esc(revFmt(it, c.key, c.old == null ? c.new : c.old, true)) + "</span></div>";
@@ -2141,9 +2143,9 @@ function revChange(it, c, h) {
     var nw = c.kind === "new";
     return '<div class="rrow"><span class="rl">' + (nw ? '<span class="b">New</span> · ' : '<span class="m">Removed</span> · ') + esc(revLabel(it, c.key)) + '</span><span class="rv ' + (nw ? "b" : "m rs") + '">' + esc(revFmt(it, c.key, nw ? c.new : c.old)) + "</span></div>";
   }
-  if (c.kind === "tierbox") return '<div class="rtiers"><div class="rtb was"><div class="rth">◆&#xFE0E; ' + c.tier + ' before</div><div class="rtt">' + c.old + '</div></div><span class="rsep">›</span><div class="rtb"><div class="rth">◆&#xFE0E; ' + c.tier + ' now</div><div class="rtt">' + c.new + "</div></div></div>";
+  if (c.kind === "tierbox") return '<div class="rtiers"><div class="rtb was"><div class="rth">◆ ' + REV_COST[c.tier] + ' before</div><div class="rtt">' + c.old + '</div></div><span class="rsep">›</span><div class="rtb"><div class="rth">◆ ' + REV_COST[c.tier] + ' now</div><div class="rtt">' + c.new + "</div></div></div>";
   if (c.kind === "tier") return "";
-  if (c.kind === "tierold") return '<div class="rtiers"><div class="rtb was"><div class="rth">◆&#xFE0E; ' + c.tier + ' before</div><div class="rtt">' + revRich(c.old) + '</div></div><span class="rsep">›</span><div class="rtb"><div class="rth">◆&#xFE0E; ' + c.tier + ' now</div><div class="rtt">' + revRich(c.new) + "</div></div></div>";
+  if (c.kind === "tierold") return '<div class="rtiers"><div class="rtb was"><div class="rth">◆ ' + REV_COST[c.tier] + ' before</div><div class="rtt">' + revRich(c.old) + '</div></div><span class="rsep">›</span><div class="rtb"><div class="rth">◆ ' + REV_COST[c.tier] + ' now</div><div class="rtt">' + revRich(c.new) + "</div></div></div>";
   if (c.kind === "desc") return '<div class="rtxt">' + revTextDiff(c.old, c.new) + "</div>";
   if (c.kind === "wpn") {
     var wl = REV_WPN[c.key] || prettify(c.key), f = function (v) { return v == null ? "—" : c.key === "bullet_speed" ? fmtNum(Math.round(v / 39.37)) + " m/s" : /time|duration|reload/.test(c.key) ? fmtNum(v) + "s" : fmtNum(v); };
