@@ -77,9 +77,11 @@ body.srch #sarea{padding-bottom:calc(env(safe-area-inset-bottom,0) + 96px)}
 .toprow{display:flex;align-items:center;gap:8px}
 .toprow .brand{flex:1}
 #nbtn{position:relative}#nbtn i{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--panel)}#nbtn i[hidden]{display:none}
-.nhh{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-top:1px solid var(--line);color:#fff;font:inherit;padding:12px 0 6px;margin-top:6px;text-align:left}.nhh:first-child{border-top:0;margin-top:0}.nhh img{width:30px;height:30px;border-radius:8px;object-fit:cover;background:var(--panel2)}.nhh b{font-family:var(--disp);font-size:17px;font-weight:600;letter-spacing:.02em}.nhh i{margin-left:auto;color:var(--dim);font-style:normal;font-size:20px}
-.nsub{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:14px 0 4px;border-top:1px solid var(--line);margin-top:10px}
-.nhg .rgrp{margin-top:2px}.nhg .rch{margin-left:40px}
+.nhs{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:0 12px 6px;margin-top:12px}.nhs .ric{background:var(--panel)}
+.nhh{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);color:#fff;font:inherit;padding:10px 0;text-align:left}.nhh img{width:40px;height:40px;border-radius:10px;object-fit:cover;background:var(--panel)}.nhh b{font-family:var(--disp);font-size:20px;font-weight:600;letter-spacing:.02em}
+.nsub{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:12px 0;border-bottom:1px solid var(--line)}
+.nhg .rgrp{margin-top:8px}.nhg .rch{margin-left:32px}.nhs .rrow{border-top-color:#3a3350}
+.gtitle.nt{margin-bottom:14px}
 .nnone{color:var(--dim);padding:14px 2px}
 .topbar .ibtn{min-height:44px;min-width:46px;display:flex;align-items:center;justify-content:center}
 .corner{position:absolute;top:-9px;right:-3px;display:flex;gap:4px}.corner .sc{position:static}
@@ -2172,7 +2174,7 @@ function revGroupHtml(g, h) { // one ability, weapon or base-stats block of chan
       else { var op = (ABOPT[g.item] || {}); icon = it ? imgTag(op.img || itemImg(it)) : ""; name = it ? nameOf(it) : g.name; }
       var rows = revMerge(it, revTierPlan(it, g.changes)).map(function (c) { return revChange(it, c, h); }), seen = {};
       rows = rows.filter(function (r) { if (seen[r]) return false; seen[r] = 1; return !!r; }); // the same change on twin stats (three "cycle" windows) shows once
-      return '<div class="rgrp"><div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + '</div><div class="rch">' + rows.join("") + "</div></div>";
+      return '<div class="rgrp"' + (g.type === "ability" && g.item ? ' data-gab="' + esc(g.item) + '"' : "") + '><div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + '</div><div class="rch">' + rows.join("") + "</div></div>";
 }
 function revisionsHtml(h) {
   var R = state.revs; if (!R || !R.length) return "";
@@ -2192,7 +2194,7 @@ function renderHero(cn) {
   var cxn = Math.max(0, Math.min(3, Number(h.complexity) || 0)), dots = "";
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
   var tagsA = (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
-  var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>All heroes</span><span class="bn">' + state.heroes.length + '</span></button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
+  var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span><span class="bn">' + (NEWSFROM && NEWSFROM.hero === cn ? "" : state.heroes.length) + '</span></button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   html += '<div class="stats1">' + statBlock(h) + "</div>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
@@ -2210,6 +2212,7 @@ function renderHero(cn) {
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : ""; updateJbar();
   $("back").onclick = function () {
+    if (NEWSFROM && NEWSFROM.hero === cn) { slideBack(backToNews); return; } // opened from What's New: back goes there
     slideBack(function () { state.hero = null; render(); window.scrollTo(0, state.listY || 0); });
   };
   window.scrollTo(0, 0);
@@ -2441,6 +2444,7 @@ function searchResults() {
   return html;
 }
 function openResult(b) {
+  NEWSFROM = null;
   var kind = b.getAttribute("data-kind"), cn = b.getAttribute("data-cn");
   if (kind === "item") { itemSheet(cn); return; }
   if (kind === "term") { glossSheet(cn); return; }
@@ -2633,19 +2637,31 @@ function newsHtml() {
   return '<div id="revs" class="news">' + R.map(function (e, ei) {
     var hs = state.heroes.filter(function (h) { return (e.heroes || {})[h.class_name]; }).sort(byName);
     var body = hs.map(function (h) {
-      return '<button class="nhh" data-nh="' + esc(h.class_name) + '"><img alt="" src="' + esc(heroImg(h)) + '"><b>' + esc(h.name) + '</b><i aria-hidden="true">\u203a</i></button><div class="nhg">' +
-        e.heroes[h.class_name].map(function (g) { return revGroupHtml(g, h); }).join("") + "</div>";
+      return '<section class="nhs" data-hero="' + esc(h.class_name) + '"><button class="nhh" data-nh="' + esc(h.class_name) + '"><img alt="" src="' + esc(heroImg(h)) + '"><b>' + esc(h.name) + '</b></button><div class="nhg">' +
+        e.heroes[h.class_name].map(function (g) { return revGroupHtml(g, h); }).join("") + "</div></section>";
     }).join("");
     var its = Object.keys(e.items || {}).map(function (cn) {
       var it = revItem(cn), cs = e.items[cn].changes.filter(function (c) { var p = c.key && it && (it.properties || {})[c.key]; return !c.key || (p && p.label); }); // internal tuning values the game gives no name to stay out
       return { name: it ? nameOf(it) : e.items[cn].name, cn: cn, g: { item: cn, type: "shop", name: e.items[cn].name, changes: cs } };
     }).filter(function (x) { return x.g.changes.length; }).sort(byName);
-    if (its.length) body += '<div class="nsub">Shop items</div><div class="nhg">' + its.map(function (x) { return revGroupHtml(x.g, null); }).join("") + "</div>";
+    if (its.length) body += '<section class="nhs"><div class="nsub">Shop items</div><div class="nhg">' + its.map(function (x) { return revGroupHtml(x.g, null); }).join("") + "</div></section>";
     return '<details class="rpt"' + (ei === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(e.date)) + '</span><span class="rcv">' + CHEV + "</span></summary>" + body + "</details>";
   }).join("") + "</div>";
 }
+var NEWSFROM = null; // set while a hero page opened from What's New is showing: where to put you back
+function backToNews() {
+  var f = NEWSFROM; NEWSFROM = null; state.tab = "news"; state.hero = null; state.from = null; setTabsUI("news"); renderNews();
+  if (f) { Array.prototype.forEach.call(document.querySelectorAll("#main details.rpt"), function (d, i) { d.open = f.open.indexOf(i) >= 0; }); window.scrollTo(0, f.y); }
+}
+function heroFromNews(cn, ab) { // a hero (or one of their abilities) tapped in the changelog
+  var open = []; Array.prototype.forEach.call(document.querySelectorAll("#main details.rpt"), function (d, i) { if (d.open) open.push(i); });
+  hideBack(); NEWSFROM = { hero: cn, y: window.pageYOffset || 0, open: open };
+  state.tab = "heroes"; state.hero = cn; state.from = null; setTabsUI("heroes"); renderHero(cn);
+  var el = ab && document.querySelector('[data-ab="' + ab + '"]');
+  if (el) { if (el.closest(".f1")) setForm(true); scrollToEl(el); } else window.scrollTo(0, 0);
+}
 function renderNews() {
-  $("main").innerHTML = '<h1 class="gtitle">What\u2019s New</h1>' + newsHtml();
+  $("main").innerHTML = '<h1 class="gtitle nt">What\u2019s New</h1>' + newsHtml();
   newsSeen();
 }
 function newsSeen() { // the dot on the header button clears once you've opened the page
@@ -2708,7 +2724,7 @@ function showError(e) {
 
 /* ---------- wiring ---------- */
 $("tabs").onclick = function (e) {
-  var b = e.target.closest(".tab"); if (!b) return; hideBack();
+  var b = e.target.closest(".tab"); if (!b) return; hideBack(); NEWSFROM = null;
   if (b.getAttribute("data-c") === "glossary") return; // has its own handler
   // each tab remembers where you were (the hero you had open, the scroll spot); tapping the tab you're already on goes to its top level
   var to = b.getAttribute("data-c"), same = to === state.tab && !searchOn();
@@ -2720,7 +2736,7 @@ $("tabs").onclick = function (e) {
 };
 var TABMEM = {};
 $("brand").onclick = function () { // the title goes home: the hero list
-  hideBack(); TABMEM.heroes = null; endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
+  hideBack(); NEWSFROM = null; TABMEM.heroes = null; endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
 };
 function glossBack() { // back to the page the glossary was opened from (Abrams, say), then the hero list
   var f = state.glossFrom; state.glossFrom = null; if (!f) { $("brand").onclick(); return; }
@@ -2747,8 +2763,11 @@ $("nbtn").onclick = function () { // a second tap while on the page goes home
   hideBack(); openNews();
 };
 $("main").addEventListener("click", function (e) { // a hero's name in the changelog opens that hero
-  var b = e.target.closest && e.target.closest("[data-nh]"); if (!b || state.tab !== "news") return;
-  var cn = b.getAttribute("data-nh"); hideBack(); state.glossFrom = null; state.tab = "heroes"; state.hero = cn; state.from = null; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
+  if (state.tab !== "news" || !e.target.closest) return;
+  var g = e.target.closest(".rgrp[data-gab]"); // an ability's block opens its hero and scrolls to it (no hint that it does)
+  if (g && !e.target.closest("[data-g], a")) { var s0 = g.closest(".nhs"); if (s0) { heroFromNews(s0.getAttribute("data-hero"), g.getAttribute("data-gab")); return; } }
+  var b = e.target.closest("[data-nh]"); if (!b) return;
+  heroFromNews(b.getAttribute("data-nh"), null);
 });
 $("gbtn").onclick = function () { // a second tap while on the glossary goes home
   if (state.tab === "glossary" && !searchOn()) { $("brand").onclick(); return; }
