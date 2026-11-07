@@ -1880,6 +1880,18 @@ function slideBack(fn) {
     SLIDING = false;
   }, 170);
 }
+function slideForward(fn) { // opening a page (What's New, Glossary): the same slide-and-fade a tab swipe plays, as if swiping to the next page: the old one slides left and fades, the new one comes in from the right
+  var m = $("slide");
+  if (INSIDE || SLIDING || !m || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) { fn(); return; }
+  SLIDING = true;
+  m.style.transition = "transform .12s ease-out, opacity .12s ease-out"; m.style.transform = "translateX(-40px)"; m.style.opacity = "0";
+  setTimeout(function () {
+    m.style.transition = "none"; INSIDE = true; try { fn(); } finally { INSIDE = false; }
+    m.style.transform = "translateX(40px)"; m.style.opacity = "0"; void m.offsetWidth;
+    m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = "";
+    setTimeout(function () { m.style.transition = ""; SLIDING = false; }, 200);
+  }, 120);
+}
 (function () { // the pinned ability buttons are fixed to the screen, so they replay the page's slide (swipes, back buttons, tab changes) step by step to travel with it
   var m = $("slide"), j = $("jbar"), tmp = document.createElement("div");
   function apply(css) {
@@ -2839,7 +2851,7 @@ $("toppill").onclick = function () { easeScroll(0); };
 $("tabs").addEventListener("click", function () { setTimeout(topPill, 0); });
 $("nbtn").onclick = function () { // a second tap while on the page goes home
   if (state.tab === "news" && !searchOn()) { $("brand").onclick(); return; }
-  hideBack(); openNews();
+  slideForward(function () { hideBack(); openNews(); });
 };
 $("main").addEventListener("click", function (e) { // a hero's name in the changelog opens that hero
   if (state.tab !== "news" || !e.target.closest) return;
@@ -2850,9 +2862,11 @@ $("main").addEventListener("click", function (e) { // a hero's name in the chang
 });
 $("gbtn").onclick = function () { // a second tap while on the glossary goes home
   if (state.tab === "glossary" && !searchOn()) { $("brand").onclick(); return; }
-  hideBack(); var top = !(state.tab === "heroes" && state.hero); openGlossary();
-  if (top && state.glossFrom) state.glossFrom.quiet = true; // from a main page: swipe still goes back, but no Back pill
-  topPill();
+  slideForward(function () {
+    hideBack(); var top = !(state.tab === "heroes" && state.hero); openGlossary();
+    if (top && state.glossFrom) state.glossFrom.quiet = true; // from a main page: swipe still goes back, but no Back pill
+    topPill();
+  });
 };
 // search: the bar is always there; while it has text the page underneath is hidden (not re-rendered), so clearing it puts you back exactly where you were
 var SEARCH_Y = 0;
