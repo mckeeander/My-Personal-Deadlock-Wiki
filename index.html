@@ -104,6 +104,7 @@ body{padding-top:calc(env(safe-area-inset-top,0) + 32px)}
 .brand{white-space:nowrap;overflow:hidden;min-width:0}
 @media (max-width:420px){.brand{font-size:16px;letter-spacing:.04em}.bar .ibtn{padding:8px 9px}}
 .ibtn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px}
+.ibtn.on{color:var(--gold);border-color:var(--gold);background:rgba(230,180,90,.14)} /* What's New / Glossary while you are on that page */
 .tabs{display:flex;gap:6px;margin-top:8px}
 .tab{flex:1;padding:9px 4px;background:var(--panel);border:1px solid var(--line);border-bottom:3px solid var(--line);border-radius:8px 8px 0 0;font-size:14px}
 .tab.on{background:var(--panel2);border-bottom-color:var(--gold);font-weight:600}
@@ -1880,14 +1881,15 @@ function slideBack(fn) {
     SLIDING = false;
   }, 170);
 }
-function slideForward(fn) { // opening a page (What's New, Glossary): the same slide-and-fade a tab swipe plays, as if swiping to the next page: the old one slides left and fades, the new one comes in from the right
+function slideForward(fn, back) { // opening a page (back=true: returning from it, mirrored) (What's New, Glossary): the same slide-and-fade a tab swipe plays, as if swiping to the next page: the old one slides left and fades, the new one comes in from the right
   var m = $("slide");
   if (INSIDE || SLIDING || !m || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) { fn(); return; }
   SLIDING = true;
-  m.style.transition = "transform .12s ease-out, opacity .12s ease-out"; m.style.transform = "translateX(-40px)"; m.style.opacity = "0";
+  var d = back ? -1 : 1; // forward: the old page leaves to the left and the new one arrives from the right; back is the mirror image
+  m.style.transition = "transform .12s ease-out, opacity .12s ease-out"; m.style.transform = "translateX(" + (-d * 40) + "px)"; m.style.opacity = "0";
   setTimeout(function () {
     m.style.transition = "none"; INSIDE = true; try { fn(); } finally { INSIDE = false; }
-    m.style.transform = "translateX(40px)"; m.style.opacity = "0"; void m.offsetWidth;
+    m.style.transform = "translateX(" + (d * 40) + "px)"; m.style.opacity = "0"; void m.offsetWidth;
     m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = "";
     setTimeout(function () { m.style.transition = ""; SLIDING = false; }, 200);
   }, 120);
@@ -2301,7 +2303,12 @@ function renderHero(cn) {
   window.scrollTo(0, 0);
 }
 function roleLabel(h) { var t = String(h.hero_type || ""); return t ? t.charAt(0).toUpperCase() + t.slice(1) : ""; }
-function setTabsUI(c) { Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x.getAttribute("data-c") === c); }); }
+function setTabsUI(c) {
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x.getAttribute("data-c") === c); });
+  var nb = $("nbtn"), gb = $("gbtn"); // the header button for the page you are on is lit
+  if (nb) { nb.classList.toggle("on", c === "news"); nb.setAttribute("aria-pressed", c === "news"); }
+  if (gb) { gb.classList.toggle("on", c === "glossary"); gb.setAttribute("aria-pressed", c === "glossary"); }
+}
 function bonusCard(slot) {
   var h = state.heroes.filter(function (x) { return x.cost_bonuses && x.cost_bonuses[slot] && x.cost_bonuses[slot].length; })[0];
   if (!h) return "";
@@ -2849,8 +2856,8 @@ $("glbpill").onclick = function () { $("glbpill").hidden = true; slideBack(gloss
 window.addEventListener("scroll", topPill, { passive: true });
 $("toppill").onclick = function () { easeScroll(0); };
 $("tabs").addEventListener("click", function () { setTimeout(topPill, 0); });
-$("nbtn").onclick = function () { // a second tap while on the page goes home
-  if (state.tab === "news" && !searchOn()) { $("brand").onclick(); return; }
+$("nbtn").onclick = function () { // a second tap while on the page goes back to where you were
+  if (state.tab === "news" && !searchOn()) { slideForward(glossBack, true); return; } // a second tap returns to where you were
   slideForward(function () { hideBack(); openNews(); });
 };
 $("main").addEventListener("click", function (e) { // a hero's name in the changelog opens that hero
@@ -2860,8 +2867,8 @@ $("main").addEventListener("click", function (e) { // a hero's name in the chang
   var b = e.target.closest("[data-nh]"); if (!b) return;
   heroFromNews(b.getAttribute("data-nh"), null);
 });
-$("gbtn").onclick = function () { // a second tap while on the glossary goes home
-  if (state.tab === "glossary" && !searchOn()) { $("brand").onclick(); return; }
+$("gbtn").onclick = function () { // a second tap while on the glossary goes back to where you were
+  if (state.tab === "glossary" && !searchOn()) { slideForward(glossBack, true); return; } // a second tap returns to where you were
   slideForward(function () {
     hideBack(); var top = !(state.tab === "heroes" && state.hero); openGlossary();
     if (top && state.glossFrom) state.glossFrom.quiet = true; // from a main page: swipe still goes back, but no Back pill
