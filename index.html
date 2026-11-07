@@ -185,6 +185,8 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .hc span{position:absolute;left:0;right:0;bottom:0;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
+/* the form-switch wrappers slide and fade as their own layer; on iOS that layer's top edge could shave the card's 1px top border, so the layer gets 3px of its own padding there (cancelled by the negative margin, so nothing moves) */
+#main .f0,#main .f1{padding-top:3px;margin-top:-3px}
 /* the form switch: one split control, each half taking half the width; a filled box slides to the chosen half */
 .fsw{position:relative;display:flex;gap:3px;margin:0 0 12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:3px}
 .fsw button{position:relative;z-index:1;flex:1;border:0;border-radius:9px;background:transparent;padding:10px 4px;color:var(--dim);font-size:14px;font-weight:600;line-height:1.2}
