@@ -254,6 +254,7 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 #revs summary{display:flex;align-items:center;gap:8px;padding:11px 0;cursor:pointer;list-style:none}#revs summary::-webkit-details-marker{display:none}
 #revs .rd{font-weight:600;color:#fff}#revs .rcv{margin-left:auto;color:var(--dim);display:flex;transition:transform .2s}#revs .rpt:not([open]) .rcv{transform:rotate(-90deg)}
 #revs .rpt[open]{padding-bottom:8px}
+#revs .rpt.closing .rcv{transform:rotate(-90deg)}
 .rgrp{margin-top:6px}.rgrp+.rgrp{margin-top:12px}
 .rhd{display:flex;align-items:center;gap:8px;color:#c8bfd9;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
 .ric{width:24px;height:24px;border-radius:6px;background:var(--panel2);display:inline-flex;align-items:center;justify-content:center;flex:none;overflow:hidden}.ric img{width:20px;height:20px;object-fit:contain}.ric .si{width:15px;height:15px;color:#fff}
@@ -3305,6 +3306,31 @@ $("main").addEventListener("click", function (e) {
   card.parentNode.replaceChild(fresh, card);
   pulseChanges(fresh, before, t, (SEL[key] || 0) < cur);
   animateLayout(fresh, lay);
+});
+// Revisions / What's New dates: the section grows open and folds shut (its height animates while the content fades and slides), instead of snapping.
+// Opening a native <details> just flips it, so the tap is taken over: the height is measured open and shut, animated, and the open attribute is set at the end of a close.
+document.addEventListener("click", function (e) {
+  var sm = e.target.closest ? e.target.closest("details.rpt > summary") : null; if (!sm) return;
+  var d = sm.parentNode;
+  if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
+  e.preventDefault();
+  if (d._busy) return;
+  var kids = Array.prototype.slice.call(d.querySelectorAll(":scope > :not(summary)")), opening = !d.open, h0 = d.offsetHeight, h1;
+  if (opening) { d.open = true; h1 = d.offsetHeight; }
+  else { d.open = false; h1 = d.offsetHeight; d.open = true; var t = h0; h0 = h1; h1 = t; } // h0 = shut height, h1 = open height
+  d._busy = true; d.style.overflow = "hidden";
+  if (!opening) d.classList.add("closing"); // the chevron turns at once
+  var from = opening ? h0 : h1, to = opening ? h1 : h0, ease = "cubic-bezier(.2,.7,.3,1)";
+  var a = d.animate([{ height: from + "px" }, { height: to + "px" }], { duration: 260, easing: ease });
+  kids.forEach(function (k) {
+    k.animate(opening ? [{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-8px)" }],
+      { duration: opening ? 240 : 180, easing: opening ? ease : "ease-in", fill: opening ? "none" : "forwards" });
+  });
+  a.onfinish = a.oncancel = function () {
+    if (!opening) d.open = false;
+    d.classList.remove("closing"); d.style.overflow = ""; d._busy = false;
+    kids.forEach(function (k) { k.getAnimations().forEach(function (x) { x.cancel(); }); });
+  };
 });
 $("sheetin").addEventListener("click", function (e) {
   var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
