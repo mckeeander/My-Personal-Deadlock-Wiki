@@ -1710,15 +1710,8 @@ function syncFormTiers(toAlt) { // switching between Normal and Lycan: each abil
 }
 function setForm(on, keepEl) { // keep the tapped switch where it is on screen while the content above it changes
   var m = $("main"), y0 = keepEl ? keepEl.getBoundingClientRect().top : 0;
-  var lim = 12 + (parseFloat(getComputedStyle(document.body).paddingTop) || 0); // same top margin scrollToEl uses
-  var wf = m.querySelector(state.alt ? ".f1" : ".f0"), wy0 = wf && wf.offsetParent ? wf.getBoundingClientRect().top : null; // the weapon card, if it is on screen now
   state.alt = !!on; m.classList.toggle("alt", state.alt); m.classList.toggle("fbox", state.alt); $("jbar").classList.toggle("alt", state.alt);
-  if (keepEl) {
-    window.scrollBy(0, keepEl.getBoundingClientRect().top - y0);
-    // Normal's weapon card is taller than Lycan's. Pinning the tapped switch would shove the card's top off the screen, so let the switch drift down instead.
-    wf = m.querySelector(on ? ".f1" : ".f0");
-    if (wf && wy0 !== null && wy0 >= lim) { var wy = wf.getBoundingClientRect().top; if (wy < lim) window.scrollBy(0, wy - lim); }
-  }
+  if (keepEl) window.scrollBy(0, keepEl.getBoundingClientRect().top - y0); // the tapped switch stays exactly where it was on screen
 }
 var NOGUN = { citadel_weapon_werewolf_claws: 1 };
 var WNAME = { citadel_weapon_werewolf_claws: "Loose Muzzle" }; // the game file still calls it Lycan Claws; in game it's Loose Muzzle
