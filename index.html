@@ -801,7 +801,7 @@ function effP(it, key) {
 }
 // experiment: a duration shown on the card of the effect it times, instead of as its own stat
 // extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
-var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" } };
+var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Death Slam": { SlowPercent: "SlowDuration" } };
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
@@ -864,7 +864,9 @@ function durPairs(it, secs, GO, moved, extra) {
 var ORDER_OV = { "Infernal Resilience": ["Damage Regenerated", "Max Health", "Debuff Resist", "Melee Lifesteal"], "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Slow"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Slow", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
   "Traveler": ["Move Speed", "Fire Rate", "Buff Duration", "Barrier"], "Crackshot": ["Damage", "Fading Slow", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
-var FLAG_OV = { SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
+var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
+var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
+var PROMOTE = { "Death Slam": { SlowPercent: 1 } }; // listed as small text by the game; shown as a card
 var PCT_ITEM = { "Scorn|DamageBonus": 1 }; // an unlabelled value that is a percentage on just this ability
 var PCT_KEYS = { AttackSpeedMult: 1, ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
 var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Turret|AttackSpeedMult": "Turret Fire Rate", "Spectral Wall|CreateTurrets": "Mini Turrets", "Spectral Wall|TurretLifeTime": "Turret Lifetime",
@@ -876,7 +878,7 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
   "Ava|OutgoingDamagePercent": "Max Damage Amp", "Ava|DamageAmpBuildDuration": "Build-up Time", "Ava|DamageAmpDuration": "Lingers For", "Gloom Bombs|MeleeResistReductionDuration": "Debuff Duration", "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
   "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
-  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
+  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Death Slam|SlowPercent": "Enemy Move Speed", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
 function propRec(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -1136,6 +1138,7 @@ function tooltipHtml(it) {
       (blk.properties || []).forEach(function (pp) {
         if (moved[pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property)]) hadMoved = true;
         if (moved[pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property)] || durUsed[pp.important_property || pp.property]) return;
+        if ((HIDE_KEYS[it.name] || {})[pp.status_effect_name ? pp.status_effect_value : (pp.important_property || pp.property)]) return; // left off the page on purpose
         if (pp.status_effect_name) {
           var sv = propRec(it, pp.status_effect_value);
           if (sv && !seen[sig(sv.v, pp.status_effect_name)]) { seen[sig(sv.v, pp.status_effect_name)] = allSig[sig(sv.v, pp.status_effect_name)] = 1; tiles += tile(sv.v, pp.status_effect_name); }
@@ -1155,7 +1158,7 @@ function tooltipHtml(it) {
       if (moved[k] || durUsed[k] || (k === "Radius" && blockOf.Radius == null)) return; // shown as a header chip
       var r = withDur(k, propRec(it, k)); if (!r) return;
       var p0 = (it.properties || {})[k], b0 = p0 ? parseFloat(p0.value) : NaN;
-      if (b0 === 0 || (/damage$/.test(String(p0 && p0.css_class)) && /Damage$/.test(r.l) && !/Bonus|Reduction|Amp|Self|Headshot/.test(r.l) && !/%$/.test(r.v))) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
+      if (b0 === 0 || (PROMOTE[it.name] || {})[k] || (/damage$/.test(String(p0 && p0.css_class)) && /Damage$/.test(r.l) && !/Bonus|Reduction|Amp|Self|Headshot/.test(r.l) && !/%$/.test(r.v))) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
       minor += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + (r.dur ? " for " + esc(r.dur) : "") + scaleBadge(r) + "</span>";
     });
     if (promo) {
@@ -1247,11 +1250,11 @@ function upgradeExtras(it) {
     ((u && u.property_upgrades) || []).forEach(function (pu) {
       var t = pu.upgrade_type;
       if (t === "EAddToScale" || t === "EMultiplyScale") return;
-      var k = pu.name; if (seen[k] || L[k] || HEADER_KEYS[k] || !P[k] || /^CountsAs/.test(k)) return; seen[k] = 1; keys.push(k); // "Counts as light melee" is shown by the scaling badge
+      var k = pu.name; if (seen[k] || L[k] || HEADER_KEYS[k] || !P[k] || /^CountsAs/.test(k) || (HIDE_KEYS[it.name] || {})[k]) return; seen[k] = 1; keys.push(k); // "Counts as light melee" is shown by the scaling badge
     });
   });
   keys.forEach(function (k) {
-    if (FLAG_OV[k]) { var fe = effP(it, k); if (fe && parseFloat(fe.value) > 0) { res.flags.push(FLAG_OV[k]); (res.fk = res.fk || []).push(k); } return; }
+    if (FLAG_OV[k]) { var fe = effP(it, k); if (fe && parseFloat(fe.value) > 0) { res.flags.push(FLAG_OV[k].replace("{v}", fmtNum(parseFloat(fe.value)))); (res.fk = res.fk || []).push(k); } return; }
     var p = P[k], named = !!(p.postvalue_label || p.label), base = parseFloat(p.value), e = effP(it, k), ev = e ? parseFloat(e.value) : NaN;
     var lbl0 = String(p.postvalue_label || p.label || "");
     if (named && base === 0 && !p.postfix && !p.prefix && !p.display_units && /^(Reset|Can |Enable|Grant|Allow|Remove|Cancel|Ignore|Pierce|Disable|Purge|Dispel|Immune|Unstoppable|No )/i.test(lbl0) &&
