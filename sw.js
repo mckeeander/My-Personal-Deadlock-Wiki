@@ -1,8 +1,8 @@
 // Deadlock service worker: keeps the page and item/hero art available offline.
-var SHELL = "codex-shell-v2", ART = "codex-art-v1", ART_MAX = 700;
+var SHELL = "codex-shell-v3", ART = "codex-art-v1", ART_MAX = 700;
 
 self.addEventListener("install", function (e) {
-  e.waitUntil(caches.open(SHELL).then(function (c) { return c.addAll(["./", "index.html", "manifest.webmanifest", "icon-192.png", "apple-touch-icon.png"]); }).then(function () { return self.skipWaiting(); }));
+  e.waitUntil(caches.open(SHELL).then(function (c) { return c.addAll(["./", "index.html", "manifest.webmanifest", "icon-192.png", "apple-touch-icon.png", "favicon-32.png"]); }).then(function () { return self.skipWaiting(); }));
 });
 self.addEventListener("activate", function (e) {
   e.waitUntil(caches.keys().then(function (keys) {
