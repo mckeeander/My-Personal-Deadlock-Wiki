@@ -866,6 +866,7 @@ var ORDER_OV = { "Infernal Resilience": ["Damage Regenerated", "Max Health", "De
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
 var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
+var CHIP_KEYS = { "Flog": ["TargetingConeAngle"] }; // stats shown as a header chip beside the cooldown and range, not as a card
 var PROMOTE = { "Death Slam": { SlowPercent: 1 } }; // listed as small text by the game; shown as a card
 var PCT_ITEM = { "Scorn|DamageBonus": 1 }; // an unlabelled value that is a percentage on just this ability
 var PCT_KEYS = { AttackSpeedMult: 1, ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
@@ -1071,6 +1072,7 @@ function tooltipHtml(it) {
   if (!secs || !secs.length) secs = [];
   var GO = GROUP_OV[it.name] || [], moved = {};
   GO.forEach(function (g) { g.k.forEach(function (k) { moved[k] = 1; }); Object.keys(g.f || {}).forEach(function (k) { moved[k] = 1; }); });
+  (CHIP_KEYS[it.name] || []).forEach(function (k) { moved[k] = 1; }); // a header chip: no card for it
   // each timed effect carries its own duration as a corner tag; the duration's own card or line is then dropped
   var DO = {}, durUsed = {};
   function withDur(k, r) { if (r && DO[k]) { var d = propRec(it, DO[k]); if (d) r.dur = d.v; } return r; }
@@ -1228,7 +1230,7 @@ function chipsHtml(it) {
     var rp = effP(it, "Radius"); seen.Radius = 1;
     if (rp && !isDisabled(rp) && parseFloat(rp.value) > 0) left += chip("Radius", "◎", fmtVal(rp), "Radius");
   }
-  var extra = (it.tooltip_details && it.tooltip_details.additional_header_properties) || [];
+  var extra = ((it.tooltip_details && it.tooltip_details.additional_header_properties) || []).concat(CHIP_KEYS[it.name] || []);
   extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" data-tip="' + esc(r.l) + '">' + (pIcon(r.icon) || "") + esc(r.v) + "</span>"; });
   var ch = effP(it, "AbilityCharges"), nch = ch && !isDisabled(ch) ? parseFloat(ch.value) : 0;
   var nch0 = P.AbilityCharges ? parseFloat(P.AbilityCharges.value) || 0 : 0;
