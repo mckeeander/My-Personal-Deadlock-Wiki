@@ -337,10 +337,8 @@ details.notes[open]{padding-bottom:10px}
 .ncount{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--panel2);color:var(--dim);font-size:12px;line-height:1}
 .ncv{margin-left:auto;width:16px;height:16px;flex:none;color:var(--dim);transition:transform .2s ease}
 details.notes[open] .ncv{transform:rotate(90deg)}
+details.notes.closing .ncv{transform:none}
 @media (prefers-reduced-motion:reduce){.ncv{transition:none}}
-details.notes.anim[open] > :not(summary){animation:nopen .22s ease-out}
-@keyframes nopen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){details.notes.anim[open] > :not(summary){animation:none}}
 details.notes ul{margin:4px 0 0;padding-left:18px;font-size:14px;line-height:1.45;color:var(--fg)}
 details.notes li{margin-bottom:4px}
 details.notes > summary + *{margin-top:2px} /* content starts the same distance below every row */
@@ -3267,8 +3265,6 @@ function tapTip(e) { // touch screens have no hover, so a tap on a chip names it
   return true;
 }
 $("main").addEventListener("click", function (e) {
-  var ns = e.target.closest ? e.target.closest("details.notes > summary") : null; // only a tap animates opening; re-renders don't
-  if (ns) { var nd = ns.parentNode; nd.classList.add("anim"); setTimeout(function () { nd.classList.remove("anim"); }, 300); }
   var fsb = e.target.closest ? e.target.closest("[data-fs]") : null;
   if (fsb) { userForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
@@ -3307,10 +3303,10 @@ $("main").addEventListener("click", function (e) {
   pulseChanges(fresh, before, t, (SEL[key] || 0) < cur);
   animateLayout(fresh, lay);
 });
-// Revisions / What's New dates: the section grows open and folds shut (its height animates while the content fades and slides), instead of snapping.
+// Revisions / What's New dates and the Notes / Interactions rows: the section grows open and folds shut (its height animates while the content fades and slides), instead of snapping.
 // Opening a native <details> just flips it, so the tap is taken over: the height is measured open and shut, animated, and the open attribute is set at the end of a close.
 document.addEventListener("click", function (e) {
-  var sm = e.target.closest ? e.target.closest("details.rpt > summary") : null; if (!sm) return;
+  var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary") : null; if (!sm) return;
   var d = sm.parentNode;
   if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
   e.preventDefault();
