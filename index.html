@@ -181,11 +181,11 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .sc .bsi{width:8.85px}
 .sc.bn{background:#1f3320;color:var(--vital)}
 .hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.hc{transform:translateZ(0);position:relative;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel2);aspect-ratio:3/4}
-.hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .28s ease-out var(--d,0ms)} /* fade only: a scaling image inside the rounded, clipped card made Safari clip the card border and the grid look like it jumped */
+.hc{transform:translateZ(0);position:relative;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--panel2);aspect-ratio:3/4} /* no overflow clip on the tile: on iOS the rounded clip around the fading image nibbled the 1px border at fractional positions (visible zoomed in); the image and label carry the rounding themselves */
+.hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:5px;opacity:0;transition:opacity .28s ease-out var(--d,0ms)} /* fade only: a scaling image inside the rounded, clipped card made Safari clip the card border and the grid look like it jumped */
 .hc img.ld{opacity:1}
 @media (prefers-reduced-motion:reduce){.hc img{transition:none}}
-.hc span{position:absolute;left:0;right:0;bottom:0;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
+.hc span{position:absolute;left:0;right:0;bottom:0;border-radius:0 0 5px 5px;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
 /* the form-switch wrappers slide and fade as their own layer; on iOS that layer's top edge could shave the card's 1px top border, so the layer gets 3px of its own padding there (cancelled by the negative margin, so nothing moves) */
