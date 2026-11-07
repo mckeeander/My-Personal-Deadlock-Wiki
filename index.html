@@ -104,7 +104,8 @@ body{padding-top:calc(env(safe-area-inset-top,0) + 32px)}
 .brand{white-space:nowrap;overflow:hidden;min-width:0}
 @media (max-width:420px){.brand{font-size:16px;letter-spacing:.04em}.bar .ibtn{padding:8px 9px}}
 .ibtn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px}
-.ibtn.on{color:var(--gold);border-color:var(--gold);background:rgba(230,180,90,.14)} /* What's New / Glossary while you are on that page */
+.ibtn.on{color:var(--gold);border-color:var(--gold);background:rgba(230,180,90,.14)} /* What's New (gold) / Glossary (blue) while you are on that page */
+#gbtn.on{color:#bcd5f8;border-color:var(--nav);background:rgba(79,143,232,.22)}
 .tabs{display:flex;gap:6px;margin-top:8px}
 .tab{flex:1;padding:9px 4px;background:var(--panel);border:1px solid var(--line);border-bottom:3px solid var(--line);border-radius:8px 8px 0 0;font-size:14px}
 .tab.on{background:var(--panel2);border-bottom-color:var(--gold);font-weight:600}
@@ -2765,12 +2766,13 @@ function newsDot() {
   d.hidden = !(ok && state.revs && state.revs.length && seen !== state.revs[0].date && state.tab !== "news");
 }
 function openNews() {
-  if (state.tab !== "news") { state.glossFrom = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, back: $("backpill").hidden ? null : BACK, quiet: true }; if (state.glossFrom.back) hideBack(); }
+  if (state.tab !== "news") { state.glossFrom = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, back: $("backpill").hidden ? null : BACK, quiet: true }; if (state.tab !== "glossary") state.homeFrom = state.glossFrom; if (state.glossFrom.back) hideBack(); }
   endSearch(); state.tab = "news"; state.hero = null; state.from = null; setTabsUI("news"); renderNews(); window.scrollTo(0, 0);
 }
 function openGlossary(k) {
   if (state.tab !== "glossary") { // swipe back returns here; a Back pill showing on this page (Back to search) is put away and comes back with the page
     state.glossFrom = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, back: $("backpill").hidden ? null : BACK };
+    if (state.tab !== "news") state.homeFrom = state.glossFrom; // the last real page, kept while you hop between What's New and Glossary
     if (state.glossFrom.back) hideBack();
   }
   endSearch(); state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI("glossary"); renderGlossary();
@@ -2836,6 +2838,10 @@ var TABMEM = {};
 $("brand").onclick = function () { // the title goes home: the hero list
   hideBack(); NEWSFROM = null; TABMEM.heroes = null; endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
 };
+function leaveToHome() { // the lit header button, tapped again: back to the real page you were on, not the other of What's New / Glossary
+  if (state.homeFrom) state.glossFrom = state.homeFrom;
+  state.homeFrom = null; glossBack();
+}
 function glossBack() { // back to the page the glossary was opened from (Abrams, say), then the hero list
   var f = state.glossFrom; state.glossFrom = null; if (!f) { $("brand").onclick(); return; }
   state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y);
@@ -2857,7 +2863,7 @@ window.addEventListener("scroll", topPill, { passive: true });
 $("toppill").onclick = function () { easeScroll(0); };
 $("tabs").addEventListener("click", function () { setTimeout(topPill, 0); });
 $("nbtn").onclick = function () { // a second tap while on the page goes back to where you were
-  if (state.tab === "news" && !searchOn()) { slideForward(glossBack, true); return; } // a second tap returns to where you were
+  if (state.tab === "news" && !searchOn()) { slideForward(leaveToHome, true); return; } // a second tap returns to where you were
   slideForward(function () { hideBack(); openNews(); });
 };
 $("main").addEventListener("click", function (e) { // a hero's name in the changelog opens that hero
@@ -2868,7 +2874,7 @@ $("main").addEventListener("click", function (e) { // a hero's name in the chang
   heroFromNews(b.getAttribute("data-nh"), null);
 });
 $("gbtn").onclick = function () { // a second tap while on the glossary goes back to where you were
-  if (state.tab === "glossary" && !searchOn()) { slideForward(glossBack, true); return; } // a second tap returns to where you were
+  if (state.tab === "glossary" && !searchOn()) { slideForward(leaveToHome, true); return; } // a second tap returns to where you were
   slideForward(function () {
     hideBack(); var top = !(state.tab === "heroes" && state.hero); openGlossary();
     if (top && state.glossFrom) state.glossFrom.quiet = true; // from a main page: swipe still goes back, but no Back pill
