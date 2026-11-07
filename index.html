@@ -1917,7 +1917,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
   window.backSwipeOn = ok; // the tab swipe asks: where this is on, the left edge means back; elsewhere the edge is free to change tabs
   function goBack() {
     if (searchOn()) { $("sq").blur(); endSearch(true); return; } // swiping out of search works like Cancel
-    if (state.tab === "glossary" || state.tab === "news") { glossBack(); return; }
+    if (state.tab === "glossary" || state.tab === "news") { leaveToHome(); return; } // always the real page you were on, not the other of What's New / Glossary
     if (!$("backpill").hidden) { $("backpill").click(); return; }
     var b = $("back"); if (b) b.onclick();
   }
