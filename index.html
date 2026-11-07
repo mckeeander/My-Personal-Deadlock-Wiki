@@ -1885,7 +1885,8 @@ function slideBack(fn) {
 }
 function slideForward(fn, back) { // opening a page (back=true: returning from it, mirrored) (What's New, Glossary): the same slide-and-fade a tab swipe plays, as if swiping to the next page: the old one slides left and fades, the new one comes in from the right
   var m = $("slide");
-  if (INSIDE || SLIDING || !m || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) { fn(); return; }
+  if (INSIDE || !m || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) { fn(); return; }
+  if (SLIDING) return; // taps during the animation are ignored, as with slideBack
   SLIDING = true;
   var d = back ? -1 : 1; // forward: the old page leaves to the left and the new one arrives from the right; back is the mirror image
   m.style.transition = "transform .12s ease-out, opacity .12s ease-out"; m.style.transform = "translateX(" + (-d * 40) + "px)"; m.style.opacity = "0";
@@ -1993,7 +1994,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     busy = true; // old page slides off, the new one comes in from the far side
     m.style.transition = "transform .12s ease-out, opacity .12s ease-out"; m.style.transform = "translateX(" + (-dir * 40) + "px)"; m.style.opacity = "0";
     setTimeout(function () {
-      m.style.transition = "none"; btn.click();
+      m.style.transition = "none"; INSIDE = true; try { btn.click(); } finally { INSIDE = false; }
       m.style.transform = "translateX(" + (dir * 40) + "px)"; m.style.opacity = "0"; void m.offsetWidth;
       m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = "";
       setTimeout(function () { m.style.transition = ""; busy = false; }, 200);
@@ -2705,7 +2706,7 @@ function glossSheet(k, fromBack) {
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button></div>';
   function bind() {
     $("close").onclick = closeSheet;
-    $("gall").onclick = function () { closeSheet(); openGlossary(k); };
+    $("gall").onclick = function () { closeSheet(); slideForward(function () { openGlossary(k); }); };
     var bk = $("ibk"); if (bk) bk.onclick = sheetBack;
   }
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2745,7 +2746,8 @@ function backToNews() {
   var f = NEWSFROM; NEWSFROM = null; state.tab = "news"; state.hero = null; state.from = null; setTabsUI("news"); renderNews();
   if (f) { Array.prototype.forEach.call(document.querySelectorAll("#main details.rpt"), function (d, i) { d.open = f.open.indexOf(i) >= 0; }); window.scrollTo(0, f.y); }
 }
-function heroFromNews(cn, ab) { // a hero (or one of their abilities) tapped in the changelog
+function heroFromNews(cn, ab) { slideForward(function () { heroFromNews0(cn, ab); }); }
+function heroFromNews0(cn, ab) { // a hero (or one of their abilities) tapped in the changelog
   var open = []; Array.prototype.forEach.call(document.querySelectorAll("#main details.rpt"), function (d, i) { if (d.open) open.push(i); });
   hideBack(); NEWSFROM = { hero: cn, y: window.pageYOffset || 0, open: open };
   state.tab = "heroes"; state.hero = cn; state.from = null; setTabsUI("heroes"); renderHero(cn);
@@ -2829,15 +2831,21 @@ $("tabs").onclick = function (e) {
   if (b.getAttribute("data-c") === "glossary") return; // has its own handler
   // each tab remembers where you were (the hero you had open, the scroll spot); tapping the tab you're already on goes to its top level
   var to = b.getAttribute("data-c"), same = to === state.tab && !searchOn();
-  TABMEM[state.tab] = { hero: state.hero, y: searchOn() ? SEARCH_Y : (window.pageYOffset || 0) };
-  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
-  var m = same ? null : TABMEM[to];
-  endSearch(); state.tab = to; state.q = ""; state.hero = m ? m.hero : null; state.from = null; render();
-  window.scrollTo(0, same && state.tab === "heroes" ? 0 : m ? m.y : 0);
+  var ORD = ["heroes", "weapon", "vitality", "spirit"], i0 = ORD.indexOf(state.tab), i1 = ORD.indexOf(to);
+  function go() {
+    TABMEM[state.tab] = { hero: state.hero, y: searchOn() ? SEARCH_Y : (window.pageYOffset || 0) };
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
+    var m = same ? null : TABMEM[to];
+    endSearch(); state.tab = to; state.q = ""; state.hero = m ? m.hero : null; state.from = null; render();
+    window.scrollTo(0, same && state.tab === "heroes" ? 0 : m ? m.y : 0);
+  }
+  // the page slides like a tab swipe: toward a later tab it leaves to the left, toward an earlier one (or out of a hero) to the right; the tab you are already on just scrolls to its top
+  if (same && !state.hero) go(); else slideForward(go, same ? true : (i0 > -1 && i1 < i0));
 };
 var TABMEM = {};
 $("brand").onclick = function () { // the title goes home: the hero list
-  hideBack(); NEWSFROM = null; TABMEM.heroes = null; endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0);
+  function go() { hideBack(); NEWSFROM = null; TABMEM.heroes = null; endSearch(); state.tab = "heroes"; state.hero = null; state.from = null; state.q = ""; setTabsUI("heroes"); render(); window.scrollTo(0, 0); }
+  if (state.tab === "heroes" && !state.hero && !searchOn()) go(); else slideForward(go, true); // already on the list: just back to the top
 };
 function leaveToHome() { // the lit header button, tapped again: back to the real page you were on, not the other of What's New / Glossary
   if (state.homeFrom) state.glossFrom = state.homeFrom;
@@ -2906,7 +2914,7 @@ function endSearch(keepScroll) { // close search: empty the bar and show the pag
 $("sq").addEventListener("blur", function () { document.body.classList.remove("kb"); });
 $("srchpill").onclick = function () { slideBack(function () { $("sq").blur(); endSearch(true); }); };
 $("sq").addEventListener("focus", function () { document.body.classList.add("kb"); });
-$("sq").addEventListener("focus", function () { if (!searchOn()) showSearch($("sq").value); });
+$("sq").addEventListener("focus", function () { if (!searchOn()) slideForward(function () { if (!searchOn()) showSearch($("sq").value); }); });
 $("sq").addEventListener("input", function () { showSearch($("sq").value); $("sres").scrollTop = 0; });
 $("sclr").onclick = function () { showSearch(""); $("sq").focus(); };
 $("sx").onclick = function () { slideBack(function () { $("sq").blur(); endSearch(true); }); };
@@ -2916,7 +2924,8 @@ $("sarea").addEventListener("click", function (e) {
   if (!sr) return;
   var kind = sr.getAttribute("data-kind");
   if (kind === "item" || kind === "term") { openResult(sr); return; } // these open as a sheet over the results
-  var q = state.sq; $("sq").blur(); endSearch(false); openResult(sr); showBackSearch(q);
+  var q = state.sq; $("sq").blur();
+  slideForward(function () { endSearch(false); openResult(sr); showBackSearch(q); });
 });
 // A short burst on every stat that changed when a tier was tapped
 function tileId(el) { // what a tile is, so it stays the same tile when an upgrade renames it ("Melee Damage" becomes "Damage") or the damage cards swap places
@@ -3264,14 +3273,16 @@ $("main").addEventListener("click", function (e) {
   if (gc) { var h0 = $("gc-" + gc.getAttribute("data-gc")); if (h0) scrollToEl(h0, true); return; }
   if (tapTip(e)) return;
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
-  if (sr) { openResult(sr); return; }
+  if (sr) { var sk = sr.getAttribute("data-kind"); if (sk === "item" || sk === "term") openResult(sr); else slideForward(function () { openResult(sr); }); return; } // items and terms open as a sheet; heroes and abilities are a new page
   var nr = e.target.closest ? e.target.closest(".nref[data-rh]") : null;
   if (nr) { // an ability mentioned in a note: open its hero and scroll to it, with a way back
     var fromHero = state.hero, fromY = window.pageYOffset || 0;
-    state.from = null; renderHero(nr.getAttribute("data-rh"));
-    showBack(fromHero, fromY);
-    var tg = document.querySelector('[data-ab="' + nr.getAttribute("data-ra") + '"]');
-    if (tg) scrollToEl(tg);
+    slideForward(function () {
+      state.from = null; renderHero(nr.getAttribute("data-rh"));
+      showBack(fromHero, fromY);
+      var tg = document.querySelector('[data-ab="' + nr.getAttribute("data-ra") + '"]');
+      if (tg) scrollToEl(tg);
+    });
     return;
   }
   var pi = e.target.closest ? e.target.closest(".pitem[data-pitem]") : null;
