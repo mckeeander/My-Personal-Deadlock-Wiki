@@ -1710,8 +1710,15 @@ function syncFormTiers(toAlt) { // switching between Normal and Lycan: each abil
 }
 function setForm(on, keepEl) { // keep the tapped switch where it is on screen while the content above it changes
   var m = $("main"), y0 = keepEl ? keepEl.getBoundingClientRect().top : 0;
+  Array.prototype.forEach.call(m.querySelectorAll(".f0,.f1"), function (e) { e.style.marginTop = ""; }); // drop last swap's sub-pixel correction
   state.alt = !!on; m.classList.toggle("alt", state.alt); m.classList.toggle("fbox", state.alt); $("jbar").classList.toggle("alt", state.alt);
-  if (keepEl) window.scrollBy(0, keepEl.getBoundingClientRect().top - y0); // the tapped switch stays exactly where it was on screen
+  if (keepEl) {
+    window.scrollBy(0, keepEl.getBoundingClientRect().top - y0); // the tapped switch stays where it was on screen
+    // scrolling moves in whole pixels but the cards' heights are fractional, so the switch could still land a fraction off (a visible hop):
+    // take up what is left by shifting the card above it by that fraction (3px is the padding-top/negative margin pair in the .f0/.f1 rule)
+    var r = keepEl.getBoundingClientRect().top - y0, w = m.querySelector(on ? ".f1" : ".f0");
+    if (Math.abs(r) > 0.01 && w && w.offsetParent && (w.compareDocumentPosition(keepEl) & Node.DOCUMENT_POSITION_FOLLOWING)) w.style.marginTop = (-3 - r) + "px";
+  }
 }
 var NOGUN = { citadel_weapon_werewolf_claws: 1 };
 var WNAME = { citadel_weapon_werewolf_claws: "Loose Muzzle" }; // the game file still calls it Lycan Claws; in game it's Loose Muzzle
