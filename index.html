@@ -132,7 +132,6 @@ input[type=search]{width:100%;padding:11px 12px;background:var(--panel);border:1
 .it.act::after{content:"ACTIVE";display:block;font-size:9px;color:var(--gold);letter-spacing:.08em;margin-top:2px}
 .back{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:0;border-bottom:1px solid var(--line);color:var(--gold);padding:8px 0 12px;margin:0 0 20px;font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;text-align:left}
 .back .bl{display:flex;align-items:center;gap:7px}
-.back .bn{font-weight:500;font-size:12px;letter-spacing:.04em;color:var(--dim)}
 .back:active{opacity:.7}
 .hero-h{display:flex;gap:12px;align-items:center;margin-bottom:22px}
 .hero-h img{width:86px;aspect-ratio:3/4;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
@@ -2286,7 +2285,7 @@ function renderHero(cn) {
   var cxn = Math.max(0, Math.min(3, Number(h.complexity) || 0)), dots = "";
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
   var tagsA = (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
-  var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span><span class="bn">' + (NEWSFROM && NEWSFROM.hero === cn ? "" : state.heroes.length) + '</span></button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
+  var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   html += '<div class="stats1">' + statBlock(h) + "</div>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
