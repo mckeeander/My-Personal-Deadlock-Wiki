@@ -26,7 +26,6 @@ def fetch(name):
 
 def flatten(svg, tint=None):
     inner = re.search(r"<svg[^>]*>(.*)</svg>", svg, re.S).group(1)
-    inner = re.sub(r'\s(width|height)="[^"]*"', "", inner)
     if tint:
         inner = inner.replace('fill="%s"' % tint, 'fill="currentColor"')
     else:
