@@ -1927,7 +1927,7 @@ function slideBack(fn) {
   });
 })();
 // swipe anywhere to change tab: left = next (Heroes → Weapon → Vitality → Spirit), right = previous. It presses the tab for you, so each tab still remembers its hero and scroll spot.
-// Stays out of the way of: the left-edge back swipe (only where it is active: a hero page, search, glossary, What's New; on the other pages the left edge changes tabs too), Safari's right-edge swipe, the pop-up sheets, search, the glossary, typing, pinch-zoom, text selection and anything that scrolls sideways.
+// Stays out of the way of: the left-edge back swipe (only where it is active: a hero page, search, glossary, What's New; everywhere else both edges change tabs too), the pop-up sheets, search, the glossary, typing, pinch-zoom, text selection and anything that scrolls sideways.
 (function () {
   var ORDER = ["heroes", "weapon", "vitality", "spirit"], m = $("slide");
   var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, busy = false;
@@ -1947,7 +1947,7 @@ function slideBack(fn) {
   function settle() { m.style.transition = calm ? "none" : "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = ""; }
   document.addEventListener("touchstart", function (e) {
     on = false; if (!ok() || e.touches.length !== 1) return;
-    var t = e.touches[0]; if ((t.clientX <= 40 && window.backSwipeOn()) || t.clientX >= window.innerWidth - 24) return; // the left edge belongs to the back swipe where there is a page to go back to; the right edge belongs to Safari
+    var t = e.touches[0]; if (t.clientX <= 40 && window.backSwipeOn()) return; // the left edge belongs to the back swipe where there is a page to go back to; everywhere else, edges change tabs too
     if (sideScroller(e.target)) return;
     on = true; horiz = null; x0 = t.clientX; y0 = t.clientY; t0 = Date.now(); dx = 0;
   }, { passive: true });
