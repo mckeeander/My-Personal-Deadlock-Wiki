@@ -2466,7 +2466,7 @@ function bindCommon() {
   var q = $("q");
   if (q) q.oninput = function () { state.q = q.value; var pos = q.selectionStart; render(); var n = $("q"); n.focus(); n.setSelectionRange(pos, pos); };
   var rf = $("rfr"); if (rf) rf.onclick = refreshNow;
-  Array.prototype.forEach.call(document.querySelectorAll("[data-hero]"), function (b) { b.onclick = function () { if (!state.hero) state.listY = window.pageYOffset || 0; renderHero(b.getAttribute("data-hero")); }; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-hero]"), function (b) { b.onclick = function () { var cn = b.getAttribute("data-hero"), y = window.pageYOffset || 0; slideForward(function () { if (!state.hero) state.listY = y; renderHero(cn); }); }; }); // opening a hero fades and slides like a tab swipe
   Array.prototype.forEach.call(document.querySelectorAll("[data-item]"), function (b) { b.onclick = function () { itemSheet(b.getAttribute("data-item")); }; });
 }
 function plain(s) {
