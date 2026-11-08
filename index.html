@@ -804,7 +804,7 @@ function effP(it, key) {
 }
 // experiment: a duration shown on the card of the effect it times, instead of as its own stat
 // extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
-var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Death Slam": { SlowPercent: "SlowDuration" } };
+var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Ava": { OutgoingDamagePercent: "DamageAmpDuration" }, "Death Slam": { SlowPercent: "SlowDuration" } };
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
@@ -1402,7 +1402,7 @@ function unitDim(h) { // every number bold, its unit (s, m, %) small and grey, l
 }
 // tier text: every stat name in its type's colour (spirit purple, weapon orange, vitality green), Title Case, no inline icons,
 // so the game's own coloured labels and our plain ones read the same
-var TIER_KEEP = /^(heals|health|knocked up|knocked back|slowed|bullets|silences|silenced|stuns|stunned|immobilizes|immobilized|sleeps)$/; // verbs and plain words keep the sentence's own case
+var TIER_KEEP = /^(refund all ability cooldowns|heals|health|knocked up|knocked back|slowed|bullets|silences|silenced|stuns|stunned|immobilizes|immobilized|sleeps)$/; // verbs and plain words keep the sentence's own case
 // tier colours use the same shades as --spirit, --weapon and --vital
 var TIER_BL = "#6AA6FF", TIER_SP = "#b583f0", TIER_WP = "#e8a24a", TIER_VT = "#6fc56d", TIER_NE = "#FFEFD7", TIER_RD = "#FF5C4D";
 var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_WP], ["spirit lifesteal", TIER_VT], ["bullet lifesteal", TIER_VT], ["melee lifesteal", TIER_VT],
@@ -1434,7 +1434,7 @@ function tierDmg(it) {
   return Object.keys(m).filter(function (l) { return m[l]; }).sort(function (a, b) { return b.length - a.length; }).map(function (l) { return [l, m[l]]; });
 }
 // stats whose name reads as a buff but here is done to the enemy (opposite colour)
-var TIER_OV = { "Bloodscent": [["damage", null]], "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]],
+var TIER_OV = { "Bloodscent": [["damage", null]], "Leaping Slash": [["cooldown refund", TIER_BL]], "Ava": [["buff duration", TIER_BL]], "Return to Shadows": [["refund all ability cooldowns", TIER_BL]], "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]],
   "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""], ["debuff duration", TIER_RD]], "Granny Long Legs": [["resists", TIER_VT]], "Itani Lo Sahn": [["bonus damage", TIER_SP]], "Death Slam": [["radius", ""]], "Love Bites": [["per bullet", ""]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]] };
 // wording fixes for a single tier line: [ability, tier 1-3, from, to]
 var TIER_TXT = [["Light Eater", 3, /\bDamage and /, "Bullet Hit Damage with "], ["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"], ["Exploding Uppercut", 3, /Set (<span[^>]*>)Grapple Arm cooldown to 0<\/span>/, "Resets $1Grapple Arm Cooldown</span>"]];
