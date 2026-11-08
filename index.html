@@ -1924,6 +1924,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
 (function () {
   var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("slide"); // the page and its footer slide together
   function ok() { return (searchOn() || (state.tab === "heroes" && state.hero) || state.tab === "glossary" || state.tab === "news") && $("sheet").hidden; }
+  window.swipeBack = function () { goBack(); }; // the tab swipe's rightward drag on a hero page does the same as the edge swipe
   window.backSwipeOn = ok; // the tab swipe asks: where this is on, the left edge means back; elsewhere the edge is free to change tabs
   function goBack() {
     if (searchOn()) { $("sq").blur(); endSearch(true); return; } // swiping out of search works like Cancel
@@ -1952,7 +1953,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     else { m.style.transform = ""; m.style.opacity = ""; }
   });
 })();
-// swipe anywhere to change tab: left = next (Heroes → Weapon → Vitality → Spirit), right = previous. It presses the tab for you, so each tab still remembers its hero and scroll spot.
+// swipe anywhere to change tab: left = next (Heroes → Weapon → Vitality → Spirit), right = previous (on a hero page, right goes back to the list instead). It presses the tab for you, so each tab still remembers its hero and scroll spot.
 // Stays out of the way of: the left-edge back swipe (only where it is active: a hero page, search, glossary, What's New; everywhere else both edges change tabs too), the pop-up sheets, search, the glossary, typing, pinch-zoom, text selection and anything that scrolls sideways.
 (function () {
   var ORDER = ["heroes", "weapon", "vitality", "spirit"], m = $("slide");
@@ -1987,7 +1988,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     if (e.cancelable) e.preventDefault();
     dx = ddx;
     if (calm) return;
-    var has = ORDER[ORDER.indexOf(state.tab) + (dx < 0 ? 1 : -1)] != null; // at either end the page only gives a little, like a rubber band
+    var has = ORDER[ORDER.indexOf(state.tab) + (dx < 0 ? 1 : -1)] != null || (dx > 0 && state.tab === "heroes" && !!state.hero); // at either end the page only gives a little, like a rubber band
     m.style.transition = "none"; m.style.transform = "translateX(" + (dx * (has ? .35 : .12)) + "px)";
     m.style.opacity = has ? String(1 - Math.min(.3, Math.abs(dx) / window.innerWidth)) : "";
   }, { passive: false });
@@ -1998,6 +1999,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     var dir = dx < 0 ? 1 : -1, to = ORDER[ORDER.indexOf(state.tab) + dir], sel = window.getSelection ? String(window.getSelection()) : "";
     var fast = Math.abs(dx) > 45 && Math.abs(dx) / Math.max(1, Date.now() - t0) > .45;
     var btn = to && document.querySelector('#tabs .tab[data-c="' + to + '"]');
+    if (dir === -1 && state.tab === "heroes" && state.hero && !sel && (Math.abs(dx) > window.innerWidth * .22 || fast)) { slideBack(window.swipeBack); return; } // on a hero page, swiping right from anywhere goes back, like the edge swipe
     if (!btn || sel || !(Math.abs(dx) > window.innerWidth * .22 || fast)) { settle(); return; }
     if (calm) { btn.click(); settle(); return; }
     busy = true; // old page slides off, the new one comes in from the far side
