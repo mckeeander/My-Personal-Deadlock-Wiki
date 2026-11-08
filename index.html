@@ -1953,7 +1953,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     else { m.style.transform = ""; m.style.opacity = ""; }
   });
 })();
-// swipe anywhere to change tab: left = next (Heroes → Weapon → Vitality → Spirit), right = previous (on a hero page, right goes back to the list instead). It presses the tab for you, so each tab still remembers its hero and scroll spot.
+// swipe anywhere to change tab: left = next (Heroes → Weapon → Vitality → Spirit), right = previous (on a hero page, What's New or the Glossary, right goes back instead; those two have no tab to the left or right). It presses the tab for you, so each tab still remembers its hero and scroll spot.
 // Stays out of the way of: the left-edge back swipe (only where it is active: a hero page, search, glossary, What's New; everywhere else both edges change tabs too), the pop-up sheets, search, the glossary, typing, pinch-zoom, text selection and anything that scrolls sideways.
 (function () {
   var ORDER = ["heroes", "weapon", "vitality", "spirit"], m = $("slide");
@@ -1967,8 +1967,9 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     }
     return false;
   }
+  function backPage() { return (state.tab === "heroes" && !!state.hero) || state.tab === "news" || state.tab === "glossary"; } // pages where a rightward swipe goes back
   function ok() {
-    return ORDER.indexOf(state.tab) > -1 && !searchOn() && $("sheet").hidden && !busy && !typing() &&
+    return (ORDER.indexOf(state.tab) > -1 || state.tab === "news" || state.tab === "glossary") && !searchOn() && $("sheet").hidden && !busy && !typing() &&
       !(window.visualViewport && window.visualViewport.scale > 1.02);
   }
   function settle() { m.style.transition = calm ? "none" : "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = ""; }
@@ -1988,7 +1989,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     if (e.cancelable) e.preventDefault();
     dx = ddx;
     if (calm) return;
-    var has = ORDER[ORDER.indexOf(state.tab) + (dx < 0 ? 1 : -1)] != null || (dx > 0 && state.tab === "heroes" && !!state.hero); // at either end the page only gives a little, like a rubber band
+    var has = ORDER.indexOf(state.tab) < 0 ? dx > 0 : (ORDER[ORDER.indexOf(state.tab) + (dx < 0 ? 1 : -1)] != null || (dx > 0 && backPage())); // at either end the page only gives a little, like a rubber band
     m.style.transition = "none"; m.style.transform = "translateX(" + (dx * (has ? .35 : .12)) + "px)";
     m.style.opacity = has ? String(1 - Math.min(.3, Math.abs(dx) / window.innerWidth)) : "";
   }, { passive: false });
@@ -1999,7 +2000,8 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     var dir = dx < 0 ? 1 : -1, to = ORDER[ORDER.indexOf(state.tab) + dir], sel = window.getSelection ? String(window.getSelection()) : "";
     var fast = Math.abs(dx) > 45 && Math.abs(dx) / Math.max(1, Date.now() - t0) > .45;
     var btn = to && document.querySelector('#tabs .tab[data-c="' + to + '"]');
-    if (dir === -1 && state.tab === "heroes" && state.hero && !sel && (Math.abs(dx) > window.innerWidth * .22 || fast)) { slideBack(window.swipeBack); return; } // on a hero page, swiping right from anywhere goes back, like the edge swipe
+    if (dir === -1 && backPage() && !sel && (Math.abs(dx) > window.innerWidth * .22 || fast)) { slideBack(window.swipeBack); return; } // on a hero page, What's New or the Glossary, swiping right from anywhere goes back, like the edge swipe
+    if (ORDER.indexOf(state.tab) < 0) { settle(); return; } // What's New and the Glossary are not tabs: swiping left there does nothing
     if (!btn || sel || !(Math.abs(dx) > window.innerWidth * .22 || fast)) { settle(); return; }
     if (calm) { btn.click(); settle(); return; }
     busy = true; // old page slides off, the new one comes in from the far side
