@@ -189,8 +189,8 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;opacity:0;transition:opacity .28s ease-out var(--d,0ms)} /* fade only: a scaling image inside the rounded, clipped card made Safari clip the card border and the grid look like it jumped */
 .hc img.ld{opacity:1}
 body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
-.hc.rv{opacity:0;transition:opacity .38s ease-out}.hc.rv.in{opacity:1}.hc.rv img{transition:none} /* first screen: the whole tile fades in, not just the portrait */
-@media (prefers-reduced-motion:reduce){.hc.rv,.credits{transition:none}}
+.hc.hrv{opacity:0;transition:opacity .85s ease-out}.hc.hrv.in{opacity:1}.hc.hrv img{transition:none} /* first screen: the whole tile fades in, not just the portrait */
+@media (prefers-reduced-motion:reduce){.hc.hrv,.credits{transition:none}}
 @media (prefers-reduced-motion:reduce){.hc img{transition:none}}
 .hc span{position:absolute;left:0;right:0;bottom:0;border-radius:0 0 6px 6px;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
@@ -964,7 +964,7 @@ function statusLine() {
 }
 var FIRSTLIST = true, HLIST_T0 = 0;
 function heroIn(b) { // a tile takes its turn (its slot counted from when the list appeared) once its portrait is in; one that arrives after its turn appears at once
-  if (!b || !b.classList.contains("rv") || b.classList.contains("in")) return;
+  if (!b || !b.classList.contains("hrv") || b.classList.contains("in")) return;
   var wait = Math.max(0, (+b.getAttribute("data-d") || 0) - (performance.now() - HLIST_T0));
   setTimeout(function () { b.classList.add("in"); }, wait);
 }
@@ -975,15 +975,15 @@ function renderHeroes() {
   var html = statusLine() + '<div class="hg">';
   var first = FIRSTLIST; HLIST_T0 = performance.now();
   list.forEach(function (h, i) { // portraits fade in as they arrive; on the first screen after opening each whole tile (ring, shadow, name and portrait) fades in on its own turn, one after another
-    html += '<button class="hc' + (first ? " rv" : "") + '" data-hero="' + esc(h.class_name) + '"' + (first ? ' data-d="' + Math.min(i * 45, 1000) + '"' : "") + '><img decoding="async" alt="" src="' + esc(heroImg(h)) + '" onload="this.classList.add(\'ld\');heroIn(this.parentNode)" onerror="this.classList.add(\'ld\');heroIn(this.parentNode)"><span>' + esc(h.name) + "</span></button>";
+    html += '<button class="hc' + (first ? " hrv" : "") + '" data-hero="' + esc(h.class_name) + '"' + (first ? ' data-d="' + Math.min(i * 45, 1000) + '"' : "") + '><img decoding="async" alt="" src="' + esc(heroImg(h)) + '" onload="this.classList.add(\'ld\');heroIn(this.parentNode)" onerror="this.classList.add(\'ld\');heroIn(this.parentNode)"><span>' + esc(h.name) + "</span></button>";
   });
   FIRSTLIST = false;
   $("main").innerHTML = html + "</div>";
   bindCommon();
   if (first) {
     document.body.classList.add("reveal"); // the credits wait for the last tile
-    setTimeout(function () { document.body.classList.remove("reveal"); }, Math.min(list.length * 45, 1000) + 700);
-    setTimeout(function () { Array.prototype.forEach.call(document.querySelectorAll(".hc.rv:not(.in)"), function (b) { b.classList.add("in"); }); document.body.classList.remove("reveal"); }, 5000); // failsafe: no tile stays hidden
+    setTimeout(function () { document.body.classList.remove("reveal"); }, Math.min(list.length * 45, 1000) + 900);
+    setTimeout(function () { Array.prototype.forEach.call(document.querySelectorAll(".hc.hrv:not(.in)"), function (b) { b.classList.add("in"); }); document.body.classList.remove("reveal"); }, 5000); // failsafe: no tile stays hidden
   }
 }
 function statTiles(it) {
