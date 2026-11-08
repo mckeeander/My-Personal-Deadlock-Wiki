@@ -188,6 +188,9 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .hc{position:relative;padding:0;border:0;border-radius:6px;background:var(--panel2);box-shadow:0 0 0 1px var(--line);aspect-ratio:3/4} /* the outline is a 1px ring outside the tile, not a border: on iOS the tile border lost its top/bottom lines at fractional positions (zoomed in), whether clipped by the tile or its own layer; nothing can overlap or clip a ring that sits outside, and the tile is no longer forced onto its own layer */
 .hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;opacity:0;transition:opacity .28s ease-out var(--d,0ms)} /* fade only: a scaling image inside the rounded, clipped card made Safari clip the card border and the grid look like it jumped */
 .hc img.ld{opacity:1}
+body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
+.hc.rv{opacity:0;transition:opacity .38s ease-out}.hc.rv.in{opacity:1}.hc.rv img{transition:none} /* first screen: the whole tile fades in, not just the portrait */
+@media (prefers-reduced-motion:reduce){.hc.rv,.credits{transition:none}}
 @media (prefers-reduced-motion:reduce){.hc img{transition:none}}
 .hc span{position:absolute;left:0;right:0;bottom:0;border-radius:0 0 6px 6px;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
@@ -959,18 +962,29 @@ function statusLine() {
   var d = state.fetchedAt ? new Date(state.fetchedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "never";
   return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + ' heroes · <button class="link" id="rfr">Refresh now</button></p>';
 }
-var FIRSTLIST = true;
+var FIRSTLIST = true, HLIST_T0 = 0;
+function heroIn(b) { // a tile takes its turn (its slot counted from when the list appeared) once its portrait is in; one that arrives after its turn appears at once
+  if (!b || !b.classList.contains("rv") || b.classList.contains("in")) return;
+  var wait = Math.max(0, (+b.getAttribute("data-d") || 0) - (performance.now() - HLIST_T0));
+  setTimeout(function () { b.classList.add("in"); }, wait);
+}
 function renderHeroes() {
   SEL = {}; SELS = {}; OPENS = {}; // returning to the hero list forgets all chosen tiers
   var q = state.q.toLowerCase();
   var list = state.heroes.filter(function (h) { return !q || String(h.name).toLowerCase().indexOf(q) >= 0; });
   var html = statusLine() + '<div class="hg">';
-  list.forEach(function (h, i) { // portraits fade in as they arrive; on the first screen after opening they also ripple in a few ms apart
-    html += '<button class="hc" data-hero="' + esc(h.class_name) + '"><img decoding="async" alt="" src="' + esc(heroImg(h)) + '"' + (FIRSTLIST ? ' style="--d:' + Math.min(i * 14, 220) + 'ms"' : "") + ' onload="this.classList.add(\'ld\')" onerror="this.classList.add(\'ld\')"><span>' + esc(h.name) + "</span></button>";
+  var first = FIRSTLIST; HLIST_T0 = performance.now();
+  list.forEach(function (h, i) { // portraits fade in as they arrive; on the first screen after opening each whole tile (ring, shadow, name and portrait) fades in on its own turn, one after another
+    html += '<button class="hc' + (first ? " rv" : "") + '" data-hero="' + esc(h.class_name) + '"' + (first ? ' data-d="' + Math.min(i * 45, 1000) + '"' : "") + '><img decoding="async" alt="" src="' + esc(heroImg(h)) + '" onload="this.classList.add(\'ld\');heroIn(this.parentNode)" onerror="this.classList.add(\'ld\');heroIn(this.parentNode)"><span>' + esc(h.name) + "</span></button>";
   });
   FIRSTLIST = false;
   $("main").innerHTML = html + "</div>";
   bindCommon();
+  if (first) {
+    document.body.classList.add("reveal"); // the credits wait for the last tile
+    setTimeout(function () { document.body.classList.remove("reveal"); }, Math.min(list.length * 45, 1000) + 700);
+    setTimeout(function () { Array.prototype.forEach.call(document.querySelectorAll(".hc.rv:not(.in)"), function (b) { b.classList.add("in"); }); document.body.classList.remove("reveal"); }, 5000); // failsafe: no tile stays hidden
+  }
 }
 function statTiles(it) {
   // used by shop items (tooltip_sections)
