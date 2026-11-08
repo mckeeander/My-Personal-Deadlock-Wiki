@@ -767,7 +767,7 @@ var BSCALE = '<svg class="wsi bsi" viewBox="2.75 0 17.7 24" fill="none" stroke="
 function scaleBadge(r) {
   if (!r || !r.kind) return "";
   var n = fmtRate(r.rate);
-  if (r.kind === "spirit") return '<em class="sc sp">★ ×' + esc(n) + "</em>";
+  if (r.kind === "spirit") return '<em class="sc ' + (r.wb ? "wp" : "sp") + '">★ ×' + esc(n) + "</em>";
   if (r.kind === "weapon") return '<em class="sc wp">' + WSCALE + "×" + esc(n) + "</em>";
   if (r.kind === "range") return '<em class="sc">Ability Range ×' + esc(n) + "</em>";
   if (r.kind === "melee") return '<em class="sc wp">' + esc(r.sub) + " ×" + esc(n) + "</em>";
@@ -867,8 +867,10 @@ function durPairs(it, secs, GO, moved, extra) {
 var ORDER_OV = { "Infernal Resilience": ["Damage Regenerated", "Max Health", "Debuff Resist", "Melee Lifesteal"], "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Slow"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Slow", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
   "Traveler": ["Move Speed", "Fire Rate", "Buff Duration", "Barrier"], "Crackshot": ["Damage", "Fading Slow", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"],
-  "Stalker's Mark": ["Bleed Damage", "Bullet Resist", "Incoming Healing"] };
+  "Stalker's Mark": ["Bleed Damage", "Bullet Resist", "Incoming Healing"],
+  "Borrowed Decree": ["Melee Damage", "Ghoul Move Speed", "Damage", "Slow", "Current Health as Damage"] };
 var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
+var SPIRIT_WP = { "Borrowed Decree|SummonMeleeDamage": 1 }; // melee damage (an orange card) that scales with spirit: the card and its ★ tag are orange
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Flog": ["TargetingConeAngle"] }; // stats shown as a header chip beside the cooldown and range, not as a card
 var PROMOTE = { "Death Slam": { SlowPercent: 1 } }; // listed as small text by the game; shown as a card
@@ -918,8 +920,8 @@ function propRec(it, key) {
   if (key === "RatSwarmCols") return null; // shown together with the rows
   if (key === "RatSwarmRows" && v != null) { var rc = parseFloat((effP(it, "RatSwarmCols") || {}).value) || 1, rr = parseFloat(v) || 0; v = String(rr * rc); label = "Rats (" + rc + " wide × " + rr + " deep)"; }
   if (key === "RatSwarmWidth" && v != null) { v = Math.round(parseFloat(v) / 39.37 * 10) / 10 + "m"; label = "Swarm Width"; } // game units: 39.37 per meter
-  var wpn = (((sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label)) || /^(Bonus )?Weapon Damage$/i.test(label));
-  return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label) || !!TECH_OV[it.name + "|" + key]) };
+  var wpn = (((sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label)) || /^(Bonus )?Weapon Damage$/i.test(label)) || !!SPIRIT_WP[it.name + "|" + key];
+  return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, wb: !!SPIRIT_WP[it.name + "|" + key], tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label) || !!TECH_OV[it.name + "|" + key]) };
 }
 
 /* ---------- data ---------- */
@@ -1002,6 +1004,7 @@ function tile(v, l, r) {
 var GROUP_OV = {
   "Burrow": [{ l: "On Jump Out:", k: ["TossDuration", "SpinDuration"] }],
   "Rain of Arrows": [{ l: "On Hit:", k: ["SlowPercent", "SlowDuration"] }],
+  "Borrowed Decree": [{ l: "On Explosion:", k: ["Damage", "SlowPercent", "SlowDuration", "CurrentHealthDamagePercentage"], late: true }],
   "Exploding Uppercut": [{ l: "On Hero Hit, You Gain:", k: ["MissingHPHeal", "BuffBaseWeaponPct", "UppercutBuffOnHit"],
     x: [{ k: "BuffBaseWeaponPct", t: "Fast spin-up" }, { k: "BuffBaseWeaponPct", t: "2× weapon range" }], f: { RestoreHookCooldown: "Grapple Arm cooldown reset" } }],
   "Sticky Bomb": [{ l: "On Cast, You Gain:", k: ["MovementSpeedBonus", "StatusResistancePercent", "MovementSpeedBonusDuration"], top: true }],
@@ -1101,7 +1104,7 @@ function tooltipHtml(it) {
     main = hits.concat(main.filter(function (e) { return !isHit(e); }));
     return main.concat(dur).join("");
   }
-  var firstStats = -1;
+  var firstStats = -1, late = []; // late: groups that sit after every section's own cards
   function sig(v, l) { return String(l).toLowerCase() + "|" + v; }
   // which block each listed stat sits in, and what the game already shows
   var blockOf = {}, listed = {}, bi = 0;
@@ -1183,10 +1186,12 @@ function tooltipHtml(it) {
       Object.keys(g.f || {}).forEach(function (k) { var e = effP(it, k); if (g.f[k] && e && parseFloat(e.value) > 0) mx += '<span class="fl">' + esc(g.f[k]) + "</span>"; });
       if (!t && !mx) return; if (!g.l) return;
       var html = '<div class="blk">' + esc(g.l) + "</div>" + (t ? '<div class="stats">' + t + "</div>" : "") + (mx ? '<div class="minor">' + mx + "</div>" : "");
-      if (g.top && firstStats >= 0) { parts.splice(firstStats + 1, 0, html); if (firstMinor > firstStats) firstMinor++; } else parts.push(html);
+      if (g.late) late.push(html);
+      else if (g.top && firstStats >= 0) { parts.splice(firstStats + 1, 0, html); if (firstMinor > firstStats) firstMinor++; } else parts.push(html);
     });
     if (isUU) parts.push("</div>");
   });
+  late.forEach(function (html) { if (firstMinor >= 0) { parts.splice(firstMinor, 0, html); firstMinor++; } else parts.push(html); }); // after the main cards, before the small-stats line
   if (place[-1] && !tilesDone) parts.push('<div class="stats">' + extraHtml(place[-1]) + "</div>");
   var cd0 = parseFloat(((it.properties || {}).AbilityCooldown || {}).value), cdN = parseFloat((effP(it, "AbilityCooldown") || {}).value);
   if (cd0 > 0 && cdN <= 0) { ex.flags.push("Always active"); (ex.fk = ex.fk || []).push(""); }
