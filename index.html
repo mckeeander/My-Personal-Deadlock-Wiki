@@ -866,8 +866,10 @@ function durPairs(it, secs, GO, moved, extra) {
 }
 var ORDER_OV = { "Infernal Resilience": ["Damage Regenerated", "Max Health", "Debuff Resist", "Melee Lifesteal"], "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Slow"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Slow", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
   "Traveler": ["Move Speed", "Fire Rate", "Buff Duration", "Barrier"], "Crackshot": ["Damage", "Fading Slow", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
-  "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"] };
+  "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"],
+  "Stalker's Mark": ["Bleed Damage", "Bullet Resist", "Incoming Healing"] };
 var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
+var NO_WPN = { "Bloodscent|WeaponDmgPerIsolationKill": 1 }; // a weapon-damage stat that keeps a plain card instead of the orange weapon-damage one
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Flog": ["TargetingConeAngle"] }; // stats shown as a header chip beside the cooldown and range, not as a card
 var PROMOTE = { "Death Slam": { SlowPercent: 1 } }; // listed as small text by the game; shown as a card
@@ -882,7 +884,7 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
   "Ava|OutgoingDamagePercent": "Max Damage Amp", "Ava|DamageAmpBuildDuration": "Build-up Time", "Ava|DamageAmpDuration": "Lingers For", "Gloom Bombs|MeleeResistReductionDuration": "Debuff Duration", "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
   "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
-  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Death Slam|SlowPercent": "Enemy Move Speed", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
+  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Death Slam|SlowPercent": "Enemy Move Speed", "Bloodscent|WeaponDmgPerIsolationKill": "Weapon Damage", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
 function propRec(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -917,7 +919,7 @@ function propRec(it, key) {
   if (key === "RatSwarmCols") return null; // shown together with the rows
   if (key === "RatSwarmRows" && v != null) { var rc = parseFloat((effP(it, "RatSwarmCols") || {}).value) || 1, rr = parseFloat(v) || 0; v = String(rr * rc); label = "Rats (" + rc + " wide × " + rr + " deep)"; }
   if (key === "RatSwarmWidth" && v != null) { v = Math.round(parseFloat(v) / 39.37 * 10) / 10 + "m"; label = "Swarm Width"; } // game units: 39.37 per meter
-  var wpn = ((sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label)) || /^(Bonus )?Weapon Damage$/i.test(label);
+  var wpn = (((sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label)) || /^(Bonus )?Weapon Damage$/i.test(label)) && !NO_WPN[it.name + "|" + key];
   return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label) || !!TECH_OV[it.name + "|" + key]) };
 }
 
@@ -1428,7 +1430,7 @@ function tierDmg(it) {
   return Object.keys(m).filter(function (l) { return m[l]; }).sort(function (a, b) { return b.length - a.length; }).map(function (l) { return [l, m[l]]; });
 }
 // stats whose name reads as a buff but here is done to the enemy (opposite colour)
-var TIER_OV = { "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]],
+var TIER_OV = { "Bloodscent": [["damage", null]], "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]],
   "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""], ["debuff duration", TIER_RD]], "Granny Long Legs": [["resists", TIER_VT]], "Itani Lo Sahn": [["bonus damage", TIER_SP]], "Death Slam": [["radius", ""]], "Love Bites": [["per bullet", ""]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]] };
 // wording fixes for a single tier line: [ability, tier 1-3, from, to]
 var TIER_TXT = [["Light Eater", 3, /\bDamage and /, "Bullet Hit Damage with "], ["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"], ["Exploding Uppercut", 3, /Set (<span[^>]*>)Grapple Arm cooldown to 0<\/span>/, "Resets $1Grapple Arm Cooldown</span>"]];
