@@ -767,7 +767,7 @@ var BSCALE = '<svg class="wsi bsi" viewBox="2.75 0 17.7 24" fill="none" stroke="
 function scaleBadge(r) {
   if (!r || !r.kind) return "";
   var n = fmtRate(r.rate);
-  if (r.kind === "spirit") return '<em class="sc ' + (r.wb ? "wp" : "sp") + '">★ ×' + esc(n) + "</em>";
+  if (r.kind === "spirit") return '<em class="sc sp">★ ×' + esc(n) + "</em>";
   if (r.kind === "weapon") return '<em class="sc wp">' + WSCALE + "×" + esc(n) + "</em>";
   if (r.kind === "range") return '<em class="sc">Ability Range ×' + esc(n) + "</em>";
   if (r.kind === "melee") return '<em class="sc wp">' + esc(r.sub) + " ×" + esc(n) + "</em>";
@@ -870,7 +870,7 @@ var ORDER_OV = { "Infernal Resilience": ["Damage Regenerated", "Max Health", "De
   "Stalker's Mark": ["Bleed Damage", "Bullet Resist", "Incoming Healing"],
   "Borrowed Decree": ["Melee Damage", "Ghoul Move Speed", "Damage", "Slow", "Current Health as Damage"] };
 var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
-var SPIRIT_WP = { "Borrowed Decree|SummonMeleeDamage": 1 }; // melee damage (an orange card) that scales with spirit: the card and its ★ tag are orange
+var SPIRIT_WP = { "Borrowed Decree|SummonMeleeDamage": 1 }; // melee damage (an orange card) that scales with spirit: the card is orange, its ★ tag stays purple
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Flog": ["TargetingConeAngle"] }; // stats shown as a header chip beside the cooldown and range, not as a card
 var PROMOTE = { "Death Slam": { SlowPercent: 1 } }; // listed as small text by the game; shown as a card
@@ -921,7 +921,7 @@ function propRec(it, key) {
   if (key === "RatSwarmRows" && v != null) { var rc = parseFloat((effP(it, "RatSwarmCols") || {}).value) || 1, rr = parseFloat(v) || 0; v = String(rr * rc); label = "Rats (" + rc + " wide × " + rr + " deep)"; }
   if (key === "RatSwarmWidth" && v != null) { v = Math.round(parseFloat(v) / 39.37 * 10) / 10 + "m"; label = "Swarm Width"; } // game units: 39.37 per meter
   var wpn = (((sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label)) || /^(Bonus )?Weapon Damage$/i.test(label)) || !!SPIRIT_WP[it.name + "|" + key];
-  return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, wb: !!SPIRIT_WP[it.name + "|" + key], tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label) || !!TECH_OV[it.name + "|" + key]) };
+  return v == null ? null : { icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label) || !!TECH_OV[it.name + "|" + key]) };
 }
 
 /* ---------- data ---------- */
