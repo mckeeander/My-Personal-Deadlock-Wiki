@@ -304,6 +304,20 @@ def main():
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", d) or d < SINCE: continue
         p = parse_patch(d, open(os.path.join(wdir, f), encoding="utf-8").read())
         if p["general"] or p["items"] or p["heroes"] or p["brawl"]: patches.append(p)
+    # every patch since the first wiki entry, per hero and per item, for the patch history on hero pages (and later item pages)
+    hist = {"heroes": {}, "items": {}}
+    for f in sorted(os.listdir(wdir), reverse=True):
+        d = f[:-4]
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", d): continue
+        p = parse_patch(d, open(os.path.join(wdir, f), encoding="utf-8").read())
+        gid = re.search(r"steam_community_announcements/(\d+)", p["source"] or "")
+        meta = {"date": d, "title": p["title"], "source": ("https://store.steampowered.com/news/app/1422450/view/" + gid.group(1)) if gid else p["source"]}
+        for h in p["heroes"]:
+            if h["hc"]: hist["heroes"].setdefault(h["hc"], []).append(dict(meta, groups=h["groups"]))
+        for it in p["items"]:
+            if it["ic"]: hist["items"].setdefault(it["ic"], []).append(dict(meta, lines=it["lines"]))
+    if hist["heroes"]:
+        json.dump({"source": "github.com/deadlock-wiki/deadlock-data (MIT)", **hist}, open(os.path.join(DATA, "patchhistory.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     for p in patches: p.pop("brawl", None)  # Street Brawl changes are left out
     patches = [p for p in patches if p["general"] or p["items"] or p["heroes"]]
     if patches:

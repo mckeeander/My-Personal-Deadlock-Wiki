@@ -534,6 +534,14 @@ html.lock,html.lock body{overflow:hidden}
 .glt{flex:1;display:flex;flex-direction:column;line-height:1.25}.glt b{font-weight:600;font-size:15px}.glt i{font-style:normal;font-size:12px;color:var(--dim)}
 .gig{margin-top:10px;font-size:13px;color:var(--dim)}.gig span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d7290;margin-right:8px}.gig b{color:var(--fg);font-weight:600}
 .mlist{display:flex;flex-direction:column;gap:6px}.mlist div{background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.4}.mlist b{display:block;font-weight:600}.mlist span{color:var(--dim);font-size:13px}
+.secn{font-size:13px;color:var(--dim);font-weight:500;letter-spacing:0;margin-left:6px}
+.phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
+.phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.phb.on img{opacity:1}
+.phsum{display:block;font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-top:2px}
+.phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
+.phy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;margin:16px 0 8px 4px}.phist.filt .phy{display:none!important}
+.phmore{width:100%;margin-top:4px;background:none;border:1px dashed #4a405a;border-radius:10px;padding:11px;color:var(--fg);font:inherit;font-size:14px}
+.phs{margin-top:10px}.phs .nsub{margin-bottom:4px}
 .blkn{color:var(--dim);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px}
 .mrows{margin-top:12px;border:1px solid #3d344c;border-radius:8px;overflow:hidden}
 .mrow{display:grid;grid-template-columns:1fr 64px 64px 64px;align-items:center;padding:9px 10px;background:var(--panel2);font-size:14px}.mrow + .mrow{border-top:1px solid #3d344c}
@@ -771,6 +779,7 @@ function load() {
   idbGet("pn").then(function (pn) { if (pn && pn.patches) { state.pn = pn; setTimeout(newsDot, 0); } }, function () {});
   idbGet("pw").then(function (pw) { if (pw && pw.powerups) state.pw = pw; }, function () {});
   idbGet("mc").then(function (mc) { if (mc && mc.mechanics) state.mc = mc.mechanics; }, function () {});
+  idbGet("ph").then(function (ph) { if (ph && ph.heroes) state.ph = ph; }, function () {});
   return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
@@ -1026,6 +1035,7 @@ function fetchAll() {
     state.fetchedAt = Date.now(); state.note = ""; index(); save();
     // community notes are optional: a failure here never blocks the main data
     getJson("patchnotes.json").then(function (pn) { if (pn && pn.patches) { state.pn = pn; idbSet("pn", pn); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); } }, function () {}); // official patch notes (deadlock-wiki/deadlock-data)
+    getJson("patchhistory.json").then(function (ph) { if (ph && ph.heroes) { state.ph = ph; idbSet("ph", ph); var w3 = $("revwrap"), h3 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w3 && h3) w3.innerHTML = revisionsHtml(h3); } }, function () {}); // every official patch, per hero
     getJson("mechanics.json").then(function (mc) { if (mc && mc.mechanics) { state.mc = mc.mechanics; idbSet("mc", mc); } }, function () {}); // objectives and neutrals (deadlock-wiki/deadlock-data)
     getJson("powerups.json").then(function (pw) { if (pw && pw.powerups) { state.pw = pw; idbSet("pw", pw); } }, function () {});
     getJson("status_effects.json").then(function (se) { if (se && se.effects) { state.se = se; idbSet("se", se); } }, function () {}); // what causes each effect (from the wiki), shown in the glossary pop-ups
@@ -2404,7 +2414,40 @@ function revGroupHtml(g, h) { // one ability, weapon or base-stats block of chan
       rows = rows.filter(function (r) { if (seen[r]) return false; seen[r] = 1; return !!r; }); // the same change on twin stats (three "cycle" windows) shows once
       return '<div class="rgrp"' + (g.type === "ability" && g.item ? ' data-gab="' + esc(g.item) + '"' : "") + '><div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + '</div><div class="rch">' + rows.join("") + "</div></div>";
 }
-function revisionsHtml(h) {
+var PH_SHOW = 5;
+function phGroupsHtml(groups) { // a hero's changes in one patch, grouped by ability, like What's New
+  return groups.map(function (g) {
+    var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : g.label === "Stats" ? siIcon("health") : "", stc = !ab && g.label === "Stats" ? " rstat" : "";
+    var name = ab ? nameOf(ab) : (g.ability || g.label || "");
+    return '<div class="rgrp"' + (ab ? ' data-pab="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric' + stc + '">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
+  }).join("");
+}
+function phSummary(groups) {
+  var names = groups.map(function (g) { var ab = g.ac && state.byClass[g.ac]; return ab ? nameOf(ab) : (g.ability || g.label || ""); }).filter(Boolean);
+  var n = groups.reduce(function (a, g) { return a + g.lines.length; }, 0);
+  return (names.length > 2 ? names.slice(0, 2).join(", ") + " +" + (names.length - 2) : names.join(", ")) + " · " + n + " change" + (n === 1 ? "" : "s");
+}
+function revisionsHtml(h) { // Patch history: every official patch that touched this hero, newest first
+  var P = state.ph && state.ph.heroes && state.ph.heroes[h.class_name];
+  if (!P || !P.length) return revisionsHtml0(h);
+  var R = state.revs || [], abs = {};
+  P.forEach(function (p) { p.groups.forEach(function (g) { if (g.ac && state.byClass[g.ac]) abs[g.ac] = (abs[g.ac] || 0) + 1; }); });
+  var order = ((h.items && ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return h.items[k]; })) || []).filter(function (c) { return abs[c]; });
+  Object.keys(abs).forEach(function (c) { if (order.indexOf(c) < 0) order.push(c); });
+  var filt = order.length > 1 ? '<div class="phf"><button class="phb on" data-phf="">All</button>' + order.map(function (c) { return '<button class="phb" data-phf="' + esc(c) + '" aria-label="' + esc(nameOf(state.byClass[c])) + '">' + imgTag(itemImg(state.byClass[c])) + "</button>"; }).join("") + "</div>" : "";
+  var year = "", rows = P.map(function (p, i) {
+    var y = p.date.slice(0, 4), yh = i >= PH_SHOW && y !== year ? '<div class="phy' + (i >= PH_SHOW ? " pho" : "") + '">' + y + "</div>" : "";
+    if (i >= PH_SHOW) year = y;
+    var stat = R.filter(function (e) { var dd = (new Date(e.date) - new Date(p.date)) / 864e5; return dd >= 0 && dd <= 3 && (e.heroes || {})[h.class_name]; })[0]; // the app's own before/after numbers for that patch
+    var sbody = stat ? '<div class="phs"><div class="nsub">Stat changes</div>' + stat.heroes[h.class_name].map(function (g) { return revGroupHtml(g, h); }).join("") + "</div>" : "";
+    var src = p.source ? '<a class="pnsrc" href="' + esc(p.source) + '" target="_blank" rel="noopener">' + esc(p.title || "Official notes") + " ↗</a>" : "";
+    var abl = p.groups.map(function (g) { return g.ac || ""; }).join(" ");
+    return yh + '<details class="rpt' + (i >= PH_SHOW ? " pho" : "") + '" data-abs="' + esc(abl) + '"' + (i === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '<i class="phsum">' + esc(phSummary(p.groups)) + '</i></span><span class="rcv">' + CHEV + "</span></summary>" + src + '<div class="nhg">' + phGroupsHtml(p.groups) + "</div>" + sbody + "</details>";
+  }).join("");
+  var more = P.length > PH_SHOW ? '<button class="phmore">Show older patches (' + (P.length - PH_SHOW) + ")</button>" : "";
+  return '<div class="sec">Patch history <span class="secn">' + P.length + "</span></div>" + filt + '<div id="revs" class="phist">' + rows + more + "</div>";
+}
+function revisionsHtml0(h) {
   var R = state.revs; if (!R || !R.length) return "";
   var cards = R.map(function (e, ei) {
     var gs = (e.heroes || {})[h.class_name]; if (!gs || !gs.length) return "";
@@ -3755,6 +3798,21 @@ function tapTip(e) { // touch screens have no hover, so a tap on a chip names it
   return true;
 }
 $("main").addEventListener("click", function (e) {
+  var phm = e.target.closest ? e.target.closest(".phmore") : null;
+  if (phm) { var pw = phm.parentNode; pw.classList.add("all"); phm.remove(); return; }
+  var phb = e.target.closest ? e.target.closest(".phb") : null;
+  if (phb) { // only the patches that touched this ability
+    var c0 = phb.getAttribute("data-phf"), wrap = $("revs");
+    Array.prototype.forEach.call(document.querySelectorAll(".phb"), function (b) { b.classList.toggle("on", b === phb); });
+    wrap.classList.toggle("filt", !!c0); if (c0) wrap.classList.add("all");
+    var first = null;
+    Array.prototype.forEach.call(wrap.querySelectorAll("details.rpt"), function (d) { var hit = !c0 || (" " + d.getAttribute("data-abs") + " ").indexOf(" " + c0 + " ") >= 0; d.classList.toggle("phx", !hit); if (hit && !first) first = d; d.open = false; });
+    Array.prototype.forEach.call(wrap.querySelectorAll(".rgrp[data-pab]"), function (g) { g.classList.toggle("phx", !!c0 && g.getAttribute("data-pab") !== c0); });
+    if (first) first.open = true;
+    return;
+  }
+  var pab = e.target.closest ? e.target.closest("#revs.phist .rgrp[data-pab]") : null;
+  if (pab && !e.target.closest("a")) { var el0 = document.querySelector('[data-ab="' + pab.getAttribute("data-pab") + '"]'); if (el0) { if (el0.closest(".f1")) setForm(true); else if (el0.closest(".f0")) setForm(false); scrollToEl(el0, true); } return; } // tap an ability's changes to jump to its card
   var gch = e.target.closest ? e.target.closest(".gchev[data-shc]") : null;
   if (gch) { openSource(gch); return; }
   var fsb = e.target.closest ? e.target.closest("[data-fs]") : null;
@@ -3803,9 +3861,9 @@ document.addEventListener("click", function (e) {
   if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
   e.preventDefault();
   if (d._busy) return;
-  if (!d.open && d.closest("#revs.news")) { // one patch open at a time, without the page jumping
+  if (!d.open && d.closest("#revs.news, #revs.phist")) { // one patch open at a time, without the page jumping
     var before = d.getBoundingClientRect().top, rv = d.parentNode, h0 = rv.offsetHeight;
-    Array.prototype.forEach.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { if (o !== d) { o.getAnimations().forEach(function (a) { a.cancel(); }); o.open = false; o._busy = false; o.style.overflow = ""; o.classList.remove("closing"); } });
+    Array.prototype.forEach.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { if (o !== d && o.offsetParent) { o.getAnimations().forEach(function (a) { a.cancel(); }); o.open = false; o._busy = false; o.style.overflow = ""; o.classList.remove("closing"); } });
     var lost = h0 - rv.offsetHeight; if (lost > 0) { rv.style.paddingBottom = lost + "px"; clearTimeout(rv._pt); rv._pt = setTimeout(function () { rv.style.paddingBottom = ""; }, 900); } // near the bottom of the page there'd be nothing left to scroll into, so the patch would hop
     var shift = d.getBoundingClientRect().top - before;
     if (shift) window.scrollBy(0, shift); // the tapped patch stays exactly where it was on screen
