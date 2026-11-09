@@ -473,7 +473,7 @@ html.lock,html.lock body{overflow:hidden}
 .gcat b{display:block;font-size:14px;line-height:1.25}
 .gcat small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
 .gcat i{font-style:normal;color:var(--gold);font-size:20px;line-height:1}
-.gsbtns{display:flex;gap:8px;margin-top:22px}.gsbtns #gall,.gsbtns #ibk{flex:0 0 52px;display:flex;align-items:center;justify-content:center}.gsbtns #close{flex:1}
+.gsbtns{display:flex;gap:8px;margin-top:22px}.gsbtns #gall,.gsbtns #ibk,#iph{flex:0 0 52px;display:flex;align-items:center;justify-content:center}.gsbtns #close{flex:1}
 .gsbtns .ibtn{border-radius:14px;min-height:46px}
 .sheet .in{position:relative}
 .swc{position:relative}
@@ -539,7 +539,7 @@ html.lock,html.lock body{overflow:hidden}
 .phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.phb.on img{opacity:1}
 .phsum{font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-left:8px}
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
-.iph{display:flex;align-items:center;gap:9px;width:100%;background:none;border:0;border-top:1px solid var(--line);margin-top:14px;padding:13px 0 4px;color:var(--gold);font:inherit;font-size:14px;text-align:left;-webkit-tap-highlight-color:transparent}.ipage{margin-bottom:8px}.ipl .pnl{margin-top:4px}
+.ipage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px} /* the item page: its card, set apart from the patch history below */.ipl .pnl{margin-top:4px}
 .phy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;margin:16px 0 8px 4px}.phist.filt .phy{display:none!important}
 .phmore{width:100%;margin-top:4px;background:none;border:1px dashed #4a405a;border-radius:10px;padding:11px;color:var(--fg);font:inherit;font-size:14px}
 .phs{margin-top:10px}.phs .nsub{margin-bottom:4px}
@@ -2603,7 +2603,7 @@ function itemSheet(cn, fromBack) {
   var it = state.byClass[cn]; if (!it) return;
   HERO_NAME = ""; CTX = null;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== cn) ISTACK.push(cn); if (!FWD) FSTACK = []; }
-  var html = itemBodyHtml(it) + itemHistRow(it) + '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button></div>';
+  var html = itemBodyHtml(it) + '<div class="gsbtns">' + backBtn() + itemHistBtn(it) + '<button class="ibtn" id="close">Close</button></div>';
   html = glossOnce(html);
   function bind() {
     $("close").onclick = sinkSheet;
@@ -2614,10 +2614,9 @@ function itemSheet(cn, fromBack) {
   if (!$("sheet").hidden && !calm && $("sheetin").firstChild) swapSheet(html, !!fromBack, bind);
   else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
 }
-function itemHistRow(it) { // "Patch history  12  ›": the item's own page, with every patch that changed it
-  var n = itemHistory(it.class_name).length; if (!n) return "";
-  var sv = rowSvg;
-  return '<button class="iph" id="iph">' + sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', "nsi") + "<span>Patch history</span>" + '<span class="ncount">' + n + "</span>" + sv('<path d="M9 6l6 6-6 6"/>', "ncv") + "</button>";
+function itemHistBtn(it) { // an icon button beside Close: the item's own page, with every patch that changed it
+  if (!itemHistory(it.class_name).length) return "";
+  return '<button class="ibtn" id="iph" aria-label="Patch history"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3 2"/></svg></button>';
 }
 function itemBodyHtml(it) { // an item's card: header, pills, its text and stats, what it builds from and into (the pop-up and the item page)
   var cn = it.class_name;
