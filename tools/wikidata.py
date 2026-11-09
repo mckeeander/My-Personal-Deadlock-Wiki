@@ -224,6 +224,34 @@ def crates(repo):
     return {"levels_from_min": starts, "spawns": g.get("BreakableSpawnTimeDesc"), "pickups": out} if out else None
 
 
+def mechanics(repo):
+    """Objectives and neutrals: only fields whose meaning is clear (health, souls, spawn times, backdoor protection)."""
+    J = lambda f: json.load(open(os.path.join(repo, "data", "json", f), encoding="utf-8"))
+    n, g = J("npc-data.json"), J("generic-data.json")
+    op, rj = g.get("ObjectiveParams") or {}, g.get("RejuvParams") or {}
+    def num(o, *path):
+        for k in path:
+            if not isinstance(o, dict) or k not in o: return None
+            o = o[k]
+        return o if isinstance(o, (int, float)) and not isinstance(o, bool) else None
+    bp = (n.get("npc_boss_tier1") or {}).get("BackdoorProtectionModifier") or {}
+    out = {
+        "trooper": {"health": num(n, "trooper_normal", "MaxHealth"), "melee_health": num(n, "trooper_melee", "MaxHealth"), "dps_vs_heroes": num(n, "trooper_normal", "VSPlayer", "BaseDPS")},
+        "guardian": {"health": num(n, "npc_boss_tier1", "MaxHealth"), "souls": op.get("Tier1GoldKill"), "dps_vs_heroes": num(n, "npc_boss_tier1", "PlayerDPS")},
+        "walker": {"health": num(n, "npc_boss_tier2", "MaxHealth"), "souls": op.get("Tier2GoldKill")},
+        "base_guardian": {"health": num(n, "npc_barrack_boss", "MaxHealth"), "souls": op.get("BaseGuardiansGoldKill")},
+        "shrine": {"souls": op.get("ShrinesGoldKill")},
+        "patron": {"health": num(n, "npc_boss_tier3", "MaxHealth")},
+        "mid_boss": {"health": num(n, "npc_super_neutral", "StartingHealth"), "health_per_min": num(n, "npc_super_neutral", "HealthGainPerMinute")},
+        "rejuvenator": {"duration": rj.get("RejuvinatorBuffDuration"), "trooper_health": rj.get("TrooperHealthMult"), "respawn": rj.get("PlayerRespawnMult")},
+        "backdoor": {"mitigation": bp.get("BackdoorProtectionDamageMitigationFromPlayers"), "regen": bp.get("HealthPerSecondRegen")},
+        "camps": [{"tier": i + 1, "health": num(n, k, "MaxHealth"), "souls": num(n, k, "GoldReward"), "from_sec": num(n, k, "InitialSpawnDelay"),
+                   "souls_pct_per_min": num(n, k, "GoldRewardBonusPercentPerMinute")}
+                  for i, k in enumerate(("neutral_trooper_weak", "neutral_trooper_normal", "neutral_trooper_strong"))],
+    }
+    return out if out["guardian"]["health"] else None
+
+
 def main():
     if len(sys.argv) < 2 or not os.path.isdir(sys.argv[1]):
         print("usage: wikidata.py <deadlock-data checkout>"); return 1
@@ -240,6 +268,10 @@ def main():
     if patches:
         json.dump({"source": "github.com/deadlock-wiki/deadlock-data (MIT)", "patches": patches},
                   open(os.path.join(DATA, "patchnotes.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    mc = mechanics(repo)
+    if mc:
+        json.dump({"source": "github.com/deadlock-wiki/deadlock-data (MIT), npc-data.json / generic-data.json", "mechanics": mc},
+                  open(os.path.join(DATA, "mechanics.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     pw = powerups(repo)
     cr = crates(repo)
     if pw:

@@ -1,0 +1,73 @@
+{
+ "source": "github.com/deadlock-wiki/deadlock-data (MIT), npc-data.json / generic-data.json",
+ "mechanics": {
+  "trooper": {
+   "health": 300,
+   "melee_health": 400,
+   "dps_vs_heroes": 28.0
+  },
+  "guardian": {
+   "health": 5500,
+   "souls": 1375,
+   "dps_vs_heroes": 116.0
+  },
+  "walker": {
+   "health": 6000,
+   "souls": 3675
+  },
+  "base_guardian": {
+   "health": 4000,
+   "souls": 1000
+  },
+  "shrine": {
+   "souls": 2000
+  },
+  "patron": {
+   "health": 12000
+  },
+  "mid_boss": {
+   "health": 15600,
+   "health_per_min": 234
+  },
+  "rejuvenator": {
+   "duration": 180,
+   "trooper_health": [
+    1.7,
+    2.0,
+    2.3
+   ],
+   "respawn": [
+    0.5,
+    0.4,
+    0.3
+   ]
+  },
+  "backdoor": {
+   "mitigation": 65.0,
+   "regen": 65.0
+  },
+  "camps": [
+   {
+    "tier": 1,
+    "health": 142,
+    "souls": 45,
+    "from_sec": 120,
+    "souls_pct_per_min": 1.08
+   },
+   {
+    "tier": 2,
+    "health": 354,
+    "souls": 75,
+    "from_sec": 300,
+    "souls_pct_per_min": 1.08
+   },
+   {
+    "tier": 3,
+    "health": 1246,
+    "souls": 199,
+    "from_sec": 480,
+    "souls_pct_per_min": 1.08
+   }
+  ]
+ }
+}

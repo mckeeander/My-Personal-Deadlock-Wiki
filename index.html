@@ -740,6 +740,7 @@ function load() {
   idbGet("se").then(function (se) { if (se && se.effects) state.se = se; }, function () {});
   idbGet("pn").then(function (pn) { if (pn && pn.patches) { state.pn = pn; setTimeout(newsDot, 0); } }, function () {});
   idbGet("pw").then(function (pw) { if (pw && pw.powerups) state.pw = pw; }, function () {});
+  idbGet("mc").then(function (mc) { if (mc && mc.mechanics) state.mc = mc.mechanics; }, function () {});
   return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
@@ -995,6 +996,7 @@ function fetchAll() {
     state.fetchedAt = Date.now(); state.note = ""; index(); save();
     // community notes are optional: a failure here never blocks the main data
     getJson("patchnotes.json").then(function (pn) { if (pn && pn.patches) { state.pn = pn; idbSet("pn", pn); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); } }, function () {}); // official patch notes (deadlock-wiki/deadlock-data)
+    getJson("mechanics.json").then(function (mc) { if (mc && mc.mechanics) { state.mc = mc.mechanics; idbSet("mc", mc); } }, function () {}); // objectives and neutrals (deadlock-wiki/deadlock-data)
     getJson("powerups.json").then(function (pw) { if (pw && pw.powerups) { state.pw = pw; idbSet("pw", pw); } }, function () {});
     getJson("status_effects.json").then(function (se) { if (se && se.effects) { state.se = se; idbSet("se", se); } }, function () {}); // what causes each effect (from the wiki), shown in the glossary pop-ups
     getJson("revisions.json").then(function (rv) { // optional, like the notes: the hero page simply has no Revisions section without it
@@ -2668,7 +2670,7 @@ function openResult(b) {
 }
 /* ---------- glossary ---------- */
 // [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
-var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Buffs & counters"], ["move", "Movement"], ["hero", "Hero effects"]];
+var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Buffs & counters"], ["move", "Movement"], ["map", "Map & objectives"], ["hero", "Hero effects"]];
 var GLOSS = [
   { k: "weapon-damage", c: "dmg", t: "Weapon damage", a: ["weapon damage", "bullet damage"], d: "Damage from your gun, plus abilities that say they deal weapon damage. It’s reduced by [[bullet-resist|Bullet Resist]] and raised by weapon items, which boost your gun by a percentage. Melee also counts as weapon damage, but weapon-damage bonuses apply to it at half strength." },
   { k: "spirit-damage", c: "dmg", t: "Spirit damage", a: ["spirit damage"], d: "Damage from most abilities and many items. It’s reduced by [[spirit-resist|Spirit Resist]] and usually grows with [[spirit-power|Spirit Power]]." },
@@ -2726,6 +2728,17 @@ var GLOSS = [
   { k: "dash", c: "move", t: "Dash", a: ["dash", "dashes", "air dash", "ground dash", "dash jump"], d: "A quick burst in the direction you’re moving, on the ground or in the air (one air dash per jump). Jumping during a dash (a dash jump) carries the speed for 2 stamina total. Hero pages list each dash’s distance and how long it takes." },
   { k: "sprint", c: "move", t: "Sprint", a: ["sprint", "sprint speed"], d: "Extra move speed that kicks in after about 5 seconds out of combat. It ends when you enter combat or aim down sights." },
   { k: "slide", c: "move", t: "Slide", a: ["slide", "slides", "sliding"], d: "Crouching while moving fast, or on a slope, turns into a slide." },
+  // map & objectives (numbers from the game data, shown in the pop-up)
+  { k: "troopers", c: "map", t: "Troopers", a: ["trooper", "troopers", "minions", "creeps"], d: "Waves of soldiers that march down each lane for your team. Killing enemy troopers earns souls. Your own troopers matter for pushing: a Guardian or Walker with no enemy troopers near it is protected (see [[backdoor|Backdoor protection]])." },
+  { k: "backdoor", c: "map", t: "Backdoor protection", a: ["backdoor", "backdoor protection", "backdooring"], d: "Lane objectives defend themselves when no enemy troopers are nearby: they take much less damage from heroes and heal quickly. Push with a trooper wave to take them down." },
+  { k: "guardian", c: "map", t: "Guardian", a: ["guardian", "guardians", "tier 1"], d: "The first defence in each lane. It fires at heroes and troopers who get close, and uses [[backdoor|Backdoor protection]]." },
+  { k: "walker", c: "map", t: "Walker", a: ["walker", "walkers", "tier 2"], d: "The giant second defence in each lane, attacking with a rocket barrage, a laser and a stomp. It uses [[backdoor|Backdoor protection]] too." },
+  { k: "base-guardian", c: "map", t: "Base Guardians", a: ["base guardian", "base guardians"], d: "A pair guards the entrance to each base. Destroying a pair makes the [[shrine|Shrines]] vulnerable." },
+  { k: "shrine", c: "map", t: "Shrines", a: ["shrine", "shrines"], d: "Two shrines protect the [[patron|Patron]]. They can’t be damaged until a pair of [[base-guardian|Base Guardians]] is down." },
+  { k: "patron", c: "map", t: "Patron", a: ["patron"], d: "The objective at the heart of each base, firing a powerful laser. Destroy the enemy Patron to win the match." },
+  { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss"], d: "A huge neutral boss in the middle of the map that grows tougher every minute. Killing it drops the [[rejuvenator|Rejuvenator]]." },
+  { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv"], d: "Dropped by the [[mid-boss|Mid Boss]]. The team that takes it gets a buff for a few minutes: tougher troopers and shorter respawns. It’s stronger each time a team takes it." },
+  { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Monster camps around the map, in three sizes. They give souls, and their bounty grows a little every minute." },
   // added with the status-effect sources (adapted from the Deadlock Wiki's Status Effects page)
   { k: "move-speed", c: "move", t: "Move speed", a: ["move speed", "movement speed", "bonus move speed"], d: "How fast you walk. Buffs add to it, in m/s or as a percentage, and [[slow|slows]] take it away. [[sprint|Sprint]] adds more on top when you’re out of combat." },
   { k: "burn", c: "dmg", t: "Burn", a: ["burn", "burns", "burning"], d: "A debuff that deals [[spirit-damage|spirit damage]] over a few seconds after the hit, a kind of [[dot|damage over time]]." },
@@ -2870,6 +2883,27 @@ function heroEffectIcons(x) {
   var h = state.heroes.filter(function (y) { return y.class_name === x.hc; })[0], ab = state.byClass[x.ac];
   return '<span class="gheff">' + (h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "") + (ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "") + "</span>";
 }
+function mechHtml(g) { // the numbers behind a map term, from the game data
+  var M = state.mc; if (!M || g.c !== "map") return "";
+  var f = function (n) { return n == null ? null : Number(n).toLocaleString(); }, T = [];
+  var add = function (v, l) { if (v != null) T.push('<div class="stat"><b>' + esc(v) + "</b><i>" + esc(l) + "</i></div>"); };
+  var x = { troopers: M.trooper, guardian: M.guardian, walker: M.walker, "base-guardian": M.base_guardian, shrine: M.shrine, patron: M.patron, "mid-boss": M.mid_boss }[g.k] || {};
+  if (g.k === "troopers") { add(f(x.health), "Health"); add(f(x.melee_health), "Melee trooper health"); add(x.dps_vs_heroes != null ? f(x.dps_vs_heroes) + "/s" : null, "Damage to heroes"); }
+  else if (g.k === "mid-boss") { add(f(x.health), "Starting health"); add(x.health_per_min != null ? "+" + f(x.health_per_min) : null, "Health per minute"); }
+  else if (g.k === "backdoor") { var b = M.backdoor || {}; add(b.mitigation != null ? b.mitigation + "%" : null, "Less damage from heroes"); add(b.regen != null ? b.regen + "/s" : null, "Health regen"); }
+  else if (g.k === "rejuvenator") {
+    var r = M.rejuvenator || {}, mul = function (a) { return a && a.length ? a.map(function (v) { return "×" + v; }).join(" / ") : null; };
+    add(r.duration != null ? r.duration + "s" : null, "Duration"); add(mul(r.trooper_health), "Trooper health"); add(mul(r.respawn), "Respawn time");
+    if (T.length) return '<div class="stats">' + T.join("") + '</div><div class="gsft">Each value is for the 1st / 2nd / 3rd time a team takes it.</div>';
+  }
+  else if (g.k === "neutral-camps") {
+    (M.camps || []).forEach(function (c) { add(f(c.souls) + " souls", ["Small", "Medium", "Large"][c.tier - 1] + " · " + f(c.health) + " health · from " + Math.round(c.from_sec / 60) + " min"); });
+    var pct = (M.camps || [])[0] && M.camps[0].souls_pct_per_min;
+    if (T.length) return '<div class="stats">' + T.join("") + "</div>" + (pct ? '<div class="gsft">Bounties grow about ' + pct + "% a minute.</div>" : "");
+  }
+  else { add(f(x.health), "Health"); add(f(x.souls), "Souls"); add(x.dps_vs_heroes != null ? f(x.dps_vs_heroes) + "/s" : null, "Damage to heroes"); }
+  return T.length ? '<div class="stats">' + T.join("") + "</div>" : "";
+}
 function sourcesHtml(g) {
   var hx = g.c === "hero" && heroEffect(g.k);
   if (hx) return ""; // the chevron by its name links to the ability
@@ -2914,13 +2948,13 @@ function sourcesHtml(g) {
     }
     if (x.crate) { // permanent pickups: one value per level, each level dropping from a later minute
       var cv = state.pw.crates.pickups[x.crate], vs = cv.values.filter(function (v) { return v != null; });
-      return '<div class="gsrc gsx gspw"><span class="gsi pw crate"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8l8.5-4.5L20.5 8v8.5L12 21l-8.5-4.5z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21"/></svg></span><span class="gst"><b>Breakable Crates</b></span><em class="gsn">' + vs.map(function (v) { return "+" + esc(v) + esc(cv.unit); }).join(" / ") + "</em></div>";
+      return '<div class="gsrc gsx gspw"><span class="gsi pw crate"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8l8.5-4.5L20.5 8v8.5L12 21l-8.5-4.5z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21"/></svg></span><span class="gst"><b>Breakable Crates</b></span><em class="gsn">' + vs.map(function (v) { return esc(v) + esc(cv.unit); }).join(" / ") + "</em></div>";
     }
     var pw = { Casting: "spirit", Gun: "fire_rate", Movement: "move_speed", Survival: "health" }[String(x.text || "").split(" ")[0]];
     var pwi = { spirit: "star", fire_rate: "bps", move_speed: "boot", health: "health" }[pw];
     var PWS = { "spirit-power": "Spirit Power", cooldown: "Cooldown Reduction", "fire-rate": "Fire Rate", "health-regen": "Health Regen", stamina: "Max Stamina", "move-speed": "Sprint Speed", sprint: "Sprint Speed" };
     var pd = state.pw && state.pw.powerups && state.pw.powerups[x.text], pv = pd && (pd.values || []).filter(function (v) { return v.stat === PWS[g.k]; })[0];
-    if (pv) note = '<em class="gsn">+' + esc(pv.min) + esc(pv.unit) + " → +" + esc(pv.max) + esc(pv.unit) + (pv.stat !== g.t ? " " + esc(pv.stat) : "") + "</em>";
+    if (pv) note = '<em class="gsn">' + esc(pv.min) + esc(pv.unit) + " → " + esc(pv.max) + esc(pv.unit) + "</em>";
     if (pw && /Powerup$/.test(x.text)) return '<div class="gsrc gsx gspw"><span class="gsi pw ' + pw + '">' + siIcon(pwi) + '</span><span class="gst"><b>' + esc(x.text.replace(/Powerup$/, "Buff")) + "</b></span>" + note + "</div>";
     return '<div class="gsrc gsx"><span class="gst">' + esc(x.text || "") + "</span>" + note + "</div>";
   }
@@ -2951,7 +2985,7 @@ function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); if (!FWD) FSTACK = []; }
   var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
-  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p>" + sourcesHtml(g) + relatedHtml(g) + "</div>" +
+  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p>" + mechHtml(g) + sourcesHtml(g) + relatedHtml(g) + "</div>" +
     // bottom row: back (when there is one), Close, then a small book button on the right that opens the full glossary
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button></div>';
   function bind() {
