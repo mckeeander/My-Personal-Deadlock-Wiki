@@ -172,7 +172,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .ab .chips .g:last-child{margin-left:0} /* the cooldown moved up beside the name, so the remaining chips line up on the left */
 .uu{margin:18px 0 10px;border:1px solid rgba(230,180,90,.32);background:rgba(230,180,90,.05);border-radius:10px;padding:10px 10px 12px}
 .uu .uuh{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
-.uu .desc{margin:8px 0 12px}
+.uu .desc{margin:8px 0 12px}.uu .desc:last-child{margin-bottom:0} /* an unlock with no cards: no empty space under its text */
 .uu .stats{margin-bottom:2px}
 .desc{font-size:15px;line-height:1.5;margin:11px 0}
 .desc b,.desc .hl{color:#fff;font-weight:700}
@@ -513,6 +513,8 @@ html.lock,html.lock body{overflow:hidden}
 .pnsrc{display:inline-block;font-size:12px;color:var(--dim);margin:0 0 4px}
 .pncred{font-size:11px;color:var(--dim);opacity:.8;margin:14px 2px 0}
 .nhs .rch .pnl{margin-top:2px}
+.rhdb{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;text-align:left}
+.ric.pnit{width:32px;height:32px}.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -850,7 +852,7 @@ function effP(it, key) {
 }
 // experiment: a duration shown on the card of the effect it times, instead of as its own stat
 // extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
-var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Ava": { OutgoingDamagePercent: "DamageAmpDuration" }, "Death Slam": { SlowPercent: "SlowDuration" } };
+var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Ava": { OutgoingDamagePercent: "DamageAmpDuration" }, "Serrated Knives": { BleedDPSPerStack: "BleedDuration" }, "Bloodletting": { DamagePctDeferred: "DeferredDamageDuration" }, "Death Slam": { SlowPercent: "SlowDuration" } };
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
@@ -918,7 +920,7 @@ var ORDER_OV = { "Infernal Resilience": ["Damage Regenerated", "Max Health", "De
 var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
 var SPIRIT_WP = { "Borrowed Decree|SummonMeleeDamage": 1 }; // melee damage (an orange card) that scales with spirit: the card is orange, its ★ tag stays purple
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
-var CHIP_KEYS = { "Flog": ["TargetingConeAngle"] }; // stats shown as a header chip beside the cooldown and range, not as a card
+var CHIP_KEYS = { "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"] }; // stats shown as a header chip beside the cooldown and range, not as a card
 var PROMOTE = { "Death Slam": { SlowPercent: 1 } }; // listed as small text by the game; shown as a card
 var PCT_ITEM = { "Scorn|DamageBonus": 1 }; // an unlabelled value that is a percentage on just this ability
 var PCT_KEYS = { AttackSpeedMult: 1, ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
@@ -931,7 +933,7 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
   "Ava|OutgoingDamagePercent": "Max Damage Amp", "Ava|DamageAmpBuildDuration": "Build-up Time", "Ava|DamageAmpDuration": "Lingers For", "Gloom Bombs|MeleeResistReductionDuration": "Debuff Duration", "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
   "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
-  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Death Slam|SlowPercent": "Enemy Move Speed", "Bloodscent|WeaponDmgPerIsolationKill": "Weapon Damage", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
+  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Death Slam|SlowPercent": "Enemy Move Speed", "Bloodscent|WeaponDmgPerIsolationKill": "Weapon Damage", "Killing Blow|BuffDamage": "Damage Bonus", "Killing Blow|BonusMoveSpeed": "Move Speed", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold" }; // some game labels need the subject spelled out
 function propRec(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -1211,8 +1213,12 @@ function tooltipHtml(it) {
   secs.forEach(function (sec, si) {
     var secStart = parts.length;
     var isUU = si > 0 && /Ultimate Unlock\s*:/i.test(sec.loc_string || ""), locText = sec.loc_string;
-    if (isUU) { locText = String(locText).replace(/^(\s*<br\s*\/?>)+/i, "").replace(/Ultimate Unlock\s*:\s*/i, ""); parts.push('<div class="uu"><div class="uuh">Ultimate unlock</div>'); } // what the ultimate adds sits in its own tinted block
-    if (si > 0 && locText && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc">' + rich(locText) + "</div>");
+    var boxT = (SEC_BOX[it.name] || {})[si];
+    if (boxT) { isUU = true; parts.push('<div class="uu"><div class="uuh">' + esc(boxT) + "</div>"); }
+    else if (isUU) { locText = String(locText).replace(/^(\s*<br\s*\/?>)+/i, "").replace(/Ultimate Unlock\s*:\s*/i, ""); parts.push('<div class="uu"><div class="uuh">Ultimate unlock</div>'); } // what the ultimate adds sits in its own tinted block
+    var onlyDim = /^(\s*<br\s*\/?>)*\s*<span class="diminish">([^<]*)<\/span>\s*$/i.exec(locText || "");
+    if (si > 0 && onlyDim && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc"><span class="dm">' + esc(onlyDim[2]) + "</span></div>"); // e.g. "Cooldown is increased by +30% if no hero is impacted."
+    else if (si > 0 && locText && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc">' + rich(locText) + "</div>");
     (sec.properties_block || []).forEach(function (blk) {
       var tiles = "", seen = {}, hadMoved = false;
       (blk.properties || []).forEach(function (pp) {
@@ -1710,8 +1716,15 @@ function abilityCard(it, h) {
 // a "1" that is really an on/off switch ("1 Purge Debuffs") reads better as plain text with the small stats
 var FLAG_TXT = { "Post Cube Buff": "Buff after leaving the Cube", "Silence Debuff": "Also silences", "Unstoppable Cast Delay": "Unstoppable while casting",
   "Channel Damage Immune": "Immune to damage while channeling", "Purge Debuffs": "Purges debuffs", "Remove Debuffs": "Removes debuffs", "Dispel Debuffs": "Dispels debuffs" };
+var SEC_BOX = { "Killing Blow": { 1: "While rage is full" } }; // a section shown in a titled box, by its index
+var DESC_FIX = { "Killing Blow": [[/(recast for <span class="highlight">[^<]+<\/span>)\s*$/, "$1."]] }; // small text fixes: a missing full stop
 var DESC_OV = { "Rake": '<span class="diminish">Passive:</span> Holding Zoom / alt-fire causes you to briefly float.<br><br><span class="diminish">Active:</span> Slash with your umbrella, dealing spirit damage that increases with the target\'s missing health. Receive a heal for every target killed.' };
 function abilityDesc(it) {
+  var out = abilityDesc0(it);
+  (DESC_FIX[it.name] || []).forEach(function (f) { out = String(out).replace(f[0], f[1]); });
+  return out;
+}
+function abilityDesc0(it) {
   var d = it.description || {}, l0 = (((it.tooltip_details || {}).info_sections || [])[0] || {}).loc_string;
   if (DESC_OV[it.name]) return DESC_OV[it.name];
   if (d.passive && (d.desc || d.active)) return d.passive + "<br><br>" + (d.active || d.desc);
@@ -2970,7 +2983,7 @@ function patchNotesHtml() {
     if (p.general.length) body += '<section class="nhs"><div class="nsub">General</div>' + pnList(p.general) + "</section>";
     if (p.items.length) body += '<section class="nhs"><div class="nsub">Items</div><div class="nhg">' + p.items.map(function (x) {
       var it = x.ic && state.byClass[x.ic];
-      var head = x.item ? '<div class="rhd"><span class="ric">' + (it ? imgTag(itemArt(it), itemImg(it)) : "") + "</span>" + (it ? '<button class="link pitem" data-pitem="' + esc(x.ic) + '">' + esc(nameOf(it)) + "</button>" : esc(x.item)) + "</div>" : "";
+      var head = x.item ? '<div class="rhd"><span class="ric pnit">' + (it ? imgTag(itemArt(it), itemImg(it)) : "") + "</span>" + (it ? '<button class="pitem rhdb" data-pitem="' + esc(x.ic) + '">' + esc(nameOf(it)) + "</button>" : esc(x.item)) + "</div>" : "";
       return '<div class="rgrp">' + head + '<div class="rch">' + pnList(x.lines) + "</div></div>";
     }).join("") + "</div></section>";
     var hs = p.heroes.slice().sort(function (a, b) { return a.hero.replace(/^The /, "").localeCompare(b.hero.replace(/^The /, "")); });
@@ -2983,7 +2996,6 @@ function patchNotesHtml() {
         return '<div class="rgrp"' + (ab ? ' data-gab="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
       }).join("") + "</div></section>";
     });
-    if (p.brawl.length) body += '<section class="nhs"><div class="nsub">Street Brawl</div>' + pnList(p.brawl) + "</section>";
     var src = p.source ? '<a class="pnsrc" href="' + esc(p.source) + '" target="_blank" rel="noopener">' + esc(p.title || "Official notes") + " ↗</a>" : "";
     return '<details class="rpt"' + (pi === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '</span><span class="rcv">' + CHEV + "</span></summary>" + src + body + "</details>";
   }).join("") + '<p class="pncred">Patch notes from the Deadlock Wiki’s data (github.com/deadlock-wiki/deadlock-data).</p></div>';
@@ -3120,6 +3132,7 @@ $("tabs").onclick = function (e) {
   function go() {
     TABMEM[state.tab] = { hero: state.hero, y: searchOn() ? SEARCH_Y : (window.pageYOffset || 0) };
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
+    ["nbtn", "gbtn"].forEach(function (id) { var e = $(id); if (e) { e.classList.remove("on"); e.setAttribute("aria-pressed", "false"); } }); // left What's New / the Glossary
     var m = same ? null : TABMEM[to];
     endSearch(); state.tab = to; state.q = ""; state.hero = m ? m.hero : null; state.from = null; render();
     window.scrollTo(0, same && state.tab === "heroes" ? 0 : m ? m.y : 0);
@@ -3143,7 +3156,8 @@ function glossBack() { // back to the page the glossary was opened from (Abrams,
 }
 function topPill() { // glossary: a round ↑ on the right once you've scrolled past the category cards, and "‹ Back to Abrams" when you came from somewhere
   var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gcats"), inG = state.tab === "glossary" && !searchOn();
-  var show = inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0;
+  var inN = state.tab === "news" && !searchOn(), nt = inN && document.querySelector("#main .gtitle");
+  var show = (inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0) || (inN && $("backpill").hidden && !!nt && nt.getBoundingClientRect().bottom < -300); // What's New: once you've scrolled a screen or so down
   if (show !== !tp.hidden) { tp.hidden = !show; if (show) { tp.classList.remove("in"); void tp.offsetWidth; tp.classList.add("in"); } }
   var f = inG && state.glossFrom, nm = "";
   if (f) { var h = f.tab === "heroes" && f.hero && state.heroes.filter(function (x) { return x.class_name === f.hero; })[0]; nm = h ? h.name : { heroes: "Heroes", weapon: "Weapon", vitality: "Vitality", spirit: "Spirit" }[f.tab] || "page"; }
@@ -3596,6 +3610,7 @@ document.addEventListener("click", function (e) {
   if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
   e.preventDefault();
   if (d._busy) return;
+  if (!d.open && d.closest("#revs.news")) Array.prototype.forEach.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { if (o !== d && !o._busy) { var sm2 = o.querySelector(":scope > summary"); if (sm2) sm2.click(); } }); // one patch open at a time
   var kids = Array.prototype.slice.call(d.querySelectorAll(":scope > :not(summary)")), opening = !d.open, h0 = d.offsetHeight, h1;
   if (opening) { d.open = true; h1 = d.offsetHeight; }
   else { d.open = false; h1 = d.offsetHeight; d.open = true; var t = h0; h0 = h1; h1 = t; } // h0 = shut height, h1 = open height

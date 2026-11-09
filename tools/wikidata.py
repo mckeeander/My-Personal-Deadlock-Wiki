@@ -213,6 +213,8 @@ def main():
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", d) or d < SINCE: continue
         p = parse_patch(d, open(os.path.join(wdir, f), encoding="utf-8").read())
         if p["general"] or p["items"] or p["heroes"] or p["brawl"]: patches.append(p)
+    for p in patches: p.pop("brawl", None)  # Street Brawl changes are left out
+    patches = [p for p in patches if p["general"] or p["items"] or p["heroes"]]
     if patches:
         json.dump({"source": "github.com/deadlock-wiki/deadlock-data (MIT)", "patches": patches},
                   open(os.path.join(DATA, "patchnotes.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)

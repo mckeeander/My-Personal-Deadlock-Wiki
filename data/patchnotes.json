@@ -6,7 +6,6 @@
    "title": "Minor Update - 11-04-2026",
    "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1848664643339845",
    "general": [],
-   "brawl": [],
    "items": [
     {
      "item": "Healbane",
@@ -218,9 +217,6 @@
    "title": "Minor Update - 10-14-2026",
    "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1846651706676198",
    "general": [],
-   "brawl": [
-    "[[h:Baba]] [[a:Threadsap]] duration lasts 35% less"
-   ],
    "items": [
     {
      "item": "Radiant Regeneration",
@@ -323,7 +319,6 @@
    "general": [
     "Fixed bugs that were causing troopers to walk too slowly in lane"
    ],
-   "brawl": [],
    "items": [],
    "heroes": [
     {
@@ -434,7 +429,6 @@
     "Slows now also affect air drag by 35% of the slow value (convar citadel_enable_slows_affect_air_drag",
     "Dashes and light melee's no longer pause your gun's cycle time (this is a general change that affects high-cycle time weapons the most like [[h:Silver]] or [[h:Abrams]])"
    ],
-   "brawl": [],
    "items": [
     {
      "item": "Weakening Headshot",
@@ -1074,7 +1068,6 @@
    "title": "Minor Update - 08-22-2026",
    "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1841579228672283",
    "general": [],
-   "brawl": [],
    "items": [
     {
      "item": "Radiant Regeneration",
@@ -1133,7 +1126,6 @@
    "title": "Minor Update - 08-12-2026",
    "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1840944183775204",
    "general": [],
-   "brawl": [],
    "items": [],
    "heroes": [
     {
@@ -1378,7 +1370,6 @@
     "The Orb Spawners in base that give 10 souls on hit now split to nearby players on expire",
     "Fixed the party member / team mate audio volume slider for voice communications"
    ],
-   "brawl": [],
    "items": [
     {
      "item": "Crushing Fists",
@@ -1945,7 +1936,6 @@
     "Rift Troopers max comeback count increased from 12 to 14",
     "Objectives bounty split for nearby heroes reduced from 40% to 30% (this means slightly more portion of the bounty is split team wide rather than towards an individual player)"
    ],
-   "brawl": [],
    "items": [
     {
      "item": "Scourge",
@@ -2230,7 +2220,6 @@
    "title": "Minor Update - 07-01-2026",
    "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1836506165566600",
    "general": [],
-   "brawl": [],
    "items": [],
    "heroes": [
     {
@@ -2308,11 +2297,6 @@
     "Dash Jump vertical impulse increased from 400 to 425",
     "Jump Pads on top of the double sinner buildings have been removed",
     "Hovering an item in the shop now shows you a preview for your investment bars"
-   ],
-   "brawl": [
-    "No longer locks you out of getting off the zipline in the first few seconds",
-    "Increased item randomness a bit",
-    "Fixed Enhanced [[i:Sharpshooter]] and Enhanced [[i:Spiritual Overflow]] not maintaining the bonuses from their enhanced components"
    ],
    "items": [
     {
@@ -2935,9 +2919,6 @@
     "Breakables health permanent bonus reduced from 15/25/35 to 15/20/30 for level 1/2/3",
     "Kill comeback bounty values increased by 8%"
    ],
-   "brawl": [
-    "All ability and item range/radius values are reduced by 10%"
-   ],
    "items": [
     {
      "item": "Opening Rounds",
@@ -3400,7 +3381,6 @@
     "Urn comeback resistance aura reduced from 60m to match the 20m progress radius",
     "Drop off location is above the bridges on the side lanes, rather than below."
    ],
-   "brawl": [],
    "items": [],
    "heroes": []
   },
@@ -3409,7 +3389,6 @@
    "title": "05-22-2026 Update (Reply)",
    "source": "https://forums.playdeadlock.com/threads/05-22-2026-update.135477/post-263371",
    "general": [],
-   "brawl": [],
    "items": [],
    "heroes": [
     {
@@ -3581,7 +3560,6 @@
     "## Patch 2",
     "Urn spawn time and interval changed from 10/15/20/25/etc to 12/18/24/30/etc - Urn timer now gets frozen with [[a:Frozen Shelter]] - Urn no longer provides the +35% Bullet and Spirit Resist aura for the behind team when it is being carried or dropped. The aura is now only active when it is being..."
    ],
-   "brawl": [],
    "items": [],
    "heroes": []
   },
@@ -3602,7 +3580,6 @@
     "Urn collision radius increased by 20%",
     "Various smaller urn holding timers and variables adjusted to account for the new location"
    ],
-   "brawl": [],
    "items": [],
    "heroes": []
   },
@@ -3664,9 +3641,6 @@
     "Added a new T1 Vitality Item, [[i:Grit]]. Active grants you 200 Barrier for 4s duration. Innate grants 1 Out of Combat Regen. Cooldown: 60s. Upgrades to [[i:Weapon Shielding]], [[i:Spirit Shielding]], [[i:Reactive Barrier]] (these do not inherit the manual cast active) and [[i:Guardian Ward]].",
     "Ballistic Enhancement: Now upgrades from [[i:Mystic Expansion]]",
     "Ballistic Enhancement: Ability Range increased from +20% to +22%"
-   ],
-   "brawl": [
-    "Fixed the following Enhanced Items not maintaining their stats from components: [[i:Opening Rounds]], [[i:Tankbuster]], [[i:Kinetic Dash]], [[i:Radiant Regeneration]], [[i:Burst Fire]], [[i:Veil Walker]], [[i:Arcane Surge]], [[i:Fury Trance]], [[i:Leech]]"
    ],
    "items": [
     {
