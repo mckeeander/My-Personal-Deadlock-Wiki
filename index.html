@@ -522,12 +522,14 @@ html.lock,html.lock body{overflow:hidden}
 .gtt{flex:none;width:52px;padding-left:14px;font-variant-numeric:tabular-nums;color:var(--gold);font-weight:600;font-size:14px}.gtx{flex:1;font-size:14.5px}.gtc{color:var(--gold);font-size:18px;line-height:1}
 .mrow.mr2{grid-template-columns:90px 1fr}.mr2 b{text-align:left;font-weight:500}.mr2 span{font-variant-numeric:tabular-nums;font-weight:600}.mrows .gsm{display:none}.gsg:not(.clip) .mrows .gsm{display:grid}
 .glane{margin-top:6px}.glane .gln{width:80%;margin-left:auto;margin-right:auto}.glane .glh{width:80%;margin-left:auto;margin-right:auto;text-align:center}.gsft.glf{margin-top:16px}
-.sul{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px;margin-top:4px}.sul + .gsft{margin-top:10px}
+.sug{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.sug .stat{padding:8px 4px}.sug .stat b{font-size:17px}
+.sul{display:flex;flex-wrap:wrap;gap:4px 0;font-size:14.5px;line-height:1.6;color:var(--fg);font-variant-numeric:tabular-nums}.sul span:not(:last-child)::after{content:"·";color:#7d7290;margin:0 7px}.sul + .gsft{margin-top:10px}
 .suc{display:inline-block;line-height:1.25;min-width:54px;text-align:center;padding:6px 8px;border-radius:8px;background:var(--panel2);border:1px solid #3d344c;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg)}
 .suc.sua{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.suc.sm{min-width:0;padding:1px 6px;font-size:12px}.glh{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:12px 0 6px 2px}
 .gln{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:7px 12px;font:inherit;color:var(--fg);text-align:left;position:relative;margin-bottom:16px}
 .gln:not(:last-child)::after{content:"";position:absolute;left:50%;bottom:-15px;width:2px;height:14px;background:var(--gold);transform:translateX(-50%)}
 .glh + .gln{margin-top:0}.gln:last-child,.gln:has(+ .glh){margin-bottom:4px}.gln:has(+ .glh)::after{display:none}
+.glp{flex:none;width:52px;height:52px;border-radius:6px;object-fit:cover;background:var(--panel)}.glane .gln{padding:6px 12px 6px 6px}
 .glt{flex:1;display:flex;flex-direction:column;line-height:1.25}.glt b{font-weight:600;font-size:15px}.glt i{font-style:normal;font-size:12px;color:var(--dim)}
 .blkn{color:var(--dim);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px}
 .mrows{margin-top:12px;border:1px solid #3d344c;border-radius:8px;overflow:hidden}
@@ -2918,14 +2920,16 @@ function heroEffectIcons(x) {
   return '<span class="gheff">' + (h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "") + (ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "") + "</span>";
 }
 function econCard(rows) { var t = rows.filter(function (r) { return r[0] != null; }).map(function (r) { return '<div class="stat"><b>' + esc(r[0]) + "</b><i>" + esc(r[1]) + "</i></div>"; }).join(""); return t ? '<div class="stats">' + t + "</div>" : ""; }
-function unlocksHtml() { // the souls needed for each unlock, as chips; gold ones unlock a new ability
+function unlocksHtml() { // soul totals (starting souls included) for each new ability and each boon
   var U = state.mc && state.mc.soul_unlocks; if (!U || !U.length) return "";
-  var chips = U.map(function (u) { return '<span class="suc' + (u.AbilityUnlocks ? " sua" : "") + '">' + Number(u.RequiredSouls).toLocaleString() + "</span>"; }).join("");
-  return '<div class="grh">Soul unlocks</div><div class="sul">' + chips + '</div><div class="gsft"><span class="suc sua sm">Gold</span> unlocks a new ability, the others give an ability point, and every one after the first also gives a <span class="gl" data-g="boons">boon</span>.</div>';
+  var st = (state.mc.economy && state.mc.economy.starting_souls) || 0, f = function (n) { return Number(n + st).toLocaleString(); };
+  var ab = U.filter(function (u) { return u.AbilityUnlocks; }), bo = U.filter(function (u) { return u.PowerIncrease; });
+  return '<div class="grh">New abilities at</div><div class="sug">' + ab.map(function (u, i) { return '<div class="stat"><b>' + f(u.RequiredSouls) + "</b><i>Ability " + (i + 1) + "</i></div>"; }).join("") + "</div>" +
+    '<div class="grh">Boons at</div><div class="sul">' + bo.map(function (u) { return "<span>" + f(u.RequiredSouls) + "</span>"; }).join("") + "</div>";
 }
 function laneHtml() { // the order you fight through a lane, top to bottom
   var M = state.mc || {}, f = function (n) { return n == null ? "" : Number(n).toLocaleString(); };
-  var step = function (k, name, sub) { return '<button class="gln" data-g="' + k + '"><span class="glt"><b>' + esc(name) + "</b>" + (sub ? "<i>" + esc(sub) + "</i>" : "") + '</span><span class="gtc">›</span></button>'; };
+  var step = function (k, name, sub) { return '<button class="gln" data-g="' + k + '"><img class="glp" alt="" src="img/' + k + '.jpg" onerror="this.remove()"><span class="glt"><b>' + esc(name) + "</b>" + (sub ? "<i>" + esc(sub) + "</i>" : "") + '</span><span class="gtc">›</span></button>'; };
   var hp = function (o) { return o && o.health ? f(o.health) + " health" : ""; };
   return '<div class="glane"><div class="glh">In each lane</div>' +
     step("troopers", "Troopers", "Push alongside your wave") + step("guardian", "Guardian", hp(M.guardian)) + step("walker", "Walker", hp(M.walker)) +
