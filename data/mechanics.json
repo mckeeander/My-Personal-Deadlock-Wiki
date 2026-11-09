@@ -66,6 +66,199 @@
     "from_sec": 480,
     "souls_pct_per_min": 1.08
    }
+  ],
+  "economy": {
+   "starting_souls": 600,
+   "kill_min": 200,
+   "kill_max": 2200,
+   "kill_ramp_sec": 2400,
+   "first_kill_bonus": 125,
+   "killer_assist_ratio": 2.2,
+   "assist_window_sec": 10,
+   "trooper_instant_ratio": 0.5,
+   "comeback_redirect": 0.7,
+   "tick_start_sec": 480
+  },
+  "soul_unlocks": [
+   {
+    "RequiredSouls": 0,
+    "AbilityUnlocks": 1
+   },
+   {
+    "RequiredSouls": 200,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 500,
+    "PowerIncrease": true,
+    "AbilityUnlocks": 1
+   },
+   {
+    "RequiredSouls": 900,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 1400,
+    "PowerIncrease": true,
+    "AbilityUnlocks": 1
+   },
+   {
+    "RequiredSouls": 2000,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 2600,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 3200,
+    "PowerIncrease": true,
+    "AbilityUnlocks": 1
+   },
+   {
+    "RequiredSouls": 3900,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 4600,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 5300,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 6000,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 6800,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 7600,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 8400,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 9200,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 10100,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 11000,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 11900,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 12800,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 13800,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 14900,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 16100,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 17400,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 18900,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 20600,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 22500,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 24600,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 26900,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 29400,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 32100,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 35000,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 38100,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 41400,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 44900,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   },
+   {
+    "RequiredSouls": 48600,
+    "PowerIncrease": true,
+    "AbilityPoints": 1
+   }
   ]
  }
 }

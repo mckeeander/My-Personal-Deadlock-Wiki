@@ -255,6 +255,15 @@ def mechanics(repo):
                    "souls_pct_per_min": num(n, k, "GoldRewardBonusPercentPerMinute")}
                   for i, k in enumerate(("neutral_trooper_weak", "neutral_trooper_normal", "neutral_trooper_strong"))],
     }
+    cv = J("convars.json")
+    c = lambda k: (lambda v: v.get("value") if isinstance(v, dict) else v)(cv.get(k))
+    out["economy"] = {"starting_souls": c("citadel_player_starting_gold"), "kill_min": c("citadel_player_gold_reward_min"), "kill_max": c("citadel_player_gold_reward_max"),
+                      "kill_ramp_sec": c("citadel_player_gold_reward_time"), "first_kill_bonus": c("citadel_player_gold_reward_first_kill_bonus"),
+                      "killer_assist_ratio": c("citadel_player_gold_killer_to_assist_ratio"), "assist_window_sec": c("citadel_bounty_player_assist_window"),
+                      "trooper_instant_ratio": c("citadel_trooper_instant_gold_ratio_laning"), "comeback_redirect": c("citadel_comeback_redirect_fraction"),
+                      "tick_start_sec": c("citadel_tick_gold_start_time")}
+    try: out["soul_unlocks"] = J("soul-unlock-data.json")
+    except Exception: pass
     return out if out["guardian"]["health"] else None
 
 

@@ -520,6 +520,12 @@ html.lock,html.lock body{overflow:hidden}
 .gtl{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:8px 4px 8px 0;font:inherit;color:var(--fg);text-align:left;position:relative}
 .gtl::before{content:"";position:absolute;left:-6px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--panel);box-shadow:0 0 0 2px var(--gold)}
 .gtt{flex:none;width:52px;padding-left:14px;font-variant-numeric:tabular-nums;color:var(--gold);font-weight:600;font-size:14px}.gtx{flex:1;font-size:14.5px}.gtc{color:var(--gold);font-size:18px;line-height:1}
+.mrow.mr2{grid-template-columns:90px 1fr}.mr2 b{text-align:left;font-weight:500}.mr2 span{font-variant-numeric:tabular-nums;font-weight:600}.mrows .gsm{display:none}.gsg:not(.clip) .mrows .gsm{display:grid}
+.glane{margin-top:6px}.glh{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:12px 0 6px 2px}
+.gln{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:7px 12px;font:inherit;color:var(--fg);text-align:left;position:relative;margin-bottom:16px}
+.gln:not(:last-child)::after{content:"";position:absolute;left:50%;bottom:-15px;width:2px;height:14px;background:var(--gold);transform:translateX(-50%)}
+.glh + .gln{margin-top:0}.gln:last-child,.gln:has(+ .glh){margin-bottom:4px}.gln:has(+ .glh)::after{display:none}
+.glt{flex:1;display:flex;flex-direction:column;line-height:1.25}.glt b{font-weight:600;font-size:15px}.glt i{font-style:normal;font-size:12px;color:var(--dim)}
 .blkn{color:var(--dim);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px}
 .mrows{margin-top:12px;border:1px solid #3d344c;border-radius:8px;overflow:hidden}
 .mrow{display:grid;grid-template-columns:1fr 64px 64px 64px;align-items:center;padding:9px 10px;background:var(--panel2);font-size:14px}.mrow + .mrow{border-top:1px solid #3d344c}
@@ -2687,7 +2693,7 @@ function openResult(b) {
 }
 /* ---------- glossary ---------- */
 // [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
-var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Buffs & counters"], ["move", "Movement"], ["map", "Map & objectives"], ["hero", "Hero effects"]];
+var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Buffs & counters"], ["move", "Movement"], ["map", "Map & objectives"], ["econ", "Economy"], ["hero", "Hero effects"]];
 var GLOSS = [
   { k: "weapon-damage", c: "dmg", t: "Weapon damage", a: ["weapon damage", "bullet damage"], d: "Damage from your gun, plus abilities that say they deal weapon damage. It’s reduced by [[bullet-resist|Bullet Resist]] and raised by weapon items, which boost your gun by a percentage. Melee also counts as weapon damage, but weapon-damage bonuses apply to it at half strength." },
   { k: "spirit-damage", c: "dmg", t: "Spirit damage", a: ["spirit damage"], d: "Damage from most abilities and many items. It’s reduced by [[spirit-resist|Spirit Resist]] and usually grows with [[spirit-power|Spirit Power]]." },
@@ -2702,7 +2708,7 @@ var GLOSS = [
 
   { k: "spirit-power", c: "scale", t: "Spirit Power", a: ["spirit power"], d: "The stat that makes abilities stronger. You gain it from [[boons|boons]], spirit items, [[investment|spirit shop spending]] and golden statues on the map. Any number with a ★ badge grows with it; see [[scaling|Scaling]]." },
   { k: "scaling", c: "scale", t: "Scaling (★ ×0.6)", a: ["scaling", "spirit scaling"], d: "The ★ ×N badge on a stat is its spirit scaling: final value = base + Spirit Power × N. For example, 22 damage per second with ×0.6 at 50 Spirit Power becomes 22 + 50 × 0.6 = 52. Some stats grow per [[boons|boon]] instead, shown as “+X / boon”." },
-  { k: "souls", c: "scale", t: "Souls", a: ["souls", "soul"], d: "Deadlock’s currency and experience in one. You earn them from troopers, heroes, objectives and more, spend them in the shop, and your total souls set your level." },
+  { k: "souls", c: "econ", t: "Souls", a: ["souls", "soul"], d: "Deadlock’s currency and experience in one. You earn them from troopers, heroes, objectives and more, and spend them in the shop. Your total souls earned unlock abilities, ability points and [[boons|boons]], shown below." },
   { k: "boons", c: "scale", t: "Boons", a: ["boon", "boons"], d: "Each level-up grants a boon, which raises base health, bullet damage, melee damage and Spirit Power by set amounts per hero (the “+X / boon” values on hero pages). You can reach 35 boons." },
   { k: "ability-points", c: "scale", t: "Ability points & tiers", a: ["ability points", "ability point"], d: "Level-ups also give ability points. Each ability has three upgrade tiers costing 1, 2 and 5 points (8 in total), shown as ◆1, ◆2 and ◆5. Your ultimate unlocks at 3,800 souls (level 7)." },
   { k: "investment", c: "scale", t: "Shop investment bonus", a: ["investment", "investment bonus"], d: "Spending souls in one shop category gives free stats on top of the items themselves: weapon spending raises weapon damage, spirit spending raises Spirit Power, and vitality spending raises health. The bonus steps up as your total in that category grows." },
@@ -2747,6 +2753,7 @@ var GLOSS = [
   { k: "slide", c: "move", t: "Slide", a: ["slide", "slides", "sliding"], d: "Crouching while moving fast, or on a slope, turns into a slide." },
   // map & objectives (numbers from the game data, shown in the pop-up)
   { k: "match-timeline", c: "map", t: "Match timeline", a: ["timeline", "match timeline"], d: "When things happen in a match. Tap an event to read about it." },
+  { k: "lane-layout", c: "map", t: "Lane layout", a: ["lane", "lanes", "lane layout"], d: "What stands in each lane, in the order you fight through it. Tap a step to read about it." },
   { k: "troopers", c: "map", t: "Troopers", a: ["trooper", "troopers", "minions", "creeps"], d: "Waves of soldiers that march down each lane for your team. Killing enemy troopers earns souls. Your own troopers matter for pushing: a Guardian or Walker with no enemy troopers near it is protected (see [[backdoor|Backdoor protection]])." },
   { k: "backdoor", c: "map", t: "Backdoor protection", a: ["backdoor", "backdoor protection", "backdooring"], d: "Lane objectives defend themselves when no enemy troopers are nearby: they take much less damage from heroes and heal quickly. Push with a trooper wave to take them down." },
   { k: "guardian", c: "map", t: "Guardian", a: ["guardian", "guardians", "tier 1"], d: "The first defence in each lane. It fires at heroes and troopers who get close, and uses [[backdoor|Backdoor protection]]." },
@@ -2759,6 +2766,10 @@ var GLOSS = [
   { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups"], d: "Glowing pickups around the map, broken open with a melee hit. Each gives a few minutes of extra stats, and they get stronger as the match goes on." },
   { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues", "breakable", "breakables", "crate", "crates"], d: "Golden statues around the map that drop a small permanent stat boost when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
   { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Monster camps around the map, in three sizes. They give souls, and their bounty grows a little every minute." },
+  // economy (numbers from the game data)
+  { k: "kill-bounty", c: "econ", t: "Kill bounty", a: ["kill bounty", "hero bounty", "bounty", "assist", "assists"], d: "Souls for killing an enemy hero. They’re split between the killer and everyone who damaged the hero shortly before, and the killer gets the biggest share." },
+  { k: "soul-orbs", c: "econ", t: "Soul orbs", a: ["soul orb", "soul orbs", "orb", "orbs", "deny", "denies", "last hit", "last hits"], d: "When a trooper dies, part of its bounty is paid out straight away and the rest pops out as a soul orb. Shoot the orb to claim it before it fades, or shoot an enemy’s orb to deny it." },
+  { k: "comeback-souls", c: "econ", t: "Comeback souls", a: ["comeback", "comeback souls", "comeback bounty"], d: "A team behind in net worth earns extra souls from kills and objectives. Extra comeback souls earned by someone already ahead of the enemy average go to their team’s two poorest players instead, paid out over time." },
   // added with the status-effect sources (adapted from the Deadlock Wiki's Status Effects page)
   { k: "move-speed", c: "move", t: "Move speed", a: ["move speed", "movement speed", "bonus move speed"], d: "How fast you walk. Buffs add to it, in m/s or as a percentage, and [[slow|slows]] take it away. [[sprint|Sprint]] adds more on top when you’re out of combat." },
   { k: "burn", c: "dmg", t: "Burn", a: ["burn", "burns", "burning"], d: "A debuff that deals [[spirit-damage|spirit damage]] over a few seconds after the hit, a kind of [[dot|damage over time]]." },
@@ -2903,6 +2914,29 @@ function heroEffectIcons(x) {
   var h = state.heroes.filter(function (y) { return y.class_name === x.hc; })[0], ab = state.byClass[x.ac];
   return '<span class="gheff">' + (h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "") + (ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "") + "</span>";
 }
+function econCard(rows) { var t = rows.filter(function (r) { return r[0] != null; }).map(function (r) { return '<div class="stat"><b>' + esc(r[0]) + "</b><i>" + esc(r[1]) + "</i></div>"; }).join(""); return t ? '<div class="stats">' + t + "</div>" : ""; }
+function unlocksHtml() { // the souls you need for each ability, ability point and boon
+  var U = state.mc && state.mc.soul_unlocks; if (!U || !U.length) return "";
+  var rows = U.map(function (u, i) {
+    var what = [];
+    if (u.AbilityUnlocks) what.push(i === 0 ? "First ability" : "New ability");
+    if (u.AbilityPoints) what.push("Ability point");
+    if (u.PowerIncrease) what.push('<span class="gl" data-g="boons">Boon</span>');
+    return '<div class="mrow mr2' + (i >= 10 ? " gsm" : "") + '"><span>' + Number(u.RequiredSouls).toLocaleString() + "</span><b>" + what.join(" + ") + "</b></div>";
+  }).join("");
+  return '<div class="grh">Soul unlocks</div><div class="gsg clip"><div class="mrows"><div class="mrow mr2 mrh"><span>Souls</span><b>You get</b></div>' + rows + '</div><button class="gsall">Show all ' + U.length + "</button></div>";
+}
+function laneHtml() { // the order you fight through a lane, top to bottom
+  var M = state.mc || {}, f = function (n) { return n == null ? "" : Number(n).toLocaleString(); };
+  var step = function (k, name, sub) { return '<button class="gln" data-g="' + k + '"><span class="glt"><b>' + esc(name) + "</b>" + (sub ? "<i>" + esc(sub) + "</i>" : "") + '</span><span class="gtc">›</span></button>'; };
+  var hp = function (o) { return o && o.health ? f(o.health) + " health" : ""; };
+  return '<div class="glane"><div class="glh">In each lane</div>' +
+    step("troopers", "Troopers", "Push alongside your wave") + step("guardian", "Guardian", hp(M.guardian)) + step("walker", "Walker", hp(M.walker)) +
+    '<div class="glh">In the enemy base</div>' +
+    step("base-guardian", "Base Guardians", "A pair · " + hp(M.base_guardian)) + step("shrine", "Shrines", "Two, open once Base Guardians fall") +
+    step("patron", "Patron", M.patron && M.patron.health ? "Two phases · " + f(M.patron.health) + " health each" : "") + "</div>" +
+    '<div class="gsft">With no enemy troopers nearby, the Guardian, Walker, Base Guardians and Patron are shielded by <span class="gl" data-g="backdoor">Backdoor protection</span>.</div>';
+}
 function timelineHtml() { // every event from the game data; each opens its term
   var M = state.mc || {}, C = (state.pw && state.pw.crates) || {}, ev = [];
   var at = function (sec, label, k, note) { if (sec != null) ev.push({ s: sec, l: label, k: k, n: note || "" }); };
@@ -2920,7 +2954,13 @@ function timelineHtml() { // every event from the game data; each opens its term
   return rows ? '<div class="gtlw">' + rows + "</div>" + rift : "";
 }
 function mechHtml(g) { // the numbers behind a map term, from the game data
-  var M = state.mc; if (!M || g.c !== "map") return "";
+  var M = state.mc; if (!M || (g.c !== "map" && g.c !== "econ")) return "";
+  var E = M.economy || {};
+  if (g.k === "souls") return econCard([[E.starting_souls, "Starting souls"]]) + unlocksHtml();
+  if (g.k === "kill-bounty") return econCard([[E.first_kill_bonus != null ? "+" + E.first_kill_bonus : null, "First kill of the match"], [E.killer_assist_ratio != null ? "×" + E.killer_assist_ratio : null, "Killer’s share vs an assist"], [E.assist_window_sec != null ? E.assist_window_sec + "s" : null, "Assist window"]]) +
+    (E.kill_min != null ? '<div class="gsft">The base bounty grows from ' + E.kill_min.toLocaleString() + " to " + E.kill_max.toLocaleString() + " souls over the first " + Math.round(E.kill_ramp_sec / 60) + " minutes. The actual amount also depends on the hero who died, so treat this as a rough guide.</div>" : "");
+  if (g.k === "soul-orbs") return econCard([[E.trooper_instant_ratio != null ? Math.round(E.trooper_instant_ratio * 100) + "%" : null, "Paid out instantly"], [E.trooper_instant_ratio != null ? Math.round((1 - E.trooper_instant_ratio) * 100) + "%" : null, "Dropped as an orb"]]);
+  if (g.k === "comeback-souls") return econCard([[E.comeback_redirect != null ? Math.round(E.comeback_redirect * 100) + "%" : null, "Passed to the two poorest"], [E.tick_start_sec != null ? Math.round(E.tick_start_sec / 60) + " min" : null, "Payouts start"]]);
   var f = function (n) { return n == null ? null : Number(n).toLocaleString(); }, T = [];
   var add = function (v, l) { if (v != null) T.push('<div class="stat"><b>' + esc(v) + "</b><i>" + esc(l) + "</i></div>"); };
   var x = { troopers: M.trooper, guardian: M.guardian, walker: M.walker, "base-guardian": M.base_guardian, shrine: M.shrine, patron: M.patron, "mid-boss": M.mid_boss }[g.k] || {};
@@ -2944,6 +2984,7 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
     if (T.length) return '<div class="stats">' + T.join("") + "</div>" + (x.growth1 ? '<div class="gsft">Each phase has its own health bar. From ' + (x.growth1_from_min || 20) + " minutes phase 1 gains " + f(x.growth1) + " health a minute" + (x.growth2 ? " and phase 2 gains " + f(x.growth2) : "") + ".</div>" : "");
   }
   else if (g.k === "match-timeline") return timelineHtml();
+  else if (g.k === "lane-layout") return laneHtml();
   else if (g.k === "map-buffs" && state.pw && state.pw.powerups) {
     var P = state.pw.powerups, pk0 = Object.keys(P)[0];
     return Object.keys(P).map(function (nm) {
@@ -3783,7 +3824,7 @@ $("sheetin").addEventListener("click", function (e) {
   if (sa) { sa.parentNode.classList.remove("clip"); sa.remove(); return; }
   var gs = e.target.closest ? e.target.closest("[data-shc]") : null;
   if (gs) { openSource(gs); return; }
-  var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g], .gtl[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
+  var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g], .gtl[data-g], .gln[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
 $("sheet").onclick = function (e) { if (e.target === $("sheet")) sinkSheet(); };
