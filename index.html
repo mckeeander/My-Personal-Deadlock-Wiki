@@ -2638,7 +2638,7 @@ function buildSearch() {
     });
   });
   HERO_NAME = "";
-  GLOSS.forEach(function (g) { var text = g.d.replace(/\[\[[a-z-]+\|([^\]]+)\]\]/g, "$1"); out.push({ k: "term", cn: g.k, name: g.t, sub: "Glossary", img: "", text: text, hay: (g.t + " " + g.a.join(" ") + " " + text).toLowerCase() }); });
+  GLOSS.forEach(function (g) { var text = glossFill(g.d).replace(/\[\[[a-z-]+\|([^\]]+)\]\]/g, "$1"); out.push({ k: "term", cn: g.k, name: g.t, sub: "Glossary", img: "", text: text, hay: (g.t + " " + g.a.join(" ") + " " + text).toLowerCase() }); });
   state.items.forEach(function (it) {
     if (it.type !== "upgrade" || it.shopable === false || it.disabled) return;
     var parts = [descText(it.description)];
@@ -2714,7 +2714,7 @@ var GLOSS = [
 
   { k: "spirit-power", c: "scale", t: "Spirit Power", a: ["spirit power"], d: "The stat that makes abilities stronger. You gain it from [[boons|boons]], spirit items, [[investment|spirit shop spending]] and golden statues on the map. Any number with a ★ badge grows with it; see [[scaling|Scaling]]." },
   { k: "scaling", c: "scale", t: "Scaling (★ ×0.6)", a: ["scaling", "spirit scaling"], d: "The ★ ×N badge on a stat is its spirit scaling: final value = base + Spirit Power × N. For example, 22 damage per second with ×0.6 at 50 Spirit Power becomes 22 + 50 × 0.6 = 52. Some stats grow per [[boons|boon]] instead, shown as “+X / boon”." },
-  { k: "souls", c: "econ", t: "Souls", a: ["souls", "soul"], d: "Deadlock’s currency and experience in one. You earn them from troopers, heroes, objectives and more, and spend them in the shop. Your total souls unlock abilities, ability points and [[boons|boons]], shown below. You start with 600. New abilities unlock at 600, 1,100, 2,000 and 3,800 souls." },
+  { k: "souls", c: "econ", t: "Souls", a: ["souls", "soul"], d: "Deadlock’s currency and experience in one. You earn them from troopers, heroes, objectives and more, and spend them in the shop. Your total souls unlock abilities, ability points and [[boons|boons]], shown below. You start with {start}.{abilities}" },
   { k: "boons", c: "scale", t: "Boons", a: ["boon", "boons"], d: "Each level-up grants a boon, which raises base health, bullet damage, melee damage and Spirit Power by set amounts per hero (the “+X / boon” values on hero pages). You can reach 35 boons." },
   { k: "ability-points", c: "scale", t: "Ability points & tiers", a: ["ability points", "ability point"], d: "Level-ups also give ability points. Each ability has three upgrade tiers costing 1, 2 and 5 points (8 in total), shown as ◆1, ◆2 and ◆5. Your ultimate unlocks at 3,800 souls (level 7)." },
   { k: "investment", c: "scale", t: "Shop investment bonus", a: ["investment", "investment bonus"], d: "Spending souls in one shop category gives free stats on top of the items themselves: weapon spending raises weapon damage, spirit spending raises Spirit Power, and vitality spending raises health. The bonus steps up as your total in that category grows." },
@@ -2836,8 +2836,14 @@ function glossOnce(html) {
     var cls = (a + b).replace(/\s+/g, " ").trim(); return "<span" + (cls ? ' class="' + cls + '"' : "") + rest + ">";
   });
 }
+function glossFill(d) { // numbers in a definition that come from the game data (Souls: starting souls and ability unlocks)
+  var M = state.mc || {}, st = (M.economy && M.economy.starting_souls), U = M.soul_unlocks || [];
+  var ab = U.filter(function (u) { return u.AbilityUnlocks; }).map(function (u) { return Number(u.RequiredSouls + (st || 0)).toLocaleString(); });
+  var list = ab.length > 1 ? ab.slice(0, -1).join(", ") + " and " + ab[ab.length - 1] : ab[0];
+  return String(d).replace("{start}", st != null ? Number(st).toLocaleString() : "600").replace("{abilities}", list ? " New abilities unlock at " + list + " souls." : "");
+}
 function glossBody(g) {
-  return esc(g.d).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
+  return esc(glossFill(g.d)).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
 }
 function glossCard(g) {
   return '<section class="gt" id="g-' + g.k + '"><h3>' + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p></section>";
