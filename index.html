@@ -261,7 +261,7 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 .stats + .ups,.minor + .ups{margin-top:22px}
 #revs .rpt{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:0 12px}
 #revs summary{display:flex;align-items:center;gap:8px;padding:11px 0;cursor:pointer;list-style:none}#revs summary::-webkit-details-marker{display:none}
-#revs .rd{font-weight:600;color:#fff}#revs .rcv{margin-left:auto;color:var(--dim);display:flex;transition:transform .2s}#revs .rpt:not([open]) .rcv{transform:rotate(-90deg)}
+#revs .rd{font-weight:600;color:#fff;display:flex;align-items:center}#revs .rcv{margin-left:auto;color:var(--dim);display:flex;transition:transform .2s}#revs .rpt:not([open]) .rcv{transform:rotate(-90deg)}
 #revs .rpt[open]{padding-bottom:8px}
 #revs .rpt.closing .rcv{transform:rotate(-90deg)}
 .rgrp{margin-top:6px}.rgrp+.rgrp{margin-top:12px}
@@ -515,7 +515,7 @@ html.lock,html.lock body{overflow:hidden}
 .nhs .rch .pnl{margin-top:2px}
 .rhdb{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;text-align:left}
 .ric.pnit{width:32px;height:32px}.ric.pnit.weapon{box-shadow:0 0 0 1.5px var(--weapon)}.ric.pnit.vitality{box-shadow:0 0 0 1.5px var(--vital)}.ric.pnit.spirit{box-shadow:0 0 0 1.5px var(--spirit)}
-.ric.rstat{background:none}.ric.rstat .si{width:20px;height:20px;color:var(--vital)} /* Stats: a plain green (vitality) heart, so it doesn't read as an ability */.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
+.rgrp.stp{background:#2b2535;border-radius:10px;padding:10px 12px 8px}.rgrp.stp+.rgrp,.rgrp+.rgrp.stp{margin-top:12px}.nhs .rgrp.stp{background:var(--panel)}.ric.rstat{background:none}.ric.rstat img{width:24px;height:24px;object-fit:contain} /* Stats: a tinted panel with the hero's face, so it doesn't read as an ability */.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
 .gtlw{margin-top:12px;border-left:2px solid #4a405a;margin-left:6px}
 .gtl{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:8px 4px 8px 0;font:inherit;color:var(--fg);text-align:left;position:relative}
 .gtl::before{content:"";position:absolute;left:-6px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--panel);box-shadow:0 0 0 2px var(--gold)}
@@ -2414,12 +2414,15 @@ function revGroupHtml(g, h) { // one ability, weapon or base-stats block of chan
       rows = rows.filter(function (r) { if (seen[r]) return false; seen[r] = 1; return !!r; }); // the same change on twin stats (three "cycle" windows) shows once
       return '<div class="rgrp"' + (g.type === "ability" && g.item ? ' data-gab="' + esc(g.item) + '"' : "") + '><div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + '</div><div class="rch">' + rows.join("") + "</div></div>";
 }
-function phGroupsHtml(groups) { // a hero's changes in one patch, grouped by ability, like What's New
+function phGroupsHtml(groups, h) { // a hero's changes in one patch, grouped by ability, like What's New
   return groups.map(function (g) {
-    var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : g.label === "Stats" ? siIcon("health") : "", stc = !ab && g.label === "Stats" ? " rstat" : "";
-    var name = ab ? nameOf(ab) : (g.ability || g.label || "");
-    return '<div class="rgrp"' + (ab ? ' data-pab="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric' + stc + '">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
+    if (!g.ac && g.label === "Stats") return statGroupHtml(g, h);
+    var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : "", name = ab ? nameOf(ab) : (g.ability || g.label || "");
+    return '<div class="rgrp"' + (ab ? ' data-pab="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
   }).join("");
+}
+function statGroupHtml(g, h) { // a hero's base stats in a patch: their own tinted panel, under the hero's face
+  return '<div class="rgrp stp"><div class="rhd"><span class="ric rstat">' + (h ? '<img alt="" src="' + esc(pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h)) + '">' : "") + '</span>Base stats</div><div class="rch">' + pnList(g.lines) + "</div></div>";
 }
 function phSummary(groups) {
   var n = groups.reduce(function (a, g) { return a + g.lines.length; }, 0);
@@ -2441,7 +2444,7 @@ function revisionsHtml(h) { // Patch history: every official patch that touched 
     var sbody = stat ? '<div class="phs"><div class="nsub">Stat changes</div>' + stat.heroes[h.class_name].map(function (g) { return revGroupHtml(g, h); }).join("") + "</div>" : "";
     var src = p.source ? '<a class="pnsrc" href="' + esc(p.source) + '" target="_blank" rel="noopener">' + esc(p.title || "Official notes") + " ↗</a>" : "";
     var abl = p.groups.map(function (g) { return g.ac || ""; }).join(" ");
-    return yh + '<details class="rpt' + (old ? " pho" : "") + '" data-abs="' + esc(abl) + '"' + (i === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '<i class="phsum">' + esc(phSummary(p.groups)) + '</i></span><span class="rcv">' + CHEV + "</span></summary>" + src + '<div class="nhg">' + phGroupsHtml(p.groups) + "</div>" + sbody + "</details>";
+    return yh + '<details class="rpt' + (old ? " pho" : "") + '" data-abs="' + esc(abl) + '"' + (i === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '<i class="phsum">' + esc(phSummary(p.groups)) + '</i></span><span class="rcv">' + CHEV + "</span></summary>" + src + '<div class="nhg">' + phGroupsHtml(p.groups, h) + "</div>" + sbody + "</details>";
   }).join("");
   var more = P.length > show ? '<button class="phmore">Show older patches (' + (P.length - show) + ")</button>" : "";
   return '<div class="sec">Patch history <span class="secn">' + P.length + "</span></div>" + filt + '<div id="revs" class="phist">' + rows + more + "</div>";
@@ -3209,7 +3212,8 @@ function patchNotesHtml() {
       var h = x.hc && state.heroes.filter(function (y) { return y.class_name === x.hc; })[0];
       var hd = h ? '<button class="nhh" data-nh="' + esc(h.class_name) + '"><img alt="" src="' + esc(heroImg(h)) + '"><b>' + esc(h.name) + "</b></button>" : '<div class="nhh"><b>' + esc(x.hero) + "</b></div>";
       body += '<section class="nhs"' + (h ? ' data-hero="' + esc(h.class_name) + '"' : "") + ">" + hd + '<div class="nhg">' + x.groups.map(function (g) {
-        var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : g.label === "Stats" ? siIcon("health") : "", stc = !ab && g.label === "Stats" ? " rstat" : "";
+        if (!g.ac && g.label === "Stats") return statGroupHtml(g, h);
+        var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : "", stc = "";
         var name = ab ? nameOf(ab) : (g.ability || g.label || "");
         return '<div class="rgrp"' + (ab ? ' data-gab="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric' + stc + '">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
       }).join("") + "</div></section>";
@@ -3806,7 +3810,7 @@ $("main").addEventListener("click", function (e) {
     wrap.classList.toggle("filt", !!c0); if (c0) wrap.classList.add("all");
     var first = null;
     Array.prototype.forEach.call(wrap.querySelectorAll("details.rpt"), function (d) { var hit = !c0 || (" " + d.getAttribute("data-abs") + " ").indexOf(" " + c0 + " ") >= 0; d.classList.toggle("phx", !hit); if (hit && !first) first = d; d.open = false; });
-    Array.prototype.forEach.call(wrap.querySelectorAll(".rgrp[data-pab]"), function (g) { g.classList.toggle("phx", !!c0 && g.getAttribute("data-pab") !== c0); });
+    Array.prototype.forEach.call(wrap.querySelectorAll(".rgrp[data-pab], .rgrp.stp"), function (g) { g.classList.toggle("phx", !!c0 && g.getAttribute("data-pab") !== c0); });
     if (first) first.open = true;
     return;
   }
@@ -3878,6 +3882,22 @@ function showOlder(btn) { // the button fades away, then the older patches fade 
     });
   };
 }
+function spacerOf(list) {
+  var sp = list.querySelector(":scope > .fsp");
+  if (!sp) { sp = document.createElement("div"); sp.className = "fsp"; list.appendChild(sp); }
+  return sp;
+}
+function shrinkSpacer(sp) {
+  var h0 = sp.offsetHeight, t0 = 0, live = true; if (!h0) return;
+  sp._stop = function () { live = false; sp._stop = null; };
+  requestAnimationFrame(function step(t) {
+    if (!live) return; if (!t0) t0 = t;
+    var p = Math.min(1, (t - t0) / 380), e = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+    sp.style.height = h0 * (1 - e) + "px";
+    var max = document.documentElement.scrollHeight - window.innerHeight; if ((window.pageYOffset || 0) > max) window.scrollTo(0, max); // the page shortens, so it scrolls up with it
+    if (p < 1) requestAnimationFrame(step); else { sp.style.height = "0px"; sp._stop = null; }
+  });
+}
 function foldDetails(d) {
   var list = d.closest("#revs.news, #revs.phist"), opening = !d.open, others = [];
   if (opening && list) others = Array.prototype.filter.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { return o !== d && o.offsetParent; }); // one patch open at a time
@@ -3887,7 +3907,11 @@ function foldDetails(d) {
     x.open = on; var h1 = x.offsetHeight; x.open = true; // measured at both ends; it stays open (visible) until the end
     return { el: x, on: on, h0: h0, h1: h1, kids: Array.prototype.slice.call(x.querySelectorAll(":scope > :not(summary)")) };
   });
-  var y0 = window.pageYOffset || 0, y1 = y0;
+  // near the bottom of the page, a patch folding shut would leave nothing to scroll into and the page would snap up.
+  // So a spacer under the list takes up whatever the patches give back, keeping the page its length; once they're done
+  // it shrinks away, and the page scrolls up smoothly as it goes.
+  var sp = list && spacerOf(list), sp0 = 0, y0 = window.pageYOffset || 0, y1 = y0;
+  if (sp) { if (sp._stop) sp._stop(); sp0 = sp.offsetHeight; sp.style.height = "0px"; }
   if (opening && list) { // where the tapped patch ends up once the others are shut: near the top of the screen
     parts.forEach(function (q) { q.el.style.height = q.h1 + "px"; });
     var off = 12 + (parseFloat(getComputedStyle(document.body).paddingTop) || 0);
@@ -3904,8 +3928,11 @@ function foldDetails(d) {
         { duration: q.on ? dur * 0.9 : Math.min(200, dur * 0.6), delay: q.on ? dur * 0.1 : 0, easing: q.on ? "ease-out" : "ease-in", fill: "both" });
     });
   });
-  window.scrollTo(0, y0);
+  var tot0 = parts.reduce(function (a, q) { return a + q.h0; }, 0);
+  function pad() { if (sp) sp.style.height = Math.max(0, sp0 + tot0 - parts.reduce(function (a, q) { return a + parseFloat(q.el.style.height); }, 0)) + "px"; }
+  pad(); window.scrollTo(0, y0);
   function finish() {
+    if (sp && d._fold === id) shrinkSpacer(sp);
     parts.forEach(function (q) {
       if (q.el._fold !== id) return;
       q.el._fold = null; q.el._stop = null; q.el._busy = false;
@@ -3919,7 +3946,7 @@ function foldDetails(d) {
   requestAnimationFrame(function step(t) {
     if (d._fold !== id) return; if (!t0) t0 = t;
     var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
-    parts.forEach(function (q) { q.el.style.height = (q.h0 + (q.h1 - q.h0) * e) + "px"; });
+    parts.forEach(function (q) { q.el.style.height = (q.h0 + (q.h1 - q.h0) * e) + "px"; }); pad();
     if (y1 !== y0 && !cancelled) window.scrollTo(0, y0 + (y1 - y0) * e);
     if (p < 1) requestAnimationFrame(step); else { window.removeEventListener("touchstart", stop); finish(); }
   });
