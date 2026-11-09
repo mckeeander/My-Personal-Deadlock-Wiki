@@ -12,14 +12,14 @@
    "desc": "A temporary shield that absorbs a set amount of incoming damage before breaking.",
    "sources": [
     {
-     "note": "(Tier 2)",
+     "note": "Tier 2",
      "hero": "The Doorman",
      "hc": "hero_doorman",
      "ability": "Doorway",
      "ac": "ability_doorman_doorway"
     },
     {
-     "note": "(Tier 1)",
+     "note": "Tier 1",
      "hero": "Ivy",
      "hc": "hero_tengu",
      "ability": "Air Drop",
@@ -38,7 +38,7 @@
      "ac": "ability_ratking_ratarmor"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Vyper",
      "hc": "hero_viper",
      "ability": "Slither",
@@ -51,14 +51,14 @@
      "ac": "ability_warden_high_alert"
     },
     {
-     "note": "(Tier 2)",
+     "note": "Tier 2",
      "hero": "Wraith",
      "hc": "hero_wraith",
      "ability": "Project Mind",
      "ac": "citadel_ability_projectmind"
     },
     {
-     "note": "(Active)",
+     "note": "Active",
      "item": "Divine Barrier",
      "ic": "upgrade_divine_barrier"
     },
@@ -71,7 +71,7 @@
      "ic": "upgrade_grit"
     },
     {
-     "note": "(Active)",
+     "note": "Active",
      "item": "Guardian Ward",
      "ic": "upgrade_guardian_ward"
     },
@@ -80,7 +80,7 @@
      "ic": "upgrade_auto_cleanse"
     },
     {
-     "note": "(Active)",
+     "note": "Active",
      "item": "Majestic Leap",
      "ic": "upgrade_rocket_booster"
     },
@@ -112,14 +112,14 @@
      "text": "Gun Powerup"
     },
     {
-     "note": "(Tier 1)",
+     "note": "Tier 1",
      "hero": "Apollo",
      "hc": "hero_fencer",
      "ability": "Disengaging Sigil",
      "ac": "ability_fencer_throwblade"
     },
     {
-     "note": "(Tier 1)",
+     "note": "Tier 1",
      "hero": "Paige",
      "hc": "hero_bookworm",
      "ability": "Plot Armor",
@@ -138,21 +138,21 @@
      "ac": "citadel_ability_tangotether"
     },
     {
-     "note": "(Tier 1)",
+     "note": "Tier 1",
      "hero": "Mina",
      "hc": "hero_vampirebat",
      "ability": "Sanguine Retreat",
      "ac": "ability_vampirebat_batblink"
     },
     {
-     "note": "(Tier 1)",
+     "note": "Tier 1",
      "hero": "Mirage",
      "hc": "hero_mirage",
      "ability": "Traveler",
      "ac": "mirage_teleport"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Sinclair",
      "hc": "hero_magician",
      "ability": "Spectral Assistant",
@@ -171,7 +171,7 @@
      "ac": "ability_werewolf_unloadgun"
     },
     {
-     "note": "(Tier 1)",
+     "note": "Tier 1",
      "hero": "Victor",
      "hc": "hero_frank",
      "ability": "Shocking Reanimation",
@@ -257,7 +257,7 @@
      "text": "Survival Powerup"
     },
     {
-     "note": "(conditional)",
+     "note": "conditional",
      "hero": "Abrams",
      "hc": "hero_atlas",
      "ability": "Infernal Resilience",
@@ -288,7 +288,7 @@
      "ac": "ability_frank_selfzap"
     },
     {
-     "note": "(conditional)",
+     "note": "conditional",
      "item": "Fortitude",
      "ic": "upgrade_chonky"
     },
@@ -373,7 +373,7 @@
      "ac": "ability_frank_revive"
     },
     {
-     "note": "(While transforming)",
+     "note": "While transforming",
      "hero": "Yamato",
      "hc": "hero_yamato",
      "ability": "Shadow Transformation",
@@ -396,41 +396,41 @@
    "desc": "A temporary buff that causes the user to heal for a percentage of the damage they deal.",
    "sources": [
     {
-     "note": "(Tier 3) (Bullet Lifesteal)",
+     "note": "Tier 3 · Bullet Lifesteal",
      "hero": "Haze",
      "hc": "hero_haze",
      "ability": "Smoke Bomb",
      "ac": "ability_smoke_bomb"
     },
     {
-     "note": "(Bullet Lifesteal)",
+     "note": "Bullet Lifesteal",
      "hero": "Ivy",
      "hc": "hero_tengu",
      "ability": "Kudzu Connection",
      "ac": "citadel_ability_tangotether"
     },
     {
-     "note": "(Bullet Lifesteal)",
+     "note": "Bullet Lifesteal",
      "item": "Active Reload",
      "ic": "upgrade_active_reload"
     },
     {
-     "note": "(Bullet Lifesteal)",
+     "note": "Bullet Lifesteal",
      "item": "Fury Trance",
      "ic": "upgrade_fury_trance"
     },
     {
-     "note": "(Spirit Lifesteal)",
+     "note": "Spirit Lifesteal",
      "item": "Infuser",
      "ic": "upgrade_infuser"
     },
     {
-     "note": "(Bullet Lifesteal)",
+     "note": "Bullet Lifesteal",
      "item": "Vampiric Burst",
      "ic": "upgrade_surging_power"
     },
     {
-     "note": "(Bullet and Spirit Lifesteal)",
+     "note": "Bullet and Spirit Lifesteal",
      "item": "Leech",
      "ic": "upgrade_damage_recycler"
     }
@@ -456,7 +456,7 @@
      "ac": "ability_nano_catform"
     },
     {
-     "note": "(Tier 1 Upgrade and have an isolated enemy hero around)",
+     "note": "Tier 1 Upgrade and have an isolated enemy hero around",
      "hero": "Drifter",
      "hc": "hero_drifter",
      "ability": "Bloodscent",
@@ -505,7 +505,7 @@
      "ac": "ability_warden_high_alert"
     },
     {
-     "note": "(Tier 2 Upgrade)",
+     "note": "Tier 2 Upgrade",
      "hero": "Yamato",
      "hc": "hero_yamato",
      "ability": "Shadow Transformation",
@@ -520,7 +520,7 @@
      "ic": "upgrade_blood_tribute"
     },
     {
-     "note": "(conditional)",
+     "note": "conditional",
      "item": "Burst Fire",
      "ic": "upgrade_burst_fire"
     },
@@ -529,12 +529,12 @@
      "ic": "upgrade_counterspell"
     },
     {
-     "note": "(Active)",
+     "note": "Active",
      "item": "Dispel Magic",
      "ic": "upgrade_reduce_debuff_duration"
     },
     {
-     "note": "(Active)",
+     "note": "Active",
      "item": "Divine Barrier",
      "ic": "upgrade_divine_barrier"
     },
@@ -571,7 +571,7 @@
      "ic": "upgrade_headhunter"
     },
     {
-     "note": "(Active)",
+     "note": "Active",
      "item": "Heroic Aura",
      "ic": "upgrade_dps_aura"
     },
@@ -584,7 +584,7 @@
      "ic": "upgrade_resonant_healing"
     },
     {
-     "note": "(Conditional)",
+     "note": "Conditional",
      "item": "Surge of Power",
      "ic": "upgrade_magic_storm"
     },
@@ -610,82 +610,118 @@
   {
    "name": "Resistance Buff",
    "kind": "buff",
-   "term": "resist",
+   "term": "bullet-resist",
    "icon": "Bullet Armor",
    "desc": "A temporary buff that reduces incoming damage from a specific source.",
    "sources": [
     {
-     "note": "(during cast time)",
+     "note": "during cast time",
      "hero": "Billy",
      "hc": "hero_punkgoat",
      "ability": "Chain Gang",
      "ac": "ability_punkgoat_tether"
     },
     {
-     "note": "’s (Tier 3 Upgrade - Spirit)",
-     "hero": "McGinnis",
-     "hc": "hero_forge",
-     "ability": "Medicinal Specter",
-     "ac": "citadel_ability_mobile_resupply"
-    },
-    {
-     "note": "(Reduces incoming damage via Damage Reduction)",
+     "note": "Reduces incoming damage via Damage Reduction",
      "hero": "Rat King",
      "hc": "hero_ratking"
     },
     {
-     "note": "(Tier 1 Upgrade - Bullet)",
+     "note": "Tier 1 Upgrade - Bullet",
      "hero": "Yamato",
      "hc": "hero_yamato",
      "ability": "Power Slash",
      "ac": "citadel_ability_power_slash"
     },
     {
-     "note": "(Bullet and Spirit)",
+     "note": "Bullet and Spirit",
      "hero": "Yamato",
      "hc": "hero_yamato",
      "ability": "Shadow Transformation",
      "ac": "citadel_ability_infinity_slash"
     },
     {
-     "note": "(Debuff Resistance)",
-     "item": "Blood Tribute",
-     "ic": "upgrade_blood_tribute"
-    },
-    {
-     "note": "(Bullet and Spirit)",
+     "note": "Bullet and Spirit",
      "item": "Colossus",
      "ic": "upgrade_colossus"
     },
     {
-     "note": "(stacking Bullet Resist on hit)",
+     "note": "stacking Bullet Resist on hit",
      "item": "Escalating Resilience",
      "ic": "upgrade_reinforcing_casings"
     },
     {
-     "note": "(Debuff, when below 50% health)",
-     "item": "Frenzy",
-     "ic": "upgrade_fervor"
-    },
-    {
-     "note": "(Spirit)",
-     "item": "Fury Trance",
-     "ic": "upgrade_fury_trance"
-    },
-    {
-     "note": "(Bullet Immunity)",
+     "note": "Bullet Immunity",
      "item": "Metal Skin",
      "ic": "upgrade_metal_skin"
     },
     {
-     "note": "(steals Spirit Resist on melee hit)",
-     "item": "Spirit Snatch",
-     "ic": "upgrade_spirit_snatch"
-    },
-    {
-     "note": "(Bullet)",
+     "note": "Bullet",
      "item": "Warp Stone",
      "ic": "upgrade_warp_stone"
+    }
+   ],
+   "dropped": [],
+   "notes": [],
+   "adjacent": []
+  },
+  {
+   "name": "Resistance Buff",
+   "kind": "buff",
+   "term": "spirit-resist",
+   "icon": "Bullet Armor",
+   "desc": "A temporary buff that reduces incoming damage from a specific source.",
+   "sources": [
+    {
+     "note": "during cast time",
+     "hero": "Billy",
+     "hc": "hero_punkgoat",
+     "ability": "Chain Gang",
+     "ac": "ability_punkgoat_tether"
+    },
+    {
+     "note": "Tier 3 Upgrade - Spirit",
+     "hero": "McGinnis",
+     "hc": "hero_forge",
+     "ability": "Medicinal Specter",
+     "ac": "citadel_ability_mobile_resupply"
+    },
+    {
+     "note": "Reduces incoming damage via Damage Reduction",
+     "hero": "Rat King",
+     "hc": "hero_ratking"
+    },
+    {
+     "note": "Spirit",
+     "item": "Fury Trance",
+     "ic": "upgrade_fury_trance"
+    },
+    {
+     "note": "steals Spirit Resist on melee hit",
+     "item": "Spirit Snatch",
+     "ic": "upgrade_spirit_snatch"
+    }
+   ],
+   "dropped": [],
+   "notes": [],
+   "adjacent": []
+  },
+  {
+   "name": "Resistance Buff",
+   "kind": "buff",
+   "term": "debuff-resist",
+   "icon": "Bullet Armor",
+   "desc": "A temporary buff that reduces incoming damage from a specific source.",
+   "sources": [
+    {
+     "note": "Debuff Resistance",
+     "item": "Blood Tribute",
+     "ic": "upgrade_blood_tribute"
+    },
+    {
+     "note": "Debuff, when below 50% health",
+     "item": "Frenzy",
+     "ic": "upgrade_fervor"
     }
    ],
    "dropped": [],
@@ -783,11 +819,16 @@
    "term": "hidden-minimap",
    "icon": "Invisible",
    "desc": "A temporary buff that renders the user unable to be seen on the minimap.",
-   "sources": [],
-   "dropped": [],
-   "notes": [
-    "Calico's Ava"
+   "sources": [
+    {
+     "hero": "Calico",
+     "hc": "hero_nano",
+     "ability": "Ava",
+     "ac": "ability_nano_catform"
+    }
    ],
+   "dropped": [],
+   "notes": [],
    "adjacent": []
   },
   {
@@ -798,35 +839,35 @@
    "desc": "A powerful buff that grants immunity to crowd control effects like Stun, Silence, Sleep, and Immobilize. The user can still take damage while Unstoppable.",
    "sources": [
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Abrams",
      "hc": "hero_atlas",
      "ability": "Seismic Impact",
      "ac": "citadel_ability_bull_leap"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Billy",
      "hc": "hero_punkgoat",
      "ability": "Chain Gang",
      "ac": "ability_punkgoat_tether"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "The Doorman",
      "hc": "hero_doorman",
      "ability": "Hotel Guest",
      "ac": "ability_doorman_hotel"
     },
     {
-     "note": "(Tier 3) (While channeling)",
+     "note": "Tier 3 · While channeling",
      "hero": "Warden",
      "hc": "hero_warden",
      "ability": "Last Stand",
      "ac": "ability_warden_riot_protocol"
     },
     {
-     "note": "(Tier 3) (While channeling)",
+     "note": "Tier 3 · While channeling",
      "hero": "Rem",
      "hc": "hero_familiar",
      "ability": "Naptime",
@@ -839,7 +880,7 @@
      "ac": "citadel_ability_infinity_slash"
     },
     {
-     "note": "(Active)",
+     "note": "Active",
      "item": "Unstoppable",
      "ic": "upgrade_unstoppable"
     }
@@ -862,28 +903,28 @@
      "ac": "ability_bookworm_knightbarrier"
     },
     {
-     "note": "(Tier 1)",
+     "note": "Tier 1",
      "hero": "Abrams",
      "hc": "hero_atlas",
      "ability": "Shoulder Charge",
      "ac": "citadel_ability_bull_charge"
     },
     {
-     "note": "(Tier 2)",
+     "note": "Tier 2",
      "hero": "Bebop",
      "hc": "hero_bebop",
      "ability": "Exploding Uppercut",
      "ac": "citadel_ability_uppercut"
     },
     {
-     "note": "(Tier 2)",
+     "note": "Tier 2",
      "hero": "Billy",
      "hc": "hero_punkgoat",
      "ability": "Rising Ram",
      "ac": "ability_punkgoat_goatflip"
     },
     {
-     "note": "(Tier 2)",
+     "note": "Tier 2",
      "hero": "Lash",
      "hc": "hero_lash",
      "ability": "Grapple",
@@ -961,7 +1002,7 @@
      "ac": "ability_afterburn"
     },
     {
-     "note": "(deals Weapon Damage and Pure Damage instead of Spirit)",
+     "note": "deals Weapon Damage and Pure Damage instead of Spirit",
      "hero": "Venator",
      "hc": "hero_priest",
      "ability": "Consecrating Grenade",
@@ -990,12 +1031,12 @@
      "ac": "ability_immobilize_trap"
     },
     {
-     "note": "(also removes non-ultimate buffs)",
+     "note": "also removes non-ultimate buffs",
      "item": "Cursed Relic",
      "ic": "upgrade_glitch"
     },
     {
-     "note": "(also applies movement slow)",
+     "note": "also applies movement slow",
      "item": "Mystical Piano",
      "ic": "upgrade_mystical_piano"
     },
@@ -1147,7 +1188,7 @@
      "ac": "citadel_ability_bull_leap"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Baba",
      "hc": "hero_baba",
      "ability": "Threadsap",
@@ -1226,7 +1267,7 @@
      "ac": "citadel_ability_tengu_airlift"
     },
     {
-     "note": "(Tier 2)",
+     "note": "Tier 2",
      "hero": "Lash",
      "hc": "hero_lash",
      "ability": "Ground Strike",
@@ -1315,12 +1356,12 @@
      "ac": "citadel_ability_psychic_lift"
     },
     {
-     "note": "(If the target is not on the ground)",
+     "note": "If the target is not on the ground",
      "item": "Knockdown",
      "ic": "upgrade_target_stun"
     },
     {
-     "note": "(If the target is not on the ground)",
+     "note": "If the target is not on the ground",
      "item": "Phantom Strike",
      "ic": "upgrade_phantom_strike"
     },
@@ -1345,21 +1386,21 @@
    "desc": "A negative status effect that reduces the target's healing from all sources.",
    "sources": [
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Drifter",
      "hc": "hero_drifter",
      "ability": "Stalker's Mark",
      "ac": "drifter_shadow_mark"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Pocket",
      "hc": "hero_synth",
      "ability": "Affliction",
      "ac": "synth_affliction"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Infernus",
      "hc": "hero_inferno",
      "ability": "Napalm",
@@ -1372,21 +1413,21 @@
      "ac": "ability_priest_flashbang"
     },
     {
-     "note": "(Tier 1)",
+     "note": "Tier 1",
      "hero": "Vindicta",
      "hc": "hero_hornet",
      "ability": "Crow Familiar",
      "ac": "citadel_ability_hornet_sting"
     },
     {
-     "note": "(Tier 2)",
+     "note": "Tier 2",
      "hero": "Vyper",
      "hc": "hero_viper",
      "ability": "Lethal Venom",
      "ac": "ability_viper_venom"
     },
     {
-     "note": "(Self)",
+     "note": "Self",
      "item": "Cheat Death",
      "ic": "upgrade_cheat_death"
     },
@@ -1433,7 +1474,7 @@
      "ac": "ability_fencer_riposte"
     },
     {
-     "note": "(when pulling an enemy downwards)",
+     "note": "when pulling an enemy downwards",
      "hero": "Billy",
      "hc": "hero_punkgoat",
      "ability": "Bashdown",
@@ -1446,7 +1487,7 @@
      "ac": "ability_necro_zombiewall"
     },
     {
-     "note": "(when dragging an enemy to the ground)",
+     "note": "when dragging an enemy to the ground",
      "hero": "Lash",
      "hc": "hero_lash",
      "ability": "Ground Strike",
@@ -1459,7 +1500,7 @@
      "ac": "ability_bookworm_aoemagic"
     },
     {
-     "note": "(when kick connects to the target)",
+     "note": "when kick connects to the target",
      "hero": "Silver",
      "hc": "hero_werewolf",
      "ability": "Boot Kick",
@@ -1494,21 +1535,21 @@
    "desc": "A negative status effect that applies Movement Slow and prevents the target from casting movement-related abilities and active items, and in some cases further restricts movement. See Slowing Hex for a list of abilities and items affected.",
    "sources": [
     {
-     "note": "(also prevents stamina use)",
+     "note": "also prevents stamina use",
      "hero": "Silver",
      "hc": "hero_werewolf",
      "ability": "Entangling Bola",
      "ac": "ability_werewolf_netshot"
     },
     {
-     "note": "(also prevents stamina use)",
+     "note": "also prevents stamina use",
      "hero": "Wraith",
      "hc": "hero_wraith",
      "ability": "Telekinesis",
      "ac": "citadel_ability_psychic_lift"
     },
     {
-     "note": "(also prevents stamina use)",
+     "note": "also prevents stamina use",
      "item": "Capacitor",
      "ic": "upgrade_capacitor"
     },
@@ -1550,7 +1591,7 @@
      "ac": "ability_fencer_ultimate"
     },
     {
-     "note": "(Silencing)",
+     "note": "Silencing",
      "hero": "Baba",
      "hc": "hero_baba",
      "ability": "Baba's Brew",
@@ -1563,7 +1604,7 @@
      "ac": "ability_unicorn_prismaticguard"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Drifter",
      "hc": "hero_drifter",
      "ability": "Rend",
@@ -1576,28 +1617,28 @@
      "ac": "ability_immobilize_trap"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Ivy",
      "hc": "hero_tengu",
      "ability": "Air Drop",
      "ac": "citadel_ability_tengu_airlift"
     },
     {
-     "note": "(Tier 2)",
+     "note": "Tier 2",
      "hero": "Lady Geist",
      "hc": "hero_ghost",
      "ability": "Soul Exchange",
      "ac": "ability_health_swap"
     },
     {
-     "note": "(Tier 2)",
+     "note": "Tier 2",
      "hero": "Paradox",
      "hc": "hero_chrono",
      "ability": "Time Wall",
      "ac": "citadel_ability_chrono_time_wall"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "Warden",
      "hc": "hero_warden",
      "ability": "Binding Word",
@@ -1610,7 +1651,7 @@
      "ac": "ability_vampirebat_batswarm"
     },
     {
-     "note": "(also silences active items)",
+     "note": "also silences active items",
      "item": "Cursed Relic",
      "ic": "upgrade_glitch"
     },
@@ -1619,7 +1660,7 @@
      "ic": "upgrade_focus_lens"
     },
     {
-     "note": "(Self, also silences stamina)",
+     "note": "Self, also silences stamina",
      "item": "Fury Trance",
      "ic": "upgrade_fury_trance"
     },
@@ -1696,7 +1737,7 @@
      "ac": "citadel_ability_bull_leap"
     },
     {
-     "note": "(Tier 3)",
+     "note": "Tier 3",
      "hero": "The Doorman",
      "hc": "hero_doorman",
      "ability": "Luggage Cart",
@@ -1733,7 +1774,7 @@
      "ac": "citadel_ability_tengu_stone_form"
     },
     {
-     "note": "(Tier 3 unlocks additional stun on hit)",
+     "note": "Tier 3 unlocks additional stun on hit",
      "hero": "Lash",
      "hc": "hero_lash",
      "ability": "Death Slam",
@@ -1758,7 +1799,7 @@
      "ac": "citadel_ability_static_charge"
     },
     {
-     "note": "(If target hits a wall)",
+     "note": "If target hits a wall",
      "hero": "Venator",
      "hc": "hero_priest",
      "ability": "Gutshot",
@@ -1806,7 +1847,7 @@
   {
    "name": "Time Stop",
    "kind": "debuff",
-   "term": "time-stop",
+   "term": "time-slow",
    "icon": "Kinetic Carbine",
    "desc": "A negative status effect that slows the speed of the player's actions, including the effects of inertia and gravity. Also known as Time Slow or Slow Motion.",
    "sources": [
@@ -1817,7 +1858,7 @@
      "ac": "ability_fencer_ultimate"
     },
     {
-     "note": "(also applies to self when aiming in the air)",
+     "note": "also applies to self when aiming in the air",
      "hero": "Paradox",
      "hc": "hero_chrono",
      "ability": "Kinetic Carbine",
@@ -2048,6 +2089,95 @@
      "hc": "hero_punkgoat",
      "ability": "Blasted",
      "ac": "ability_punkgoat_blasted"
+    }
+   ],
+   "dropped": [],
+   "notes": [],
+   "adjacent": []
+  },
+  {
+   "name": "Purge",
+   "kind": "counter",
+   "term": "purge",
+   "icon": null,
+   "desc": "These effects instantly remove currently active debuffs.",
+   "sources": [
+    {
+     "note": "Tier 3",
+     "hero": "Dynamo",
+     "hc": "hero_dynamo",
+     "ability": "Quantum Entanglement",
+     "ac": "citadel_ability_void_sphere"
+    },
+    {
+     "note": "Tier 3",
+     "hero": "Haze",
+     "hc": "hero_haze",
+     "ability": "Smoke Bomb",
+     "ac": "ability_smoke_bomb"
+    },
+    {
+     "note": "Tier 3",
+     "hero": "Kelvin",
+     "hc": "hero_kelvin",
+     "ability": "Frozen Shelter",
+     "ac": "ability_ice_dome"
+    },
+    {
+     "hero": "Victor",
+     "hc": "hero_frank",
+     "ability": "Shocking Reanimation",
+     "ac": "ability_frank_revive",
+     "note": "also ultimate debuffs"
+    },
+    {
+     "note": "Tier 3",
+     "hero": "Viscous",
+     "hc": "hero_viscous",
+     "ability": "The Cube",
+     "ac": "viscous_restorative_goo"
+    },
+    {
+     "hero": "Yamato",
+     "hc": "hero_yamato",
+     "ability": "Shadow Transformation",
+     "ac": "citadel_ability_infinity_slash",
+     "note": "also ultimate debuffs"
+    },
+    {
+     "item": "Dispel Magic",
+     "ic": "upgrade_reduce_debuff_duration"
+    },
+    {
+     "item": "Divine Barrier",
+     "ic": "upgrade_divine_barrier",
+     "note": "also ultimate debuffs"
+    }
+   ],
+   "dropped": [],
+   "notes": [],
+   "adjacent": []
+  },
+  {
+   "name": "Debuff Resistance (Stat)",
+   "kind": "counter",
+   "term": "debuff-resist",
+   "icon": null,
+   "desc": "The following effects grant a Debuff Resistance stat, which reduces the duration of debuffs. Except for Willpower, this is a character stat, not a temporary buff.",
+   "sources": [
+    {
+     "note": "Tier 3",
+     "hero": "Abrams",
+     "hc": "hero_atlas",
+     "ability": "Infernal Resilience",
+     "ac": "citadel_ability_passive_beefy"
+    },
+    {
+     "note": "Tier 3",
+     "hero": "Warden",
+     "hc": "hero_warden",
+     "ability": "Willpower",
+     "ac": "ability_warden_high_alert"
     }
    ],
    "dropped": [],

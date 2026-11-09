@@ -24,13 +24,17 @@ FILE_AS = {
     "Bleed": "bleed", "Burn": "burn", "Curse": "curse", "Damage Output Reduction": "damage-reduction",
     "Disarm": "disarm", "Displace": "displace", "Healing Reduction": "healing-reduction",
     "Immobilized": "immobilize", "Movement Silence": "movement-silence", "Movement Slow": "slow",
-    "Silence": "silence", "Sleep": "sleep", "Stun": "stun", "Time Stop": "time-stop",
+    "Silence": "silence", "Sleep": "sleep", "Stun": "stun", "Time Stop": "time-slow",  # the wiki: "also known as Time Slow"
     # hero-specific effects: each its own term
     "Affliction": "affliction", "Eternal Night": "eternal-night", "Fixation": "fixation", "Hotel Guest": "hotel-guest",
     "Lethal Venom": "lethal-venom", "Marked for Lifesteal": "marked-lifesteal", "Malice": "malice",
     "Parry Prevention": "parry-prevention", "Petrified": "petrified", "Rabbit Hex": "rabbit-hex",
     "Tether": "tether", "Wrecked": "wrecked",
+    # countering debuffs
+    "Purge": "purge", "Debuff Resistance (Stat)": "debuff-resist",
 }
+# "Resistance Buff" is split by what each source actually raises (game data): bullet_armor_up / tech_armor_up
+RESIST_SPLIT = {"bullet_armor_up": "bullet-resist", "tech_armor_up": "spirit-resist"}
 HERO_FIX = {"Silver (Transformed)": "Silver"}
 ABIL_FIX = {"Tornado": "Dust Devil"}  # renamed in the game since the wiki page was written
 
@@ -81,7 +85,8 @@ def main():
         abil = re.findall(r"\{\{AbilityIcon\|([^}|]+)", line)
         item = re.search(r"\{\{ItemIcon\|([^}|]+)", line)
         rest = re.sub(r"\{\{(?:HeroIcon|AbilityIcon|ItemIcon)\|[^}]*\}\}('s|')?", "", line)
-        note = plain(rest).strip(" -,")
+        note = re.sub(r"^[’']s?\s*", "", plain(rest)).strip(" -,")
+        if re.fullmatch(r"(\([^()]*\)\s*)+", note): note = " · ".join(re.findall(r"\(([^()]*)\)", note))  # "(Tier 3) (Bullet Lifesteal)" -> "Tier 3 · Bullet Lifesteal"
         s = {"note": note} if note else {}
         if hero:
             hn = HERO_FIX.get(hero.group(1).strip(), hero.group(1).strip())
@@ -127,8 +132,14 @@ def main():
             s = ln.strip()
             if not s or s.startswith("{{StatusBox") or s.startswith("{{Main"): continue
             if s.startswith("'''Sources:'''"): mode = "src"; continue
+            if s.startswith("{|") or s in ("|-", "|}"): mode = "src"; continue
+            if s.startswith("|") and "||" in s:  # a table row: source || yes/no (removes debuffs from ultimates)
+                cells = [c.strip() for c in s.lstrip("|").split("||")]
+                x = source(cells[0])
+                if len(cells) > 1 and cells[1].lower() == "yes": x["note"] = ((x.get("note") or "") + " · also ultimate debuffs").strip(" ·")
+                sources.append(x); continue
             if s.startswith("'''Adjacent Effects:'''"): mode = "adj"; continue
-            if s.startswith("*") and mode == "desc":
+            if s.startswith("*") and mode == "desc" and part != "Countering Debuffs" and not re.search(r"\{\{(HeroIcon|ItemIcon|AbilityIcon)\|", s):
                 notes.append(plain(s.lstrip("* ")))
             elif s.startswith("*"):
                 x = source(s.lstrip("* "))
@@ -146,8 +157,31 @@ def main():
         icon = re.search(r"status icon=([^|}]+)", box.group(0)).group(1).strip() if box and "status icon=" in box.group(0) else None
         gone = [x for x in sources if ("item" in x and "ic" not in x) or ("ability" in x and "ac" not in x)]
         sources = [x for x in sources if x not in gone]
-        effects.append({"name": title, "kind": kind, "term": FILE_AS[title], "icon": icon,
-                        "desc": " ".join(desc), "sources": sources, "dropped": [x.get("item") or x.get("ability") for x in gone], "notes": notes, "adjacent": adjacent})
+        if part == "Countering Debuffs": kind = "counter"
+        rec = {"name": title, "kind": kind, "term": FILE_AS[title], "icon": icon,
+               "desc": " ".join(desc), "sources": sources, "dropped": [x.get("item") or x.get("ability") for x in gone], "notes": notes, "adjacent": adjacent}
+        if title == "Resistance Buff":
+            split = {t: [] for t in list(RESIST_SPLIT.values()) + ["debuff-resist"]}
+            for x in sources:
+                # the wiki's own note says what it raises; then the stat's category; then the stat's name
+                note, kinds = (x.get("note") or "").lower(), set()
+                if "debuff" in note: kinds = {"debuff-resist"}
+                elif "bullet" in note: kinds = {"bullet-resist"}
+                elif "spirit" in note: kinds = {"spirit-resist"}
+                if not kinds:
+                    props = [p for p in ((by_class.get(x.get("ac") or x.get("ic")) or {}).get("properties") or {}).items() if isinstance(p[1], dict)]
+                    kinds = {RESIST_SPLIT[p["css_class"]] for k, p in props if p.get("css_class") in RESIST_SPLIT}
+                    if not kinds:
+                        for k, p in props:
+                            lab = (k + " " + str(p.get("label") or "")).lower()
+                            if "bulletresist" in lab.replace(" ", "") or "bullet resist" in lab: kinds.add("bullet-resist")
+                            if "techresist" in lab.replace(" ", "") or "spirit resist" in lab: kinds.add("spirit-resist")
+                if not kinds: kinds = set(RESIST_SPLIT.values())  # general damage reduction: both
+                for t in kinds: split[t].append(x)
+            for t, xs in split.items():
+                effects.append(dict(rec, term=t, sources=xs))
+        else:
+            effects.append(rec)
 
     out = {"source": "deadlock.wiki/Status_Effects", "revid": meta.get("revid"), "timestamp": meta.get("timestamp"),
            "license": "CC BY-SA 4.0, Deadlock Wiki contributors", "effects": effects}

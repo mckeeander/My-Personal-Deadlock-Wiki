@@ -481,6 +481,20 @@ html.lock,html.lock body{overflow:hidden}
 .grh{padding-left:3px;font-size:11px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--dim);margin:18px 0 8px;padding-top:14px;border-top:1px solid #3d344c}
 .grels{display:flex;flex-wrap:wrap;gap:6px}
 .grel{background:var(--panel2);border:1px solid #4a405a;border-radius:8px;padding:6px 10px;font-size:14px;color:var(--fg)}
+/* glossary pop-up: what causes this effect */
+.gsnotes{margin:10px 0 0;padding-left:18px;font-size:14px;line-height:1.45;color:var(--dim)}.gsnotes li{margin-bottom:4px}
+.gsg{margin-top:4px}.gsg + .gsg{margin-top:12px}
+.gsgh{font-size:12px;font-weight:600;color:var(--dim);margin:0 0 6px 3px}.gsgh span{color:#7d7290;font-weight:500;margin-left:2px}
+.gsrc{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:5px 10px 5px 6px;margin-bottom:5px;color:var(--fg);text-align:left;font:inherit}
+.gsrc.gsx{min-height:0;padding:9px 10px;color:var(--dim);font-size:14px}
+.gsg.clip .gsm{display:none}
+.gsp,.gsa,.gsi{flex:none;width:32px;height:32px;border-radius:6px;overflow:hidden;background:var(--panel);display:flex;align-items:center;justify-content:center}
+.gsp img,.gsi img{width:100%;height:100%;object-fit:cover}.gsa{background:transparent}.gsa img{width:26px;height:26px;object-fit:contain}
+.gsp + .gsa{margin-left:-6px}
+.gsi.weapon{box-shadow:0 0 0 1.5px var(--weapon)}.gsi.vitality{box-shadow:0 0 0 1.5px var(--vital)}.gsi.spirit{box-shadow:0 0 0 1.5px var(--spirit)}
+.gst{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}.gst b{font-weight:600;font-size:14.5px}.gst i{font-style:normal;font-size:12px;color:var(--dim)}
+.gsn{flex:none;max-width:42%;font-style:normal;font-size:12px;color:var(--gold);text-align:right;line-height:1.25}
+.gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .gt{cursor:pointer;-webkit-tap-highlight-color:transparent;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:24px}
@@ -701,6 +715,7 @@ function dataSig(h, i) { // a cheap fingerprint of the game data, so a refresh t
 }
 function save() { return idbSet(KEY, { t: state.fetchedAt, h: state.heroes, i: state.items, s: state.sig || null }); }
 function load() {
+  idbGet("se").then(function (se) { if (se && se.effects) state.se = se; }, function () {});
   return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
@@ -955,6 +970,7 @@ function fetchAll() {
     var sig = dataSig(state.heroes, state.items); state.same = !!state.sig && sig === state.sig; state.sig = sig; // same: this refresh found exactly what is already on screen
     state.fetchedAt = Date.now(); state.note = ""; index(); save();
     // community notes are optional: a failure here never blocks the main data
+    getJson("status_effects.json").then(function (se) { if (se && se.effects) { state.se = se; idbSet("se", se); } }, function () {}); // what causes each effect (from the wiki), shown in the glossary pop-ups
     getJson("revisions.json").then(function (rv) { // optional, like the notes: the hero page simply has no Revisions section without it
       if (Array.isArray(rv)) { state.revs = rv; idbSet("revs", rv); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); var w2 = $("revwrap"), h2 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w2 && h2) w2.innerHTML = revisionsHtml(h2); }
     }, function () {});
@@ -2602,7 +2618,7 @@ function openResult(b) {
 }
 /* ---------- glossary ---------- */
 // [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
-var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Buffs & counters"], ["move", "Movement"]];
+var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Buffs & counters"], ["move", "Movement"], ["hero", "Hero effects"]];
 var GLOSS = [
   { k: "weapon-damage", c: "dmg", t: "Weapon damage", a: ["weapon damage", "bullet damage"], d: "Damage from your gun, plus abilities that say they deal weapon damage. It’s reduced by [[bullet-resist|Bullet Resist]] and raised by weapon items, which boost your gun by a percentage. Melee also counts as weapon damage, but weapon-damage bonuses apply to it at half strength." },
   { k: "spirit-damage", c: "dmg", t: "Spirit damage", a: ["spirit damage"], d: "Damage from most abilities and many items. It’s reduced by [[spirit-resist|Spirit Resist]] and usually grows with [[spirit-power|Spirit Power]]." },
@@ -2659,7 +2675,25 @@ var GLOSS = [
   { k: "stamina", c: "move", t: "Stamina", a: ["stamina"], d: "The pips by your crosshair, spent on dashes and air jumps. They refill one at a time; “Stamina cooldown” on hero pages is how long each takes." },
   { k: "dash", c: "move", t: "Dash", a: ["dash", "dashes", "air dash", "ground dash", "dash jump"], d: "A quick burst in the direction you’re moving, on the ground or in the air (one air dash per jump). Jumping during a dash (a dash jump) carries the speed for 2 stamina total. Hero pages list each dash’s distance and how long it takes." },
   { k: "sprint", c: "move", t: "Sprint", a: ["sprint", "sprint speed"], d: "Extra move speed that kicks in after about 5 seconds out of combat. It ends when you enter combat or aim down sights." },
-  { k: "slide", c: "move", t: "Slide", a: ["slide", "slides", "sliding"], d: "Crouching while moving fast, or on a slope, turns into a slide." }
+  { k: "slide", c: "move", t: "Slide", a: ["slide", "slides", "sliding"], d: "Crouching while moving fast, or on a slope, turns into a slide." },
+  // added with the status-effect sources (adapted from the Deadlock Wiki's Status Effects page)
+  { k: "move-speed", c: "move", t: "Move speed", a: ["move speed", "movement speed", "bonus move speed"], d: "How fast you walk. Buffs add to it, in m/s or as a percentage, and [[slow|slows]] take it away. [[sprint|Sprint]] adds more on top when you’re out of combat." },
+  { k: "burn", c: "dmg", t: "Burn", a: ["burn", "burns", "burning"], d: "A debuff that deals [[spirit-damage|spirit damage]] over a few seconds after the hit, a kind of [[dot|damage over time]]." },
+  { k: "movement-silence", c: "cc", t: "Movement Silence", a: ["movement silence", "movement silenced"], d: "A debuff that slows the target and blocks their movement abilities and movement items, like dashes and leaps. Some versions restrict movement further. They can still shoot and use other abilities." },
+  { k: "damage-reduction", c: "cc", t: "Damage output reduction", a: ["damage output reduction", "reduced damage output"], d: "A debuff that lowers how much damage the target deals. Some cut every kind of damage, others only weapon or only spirit damage." },
+  { k: "hidden-minimap", c: "buff", t: "Hidden on minimap", a: ["hidden on the minimap", "hidden on minimap"], d: "A buff that keeps you off the enemy minimap. You can still be seen normally." },
+  { k: "affliction", c: "hero", t: "Affliction", a: [], d: "Pocket’s long damage-over-time debuff. It can’t kill: it stops at 1 health, and it doesn’t trigger item procs." },
+  { k: "eternal-night", c: "hero", t: "Eternal Night", a: [], d: "Drifter’s debuff that badly limits how far affected heroes can see." },
+  { k: "fixation", c: "hero", t: "Fixation", a: [], d: "Haze’s stacking debuff: the target takes more damage from her." },
+  { k: "hotel-guest", c: "hero", t: "Hotel Guest", a: [], d: "The Doorman’s debuff that sends the target into the Baroness Hotel. They have to reach the elevator to get out." },
+  { k: "lethal-venom", c: "hero", t: "Lethal Venom", a: [], d: "Vyper’s debuff that deals [[spirit-damage|spirit damage]] after a short delay. The more health the target is missing, the more it can deal." },
+  { k: "malice", c: "hero", t: "Malice", a: [], d: "Lady Geist’s debuff: a fading [[slow|slow]], and the target takes more damage from her. Stacks up to 5 times and can be refreshed." },
+  { k: "marked-lifesteal", c: "hero", t: "Marked for Lifesteal", a: [], d: "Apollo’s Riposte marks the target: he gains 75% [[lifesteal|lifesteal]] against them." },
+  { k: "parry-prevention", c: "hero", t: "Parry Prevention", a: [], d: "Apollo’s Riposte also stops the target from [[parry|parrying]] for a while." },
+  { k: "petrified", c: "hero", t: "Petrified", a: [], d: "Vyper’s Petrifying Bola turns heroes to stone: [[interrupt|interrupted]], unable to move or act, but immune to damage except Vyper’s own Lethal Venom." },
+  { k: "rabbit-hex", c: "hero", t: "Rabbit Hex", a: [], d: "Sinclair turns the target into a rabbit with a rabbit’s hitbox. They move faster but take more damage, and can only walk and jump. Anything they’d already started still finishes." },
+  { k: "tether", c: "hero", t: "Tether", a: [], d: "Vindicta’s Stake binds nearby enemies to a point, keeping them within a short radius of it." },
+  { k: "wrecked", c: "hero", t: "Wrecked", a: [], d: "Billy’s melee hits mark enemies as Wrecked. When he activates Blasted, he deals extra bullet damage to Wrecked enemies." }
 ];
 var HINT_RX = [/^Hit the trap with a Charged Shot/i], GBY = {}, GAL = {}, ICON_SPIRIT = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_magic_color.svg", ICON_WEAPON = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_bullet_color.svg";
 GLOSS.forEach(function (g) { GBY[g.k] = g; g.a.forEach(function (x) { GAL[x] = g.k; }); GAL[g.t.toLowerCase()] = g.k; });
@@ -2736,6 +2770,70 @@ function renderGlossary() {
     '<div class="gcats">' + jump + '</div><div id="glist">' + glossList() + "</div>";
 }
 // related terms: ones whose definitions link to this one, minus any already linked or named in this definition
+// What causes an effect: the wiki's list (data/status_effects.json, matched to the game data) plus, for slows and
+// debuff resist, every ability and item whose game data has one (those lists are generated on the wiki too, so they never export)
+var SRC_LIMIT = 8;
+function srcLive(k) {
+  var test = k === "slow" ? function (p, r) { return p.css_class === "slow" && /Slow\b/.test(r.l) && !/Resist/.test(r.l); }
+    : k === "debuff-resist" ? function (p, r) { return /Debuff Resist/.test(r.l); } : null;
+  if (!test) return null;
+  var out = [], heroOf = {};
+  state.heroes.forEach(function (h) { Object.keys(h.items || {}).forEach(function (s) { if (!heroOf[h.items[s]]) heroOf[h.items[s]] = h; }); });
+  (state.items || []).forEach(function (it) {
+    var P = it.properties || {}, isAb = it.type === "ability" && heroOf[it.class_name], isIt = it.type === "upgrade" && !it.disabled && it.shopable !== false && slotOf(it);
+    if (!isAb && !isIt) return;
+    var best = null;
+    Object.keys(P).forEach(function (key) {
+      var p = P[key]; if (!p || typeof p !== "object") return;
+      var r = null; try { r = propRec(it, key); } catch (e) {}
+      if (r && test(p, r) && !best) best = r.v.replace(/^-/, "");
+    });
+    if (best == null && k === "slow") { // an ability whose slow only comes with a tier
+      (it.upgrades || []).some(function (u) { return ((u && u.property_upgrades) || []).some(function (pu) { var p = P[pu.name]; if (p && p.css_class === "slow" && /Slow|Move/.test(propLabel(p, pu.name))) { best = String(pu.bonus).replace(/^-/, "") + "%"; return true; } return false; }); });
+    }
+    if (best == null) return;
+    if (isAb) out.push({ hero: heroOf[it.class_name].name, hc: heroOf[it.class_name].class_name, ability: nameOf(it), ac: it.class_name, note: best });
+    else out.push({ item: nameOf(it), ic: it.class_name, note: best });
+  });
+  return out;
+}
+function sourcesHtml(g) {
+  var se = state.se && state.se.effects || [], list = [], notes = [], seen = {};
+  se.forEach(function (e) { if (e.term !== g.k) return; list = list.concat(e.sources || []); (e.notes || []).forEach(function (n) { if (notes.indexOf(n) < 0) notes.push(n); }); });
+  var live = srcLive(g.k);
+  if (live) { // the game data's list wins; the wiki's own entries fill in what isn't an ability or item (powerups and the like)
+    var have = {}; live.forEach(function (x) { have[x.ac || x.ic] = 1; });
+    list = live.concat(list.filter(function (x) { return !(x.ac || x.ic) || !have[x.ac || x.ic]; }));
+  }
+  list = list.filter(function (x) { var id = x.ac || x.ic || x.text || x.hero; if (seen[id + "|" + (x.note || "")]) return false; seen[id + "|" + (x.note || "")] = 1; return true; });
+  if (!list.length && !notes.length) return "";
+  var heroes = list.filter(function (x) { return x.hero; }), items = list.filter(function (x) { return x.item; }), other = list.filter(function (x) { return !x.hero && !x.item; });
+  heroes.sort(function (a, b) { return a.hero.localeCompare(b.hero); });
+  items.sort(function (a, b) { var ia = state.byClass[a.ic] || {}, ib = state.byClass[b.ic] || {}; return (ia.item_tier || 0) - (ib.item_tier || 0) || a.item.localeCompare(b.item); });
+  function row(x) {
+    var note = x.note ? '<em class="gsn">' + esc(x.note) + "</em>" : "";
+    if (x.hero) {
+      var h = state.heroes.filter(function (y) { return y.class_name === x.hc; })[0], ab = state.byClass[x.ac];
+      var pic = h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "";
+      var abi = ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "";
+      var go = x.ac ? ' data-sac="' + esc(x.ac) + '" data-shc="' + esc(x.hc || "") + '"' : (x.hc ? ' data-shc="' + esc(x.hc) + '"' : "");
+      return '<button class="gsrc"' + go + ">" + pic + abi + '<span class="gst"><b>' + esc(x.ability || x.hero) + "</b>" + (x.ability ? '<i>' + esc(x.hero) + "</i>" : "") + "</span>" + note + "</button>";
+    }
+    if (x.item) {
+      var it = state.byClass[x.ic], sl = it ? slotOf(it) : "";
+      return '<button class="gsrc"' + (x.ic ? ' data-item="' + esc(x.ic) + '"' : "") + '><span class="gsi' + (sl ? " " + sl : "") + '">' + (it ? imgTag(itemImg(it)) : "") + '</span><span class="gst"><b>' + esc(x.item) + "</b></span>" + note + "</button>";
+    }
+    return '<div class="gsrc gsx"><span class="gst">' + esc(x.text || "") + "</span></div>";
+  }
+  function group(title, xs) {
+    if (!xs.length) return "";
+    var more = xs.length > SRC_LIMIT ? xs.length - SRC_LIMIT : 0;
+    return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + ' <span>' + xs.length + "</span></div>" + xs.map(function (x, i) { return i >= SRC_LIMIT ? row(x).replace('class="gsrc', 'class="gsrc gsm') : row(x); }).join("") +
+      (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
+  }
+  var nt = notes.length ? '<ul class="gsnotes">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
+  return nt + (list.length ? '<div class="grh">Sources</div>' + group("Heroes", heroes) + group("Items", items) + group("Other", other) : "");
+}
 function relatedHtml(g) {
   var inDef = {}, txt = String(g.d).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, t) { inDef[k] = 1; return t; }).toLowerCase();
   var ks = [], add = function (k) {
@@ -2751,7 +2849,7 @@ function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); if (!FWD) FSTACK = []; }
   var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
-  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + "</h3><p>" + glossBody(g) + "</p>" + relatedHtml(g) + "</div>" +
+  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + "</h3><p>" + glossBody(g) + "</p>" + sourcesHtml(g) + relatedHtml(g) + "</div>" +
     // bottom row: back (when there is one), Close, then a small book button on the right that opens the full glossary
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button></div>';
   function bind() {
@@ -3377,6 +3475,20 @@ document.addEventListener("click", function (e) {
   };
 });
 $("sheetin").addEventListener("click", function (e) {
+  var sa = e.target.closest ? e.target.closest(".gsall") : null;
+  if (sa) { sa.parentNode.classList.remove("clip"); sa.remove(); return; }
+  var gs = e.target.closest ? e.target.closest(".gsrc[data-shc]") : null;
+  if (gs) { // an ability that causes the effect: open its hero and scroll to it, with a way back to where you were
+    var hc = gs.getAttribute("data-shc"), ac = gs.getAttribute("data-sac"), fromHero = state.tab === "heroes" ? state.hero : null, fromY = window.pageYOffset || 0;
+    closeSheet();
+    slideForward(function () {
+      endSearch(); state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(hc);
+      if (fromHero && fromHero !== hc) showBack(fromHero, fromY);
+      var el = ac && document.querySelector('[data-ab="' + ac + '"]');
+      if (el) { if (el.closest(".f1")) setForm(true); scrollToEl(el); } else window.scrollTo(0, 0);
+    });
+    return;
+  }
   var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
