@@ -524,6 +524,7 @@ html.lock,html.lock body{overflow:hidden}
 .glane{margin-top:6px}.glane .gln{width:80%;margin-left:auto;margin-right:auto}.glane .glh{width:80%;margin-left:auto;margin-right:auto;text-align:center}.gsft.glf{margin-top:16px}
 .sug{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.sug .stat{padding:8px 4px}.sug .stat b{font-size:17px}
 .sul{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;grid-auto-flow:column;gap:4px 6px;padding:0 3px;font-size:14px;line-height:1.6;color:var(--fg);font-variant-numeric:tabular-nums} /* counts down each column */
+.sul .sua,.sul .sua i,.suh{color:var(--gold)}.sul + .suh{margin-top:8px}
 .sul i{display:inline-block;margin-right:8px;font-style:normal;font-size:12px;color:#7d7290;text-align:left}.sul + .gsft{margin-top:10px}
 .suc{display:inline-block;line-height:1.25;min-width:54px;text-align:center;padding:6px 8px;border-radius:8px;background:var(--panel2);border:1px solid #3d344c;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg)}
 .suc.sua{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.suc.sm{min-width:0;padding:1px 6px;font-size:12px}.glh{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:12px 0 6px 2px}
@@ -2921,12 +2922,12 @@ function heroEffectIcons(x) {
   return '<span class="gheff">' + (h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "") + (ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "") + "</span>";
 }
 function econCard(rows) { var t = rows.filter(function (r) { return r[0] != null; }).map(function (r) { return '<div class="stat"><b>' + esc(r[0]) + "</b><i>" + esc(r[1]) + "</i></div>"; }).join(""); return t ? '<div class="stats">' + t + "</div>" : ""; }
-function unlocksHtml() { // soul totals (starting souls included) for each new ability and each boon
+function unlocksHtml() { // soul totals (starting souls included) for each boon; gold ones also unlock a new ability
   var U = state.mc && state.mc.soul_unlocks; if (!U || !U.length) return "";
   var st = (state.mc.economy && state.mc.economy.starting_souls) || 0, f = function (n) { return Number(n + st).toLocaleString(); };
-  var ab = U.filter(function (u) { return u.AbilityUnlocks; }), bo = U.filter(function (u) { return u.PowerIncrease; });
-  return '<div class="grh">New abilities at</div><div class="sul">' + ab.map(function (u, i) { return "<span><i>" + (i + 1) + "</i>" + f(u.RequiredSouls) + "</span>"; }).join("") + "</div>" +
-    '<div class="grh">Boons at</div><div class="sul" style="grid-template-rows:repeat(' + Math.ceil(bo.length / 4) + ',auto)">' + bo.map(function (u, i) { return '<span><i>' + (i + 1) + "</i>" + f(u.RequiredSouls) + "</span>"; }).join("") + "</div>";
+  var bo = U.filter(function (u) { return u.PowerIncrease; });
+  return '<div class="grh">Boons at</div><div class="sul" style="grid-template-rows:repeat(' + Math.ceil(bo.length / 4) + ',auto)">' + bo.map(function (u, i) { return "<span" + (u.AbilityUnlocks ? ' class="sua"' : "") + "><i>" + (i + 1) + "</i>" + f(u.RequiredSouls) + "</span>"; }).join("") + "</div>" +
+    (bo.some(function (u) { return u.AbilityUnlocks; }) ? '<div class="gsft suh">Unlocks a new ability</div>' : "");
 }
 function laneHtml() { // the order you fight through a lane, top to bottom
   var M = state.mc || {}, f = function (n) { return n == null ? "" : Number(n).toLocaleString(); };
