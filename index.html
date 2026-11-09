@@ -526,7 +526,11 @@ html.lock,html.lock body{overflow:hidden}
 .mrow span{color:var(--fg)}.mrow b{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}.mrh{background:var(--panel);font-size:11px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}.mrh b{font-weight:600;color:var(--dim)}
 .gslide{margin-top:14px;padding:10px 12px 4px;background:var(--panel2);border:1px solid #3d344c;border-radius:8px}
 .gslh{display:flex;justify-content:space-between;font-size:13px;color:var(--dim)}.gslh b{color:var(--gold);font-weight:600}
-#gsr{width:100%;margin:10px 0 2px;accent-color:var(--gold)}
+#gsr{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:6px 0 0;background:transparent;touch-action:none;--p:0%}
+#gsr::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--gold) var(--p),#3d344c var(--p))}
+#gsr::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 1px 4px rgba(0,0,0,.5)}
+#gsr::-moz-range-track{height:6px;border-radius:3px;background:#3d344c}#gsr::-moz-range-progress{height:6px;border-radius:3px;background:var(--gold)}
+#gsr::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--gold)}
 .gsticks{display:flex;justify-content:space-between;font-size:11px;color:#7d7290;padding:0 2px}.gslide .gsft{margin:8px 0 6px}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
@@ -2572,6 +2576,7 @@ function backBtn() { // icon-only back button, first in the bottom button row; o
 }
 var LOCKY = 0;
 function lockMove(e) {
+  if (e.target.closest && e.target.closest('input[type="range"]')) return; // a slider in a pop-up must be draggable
   var inn = e.target.closest ? e.target.closest(".sheet .in") : null;
   if (!inn || inn.scrollHeight <= inn.clientHeight + 1) e.preventDefault();
 }
@@ -3185,6 +3190,17 @@ function showBackNews() { // after opening a hero or ability from What's New: a 
   b.hidden = false; b.classList.remove("in"); void b.offsetWidth; b.classList.add("in");
 }
 function hideBack() { BACK = null; var b = $("backpill"); if (b) b.hidden = true; }
+var GBACK_Y = null;
+function showBackGloss(k, y) { // "‹ Back to Malice" after following a link within the glossary; it goes once you scroll away from where you landed
+  var b = $("backpill"), g = GBY[k]; if (!b || !g) return;
+  BACK = { gloss: k, y: y }; GBACK_Y = window.pageYOffset || 0;
+  b.innerHTML = "‹ Back to " + esc(g.t) + '<span class="bx" aria-label="Dismiss">×</span>';
+  b.hidden = false; b.classList.remove("in"); void b.offsetWidth; b.classList.add("in"); topPill();
+}
+window.addEventListener("scroll", function () {
+  if (GBACK_Y == null || !BACK || !BACK.gloss) return;
+  if (Math.abs((window.pageYOffset || 0) - GBACK_Y) > 60) { GBACK_Y = null; hideBack(); topPill(); }
+}, { passive: true });
 function showBackSheet(f) { // "‹ Back to Burn": the page you were on, with the pop-up you followed a link from open again
   var b = $("backpill"); if (!b) return;
   var nm = f.sheet ? (GBY[f.sheet] || {}).t : f.item ? nameOf(state.byClass[f.item] || {}) : f.tab === "glossary" ? "Glossary" : f.tab === "news" ? "What’s New" : "";
@@ -3197,6 +3213,7 @@ $("backpill").onclick = function (e) {
   if (e.target.classList && e.target.classList.contains("bx")) { hideBack(); return; }
   var bk = BACK; hideBack(); if (!bk) return;
   if (bk.news) { slideBack(backToNews); return; }
+  if (bk.gloss) { GBACK_Y = null; topPill(); easeScroll(bk.y); var c0 = $("g-" + bk.gloss); setTimeout(function () { if (c0) { c0.classList.add("pop"); setTimeout(function () { c0.classList.remove("pop"); }, 1700); } }, EASE_DUR || 400); return; }
   if (bk.sheet) {
     var f = bk.sheet;
     slideBack(function () {
@@ -3672,7 +3689,7 @@ $("main").addEventListener("click", function (e) {
   var fsb = e.target.closest ? e.target.closest("[data-fs]") : null;
   if (fsb) { userForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
-  if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
+  if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { var fromCard = gl.closest(".gt"), fromY = window.pageYOffset || 0; EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); if (fromCard && fromCard !== t0) showBackGloss(fromCard.id.slice(2), fromY); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
   var gt = state.tab === "glossary" && e.target.closest ? e.target.closest(".gt[id^='g-']") : null;
   if (gt && !(e.target.closest && e.target.closest("a,button"))) { glossSheet(gt.id.slice(2)); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
@@ -3758,7 +3775,7 @@ function openSource(gs) { // an ability that causes an effect: open its hero and
 }
 $("sheetin").addEventListener("input", function (e) {
   if (e.target.id !== "gsr") return;
-  var m = +e.target.value; $("gsmin").textContent = m + " min";
+  var m = +e.target.value; $("gsmin").textContent = m + " min"; e.target.style.setProperty("--p", (m / +e.target.max * 100) + "%");
   Array.prototype.forEach.call(document.querySelectorAll("#sheetin [data-base]"), function (b) { b.textContent = Math.round(+b.dataset.base * (1 + +b.dataset.pct * m / 100)).toLocaleString(); });
 });
 $("sheetin").addEventListener("click", function (e) {
@@ -3787,7 +3804,7 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) sinkSheet(); };
     later(reset, 200);
   }
   sh.addEventListener("touchstart", function (e) {
-    clearTimeout(RT); act = e.touches.length === 1; mode = null; dd = 0;
+    clearTimeout(RT); act = e.touches.length === 1 && !(e.target.closest && e.target.closest('input[type="range"]')); mode = null; dd = 0; // dragging a slider never moves the card
     if (act) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }
   }, { passive: true });
   sh.addEventListener("touchmove", function (e) {
