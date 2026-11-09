@@ -514,7 +514,8 @@ html.lock,html.lock body{overflow:hidden}
 .pncred{font-size:11px;color:var(--dim);opacity:.8;margin:14px 2px 0}
 .nhs .rch .pnl{margin-top:2px}
 .rhdb{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;text-align:left}
-.ric.pnit{width:32px;height:32px}.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
+.ric.pnit{width:32px;height:32px}.ric.pnit.weapon{box-shadow:0 0 0 1.5px var(--weapon)}.ric.pnit.vitality{box-shadow:0 0 0 1.5px var(--vital)}.ric.pnit.spirit{box-shadow:0 0 0 1.5px var(--spirit)}
+.ric.rstat{background:none}.ric.rstat .si{width:20px;height:20px;color:var(--nav)} /* Stats: a plain blue heart, so it doesn't read as an ability */.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -1215,7 +1216,12 @@ function tooltipHtml(it) {
     var isUU = si > 0 && /Ultimate Unlock\s*:/i.test(sec.loc_string || ""), locText = sec.loc_string;
     var boxT = (SEC_BOX[it.name] || {})[si];
     if (boxT) { isUU = true; parts.push('<div class="uu"><div class="uuh">' + esc(boxT) + "</div>"); }
-    else if (isUU) { locText = String(locText).replace(/^(\s*<br\s*\/?>)+/i, "").replace(/Ultimate Unlock\s*:\s*/i, ""); parts.push('<div class="uu"><div class="uuh">Ultimate unlock</div>'); } // what the ultimate adds sits in its own tinted block
+    else if (isUU) {
+      locText = String(locText).replace(/^(\s*<br\s*\/?>)+/i, "").replace(/Ultimate Unlock\s*:\s*/i, "");
+      var cond = /^\s*<span class="highlight">\s*(While [^<]+?)\s*<\/span>\s*/i.exec(locText), uuT = "Ultimate unlock";
+      if (cond) { uuT = cond[1]; locText = locText.slice(cond[0].length).replace(/^([^A-Za-z<]*)([a-z])/, function (m, a, c) { return a + c.toUpperCase(); }); } // "While rage is full knives deal…" -> title "While rage is full", text "Knives deal…"
+      parts.push('<div class="uu"><div class="uuh">' + esc(uuT) + "</div>");
+    } // what the ultimate adds sits in its own tinted block
     var onlyDim = /^(\s*<br\s*\/?>)*\s*<span class="diminish">([^<]*)<\/span>\s*$/i.exec(locText || "");
     if (si > 0 && onlyDim && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc"><span class="dm">' + esc(onlyDim[2]) + "</span></div>"); // e.g. "Cooldown is increased by +30% if no hero is impacted."
     else if (si > 0 && locText && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc">' + rich(locText) + "</div>");
@@ -2983,7 +2989,7 @@ function patchNotesHtml() {
     if (p.general.length) body += '<section class="nhs"><div class="nsub">General</div>' + pnList(p.general) + "</section>";
     if (p.items.length) body += '<section class="nhs"><div class="nsub">Items</div><div class="nhg">' + p.items.map(function (x) {
       var it = x.ic && state.byClass[x.ic];
-      var head = x.item ? '<div class="rhd"><span class="ric pnit">' + (it ? imgTag(itemArt(it), itemImg(it)) : "") + "</span>" + (it ? '<button class="pitem rhdb" data-pitem="' + esc(x.ic) + '">' + esc(nameOf(it)) + "</button>" : esc(x.item)) + "</div>" : "";
+      var head = x.item ? '<div class="rhd"><span class="ric pnit' + (it && slotOf(it) ? " " + slotOf(it) : "") + '">' + (it ? imgTag(itemArt(it), itemImg(it)) : "") + "</span>" + (it ? '<button class="pitem rhdb" data-pitem="' + esc(x.ic) + '">' + esc(nameOf(it)) + "</button>" : esc(x.item)) + "</div>" : "";
       return '<div class="rgrp">' + head + '<div class="rch">' + pnList(x.lines) + "</div></div>";
     }).join("") + "</div></section>";
     var hs = p.heroes.slice().sort(function (a, b) { return a.hero.replace(/^The /, "").localeCompare(b.hero.replace(/^The /, "")); });
@@ -2991,12 +2997,13 @@ function patchNotesHtml() {
       var h = x.hc && state.heroes.filter(function (y) { return y.class_name === x.hc; })[0];
       var hd = h ? '<button class="nhh" data-nh="' + esc(h.class_name) + '"><img alt="" src="' + esc(heroImg(h)) + '"><b>' + esc(h.name) + "</b></button>" : '<div class="nhh"><b>' + esc(x.hero) + "</b></div>";
       body += '<section class="nhs"' + (h ? ' data-hero="' + esc(h.class_name) + '"' : "") + ">" + hd + '<div class="nhg">' + x.groups.map(function (g) {
-        var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : g.label === "Stats" ? siIcon("health") : "";
+        var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : g.label === "Stats" ? siIcon("health") : "", stc = !ab && g.label === "Stats" ? " rstat" : "";
         var name = ab ? nameOf(ab) : (g.ability || g.label || "");
-        return '<div class="rgrp"' + (ab ? ' data-gab="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
+        return '<div class="rgrp"' + (ab ? ' data-gab="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric' + stc + '">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
       }).join("") + "</div></section>";
     });
-    var src = p.source ? '<a class="pnsrc" href="' + esc(p.source) + '" target="_blank" rel="noopener">' + esc(p.title || "Official notes") + " ↗</a>" : "";
+    var gid = /steam_community_announcements\/(\d+)/.exec(p.source || ""), url = gid ? "https://store.steampowered.com/news/app/1422450/view/" + gid[1] : p.source; // Steam's store news page loads in Safari; the community redirect came up blank
+    var src = p.source ? '<a class="pnsrc" href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(p.title || "Official notes") + " ↗</a>" : "";
     return '<details class="rpt"' + (pi === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '</span><span class="rcv">' + CHEV + "</span></summary>" + src + body + "</details>";
   }).join("") + '<p class="pncred">Patch notes from the Deadlock Wiki’s data (github.com/deadlock-wiki/deadlock-data).</p></div>';
 }
@@ -3358,17 +3365,19 @@ function countTo(el, bef, k) {
 // then the tiles beside it widen into its place. A tile that wraps onto a new row, or a whole stat block that appears or vanishes, grows or shrinks the same way,
 // so everything below glides instead of jumping. The card is re-rendered as before; this only animates from the old layout to the new one.
 var LAY_MS = 380, LAY_EASE = "cubic-bezier(.4,0,.2,1)";
-function blockList(card) { // the headings and stat blocks sitting directly in the card, each with a name so the old card and the new one can be lined up
-  var out = [], head = "";
-  Array.prototype.forEach.call(card.children, function (el) {
+function blockList(card) { // the headings and stat blocks sitting directly in the card (or in one of its titled boxes), each with a name so the old card and the new one can be lined up
+  var out = [], head = "", box = 0;
+  function walk(el, pre) {
     if (el.hasAttribute("data-ghost")) return;
     var c = el.classList, sig = null;
+    if (c.contains("uu")) { var p2 = "u" + (box++) + ":"; head = ""; Array.prototype.forEach.call(el.children, function (k) { walk(k, p2); }); head = ""; return; } // e.g. "While rage is full"
     if (c.contains("blk")) { head = el.textContent.trim(); sig = "b:" + head; }
     else if (c.contains("stats")) { sig = "s:" + head; head = ""; }
     else if (c.contains("minor")) { sig = "m"; head = ""; }
     else head = "";
-    if (sig) out.push({ el: el, sig: sig });
-  });
+    if (sig) out.push({ el: el, sig: pre + sig });
+  }
+  Array.prototype.forEach.call(card.children, function (el) { walk(el, ""); });
   return out;
 }
 function calmClone(el) { var n = el.cloneNode(true); n.classList.remove("pop", "dn"); Array.prototype.forEach.call(n.querySelectorAll(".pop"), function (x) { x.classList.remove("pop", "dn"); }); return n; }
@@ -3385,7 +3394,7 @@ function tileData(cont, clone) { // every tile in a stat block: where it sits in
 function snapLayout(card) { // taken from the old card, just before it is swapped out
   var out = blockList(card).map(function (b) {
     var o = { sig: b.sig, box: boxOf(b.el), node: calmClone(b.el) };
-    if (b.sig.charAt(0) === "s") o.tiles = tileData(b.el, true);
+    if (/^(u\d+:)?s:/.test(b.sig)) o.tiles = tileData(b.el, true);
     return o;
   });
   out.chips = chipData(card, true);
@@ -3444,7 +3453,7 @@ function animateLayout(fresh, snap) {
     if (op.t === "r") { gone.push({ s: snap[op.i], after: prev, n: n }); return; }
     var el = nb[op.j].el; prev = el;
     if (op.t === "a") plans.push({ add: el, box: boxOf(el) });
-    else if (nb[op.j].sig.charAt(0) === "s") plans.push(statPlan(snap[op.i], el));
+    else if (/^(u\d+:)?s:/.test(nb[op.j].sig)) plans.push(statPlan(snap[op.i], el));
   });
   // 2. put blocks that are leaving back where they were, then start every animation
   var tail = null, tailAfter = null; // blocks that leave together go back in their old order
@@ -3610,6 +3619,7 @@ document.addEventListener("click", function (e) {
   if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
   e.preventDefault();
   if (d._busy) return;
+  if (!d.open && d.closest("#revs.news")) setTimeout(function () { var y = d.getBoundingClientRect().top + window.pageYOffset - 12 - (parseFloat(getComputedStyle(document.body).paddingTop) || 0); if (Math.abs(y - window.pageYOffset) > 4) easeScroll(Math.max(0, y)); }, 300); // bring the patch you opened to the top once the others have folded
   if (!d.open && d.closest("#revs.news")) Array.prototype.forEach.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { if (o !== d && !o._busy) { var sm2 = o.querySelector(":scope > summary"); if (sm2) sm2.click(); } }); // one patch open at a time
   var kids = Array.prototype.slice.call(d.querySelectorAll(":scope > :not(summary)")), opening = !d.open, h0 = d.offsetHeight, h1;
   if (opening) { d.open = true; h1 = d.offsetHeight; }
