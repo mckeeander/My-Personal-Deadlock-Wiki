@@ -515,7 +515,7 @@ html.lock,html.lock body{overflow:hidden}
 .nhs .rch .pnl{margin-top:2px}
 .rhdb{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;text-align:left}
 .ric.pnit{width:32px;height:32px}.ric.pnit.weapon{box-shadow:0 0 0 1.5px var(--weapon)}.ric.pnit.vitality{box-shadow:0 0 0 1.5px var(--vital)}.ric.pnit.spirit{box-shadow:0 0 0 1.5px var(--spirit)}
-.ric.rstat{background:none}.ric.rstat .si{width:20px;height:20px;color:var(--nav)} /* Stats: a plain blue heart, so it doesn't read as an ability */.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
+.ric.rstat{background:none}.ric.rstat .si{width:20px;height:20px;color:var(--vital)} /* Stats: a plain green (vitality) heart, so it doesn't read as an ability */.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -3439,6 +3439,7 @@ function statPlan(s, el) {
   Object.keys(ot).forEach(function (k) { if (!nt[k]) p.leave.push(ot[k]); });
   return p;
 }
+function veilRGB(el) { return el && el.closest && el.closest(".uu") ? "39,33,41" : "29,25,38"; } // --panel, or --panel under the titled box's 5% gold tint
 function animateLayout(fresh, snap) {
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!snap || calm || !fresh.animate) return;
@@ -3500,7 +3501,8 @@ function animateLayout(fresh, snap) {
       veil.style.cssText = "position:absolute;left:-8px;right:-10px;top:-11px;bottom:-12px;background:var(--panel);z-index:5;pointer-events:none;border-radius:10px";
       Array.prototype.forEach.call(n.el.children, function (c) { run(c, [{ visibility: "hidden" }, { visibility: "hidden" }], { duration: dl + 245, fill: "none" }); }); // while the tile is narrow its text and badge would spill past the veil; they switch on under the still-opaque veil
       n.el.appendChild(veil);
-      run(veil, [{ backgroundColor: "rgba(29,25,38,1)" }, { backgroundColor: "rgba(29,25,38,0)" }], { duration: 260, delay: dl + 245, easing: "linear" }); // fade the veil's colour (= --panel), not its opacity: an opacity fade gets its own layer in Safari, which drags the overlapping neighbour onto one too and nudges it a pixel (its badge's top edge got clipped)
+      var vc = veilRGB(n.el); veil.style.background = "rgb(" + vc + ")";
+      run(veil, [{ backgroundColor: "rgba(" + vc + ",1)" }, { backgroundColor: "rgba(" + vc + ",0)" }], { duration: 260, delay: dl + 245, easing: "linear" }); // fade the veil's colour (= what's behind the tile), not its opacity: an opacity fade gets its own layer in Safari, which drags the overlapping neighbour onto one too and nudges it a pixel (its badge's top edge got clipped)
       undo.push(function () { if (veil.parentNode) veil.parentNode.removeChild(veil); });
     });
     p.leave.forEach(function (o) {
@@ -3619,8 +3621,15 @@ document.addEventListener("click", function (e) {
   if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
   e.preventDefault();
   if (d._busy) return;
-  if (!d.open && d.closest("#revs.news")) setTimeout(function () { var y = d.getBoundingClientRect().top + window.pageYOffset - 12 - (parseFloat(getComputedStyle(document.body).paddingTop) || 0); if (Math.abs(y - window.pageYOffset) > 4) easeScroll(Math.max(0, y)); }, 300); // bring the patch you opened to the top once the others have folded
-  if (!d.open && d.closest("#revs.news")) Array.prototype.forEach.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { if (o !== d && !o._busy) { var sm2 = o.querySelector(":scope > summary"); if (sm2) sm2.click(); } }); // one patch open at a time
+  if (!d.open && d.closest("#revs.news")) { // one patch open at a time, without the page jumping
+    var before = d.getBoundingClientRect().top, rv = d.parentNode, h0 = rv.offsetHeight;
+    Array.prototype.forEach.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { if (o !== d) { o.getAnimations().forEach(function (a) { a.cancel(); }); o.open = false; o._busy = false; o.style.overflow = ""; o.classList.remove("closing"); } });
+    var lost = h0 - rv.offsetHeight; if (lost > 0) { rv.style.paddingBottom = lost + "px"; clearTimeout(rv._pt); rv._pt = setTimeout(function () { rv.style.paddingBottom = ""; }, 900); } // near the bottom of the page there'd be nothing left to scroll into, so the patch would hop
+    var shift = d.getBoundingClientRect().top - before;
+    if (shift) window.scrollBy(0, shift); // the tapped patch stays exactly where it was on screen
+    var topY = d.getBoundingClientRect().top + window.pageYOffset - 12 - (parseFloat(getComputedStyle(document.body).paddingTop) || 0);
+    if (Math.abs(topY - window.pageYOffset) > 4) setTimeout(function () { easeScroll(Math.max(0, topY)); }, 30); // then it glides to the top as it opens
+  }
   var kids = Array.prototype.slice.call(d.querySelectorAll(":scope > :not(summary)")), opening = !d.open, h0 = d.offsetHeight, h1;
   if (opening) { d.open = true; h1 = d.offsetHeight; }
   else { d.open = false; h1 = d.offsetHeight; d.open = true; var t = h0; h0 = h1; h1 = t; } // h0 = shut height, h1 = open height
