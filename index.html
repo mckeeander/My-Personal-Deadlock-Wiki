@@ -2489,7 +2489,7 @@ function itemSheet(cn, fromBack) {
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button></div>';
   html = glossOnce(html);
   function bind() {
-    $("close").onclick = closeSheet;
+    $("close").onclick = sinkSheet;
     var bk = $("ibk"); if (bk) bk.onclick = sheetBack;
   }
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2537,6 +2537,14 @@ function unlockBody() {
   if (!document.documentElement.classList.contains("lock")) return;
   document.documentElement.classList.remove("lock"); document.removeEventListener("touchmove", lockMove, { passive: false });
   if ((window.pageYOffset || 0) !== LOCKY) window.scrollTo(0, LOCKY);
+}
+function sinkSheet() { // Close (or a tap outside the card): the card sinks out of view, as when you swipe it down
+  var box = $("sheetin"), sh = $("sheet");
+  if (sh.hidden || sinkSheet.on) return;
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { closeSheet(); return; }
+  sinkSheet.on = true;
+  box.style.transition = "transform .18s ease-out"; box.style.transform = "translateY(100%)";
+  setTimeout(function () { sinkSheet.on = false; closeSheet(); box.style.transition = ""; box.style.transform = ""; }, 170);
 }
 function closeSheet() { clearTimeout(SWAPT); resetSwap(); $("sheet").hidden = true; ISTACK = []; FSTACK = []; unlockBody(); }
 function bindCommon() {
@@ -2901,7 +2909,7 @@ function glossSheet(k, fromBack) {
     // bottom row: back (when there is one), Close, then a small book button on the right that opens the full glossary
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button></div>';
   function bind() {
-    $("close").onclick = closeSheet;
+    $("close").onclick = sinkSheet;
     $("gall").onclick = function () { closeSheet(); slideForward(function () { openGlossary(k); }); };
     var bk = $("ibk"); if (bk) bk.onclick = sheetBack;
   }
@@ -3564,7 +3572,7 @@ $("sheetin").addEventListener("click", function (e) {
   var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
-$("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); };
+$("sheet").onclick = function (e) { if (e.target === $("sheet")) sinkSheet(); };
 // drag the pop-up away to dismiss it. The card itself only ever moves up and down: swiping down, or right, lowers it and closes it.
 // Several cards deep, swiping right instead slides the content off the card and brings back the card you came from.
 (function () {
