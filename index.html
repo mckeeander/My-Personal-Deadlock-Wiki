@@ -496,10 +496,12 @@ html.lock,html.lock body{overflow:hidden}
 .gsn{flex:none;max-width:46%;font-style:normal;font-size:12px;color:var(--gold);text-align:right;line-height:1.25}
 .gtier{color:#a77ff0;margin-right:3px;font-size:11px} /* the ◆ of the tier boxes */
 .gric{width:17px;height:17px;vertical-align:-4px;margin:0 1px}
-.gsi.pw i{display:block;width:20px;height:20px;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;background:currentColor}
+.gsi.pw .si{width:20px;height:20px;color:inherit}
 .gsi.pw.fire_rate{color:var(--weapon);box-shadow:0 0 0 1.5px var(--weapon)}.gsi.pw.spirit{color:var(--spirit);box-shadow:0 0 0 1.5px var(--spirit)}
 .gsi.pw.health{color:var(--vital);box-shadow:0 0 0 1.5px var(--vital)}.gsi.pw.move_speed{color:var(--nav);box-shadow:0 0 0 1.5px var(--nav)}
-.gheff{display:inline-flex;align-items:center;flex:none}.gheff .gsp{width:28px;height:28px}.gheff .gsa{width:28px;height:28px}.gheff .gsa img{width:24px;height:24px}
+.gheff{display:inline-flex;align-items:center;gap:4px;flex:none}.gheff .gsp + .gsa{margin-left:0}
+.gchev{flex:none;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin:-6px -6px -6px auto;background:none;border:0;color:var(--gold);padding:0}
+.ghh{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.04em;margin:14px 0 6px 2px}.gh + .ghh{margin-top:4px}.gheff .gsp{width:28px;height:28px}.gheff .gsa{width:28px;height:28px}.gheff .gsa img{width:24px;height:24px}
 .gslink{display:inline-block;margin-top:14px;background:var(--panel2);border:1px solid #4a405a;border-radius:8px;padding:9px 14px;font:inherit;font-size:15px;color:var(--fg)}
 .gsx.gspw{color:var(--fg);min-height:44px;padding:5px 10px 5px 6px}.gsi.pw{background:var(--panel)}.gsi.pw img{width:20px;height:20px;object-fit:contain}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
@@ -2748,7 +2750,7 @@ function glossBody(g) {
   return esc(g.d).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
 }
 function glossCard(g) {
-  return '<section class="gt" id="g-' + g.k + '"><h3>' + gIcon(g.k) + esc(g.t) + "</h3><p>" + glossBody(g) + "</p></section>";
+  return '<section class="gt" id="g-' + g.k + '"><h3>' + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p></section>";
 }
 // the game's own property icons, for terms that have one
 var GA = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/", GP = GA + "icons/properties/";
@@ -2758,6 +2760,11 @@ var GICON = { "weapon-damage": GP + "damage_bullet_color.svg", "spirit-damage": 
   "melee-resist": GP + "armor_melee_color.svg", "barrier": GP + "armor_alt.svg", "lifesteal": GP + "heal.svg", "health-regen": GP + "heal.svg",
   "slow-resist": GP + "move_speed.svg", "slow": GP + "condition_slow.svg", "time-slow": GP + "condition_slow.svg", "stamina": GP + "move_stamina_recharge.svg",
   "sprint": GP + "move_speed.svg" };
+function gChev(k) { // hero effects: a gold chevron after the name opens the ability that applies it
+  var hx = GBY[k] && GBY[k].c === "hero" && heroEffect(k); if (!hx) return "";
+  var ab = state.byClass[hx.ac];
+  return '<button class="gchev" data-sac="' + esc(hx.ac) + '" data-shc="' + esc(hx.hc) + '" aria-label="Go to ' + esc(ab ? nameOf(ab) : hx.ability) + '"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>';
+}
 function gIcon(k) {
   var hx = GBY[k] && GBY[k].c === "hero" && heroEffect(k); if (hx) return heroEffectIcons(hx);
   return GICON[k] ? '<img class="gi" alt="" loading="lazy" src="' + GICON[k] + '" onerror="this.remove()">' : "";
@@ -2767,6 +2774,11 @@ function glossList() {
   GCATS.forEach(function (c) {
     var list = GLOSS.filter(function (g) { return g.c === c[0] && (!q || (g.t + " " + g.a.join(" ") + " " + g.d).toLowerCase().indexOf(q) >= 0); });
     if (!list.length) return; n += list.length;
+    if (c[0] === "hero") { // grouped by hero, A-Z
+      var by = {}; list.forEach(function (g) { var x = heroEffect(g.k), h = x && x.hero || "Other"; (by[h] = by[h] || []).push(g); });
+      html += '<h2 class="gh" id="gc-' + c[0] + '">' + esc(c[1]) + "</h2>" + Object.keys(by).sort().map(function (h) { return '<div class="ghh">' + esc(h) + "</div>" + by[h].map(glossCard).join(""); }).join("");
+      return;
+    }
     html += '<h2 class="gh" id="gc-' + c[0] + '">' + esc(c[1]) + "</h2>" + list.map(glossCard).join("");
   });
   return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
@@ -2786,7 +2798,8 @@ function renderGlossary() {
 var SRC_LIMIT = 7;
 function srcLive(k) {
   var test = k === "slow" ? function (p, r) { return p.css_class === "slow" && /Slow\b/.test(r.l) && !/Resist/.test(r.l); }
-    : k === "debuff-resist" ? function (p, r) { return /Debuff Resist/.test(r.l); } : null;
+    : k === "debuff-resist" ? function (p, r) { return /Debuff Resist/.test(r.l); }
+    : k === "melee-resist" ? function (p, r) { return /^Melee Resist$/.test(r.l) && !/^-/.test(r.v); } : null;
   if (!test) return null;
   var out = [], heroOf = {};
   state.heroes.forEach(function (h) { Object.keys(h.items || {}).forEach(function (s) { if (!heroOf[h.items[s]]) heroOf[h.items[s]] = h; }); });
@@ -2808,7 +2821,7 @@ function srcLive(k) {
   });
   return out;
 }
-var SRC_EXTRA = { stamina: [{ text: "Movement Powerup", note: "Restores stamina" }] };
+var SRC_EXTRA = { stamina: [{ text: "Movement Powerup", note: "Raises max stamina" }] };
 function heroEffect(k) { // a hero-specific effect: the one ability that applies it
   var e = (state.se && state.se.effects || []).filter(function (x) { return x.term === k && x.kind === "hero"; })[0];
   return e && e.sources && e.sources[0] && e.sources[0].ac ? e.sources[0] : null;
@@ -2819,7 +2832,7 @@ function heroEffectIcons(x) {
 }
 function sourcesHtml(g) {
   var hx = g.c === "hero" && heroEffect(g.k);
-  if (hx) { var ab0 = state.byClass[hx.ac]; return '<button class="gslink" data-sac="' + esc(hx.ac) + '" data-shc="' + esc(hx.hc) + '">Go to ' + esc(ab0 ? nameOf(ab0) : hx.ability) + " ›</button>"; } // its own card already shows whose it is
+  if (hx) return ""; // the chevron by its name links to the ability
   var se = state.se && state.se.effects || [], list = (SRC_EXTRA[g.k] || []).slice(), notes = [], seen = {};
   se.forEach(function (e) { if (e.term !== g.k) return; list = list.concat(e.sources || []); (e.notes || []).forEach(function (n) { if (notes.indexOf(n) < 0) notes.push(n); }); });
   var live = srcLive(g.k);
@@ -2856,12 +2869,13 @@ function sourcesHtml(g) {
       return '<button class="gsrc"' + (x.ic ? ' data-item="' + esc(x.ic) + '"' : "") + '><span class="gsi' + (sl ? " " + sl : "") + '">' + (it ? imgTag(itemArt(it), itemImg(it)) : "") + '</span><span class="gst"><b>' + esc(it ? nameOf(it) : x.item) + "</b></span>" + note + "</button>"; // the shop art, as on the item's own card
     }
     var pw = { Casting: "spirit", Gun: "fire_rate", Movement: "move_speed", Survival: "health" }[String(x.text || "").split(" ")[0]];
-    if (pw && /Powerup$/.test(x.text)) return '<div class="gsrc gsx gspw"><span class="gsi pw ' + pw + '"><i style="-webkit-mask-image:url(' + GP + pw + '.svg);mask-image:url(' + GP + pw + '.svg)"></i></span><span class="gst"><b>' + esc(x.text) + "</b></span>" + note + "</div>";
+    var pwi = { spirit: "star", fire_rate: "bps", move_speed: "boot", health: "health" }[pw];
+    if (pw && /Powerup$/.test(x.text)) return '<div class="gsrc gsx gspw"><span class="gsi pw ' + pw + '">' + siIcon(pwi) + '</span><span class="gst"><b>' + esc(x.text) + "</b></span>" + note + "</div>";
     return '<div class="gsrc gsx"><span class="gst">' + esc(x.text || "") + "</span>" + note + "</div>";
   }
   function group(title, xs) {
     if (!xs.length) return "";
-    var more = xs.length > SRC_LIMIT + 1 ? xs.length - SRC_LIMIT : 0; // never collapse just one row
+    var more = xs.length > SRC_LIMIT + 2 ? xs.length - SRC_LIMIT : 0; // only worth a button when it hides 3 or more
     return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + ' <span>' + xs.length + "</span></div>" + xs.map(function (x, i) { return i >= SRC_LIMIT ? row(x).replace('class="gsrc', 'class="gsrc gsm') : row(x); }).join("") +
       (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
   }
@@ -2883,7 +2897,7 @@ function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); if (!FWD) FSTACK = []; }
   var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
-  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + "</h3><p>" + glossBody(g) + "</p>" + sourcesHtml(g) + relatedHtml(g) + "</div>" +
+  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p>" + sourcesHtml(g) + relatedHtml(g) + "</div>" +
     // bottom row: back (when there is one), Close, then a small book button on the right that opens the full glossary
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button></div>';
   function bind() {
@@ -2988,7 +3002,7 @@ function showBackNews() { // after opening a hero or ability from What's New: a 
 function hideBack() { BACK = null; var b = $("backpill"); if (b) b.hidden = true; }
 function showBackSheet(f) { // "‹ Back to Burn": the page you were on, with the pop-up you followed a link from open again
   var b = $("backpill"); if (!b) return;
-  var nm = f.sheet ? (GBY[f.sheet] || {}).t : f.item ? nameOf(state.byClass[f.item] || {}) : "";
+  var nm = f.sheet ? (GBY[f.sheet] || {}).t : f.item ? nameOf(state.byClass[f.item] || {}) : f.tab === "glossary" ? "Glossary" : f.tab === "news" ? "What’s New" : "";
   if (!nm) return;
   BACK = { sheet: f };
   b.innerHTML = "‹ Back to " + esc(nm) + '<span class="bx" aria-label="Dismiss">×</span>';
@@ -3462,6 +3476,8 @@ function tapTip(e) { // touch screens have no hover, so a tap on a chip names it
   return true;
 }
 $("main").addEventListener("click", function (e) {
+  var gch = e.target.closest ? e.target.closest(".gchev[data-shc]") : null;
+  if (gch) { openSource(gch); return; }
   var fsb = e.target.closest ? e.target.closest("[data-fs]") : null;
   if (fsb) { userForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
@@ -3525,26 +3541,26 @@ document.addEventListener("click", function (e) {
     kids.forEach(function (k) { k.getAnimations().forEach(function (x) { x.cancel(); }); });
   };
 });
+function openSource(gs) { // an ability that causes an effect: open its hero and scroll to it, with a way back to where you were
+    var hc = gs.getAttribute("data-shc"), ac = gs.getAttribute("data-sac"), wantT = +gs.getAttribute("data-stier") || 0, top = ISTACK[ISTACK.length - 1] || "";
+  var from = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, sheet: top.indexOf("g:") === 0 ? top.slice(2) : null, item: top && top.indexOf("g:") !== 0 ? top : null };
+  if (searchOn()) from = null; // from search results the pill would have nothing to restore
+  closeSheet();
+  slideForward(function () {
+    hideBack(); endSearch(); state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(hc);
+    if (from) showBackSheet(from);
+    var el = ac && document.querySelector('[data-ab="' + ac + '"]');
+    if (el) { if (el.closest(".f1")) setForm(true); EASE_DUR = 0; scrollToEl(el); } else window.scrollTo(0, 0);
+    if (el && wantT && (SEL[ac] || 0) < wantT) setTimeout(function () { // the tier the source names, picked as if tapped: the stats glow as they change
+      var box = document.querySelector('[data-ab="' + ac + '"] .up[data-t="' + wantT + '"]'); if (box) box.click();
+    }, (EASE_DUR || 0) + 350);
+  });
+}
 $("sheetin").addEventListener("click", function (e) {
   var sa = e.target.closest ? e.target.closest(".gsall") : null;
   if (sa) { sa.parentNode.classList.remove("clip"); sa.remove(); return; }
   var gs = e.target.closest ? e.target.closest("[data-shc]") : null;
-  if (gs) { // an ability that causes the effect: open its hero and scroll to it, with a way back to where you were
-    var hc = gs.getAttribute("data-shc"), ac = gs.getAttribute("data-sac"), wantT = +gs.getAttribute("data-stier") || 0, top = ISTACK[ISTACK.length - 1] || "";
-    var from = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, sheet: top.indexOf("g:") === 0 ? top.slice(2) : null, item: top && top.indexOf("g:") !== 0 ? top : null };
-    if (searchOn()) from = null; // from search results the pill would have nothing to restore
-    closeSheet();
-    slideForward(function () {
-      hideBack(); endSearch(); state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(hc);
-      if (from) showBackSheet(from);
-      var el = ac && document.querySelector('[data-ab="' + ac + '"]');
-      if (el) { if (el.closest(".f1")) setForm(true); EASE_DUR = 0; scrollToEl(el); } else window.scrollTo(0, 0);
-      if (el && wantT && (SEL[ac] || 0) < wantT) setTimeout(function () { // the tier the source names, picked as if tapped: the stats glow as they change
-        var box = document.querySelector('[data-ab="' + ac + '"] .up[data-t="' + wantT + '"]'); if (box) box.click();
-      }, (EASE_DUR || 0) + 350);
-    });
-    return;
-  }
+  if (gs) { openSource(gs); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
