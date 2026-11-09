@@ -123,7 +123,22 @@ def parse_patch(date, txt):
         else:  # any other section: keep it, titled, with the general notes
             ls = [("  " * (d - 1)) + inline(x) for d, x in bullets(chunk)]
             if ls: patch["general"] += ["## " + inline(title)] + ls
+    # some pages repeat a block of notes (a reply post quoting the original), and notes filed under an ability
+    # lose its name, so "Siphon Life range increased" became "range increased": drop repeats, capitalise
+    for x in [g for e in patch["heroes"] for g in e["groups"]] + patch["items"]:
+        x["lines"] = tidy(x["lines"])
+    patch["general"] = tidy(patch["general"])
     return patch
+
+
+def tidy(lines):
+    out, seen = [], set()
+    for ln in lines:
+        body = ln.lstrip(" ")
+        if re.match(r"[a-z]+\b(?![_.(])", body): ln = ln[:len(ln) - len(body)] + body[0].upper() + body[1:]
+        if ln in seen: continue
+        seen.add(ln); out.append(ln)
+    return out
 
 
 def add_hero_line(patch, hn, ab, line):

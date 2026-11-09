@@ -3415,8 +3415,8 @@
        "ability": "Itani Lo Sahn",
        "ac": "ability_fencer_ultimate",
        "lines": [
-        "damage increased from 190 to 200",
-        "spirit scaling increased from 2.3 to 2.6"
+        "Damage increased from 190 to 200",
+        "Spirit scaling increased from 2.3 to 2.6"
        ]
       }
      ]
@@ -3436,7 +3436,7 @@
        "ability": "Jar of Dead",
        "ac": "ability_necro_hauntingskull",
        "lines": [
-        "damage reduced from 20 + 0.31/spirit to 17 + 0.27/spirit"
+        "Damage reduced from 20 + 0.31/spirit to 17 + 0.27/spirit"
        ]
       }
      ]
@@ -3449,7 +3449,7 @@
        "ability": "Heavy Barrage",
        "ac": "citadel_ability_rocket_barrage",
        "lines": [
-        "range reduced from 50m to 36m",
+        "Range reduced from 50m to 36m",
         "T1 [[a:Dash]] Slow reduced from 30% to 18% (regular slow still 30%)",
         "T3 Damage Per Rocket reduced from +18 to +15"
        ]
@@ -3492,7 +3492,7 @@
        "ability": "Entangling Bola",
        "ac": "ability_werewolf_netshot",
        "lines": [
-        "cooldown increased from 20s to 23s",
+        "Cooldown increased from 20s to 23s",
         "T2 increased from -5s Cooldown to -8s"
        ]
       },
@@ -3526,14 +3526,14 @@
        "ability": "Power Slash",
        "ac": "citadel_ability_power_slash",
        "lines": [
-        "spirit scaling reduced from 2.1 to 1.85"
+        "Spirit scaling reduced from 2.1 to 1.85"
        ]
       },
       {
        "ability": "Flying Slash",
        "ac": "citadel_ability_flying_strike",
        "lines": [
-        "cast range reduced from 30m to 28m"
+        "Cast range reduced from 30m to 28m"
        ]
       }
      ]
@@ -3545,7 +3545,7 @@
    "title": "05-22-2026 Update (Reply)",
    "source": "https://forums.playdeadlock.com/threads/05-22-2026-update.135477/post-261657",
    "general": [
-    "spawn time and interval changed from 10/15/20/25/etc to 12/18/24/30/etc",
+    "Spawn time and interval changed from 10/15/20/25/etc to 12/18/24/30/etc",
     "Urn timer now gets frozen with [[a:Frozen Shelter]]",
     "Urn no longer provides the +35% Bullet and Spirit Resist aura for the behind team when it is being carried or dropped. The aura is now only active when it is being deposited.",
     "Urn runner when behind now gains +35% Bullet and Spirit Resist for themselves only",
@@ -4252,16 +4252,16 @@
        "ability": "Riposte",
        "ac": "ability_fencer_riposte",
        "lines": [
-        "no longer automatically dashes. It now grants you a sub ability immediately to target the hero you want to jump to for a brief duration (can target the enemy before the parry to buffer it). Cast range is 25m.",
-        "no longer triggers on damage auras (things like [[a:Flame Dash]])",
-        "no longer triggers off of objective damage"
+        "No longer automatically dashes. It now grants you a sub ability immediately to target the hero you want to jump to for a brief duration (can target the enemy before the parry to buffer it). Cast range is 25m.",
+        "No longer triggers on damage auras (things like [[a:Flame Dash]])",
+        "No longer triggers off of objective damage"
        ]
       },
       {
        "ability": "Flawless Advance",
        "ac": "ability_fencer_lunge",
        "lines": [
-        "hitbox reduced by 10%"
+        "Hitbox reduced by 10%"
        ]
       }
      ]
@@ -4307,7 +4307,7 @@
        "ability": "Rising Ram",
        "ac": "ability_punkgoat_goatflip",
        "lines": [
-        "cooldown increased from 30s to 32s",
+        "Cooldown increased from 30s to 32s",
         "T2 increased from +0.3s Duration to +0.4s",
         "T3 increased from -10s Cooldown to -13s"
        ]
@@ -4395,7 +4395,7 @@
        "ac": "citadel_ability_stomp",
        "lines": [
         "T2 reduced from -18% Bullet Resistance to -15%",
-        "spirit scaling reduced from 1.65 to 1.55"
+        "Spirit scaling reduced from 1.65 to 1.55"
        ]
       },
       {
@@ -4432,14 +4432,14 @@
        "ability": "Grasping Hands",
        "ac": "ability_necro_zombiewall",
        "lines": [
-        "now spawns a ghoul in the base ability (T3 still increases it by 1)"
+        "Now spawns a ghoul in the base ability (T3 still increases it by 1)"
        ]
       },
       {
        "ability": "Jar of Dead",
        "ac": "ability_necro_hauntingskull",
        "lines": [
-        "spirit scaling reduced from 0.35 to 0.31 (they are better at dealing damage now)"
+        "Spirit scaling reduced from 0.35 to 0.31 (they are better at dealing damage now)"
        ]
       }
      ]
@@ -4458,10 +4458,10 @@
        "ability": "Rain of Arrows",
        "ac": "ability_power_jump",
        "lines": [
-        "cooldown reduced from 30s to 22s",
-        "cast delay reduced from 0.5s to 0.2s",
-        "duration reduced from 7s to 4s",
-        "moving ability in air improved",
+        "Cooldown reduced from 30s to 22s",
+        "Cast delay reduced from 0.5s to 0.2s",
+        "Duration reduced from 7s to 4s",
+        "Moving ability in air improved",
         "Weapon Damage bonus reduced from +4 to +3",
         "T1 changed from \"-14s Cooldown\" to \"+3 Weapon Damage and +30% Slow for 1.5s\"",
         "T2 changed from \"+5 Weapon Damage and +40% Slow for 1.5s\" to \"-13s Cooldown\" (Total CD from 16s to 9s)"
@@ -4528,7 +4528,7 @@
        "ability": "Frost Grenade",
        "ac": "ability_ice_grenade",
        "lines": [
-        "damage spirit scaling reduced from 0.7 to 0.6"
+        "Damage spirit scaling reduced from 0.7 to 0.6"
        ]
       },
       {
@@ -4554,7 +4554,7 @@
        "ability": "Ground Strike",
        "ac": "citadel_ability_lash_down_strike",
        "lines": [
-        "damage per meter spirit scaling increased from 0.0372 to 0.04"
+        "Damage per meter spirit scaling increased from 0.0372 to 0.04"
        ]
       },
       {
@@ -4582,7 +4582,7 @@
        "ability": "Medicinal Specter",
        "ac": "citadel_ability_mobile_resupply",
        "lines": [
-        "radius increased from 5.5m to 6m"
+        "Radius increased from 5.5m to 6m"
        ]
       }
      ]
@@ -4603,7 +4603,7 @@
        "ac": "ability_vampirebat_lovebites",
        "lines": [
         "T3 increased from -4s Cooldown to -5s",
-        "no longer applies the flat on hit damage to abilities (was doing 20% of its value on [[a:Nox Nostra]])"
+        "No longer applies the flat on hit damage to abilities (was doing 20% of its value on [[a:Nox Nostra]])"
        ]
       },
       {
@@ -4662,7 +4662,7 @@
        "ac": "ability_bookworm_knightcharge",
        "lines": [
         "T3 increased from +135 Damage to +160",
-        "now has half cooldown if it hits no allies or enemies"
+        "Now has half cooldown if it hits no allies or enemies"
        ]
       }
      ]
@@ -4691,7 +4691,7 @@
        "ability": "Paradoxical Swap",
        "ac": "citadel_ability_chrono_swap",
        "lines": [
-        "damage increased from 125 to 150"
+        "Damage increased from 125 to 150"
        ]
       }
      ]
@@ -4711,7 +4711,7 @@
        "ability": "Affliction",
        "ac": "synth_affliction",
        "lines": [
-        "cooldown increased from 140s to 150s"
+        "Cooldown increased from 140s to 150s"
        ]
       }
      ]
@@ -4730,7 +4730,7 @@
        "ability": "Pillow Toss",
        "ac": "ability_familiar_ability02",
        "lines": [
-        "charge time reduced from 9s to 8s",
+        "Charge time reduced from 9s to 8s",
         "T3 increased from +90 to +100 Damage"
        ]
       },
@@ -4738,24 +4738,24 @@
        "ability": "Tag Along",
        "ac": "ability_familiar_attach",
        "lines": [
-        "burst heal now also applies to secondary allies that you jump to",
-        "lingering heal duration reduced from 3s to 2s (values rebalanced to be the same overall heal just faster)",
+        "Burst heal now also applies to secondary allies that you jump to",
+        "Lingering heal duration reduced from 3s to 2s (values rebalanced to be the same overall heal just faster)",
         "T2 Barrier and Item Duration/Range effectiveness increased from 25% to 35%",
         "T3 now also increases Missing Health Heal from 0.03 to 0.05 and Regen Per Second from 0.66 to 1.0",
-        "can now be cast through veils",
-        "time to fly to your ally is now 50% faster",
-        "heal duration is now displayed on the hud as well as the healthbar icon",
-        "fixed specific abilities/items that could kill [[h:Rem]] while he's napping",
-        "now allows friendly auras to affect [[h:Rem]]",
-        "eject is no longer affected by debuff resistance and now launches upwards slightly more to prevent hitting the ground",
-        "eject no longer briefly restricts movement abilities and input"
+        "Can now be cast through veils",
+        "Time to fly to your ally is now 50% faster",
+        "Heal duration is now displayed on the hud as well as the healthbar icon",
+        "Fixed specific abilities/items that could kill [[h:Rem]] while he's napping",
+        "Now allows friendly auras to affect [[h:Rem]]",
+        "Eject is no longer affected by debuff resistance and now launches upwards slightly more to prevent hitting the ground",
+        "Eject no longer briefly restricts movement abilities and input"
        ]
       },
       {
        "ability": "Naptime",
        "ac": "ability_familiar_ability01",
        "lines": [
-        "now provides +30% damage reduction in the base ability (T3 still adds +50%)"
+        "Now provides +30% damage reduction in the base ability (T3 still adds +50%)"
        ]
       }
      ]
@@ -4796,8 +4796,8 @@
        "ability": "Killing Blow",
        "ac": "citadel_ability_shiv_killing_blow",
        "lines": [
-        "cooldown increased from 105s to 125s",
-        "full rage damage bonus reduced from 14% to 12%",
+        "Cooldown increased from 105s to 125s",
+        "Full rage damage bonus reduced from 14% to 12%",
         "T2 increased from +8% Full Rage Damage Bonus to +10%",
         "T2 now also reduces cooldown by -30s"
        ]
@@ -4818,7 +4818,7 @@
        "ability": "Entangling Bola",
        "ac": "ability_werewolf_netshot",
        "lines": [
-        "no longer prevents you from jumping and mantling",
+        "No longer prevents you from jumping and mantling",
         "T2 changed from \"+0.75s Duration\" to \"-5s Cooldown\"",
         "T3 changed from \"-5s Cooldown and [[i:Ricochet]] to 2 additional targets\" to \"+0.75s Duration and [[i:Ricochet]] to 2 additional targets\""
        ]
@@ -4874,7 +4874,7 @@
        "ability": "Aura of Suffering",
        "ac": "ability_frank_painaura",
        "lines": [
-        "now does 50% damage to objectives"
+        "Now does 50% damage to objectives"
        ]
       }
      ]
@@ -4948,15 +4948,15 @@
        "ability": "Power Slash",
        "ac": "citadel_ability_power_slash",
        "lines": [
-        "post cast time reduced from 0.4s to 0.2s",
-        "spirit scaling increased from 1.86s to 2.1"
+        "Post cast time reduced from 0.4s to 0.2s",
+        "Spirit scaling increased from 1.86s to 2.1"
        ]
       },
       {
        "ability": "Flying Slash",
        "ac": "citadel_ability_flying_strike",
        "lines": [
-        "range increased from 25m to 30m",
+        "Range increased from 25m to 30m",
         "T2 no longer grants +20m Cast Range",
         "T3 now also grants +15m Cast Range",
         "T3 increased from +1 Charge to +2"

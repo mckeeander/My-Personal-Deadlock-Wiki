@@ -537,7 +537,7 @@ html.lock,html.lock body{overflow:hidden}
 .secn{font-size:13px;color:var(--dim);font-weight:500;letter-spacing:0;margin-left:6px}
 .phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
 .phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.phb.on img{opacity:1}
-.phsum{display:block;font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-top:2px}
+.phsum{font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-left:8px}
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
 .phy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;margin:16px 0 8px 4px}.phist.filt .phy{display:none!important}
 .phmore{width:100%;margin-top:4px;background:none;border:1px dashed #4a405a;border-radius:10px;padding:11px;color:var(--fg);font:inherit;font-size:14px}
@@ -2414,7 +2414,6 @@ function revGroupHtml(g, h) { // one ability, weapon or base-stats block of chan
       rows = rows.filter(function (r) { if (seen[r]) return false; seen[r] = 1; return !!r; }); // the same change on twin stats (three "cycle" windows) shows once
       return '<div class="rgrp"' + (g.type === "ability" && g.item ? ' data-gab="' + esc(g.item) + '"' : "") + '><div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + '</div><div class="rch">' + rows.join("") + "</div></div>";
 }
-var PH_SHOW = 5;
 function phGroupsHtml(groups) { // a hero's changes in one patch, grouped by ability, like What's New
   return groups.map(function (g) {
     var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : g.label === "Stats" ? siIcon("health") : "", stc = !ab && g.label === "Stats" ? " rstat" : "";
@@ -2423,9 +2422,8 @@ function phGroupsHtml(groups) { // a hero's changes in one patch, grouped by abi
   }).join("");
 }
 function phSummary(groups) {
-  var names = groups.map(function (g) { var ab = g.ac && state.byClass[g.ac]; return ab ? nameOf(ab) : (g.ability || g.label || ""); }).filter(Boolean);
   var n = groups.reduce(function (a, g) { return a + g.lines.length; }, 0);
-  return (names.length > 2 ? names.slice(0, 2).join(", ") + " +" + (names.length - 2) : names.join(", ")) + " · " + n + " change" + (n === 1 ? "" : "s");
+  return n + " change" + (n === 1 ? "" : "s");
 }
 function revisionsHtml(h) { // Patch history: every official patch that touched this hero, newest first
   var P = state.ph && state.ph.heroes && state.ph.heroes[h.class_name];
@@ -2435,16 +2433,17 @@ function revisionsHtml(h) { // Patch history: every official patch that touched 
   var order = ((h.items && ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return h.items[k]; })) || []).filter(function (c) { return abs[c]; });
   Object.keys(abs).forEach(function (c) { if (order.indexOf(c) < 0) order.push(c); });
   var filt = order.length > 1 ? '<div class="phf"><button class="phb on" data-phf="">All</button>' + order.map(function (c) { return '<button class="phb" data-phf="' + esc(c) + '" aria-label="' + esc(nameOf(state.byClass[c])) + '">' + imgTag(itemImg(state.byClass[c])) + "</button>"; }).join("") + "</div>" : "";
+  var thisYear = String(new Date().getFullYear()), show = P.filter(function (p) { return p.date.slice(0, 4) >= thisYear; }).length || 1; // this year's patches; older ones wait behind the button
   var year = "", rows = P.map(function (p, i) {
-    var y = p.date.slice(0, 4), yh = i >= PH_SHOW && y !== year ? '<div class="phy' + (i >= PH_SHOW ? " pho" : "") + '">' + y + "</div>" : "";
-    if (i >= PH_SHOW) year = y;
+    var old = i >= show, y = p.date.slice(0, 4), yh = old && y !== year ? '<div class="phy pho">' + y + "</div>" : "";
+    if (old) year = y;
     var stat = R.filter(function (e) { var dd = (new Date(e.date) - new Date(p.date)) / 864e5; return dd >= 0 && dd <= 3 && (e.heroes || {})[h.class_name]; })[0]; // the app's own before/after numbers for that patch
     var sbody = stat ? '<div class="phs"><div class="nsub">Stat changes</div>' + stat.heroes[h.class_name].map(function (g) { return revGroupHtml(g, h); }).join("") + "</div>" : "";
     var src = p.source ? '<a class="pnsrc" href="' + esc(p.source) + '" target="_blank" rel="noopener">' + esc(p.title || "Official notes") + " ↗</a>" : "";
     var abl = p.groups.map(function (g) { return g.ac || ""; }).join(" ");
-    return yh + '<details class="rpt' + (i >= PH_SHOW ? " pho" : "") + '" data-abs="' + esc(abl) + '"' + (i === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '<i class="phsum">' + esc(phSummary(p.groups)) + '</i></span><span class="rcv">' + CHEV + "</span></summary>" + src + '<div class="nhg">' + phGroupsHtml(p.groups) + "</div>" + sbody + "</details>";
+    return yh + '<details class="rpt' + (old ? " pho" : "") + '" data-abs="' + esc(abl) + '"' + (i === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '<i class="phsum">' + esc(phSummary(p.groups)) + '</i></span><span class="rcv">' + CHEV + "</span></summary>" + src + '<div class="nhg">' + phGroupsHtml(p.groups) + "</div>" + sbody + "</details>";
   }).join("");
-  var more = P.length > PH_SHOW ? '<button class="phmore">Show older patches (' + (P.length - PH_SHOW) + ")</button>" : "";
+  var more = P.length > show ? '<button class="phmore">Show older patches (' + (P.length - show) + ")</button>" : "";
   return '<div class="sec">Patch history <span class="secn">' + P.length + "</span></div>" + filt + '<div id="revs" class="phist">' + rows + more + "</div>";
 }
 function revisionsHtml0(h) {
@@ -3799,7 +3798,7 @@ function tapTip(e) { // touch screens have no hover, so a tap on a chip names it
 }
 $("main").addEventListener("click", function (e) {
   var phm = e.target.closest ? e.target.closest(".phmore") : null;
-  if (phm) { var pw = phm.parentNode; pw.classList.add("all"); phm.remove(); return; }
+  if (phm) { showOlder(phm); return; }
   var phb = e.target.closest ? e.target.closest(".phb") : null;
   if (phb) { // only the patches that touched this ability
     var c0 = phb.getAttribute("data-phf"), wrap = $("revs");
@@ -3861,32 +3860,70 @@ document.addEventListener("click", function (e) {
   if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
   e.preventDefault();
   if (d._busy) return;
-  if (!d.open && d.closest("#revs.news, #revs.phist")) { // one patch open at a time, without the page jumping
-    var before = d.getBoundingClientRect().top, rv = d.parentNode, h0 = rv.offsetHeight;
-    Array.prototype.forEach.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { if (o !== d && o.offsetParent) { o.getAnimations().forEach(function (a) { a.cancel(); }); o.open = false; o._busy = false; o.style.overflow = ""; o.classList.remove("closing"); } });
-    var lost = h0 - rv.offsetHeight; if (lost > 0) { rv.style.paddingBottom = lost + "px"; clearTimeout(rv._pt); rv._pt = setTimeout(function () { rv.style.paddingBottom = ""; }, 900); } // near the bottom of the page there'd be nothing left to scroll into, so the patch would hop
-    var shift = d.getBoundingClientRect().top - before;
-    if (shift) window.scrollBy(0, shift); // the tapped patch stays exactly where it was on screen
-    var topY = d.getBoundingClientRect().top + window.pageYOffset - 12 - (parseFloat(getComputedStyle(document.body).paddingTop) || 0);
-    if (Math.abs(topY - window.pageYOffset) > 4) setTimeout(function () { easeScroll(Math.max(0, topY)); }, 30); // then it glides to the top as it opens
-  }
-  var kids = Array.prototype.slice.call(d.querySelectorAll(":scope > :not(summary)")), opening = !d.open, h0 = d.offsetHeight, h1;
-  if (opening) { d.open = true; h1 = d.offsetHeight; }
-  else { d.open = false; h1 = d.offsetHeight; d.open = true; var t = h0; h0 = h1; h1 = t; } // h0 = shut height, h1 = open height
-  d._busy = true; d.style.overflow = "hidden";
-  if (!opening) d.classList.add("closing"); // the chevron turns at once
-  var from = opening ? h0 : h1, to = opening ? h1 : h0, ease = "cubic-bezier(.2,.7,.3,1)";
-  var a = d.animate([{ height: from + "px" }, { height: to + "px" }], { duration: 260, easing: ease });
-  kids.forEach(function (k) {
-    k.animate(opening ? [{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-8px)" }],
-      { duration: opening ? 240 : 180, easing: opening ? ease : "ease-in", fill: opening ? "none" : "forwards" });
-  });
-  a.onfinish = a.oncancel = function () {
-    if (!opening) d.open = false;
-    d.classList.remove("closing"); d.style.overflow = ""; d._busy = false;
-    kids.forEach(function (k) { k.getAnimations().forEach(function (x) { x.cancel(); }); });
-  };
+  foldDetails(d);
 });
+// One frame loop drives everything: the tapped section's height, the one it closes, and the page scroll, all on the same curve.
+// So the tapped patch glides from where you touched it to the top of the screen, while the patch above it folds away, with no hop.
+function showOlder(btn) { // the button fades away, then the older patches fade in as the list grows to fit them
+  var pw = btn.parentNode;
+  if (btn._busy) return; btn._busy = true;
+  if (!pw.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) { pw.classList.add("all"); btn.remove(); return; }
+  btn.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: "ease-in", fill: "forwards" }).onfinish = function () {
+    var h0 = pw.offsetHeight; btn.remove(); pw.classList.add("all"); var h1 = pw.offsetHeight;
+    pw.style.overflow = "hidden";
+    pw.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: 420, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = function () { pw.style.overflow = ""; };
+    Array.prototype.forEach.call(pw.querySelectorAll(":scope > .pho"), function (el, i) {
+      if (!el.offsetParent) return;
+      el.animate([{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }], { duration: 300, delay: Math.min(i, 8) * 30, easing: "ease-out", fill: "backwards" });
+    });
+  };
+}
+function foldDetails(d) {
+  var list = d.closest("#revs.news, #revs.phist"), opening = !d.open, others = [];
+  if (opening && list) others = Array.prototype.filter.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { return o !== d && o.offsetParent; }); // one patch open at a time
+  others.forEach(function (o) { if (o._stop) o._stop(); });
+  var parts = [d].concat(others).map(function (x) {
+    var on = x === d ? opening : false, h0 = x.offsetHeight;
+    x.open = on; var h1 = x.offsetHeight; x.open = true; // measured at both ends; it stays open (visible) until the end
+    return { el: x, on: on, h0: h0, h1: h1, kids: Array.prototype.slice.call(x.querySelectorAll(":scope > :not(summary)")) };
+  });
+  var y0 = window.pageYOffset || 0, y1 = y0;
+  if (opening && list) { // where the tapped patch ends up once the others are shut: near the top of the screen
+    parts.forEach(function (q) { q.el.style.height = q.h1 + "px"; });
+    var off = 12 + (parseFloat(getComputedStyle(document.body).paddingTop) || 0);
+    y1 = d.getBoundingClientRect().top + (window.pageYOffset || 0) - off; // the live scroll: a browser that anchors scrolling may have moved it
+    y1 = Math.max(0, Math.min(y1, document.documentElement.scrollHeight - window.innerHeight));
+  }
+  var dist = Math.abs(y1 - y0), dur = opening ? Math.min(560, 300 + dist * 0.25) : 240, id = {}, t0 = 0;
+  d._busy = true;
+  parts.forEach(function (q) {
+    q.el._fold = id; q.el.style.overflow = "hidden"; q.el.style.height = q.h0 + "px";
+    q.el.classList.toggle("closing", !q.on); // the chevron turns at once
+    q.kids.forEach(function (k) {
+      k.animate(q.on ? [{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1 }, { opacity: 0 }],
+        { duration: q.on ? dur * 0.9 : Math.min(200, dur * 0.6), delay: q.on ? dur * 0.1 : 0, easing: q.on ? "ease-out" : "ease-in", fill: "both" });
+    });
+  });
+  window.scrollTo(0, y0);
+  function finish() {
+    parts.forEach(function (q) {
+      if (q.el._fold !== id) return;
+      q.el._fold = null; q.el._stop = null; q.el._busy = false;
+      q.el.open = q.on; q.el.style.height = ""; q.el.style.overflow = ""; q.el.classList.remove("closing");
+      q.kids.forEach(function (k) { k.getAnimations().forEach(function (x) { x.cancel(); }); });
+    });
+  }
+  parts.forEach(function (q) { q.el._stop = finish; });
+  var cancelled = false; function stop() { cancelled = true; }
+  window.addEventListener("touchstart", stop, { once: true, passive: true });
+  requestAnimationFrame(function step(t) {
+    if (d._fold !== id) return; if (!t0) t0 = t;
+    var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    parts.forEach(function (q) { q.el.style.height = (q.h0 + (q.h1 - q.h0) * e) + "px"; });
+    if (y1 !== y0 && !cancelled) window.scrollTo(0, y0 + (y1 - y0) * e);
+    if (p < 1) requestAnimationFrame(step); else { window.removeEventListener("touchstart", stop); finish(); }
+  });
+}
 function openSource(gs) { // an ability that causes an effect: open its hero and scroll to it, with a way back to where you were
     var hc = gs.getAttribute("data-shc"), ac = gs.getAttribute("data-sac"), wantT = +gs.getAttribute("data-stier") || 0, top = ISTACK[ISTACK.length - 1] || "";
   var from = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, sheet: top.indexOf("g:") === 0 ? top.slice(2) : null, item: top && top.indexOf("g:") !== 0 ? top : null };
