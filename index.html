@@ -493,7 +493,9 @@ html.lock,html.lock body{overflow:hidden}
 .gsp + .gsa{margin-left:-6px}
 .gsi.weapon{box-shadow:0 0 0 1.5px var(--weapon)}.gsi.vitality{box-shadow:0 0 0 1.5px var(--vital)}.gsi.spirit{box-shadow:0 0 0 1.5px var(--spirit)}
 .gst{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}.gst b{font-weight:600;font-size:14.5px}.gst i{font-style:normal;font-size:12px;color:var(--dim)}
-.gsn{flex:none;max-width:42%;font-style:normal;font-size:12px;color:var(--gold);text-align:right;line-height:1.25}
+.gsn{flex:none;max-width:46%;font-style:normal;font-size:12px;color:var(--gold);text-align:right;line-height:1.25}
+.gtier{color:#a77ff0;margin-right:3px;font-size:11px} /* the ◆ of the tier boxes */
+.gsx.gspw{color:var(--fg);min-height:44px;padding:5px 10px 5px 6px}.gsi.pw{background:var(--panel)}.gsi.pw img{width:20px;height:20px;object-fit:contain}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -2807,32 +2809,37 @@ function sourcesHtml(g) {
   }
   list = list.filter(function (x) { var id = x.ac || x.ic || x.text || x.hero; if (seen[id + "|" + (x.note || "")]) return false; seen[id + "|" + (x.note || "")] = 1; return true; });
   if (!list.length && !notes.length) return "";
-  var heroes = list.filter(function (x) { return x.hero; }), items = list.filter(function (x) { return x.item; }), other = list.filter(function (x) { return !x.hero && !x.item; });
-  heroes.sort(function (a, b) { return a.hero.localeCompare(b.hero); });
+  var abil = list.filter(function (x) { return x.hero && x.ability; }), whole = list.filter(function (x) { return x.hero && !x.ability; }), items = list.filter(function (x) { return x.item; });
+  var power = list.filter(function (x) { return !x.hero && !x.item && /Powerup$/.test(x.text || ""); }), other = list.filter(function (x) { return !x.hero && !x.item && !/Powerup$/.test(x.text || ""); });
+  abil.sort(function (a, b) { return a.hero.localeCompare(b.hero); }); whole.sort(function (a, b) { return a.hero.localeCompare(b.hero); });
   items.sort(function (a, b) { var ia = state.byClass[a.ic] || {}, ib = state.byClass[b.ic] || {}; return (ia.item_tier || 0) - (ib.item_tier || 0) || a.item.localeCompare(b.item); });
   function row(x) {
-    var note = x.note ? '<em class="gsn">' + esc(x.note) + "</em>" : "";
+    var nt0 = String(x.note || "").replace(/\bTier (\d) Upgrade\s*-\s*/g, "Tier $1 · ").replace(/\bTier (\d) Upgrade\b/g, "Tier $1");
+    nt0 = nt0.charAt(0).toUpperCase() + nt0.slice(1);
+    var note = nt0 ? '<em class="gsn">' + esc(nt0).replace(/\bTier (\d)\b/g, '<span class="gtier">◆</span>Tier $1') + "</em>" : "";
     if (x.hero) {
       var h = state.heroes.filter(function (y) { return y.class_name === x.hc; })[0], ab = state.byClass[x.ac];
       var pic = h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "";
       var abi = ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "";
       var go = x.ac ? ' data-sac="' + esc(x.ac) + '" data-shc="' + esc(x.hc || "") + '"' : (x.hc ? ' data-shc="' + esc(x.hc) + '"' : "");
-      return '<button class="gsrc"' + go + ">" + pic + abi + '<span class="gst"><b>' + esc(x.ability || x.hero) + "</b>" + (x.ability ? '<i>' + esc(x.hero) + "</i>" : "") + "</span>" + note + "</button>";
+      return '<button class="gsrc"' + go + ">" + pic + abi + '<span class="gst"><b>' + esc(ab ? nameOf(ab) : (x.ability || x.hero)) + "</b></span>" + note + "</button>"; // the game's own name (the wiki sometimes writes "powder keg"); the portrait says whose it is
     }
     if (x.item) {
       var it = state.byClass[x.ic], sl = it ? slotOf(it) : "";
-      return '<button class="gsrc"' + (x.ic ? ' data-item="' + esc(x.ic) + '"' : "") + '><span class="gsi' + (sl ? " " + sl : "") + '">' + (it ? imgTag(itemImg(it)) : "") + '</span><span class="gst"><b>' + esc(x.item) + "</b></span>" + note + "</button>";
+      return '<button class="gsrc"' + (x.ic ? ' data-item="' + esc(x.ic) + '"' : "") + '><span class="gsi' + (sl ? " " + sl : "") + '">' + (it ? imgTag(itemArt(it), itemImg(it)) : "") + '</span><span class="gst"><b>' + esc(it ? nameOf(it) : x.item) + "</b></span>" + note + "</button>"; // the shop art, as on the item's own card
     }
-    return '<div class="gsrc gsx"><span class="gst">' + esc(x.text || "") + "</span></div>";
+    var pw = { Casting: "spirit", Gun: "fire_rate", Movement: "move_speed", Survival: "health" }[String(x.text || "").split(" ")[0]];
+    if (pw && /Powerup$/.test(x.text)) return '<div class="gsrc gsx gspw"><span class="gsi pw"><img alt="" src="' + GP + pw + '.svg"></span><span class="gst"><b>' + esc(x.text) + "</b></span>" + note + "</div>";
+    return '<div class="gsrc gsx"><span class="gst">' + esc(x.text || "") + "</span>" + note + "</div>";
   }
   function group(title, xs) {
     if (!xs.length) return "";
-    var more = xs.length > SRC_LIMIT ? xs.length - SRC_LIMIT : 0;
+    var more = xs.length > SRC_LIMIT + 1 ? xs.length - SRC_LIMIT : 0; // never collapse just one row
     return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + ' <span>' + xs.length + "</span></div>" + xs.map(function (x, i) { return i >= SRC_LIMIT ? row(x).replace('class="gsrc', 'class="gsrc gsm') : row(x); }).join("") +
       (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
   }
   var nt = notes.length ? '<ul class="gsnotes">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
-  return nt + (list.length ? '<div class="grh">Sources</div>' + group("Heroes", heroes) + group("Items", items) + group("Other", other) : "");
+  return nt + (list.length ? '<div class="grh">Sources</div>' + group("Powerups", power) + group("Heroes", whole) + group("Abilities", abil) + group("Items", items) + group("Other", other) : "");
 }
 function relatedHtml(g) {
   var inDef = {}, txt = String(g.d).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, t) { inDef[k] = 1; return t; }).toLowerCase();
@@ -2952,10 +2959,27 @@ function showBackNews() { // after opening a hero or ability from What's New: a 
   b.hidden = false; b.classList.remove("in"); void b.offsetWidth; b.classList.add("in");
 }
 function hideBack() { BACK = null; var b = $("backpill"); if (b) b.hidden = true; }
+function showBackSheet(f) { // "‹ Back to Burn": the page you were on, with the pop-up you followed a link from open again
+  var b = $("backpill"); if (!b) return;
+  var nm = f.sheet ? (GBY[f.sheet] || {}).t : f.item ? nameOf(state.byClass[f.item] || {}) : "";
+  if (!nm) return;
+  BACK = { sheet: f };
+  b.innerHTML = "‹ Back to " + esc(nm) + '<span class="bx" aria-label="Dismiss">×</span>';
+  b.hidden = false; b.classList.remove("in"); void b.offsetWidth; b.classList.add("in");
+}
 $("backpill").onclick = function (e) {
   if (e.target.classList && e.target.classList.contains("bx")) { hideBack(); return; }
   var bk = BACK; hideBack(); if (!bk) return;
   if (bk.news) { slideBack(backToNews); return; }
+  if (bk.sheet) {
+    var f = bk.sheet;
+    slideBack(function () {
+      state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y);
+      ISTACK = []; FSTACK = [];
+      setTimeout(function () { if (f.sheet) glossSheet(f.sheet); else if (f.item) itemSheet(f.item); }, 180);
+    });
+    return;
+  }
   slideBack(function () {
     if (bk.search != null) { showSearch(bk.search); return; }
     state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(bk.hero); window.scrollTo(0, bk.y);
@@ -3479,11 +3503,13 @@ $("sheetin").addEventListener("click", function (e) {
   if (sa) { sa.parentNode.classList.remove("clip"); sa.remove(); return; }
   var gs = e.target.closest ? e.target.closest(".gsrc[data-shc]") : null;
   if (gs) { // an ability that causes the effect: open its hero and scroll to it, with a way back to where you were
-    var hc = gs.getAttribute("data-shc"), ac = gs.getAttribute("data-sac"), fromHero = state.tab === "heroes" ? state.hero : null, fromY = window.pageYOffset || 0;
+    var hc = gs.getAttribute("data-shc"), ac = gs.getAttribute("data-sac"), top = ISTACK[ISTACK.length - 1] || "";
+    var from = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, sheet: top.indexOf("g:") === 0 ? top.slice(2) : null, item: top && top.indexOf("g:") !== 0 ? top : null };
+    if (searchOn()) from = null; // from search results the pill would have nothing to restore
     closeSheet();
     slideForward(function () {
-      endSearch(); state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(hc);
-      if (fromHero && fromHero !== hc) showBack(fromHero, fromY);
+      hideBack(); endSearch(); state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(hc);
+      if (from) showBackSheet(from);
       var el = ac && document.querySelector('[data-ab="' + ac + '"]');
       if (el) { if (el.closest(".f1")) setForm(true); scrollToEl(el); } else window.scrollTo(0, 0);
     });
