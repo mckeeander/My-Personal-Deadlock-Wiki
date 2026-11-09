@@ -523,8 +523,8 @@ html.lock,html.lock body{overflow:hidden}
 .mrow.mr2{grid-template-columns:90px 1fr}.mr2 b{text-align:left;font-weight:500}.mr2 span{font-variant-numeric:tabular-nums;font-weight:600}.mrows .gsm{display:none}.gsg:not(.clip) .mrows .gsm{display:grid}
 .glane{margin-top:6px}.glane .gln{width:80%;margin-left:auto;margin-right:auto}.glane .glh{width:80%;margin-left:auto;margin-right:auto;text-align:center}.gsft.glf{margin-top:16px}
 .sug{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.sug .stat{padding:8px 4px}.sug .stat b{font-size:17px}
-.sul{display:grid;grid-template-columns:repeat(4,1fr);gap:4px 6px;padding:0 3px;font-size:14.5px;line-height:1.6;color:var(--fg);font-variant-numeric:tabular-nums}
-.sul i{display:inline-block;min-width:18px;margin-right:5px;font-style:normal;font-size:11px;color:#7d7290;text-align:right}.sul + .gsft{margin-top:10px}
+.sul{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-flow:column;gap:4px 6px;padding:0 3px;font-size:14px;line-height:1.6;color:var(--dim);font-variant-numeric:tabular-nums} /* counts down each column */
+.sul i{display:inline-block;width:27px;font-style:normal;font-weight:600;color:var(--fg);text-align:left}.sul + .gsft{margin-top:10px}
 .suc{display:inline-block;line-height:1.25;min-width:54px;text-align:center;padding:6px 8px;border-radius:8px;background:var(--panel2);border:1px solid #3d344c;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg)}
 .suc.sua{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.suc.sm{min-width:0;padding:1px 6px;font-size:12px}.glh{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:12px 0 6px 2px}
 .gln{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:7px 12px;font:inherit;color:var(--fg);text-align:left;position:relative;margin-bottom:16px}
@@ -2926,7 +2926,7 @@ function unlocksHtml() { // soul totals (starting souls included) for each new a
   var st = (state.mc.economy && state.mc.economy.starting_souls) || 0, f = function (n) { return Number(n + st).toLocaleString(); };
   var ab = U.filter(function (u) { return u.AbilityUnlocks; }), bo = U.filter(function (u) { return u.PowerIncrease; });
   return '<div class="grh">New abilities at</div><div class="sug">' + ab.map(function (u, i) { return '<div class="stat"><b>' + f(u.RequiredSouls) + "</b><i>Ability " + (i + 1) + "</i></div>"; }).join("") + "</div>" +
-    '<div class="grh">Boons at</div><div class="sul">' + bo.map(function (u, i) { return '<span><i>' + (i + 1) + "</i>" + f(u.RequiredSouls) + "</span>"; }).join("") + "</div>";
+    '<div class="grh">Boons at</div><div class="sul" style="grid-template-rows:repeat(' + Math.ceil(bo.length / 4) + ',auto)">' + bo.map(function (u, i) { return '<span><i>' + (i + 1) + "</i>" + f(u.RequiredSouls) + "</span>"; }).join("") + "</div>";
 }
 function laneHtml() { // the order you fight through a lane, top to bottom
   var M = state.mc || {}, f = function (n) { return n == null ? "" : Number(n).toLocaleString(); };
