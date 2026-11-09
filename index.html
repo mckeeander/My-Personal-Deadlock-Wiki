@@ -495,6 +495,12 @@ html.lock,html.lock body{overflow:hidden}
 .gst{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}.gst b{font-weight:600;font-size:14.5px}.gst i{font-style:normal;font-size:12px;color:var(--dim)}
 .gsn{flex:none;max-width:46%;font-style:normal;font-size:12px;color:var(--gold);text-align:right;line-height:1.25}
 .gtier{color:#a77ff0;margin-right:3px;font-size:11px} /* the ◆ of the tier boxes */
+.gric{width:17px;height:17px;vertical-align:-4px;margin:0 1px}
+.gsi.pw i{display:block;width:20px;height:20px;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;background:currentColor}
+.gsi.pw.fire_rate{color:var(--weapon);box-shadow:0 0 0 1.5px var(--weapon)}.gsi.pw.spirit{color:var(--spirit);box-shadow:0 0 0 1.5px var(--spirit)}
+.gsi.pw.health{color:var(--vital);box-shadow:0 0 0 1.5px var(--vital)}.gsi.pw.move_speed{color:var(--nav);box-shadow:0 0 0 1.5px var(--nav)}
+.gheff{display:inline-flex;align-items:center;flex:none}.gheff .gsp{width:28px;height:28px}.gheff .gsa{width:28px;height:28px}.gheff .gsa img{width:24px;height:24px}
+.gslink{display:inline-block;margin-top:14px;background:var(--panel2);border:1px solid #4a405a;border-radius:8px;padding:9px 14px;font:inherit;font-size:15px;color:var(--fg)}
 .gsx.gspw{color:var(--fg);min-height:44px;padding:5px 10px 5px 6px}.gsi.pw{background:var(--panel)}.gsi.pw img{width:20px;height:20px;object-fit:contain}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
@@ -2752,7 +2758,10 @@ var GICON = { "weapon-damage": GP + "damage_bullet_color.svg", "spirit-damage": 
   "melee-resist": GP + "armor_melee_color.svg", "barrier": GP + "armor_alt.svg", "lifesteal": GP + "heal.svg", "health-regen": GP + "heal.svg",
   "slow-resist": GP + "move_speed.svg", "slow": GP + "condition_slow.svg", "time-slow": GP + "condition_slow.svg", "stamina": GP + "move_stamina_recharge.svg",
   "sprint": GP + "move_speed.svg" };
-function gIcon(k) { return GICON[k] ? '<img class="gi" alt="" loading="lazy" src="' + GICON[k] + '" onerror="this.remove()">' : ""; }
+function gIcon(k) {
+  var hx = GBY[k] && GBY[k].c === "hero" && heroEffect(k); if (hx) return heroEffectIcons(hx);
+  return GICON[k] ? '<img class="gi" alt="" loading="lazy" src="' + GICON[k] + '" onerror="this.remove()">' : "";
+}
 function glossList() {
   var q = (state.gq || "").toLowerCase().trim(), html = "", n = 0;
   GCATS.forEach(function (c) {
@@ -2774,7 +2783,7 @@ function renderGlossary() {
 // related terms: ones whose definitions link to this one, minus any already linked or named in this definition
 // What causes an effect: the wiki's list (data/status_effects.json, matched to the game data) plus, for slows and
 // debuff resist, every ability and item whose game data has one (those lists are generated on the wiki too, so they never export)
-var SRC_LIMIT = 8;
+var SRC_LIMIT = 7;
 function srcLive(k) {
   var test = k === "slow" ? function (p, r) { return p.css_class === "slow" && /Slow\b/.test(r.l) && !/Resist/.test(r.l); }
     : k === "debuff-resist" ? function (p, r) { return /Debuff Resist/.test(r.l); } : null;
@@ -2799,8 +2808,19 @@ function srcLive(k) {
   });
   return out;
 }
+var SRC_EXTRA = { stamina: [{ text: "Movement Powerup", note: "Restores stamina" }] };
+function heroEffect(k) { // a hero-specific effect: the one ability that applies it
+  var e = (state.se && state.se.effects || []).filter(function (x) { return x.term === k && x.kind === "hero"; })[0];
+  return e && e.sources && e.sources[0] && e.sources[0].ac ? e.sources[0] : null;
+}
+function heroEffectIcons(x) {
+  var h = state.heroes.filter(function (y) { return y.class_name === x.hc; })[0], ab = state.byClass[x.ac];
+  return '<span class="gheff">' + (h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "") + (ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "") + "</span>";
+}
 function sourcesHtml(g) {
-  var se = state.se && state.se.effects || [], list = [], notes = [], seen = {};
+  var hx = g.c === "hero" && heroEffect(g.k);
+  if (hx) { var ab0 = state.byClass[hx.ac]; return '<button class="gslink" data-sac="' + esc(hx.ac) + '" data-shc="' + esc(hx.hc) + '">Go to ' + esc(ab0 ? nameOf(ab0) : hx.ability) + " ›</button>"; } // its own card already shows whose it is
+  var se = state.se && state.se.effects || [], list = (SRC_EXTRA[g.k] || []).slice(), notes = [], seen = {};
   se.forEach(function (e) { if (e.term !== g.k) return; list = list.concat(e.sources || []); (e.notes || []).forEach(function (n) { if (notes.indexOf(n) < 0) notes.push(n); }); });
   var live = srcLive(g.k);
   if (live) { // the game data's list wins; the wiki's own entries fill in what isn't an ability or item (powerups and the like)
@@ -2809,19 +2829,26 @@ function sourcesHtml(g) {
   }
   list = list.filter(function (x) { var id = x.ac || x.ic || x.text || x.hero; if (seen[id + "|" + (x.note || "")]) return false; seen[id + "|" + (x.note || "")] = 1; return true; });
   if (!list.length && !notes.length) return "";
+  var resIc = { bullet: '<img class="gric" alt="Bullet Resist" src="' + GP + 'armor_bullet_color.svg">', spirit: '<img class="gric" alt="Spirit Resist" src="' + GP + 'armor_spirit_color.svg">' };
+  var resPage = g.k === "bullet-resist" || g.k === "spirit-resist";
   var abil = list.filter(function (x) { return x.hero && x.ability; }), whole = list.filter(function (x) { return x.hero && !x.ability; }), items = list.filter(function (x) { return x.item; });
   var power = list.filter(function (x) { return !x.hero && !x.item && /Powerup$/.test(x.text || ""); }), other = list.filter(function (x) { return !x.hero && !x.item && !/Powerup$/.test(x.text || ""); });
   abil.sort(function (a, b) { return a.hero.localeCompare(b.hero); }); whole.sort(function (a, b) { return a.hero.localeCompare(b.hero); });
   items.sort(function (a, b) { var ia = state.byClass[a.ic] || {}, ib = state.byClass[b.ic] || {}; return (ia.item_tier || 0) - (ib.item_tier || 0) || a.item.localeCompare(b.item); });
   function row(x) {
     var nt0 = String(x.note || "").replace(/\bTier (\d) Upgrade\s*-\s*/g, "Tier $1 · ").replace(/\bTier (\d) Upgrade\b/g, "Tier $1");
+    nt0 = nt0.replace(/^stacking\b/i, "Stacks").replace(/^steals\b/i, "Steals"); // present tense: "Stacks Bullet Resist on hit"
     nt0 = nt0.charAt(0).toUpperCase() + nt0.slice(1);
-    var note = nt0 ? '<em class="gsn">' + esc(nt0).replace(/\bTier (\d)\b/g, '<span class="gtier">◆</span>Tier $1') + "</em>" : "";
+    var nh = esc(nt0).replace(/\bTier (\d)\b/g, '<span class="gtier">◆</span>Tier $1');
+    if (resPage) nh = nh.replace(/\bBullet and Spirit\b/g, "\u0001\u0002").replace(/\bBullet( Resist)?\b(?! Immunity)/g, "\u0001").replace(/\bSpirit( Resist)?\b(?! Immunity)/g, "\u0002")
+      .replace(/\u0001/g, resIc.bullet).replace(/\u0002/g, resIc.spirit).replace(/ · (?=<img)/g, " "); // the resist type as its icon
+    var note = nt0 ? '<em class="gsn">' + nh + "</em>" : "";
+    var tier = (/\bTier (\d)\b/.exec(nt0) || [])[1];
     if (x.hero) {
       var h = state.heroes.filter(function (y) { return y.class_name === x.hc; })[0], ab = state.byClass[x.ac];
       var pic = h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "";
       var abi = ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "";
-      var go = x.ac ? ' data-sac="' + esc(x.ac) + '" data-shc="' + esc(x.hc || "") + '"' : (x.hc ? ' data-shc="' + esc(x.hc) + '"' : "");
+      var go = x.ac ? ' data-sac="' + esc(x.ac) + '" data-shc="' + esc(x.hc || "") + '"' + (tier ? ' data-stier="' + tier + '"' : "") : (x.hc ? ' data-shc="' + esc(x.hc) + '"' : "");
       return '<button class="gsrc"' + go + ">" + pic + abi + '<span class="gst"><b>' + esc(ab ? nameOf(ab) : (x.ability || x.hero)) + "</b></span>" + note + "</button>"; // the game's own name (the wiki sometimes writes "powder keg"); the portrait says whose it is
     }
     if (x.item) {
@@ -2829,7 +2856,7 @@ function sourcesHtml(g) {
       return '<button class="gsrc"' + (x.ic ? ' data-item="' + esc(x.ic) + '"' : "") + '><span class="gsi' + (sl ? " " + sl : "") + '">' + (it ? imgTag(itemArt(it), itemImg(it)) : "") + '</span><span class="gst"><b>' + esc(it ? nameOf(it) : x.item) + "</b></span>" + note + "</button>"; // the shop art, as on the item's own card
     }
     var pw = { Casting: "spirit", Gun: "fire_rate", Movement: "move_speed", Survival: "health" }[String(x.text || "").split(" ")[0]];
-    if (pw && /Powerup$/.test(x.text)) return '<div class="gsrc gsx gspw"><span class="gsi pw"><img alt="" src="' + GP + pw + '.svg"></span><span class="gst"><b>' + esc(x.text) + "</b></span>" + note + "</div>";
+    if (pw && /Powerup$/.test(x.text)) return '<div class="gsrc gsx gspw"><span class="gsi pw ' + pw + '"><i style="-webkit-mask-image:url(' + GP + pw + '.svg);mask-image:url(' + GP + pw + '.svg)"></i></span><span class="gst"><b>' + esc(x.text) + "</b></span>" + note + "</div>";
     return '<div class="gsrc gsx"><span class="gst">' + esc(x.text || "") + "</span>" + note + "</div>";
   }
   function group(title, xs) {
@@ -2839,7 +2866,7 @@ function sourcesHtml(g) {
       (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
   }
   var nt = notes.length ? '<ul class="gsnotes">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
-  return nt + (list.length ? '<div class="grh">Sources</div>' + group("Powerups", power) + group("Heroes", whole) + group("Abilities", abil) + group("Items", items) + group("Other", other) : "");
+  return nt + (list.length ? '<div class="grh">Sources</div>' + group("Buffs", power) + group("Heroes", whole) + group("Abilities", abil) + group("Items", items) + group("Other", other) : "");
 }
 function relatedHtml(g) {
   var inDef = {}, txt = String(g.d).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, t) { inDef[k] = 1; return t; }).toLowerCase();
@@ -3501,9 +3528,9 @@ document.addEventListener("click", function (e) {
 $("sheetin").addEventListener("click", function (e) {
   var sa = e.target.closest ? e.target.closest(".gsall") : null;
   if (sa) { sa.parentNode.classList.remove("clip"); sa.remove(); return; }
-  var gs = e.target.closest ? e.target.closest(".gsrc[data-shc]") : null;
+  var gs = e.target.closest ? e.target.closest("[data-shc]") : null;
   if (gs) { // an ability that causes the effect: open its hero and scroll to it, with a way back to where you were
-    var hc = gs.getAttribute("data-shc"), ac = gs.getAttribute("data-sac"), top = ISTACK[ISTACK.length - 1] || "";
+    var hc = gs.getAttribute("data-shc"), ac = gs.getAttribute("data-sac"), wantT = +gs.getAttribute("data-stier") || 0, top = ISTACK[ISTACK.length - 1] || "";
     var from = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, sheet: top.indexOf("g:") === 0 ? top.slice(2) : null, item: top && top.indexOf("g:") !== 0 ? top : null };
     if (searchOn()) from = null; // from search results the pill would have nothing to restore
     closeSheet();
@@ -3511,7 +3538,10 @@ $("sheetin").addEventListener("click", function (e) {
       hideBack(); endSearch(); state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(hc);
       if (from) showBackSheet(from);
       var el = ac && document.querySelector('[data-ab="' + ac + '"]');
-      if (el) { if (el.closest(".f1")) setForm(true); scrollToEl(el); } else window.scrollTo(0, 0);
+      if (el) { if (el.closest(".f1")) setForm(true); EASE_DUR = 0; scrollToEl(el); } else window.scrollTo(0, 0);
+      if (el && wantT && (SEL[ac] || 0) < wantT) setTimeout(function () { // the tier the source names, picked as if tapped: the stats glow as they change
+        var box = document.querySelector('[data-ab="' + ac + '"] .up[data-t="' + wantT + '"]'); if (box) box.click();
+      }, (EASE_DUR || 0) + 350);
     });
     return;
   }
