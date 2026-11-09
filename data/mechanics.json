@@ -4,7 +4,11 @@
   "trooper": {
    "health": 300,
    "melee_health": 400,
-   "dps_vs_heroes": 28.0
+   "dps_vs_heroes": 28.0,
+   "medic_health": 350,
+   "medic_heal": 150.0,
+   "medic_heal_pct": 13.0,
+   "medic_heal_sec": 4.0
   },
   "guardian": {
    "health": 5500,
@@ -13,7 +17,18 @@
   },
   "walker": {
    "health": 6000,
-   "souls": 3675
+   "souls": 3675,
+   "rocket_damage": 200,
+   "rocket_cd": 10,
+   "rocket_fire_dps": 25,
+   "rocket_fire_sec": 5,
+   "rocket_shred": -10,
+   "laser_dps": 125,
+   "laser_maxhp_dps": 2,
+   "laser_sec": 6.0,
+   "stomp_cd": 6,
+   "wave_damage": 300,
+   "wave_at_health": 0.25
   },
   "base_guardian": {
    "health": 4000,
@@ -78,6 +93,77 @@
    "trooper_instant_ratio": 0.5,
    "comeback_redirect": 0.7,
    "tick_start_sec": 480
+  },
+  "shop": {
+   "tier_prices": [
+    800,
+    1600,
+    3200,
+    6400
+   ],
+   "sell_ratio": 0.5
+  },
+  "status_text": {
+   "stun": {
+    "name": "Stun",
+    "msg": "Stunned - Can't Take Action"
+   },
+   "sleep": {
+    "name": "Sleep",
+    "msg": "Asleep - Can't Take Action"
+   },
+   "silence": {
+    "name": "Silence",
+    "msg": "Abilities Disabled"
+   },
+   "disarm": {
+    "name": "Disarm",
+    "msg": "Gun Disabled"
+   },
+   "immobilize": {
+    "name": "Immobilize",
+    "msg": "Movement Abilities Disabled"
+   },
+   "movement-silence": {
+    "name": null,
+    "msg": "Movement Abilities Disabled"
+   },
+   "curse": {
+    "name": "Curse",
+    "msg": "Abilities and Items Disabled"
+   },
+   "displace": {
+    "name": "Displacement",
+    "msg": null
+   },
+   "petrified": {
+    "name": "Petrify",
+    "msg": null
+   },
+   "tether": {
+    "name": "Tether",
+    "msg": null
+   },
+   "bleed": {
+    "name": "Bleed",
+    "msg": null
+   },
+   "burn": {
+    "name": "Burn",
+    "msg": null
+   },
+   "unstoppable": {
+    "name": "Unstoppable",
+    "msg": null
+   },
+   "invisible": {
+    "name": "Invisible",
+    "msg": null
+   },
+   "stamina": {
+    "name": null,
+    "msg": "Out of Stamina"
+   }
   },
   "soul_unlocks": [
    {

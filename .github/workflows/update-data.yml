@@ -521,7 +521,7 @@ jobs:
         continue-on-error: true
         run: |
           git clone -q --depth 1 --filter=blob:none --sparse https://github.com/deadlock-wiki/deadlock-data /tmp/deadlock-data
-          git -C /tmp/deadlock-data sparse-checkout set data/changelogs/wiki data/json
+          git -C /tmp/deadlock-data sparse-checkout set --no-cone /data/changelogs/wiki/ /data/json/ /data/localizations/english.json
           python3 tools/wikidata.py /tmp/deadlock-data
 
       - name: Save to repo

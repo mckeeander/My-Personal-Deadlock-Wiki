@@ -262,6 +262,32 @@ def mechanics(repo):
                       "killer_assist_ratio": c("citadel_player_gold_killer_to_assist_ratio"), "assist_window_sec": c("citadel_bounty_player_assist_window"),
                       "trooper_instant_ratio": c("citadel_trooper_instant_gold_ratio_laning"), "comeback_redirect": c("citadel_comeback_redirect_fraction"),
                       "tick_start_sec": c("citadel_tick_gold_start_time")}
+    # walker attacks and trooper types
+    w = (n.get("npc_boss_tier2") or {}).get("BoundAbilities") or {}
+    ap = lambda slot, k: num(w, slot, "AbilityProperties", k)
+    out["walker"].update({"rocket_damage": ap("ESlot_Signature_1", "Damage"), "rocket_cd": ap("ESlot_Signature_1", "AbilityCooldown"),
+                          "rocket_fire_dps": ap("ESlot_Signature_1", "FireDPS"), "rocket_fire_sec": ap("ESlot_Signature_1", "FireDuration"),
+                          "rocket_shred": ap("ESlot_Signature_1", "BulletArmorReduction"), "laser_dps": ap("ESlot_Signature_2", "DPS"),
+                          "laser_maxhp_dps": ap("ESlot_Signature_2", "MaxHPDPS"), "laser_sec": ap("ESlot_Signature_2", "AbilityDuration"),
+                          "stomp_cd": ap("ESlot_Signature_3", "AbilityCooldown"), "wave_damage": ap("ESlot_Signature_4", "Damage"),
+                          "wave_at_health": num(n, "npc_boss_tier2", "AoeWaveHealthThreshold")})
+    md = (n.get("trooper_medic") or {}).get("AOEHealthPickup") or {}
+    out["trooper"].update({"medic_health": num(n, "trooper_medic", "MaxHealth"), "medic_heal": md.get("RegenFixed"), "medic_heal_pct": md.get("MissingPctRegen"), "medic_heal_sec": md.get("RegenDuration")})
+    # the shop
+    out["shop"] = {"tier_prices": [p for p in (g.get("ItemPricePerTier") or []) if p and p < 9000], "sell_ratio": c("citadel_item_sell_price_ratio")}
+    # the game's own words when a status effect stops you
+    try:
+        Lz = json.load(open(os.path.join(repo, "data", "localizations", "english.json"), encoding="utf-8"))
+        T = lambda k: re.sub(r"<[^>]+>", "", Lz.get(k) or "") or None
+        S = {"stun": ("Citadel_StatusEffectStun", "CITADEL_ABILITY_INVALID_STUNNED"), "sleep": ("Citadel_StatusEffectSleep", "CITADEL_ABILITY_INVALID_ASLEEP"),
+             "silence": ("Citadel_StatusEffectSilence", "CITADEL_ABILITY_INVALID_SILENCED"), "disarm": ("Citadel_StatusEffectDisarmed", "CITADEL_ABILITY_INVALID_DISARMED"),
+             "immobilize": ("Citadel_StatusEffectImmobilize", "CITADEL_ABILITY_INVALID_ROOTED"), "movement-silence": (None, "CITADEL_ABILITY_INVALID_SILENCE_MOVEMENT_ABILITIES"),
+             "curse": ("Citadel_StatusEffectCurse", "CITADEL_ABILITY_INVALID_MUTED"), "displace": ("Citadel_StatusEffectDisplacement", None),
+             "petrified": ("Citadel_StatusEffectPetrify", None), "tether": ("Citadel_StatusEffectTethered", None), "bleed": ("Citadel_StatusEffectBleed", None),
+             "burn": ("Citadel_StatusEffectBurn", None), "unstoppable": ("Citadel_StatusEffectUnstoppable", None), "invisible": ("Citadel_StatusEffectInvisible", None),
+             "stamina": (None, "CITADEL_ABILITY_INVALID_OUT_OF_STAMINA")}
+        out["status_text"] = {k: {"name": T(a) if a else None, "msg": T(b) if b else None} for k, (a, b) in S.items() if (a and T(a)) or (b and T(b))}
+    except Exception: pass
     try: out["soul_unlocks"] = J("soul-unlock-data.json")
     except Exception: pass
     return out if out["guardian"]["health"] else None

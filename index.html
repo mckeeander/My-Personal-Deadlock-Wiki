@@ -532,6 +532,8 @@ html.lock,html.lock body{overflow:hidden}
 .glh + .gln{margin-top:0}.gln:last-child,.gln:has(+ .glh){margin-bottom:4px}.gln:has(+ .glh)::after{display:none}
 .glp{flex:none;width:52px;height:52px;border-radius:6px;object-fit:cover;background:var(--panel)}.glane .gln{padding:6px 12px 6px 6px}
 .glt{flex:1;display:flex;flex-direction:column;line-height:1.25}.glt b{font-weight:600;font-size:15px}.glt i{font-style:normal;font-size:12px;color:var(--dim)}
+.gig{margin-top:10px;font-size:13px;color:var(--dim)}.gig span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d7290;margin-right:8px}.gig b{color:var(--fg);font-weight:600}
+.mlist{display:flex;flex-direction:column;gap:6px}.mlist div{background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.4}.mlist b{display:block;font-weight:600}.mlist span{color:var(--dim);font-size:13px}
 .blkn{color:var(--dim);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px}
 .mrows{margin-top:12px;border:1px solid #3d344c;border-radius:8px;overflow:hidden}
 .mrow{display:grid;grid-template-columns:1fr 64px 64px 64px;align-items:center;padding:9px 10px;background:var(--panel2);font-size:14px}.mrow + .mrow{border-top:1px solid #3d344c}
@@ -2773,6 +2775,7 @@ var GLOSS = [
   { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues", "breakable", "breakables", "crate", "crates"], d: "Golden statues around the map that drop a small permanent stat boost when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
   { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Monster camps around the map, in three sizes. They give souls, and their bounty grows a little every minute." },
   // economy (numbers from the game data)
+  { k: "shop", c: "econ", t: "Shop", a: ["shop", "shops", "item tiers", "sell", "selling", "sell back"], d: "Items come in four price tiers. You can sell an item back for part of what you paid." },
   { k: "kill-bounty", c: "econ", t: "Kill bounty", a: ["kill bounty", "hero bounty", "bounty", "assist", "assists"], d: "Souls for killing an enemy hero. They’re split between the killer and everyone who damaged the hero shortly before, and the killer gets the biggest share." },
   { k: "soul-orbs", c: "econ", t: "Soul orbs", a: ["soul orb", "soul orbs", "orb", "orbs", "deny", "denies", "last hit", "last hits"], d: "When a trooper dies, part of its bounty is paid out straight away and the rest pops out as a soul orb. Shoot the orb to claim it before it fades, or shoot an enemy’s orb to deny it." },
   { k: "comeback-souls", c: "econ", t: "Comeback souls", a: ["comeback", "comeback souls", "comeback bounty"], d: "A team behind in net worth earns extra souls from kills and objectives. Extra comeback souls earned by someone already ahead of the enemy average go to their team’s two poorest players instead, paid out over time." },
@@ -2961,10 +2964,17 @@ function timelineHtml() { // every event from the game data; each opens its term
   var rift = M.rift_interval_sec ? '<div class="gsft">The Unstable Rift also opens about every ' + Math.round(M.rift_interval_sec / 60) + " minutes.</div>" : "";
   return rows ? '<div class="gtlw">' + rows + "</div>" + rift : "";
 }
+function gameText(g) { // the game's own name for the effect and the message it shows when the effect stops you
+  var t = state.mc && state.mc.status_text && state.mc.status_text[g.k]; if (!t) return "";
+  var nm = t.name && t.name.toLowerCase() !== g.t.toLowerCase().replace(/ \(.*\)$/, "") ? t.name : "";
+  if (!t.msg && !nm) return "";
+  return '<div class="gig"><span>In game</span>' + (nm ? "<b>" + esc(nm) + "</b>" : "") + (nm && t.msg ? " · " : "") + (t.msg ? "“" + esc(t.msg) + "”" : "") + "</div>";
+}
 function mechHtml(g) { // the numbers behind a map term, from the game data
   var M = state.mc; if (!M || (g.c !== "map" && g.c !== "econ")) return "";
   var E = M.economy || {};
   if (g.k === "souls") return unlocksHtml();
+  if (g.k === "shop") { var SH = M.shop || {}; return econCard((SH.tier_prices || []).map(function (v, i) { return [Number(v).toLocaleString(), "Tier " + (i + 1)]; }).concat([[SH.sell_ratio != null ? Math.round(SH.sell_ratio * 100) + "%" : null, "Sell-back value"]])); }
   if (g.k === "kill-bounty") return econCard([[E.first_kill_bonus != null ? "+" + E.first_kill_bonus : null, "First kill of the match"], [E.killer_assist_ratio != null ? "×" + E.killer_assist_ratio : null, "Killer’s share vs an assist"], [E.assist_window_sec != null ? E.assist_window_sec + "s" : null, "Assist window"]]) +
     (E.kill_min != null ? '<div class="gsft">The base bounty grows from ' + E.kill_min.toLocaleString() + " to " + E.kill_max.toLocaleString() + " souls over the first " + Math.round(E.kill_ramp_sec / 60) + " minutes. The actual amount also depends on the hero who died, so treat this as a rough guide.</div>" : "");
   if (g.k === "soul-orbs") return econCard([[E.trooper_instant_ratio != null ? Math.round(E.trooper_instant_ratio * 100) + "%" : null, "Paid out instantly"], [E.trooper_instant_ratio != null ? Math.round((1 - E.trooper_instant_ratio) * 100) + "%" : null, "Dropped as an orb"]]);
@@ -2972,7 +2982,10 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
   var f = function (n) { return n == null ? null : Number(n).toLocaleString(); }, T = [];
   var add = function (v, l) { if (v != null) T.push('<div class="stat"><b>' + esc(v) + "</b><i>" + esc(l) + "</i></div>"); };
   var x = { troopers: M.trooper, guardian: M.guardian, walker: M.walker, "base-guardian": M.base_guardian, shrine: M.shrine, patron: M.patron, "mid-boss": M.mid_boss }[g.k] || {};
-  if (g.k === "troopers") { add(f(x.health), "Health"); add(f(x.melee_health), "Melee trooper health"); add(f(x.dps_vs_heroes), "Damage to heroes per second"); }
+  if (g.k === "troopers") {
+    add(f(x.health), "Trooper health"); add(f(x.melee_health), "Melee trooper health"); add(f(x.medic_health), "Medic trooper health"); add(f(x.dps_vs_heroes), "Damage to heroes per second");
+    if (T.length) return '<div class="stats">' + T.join("") + "</div>" + (x.medic_heal ? '<div class="gsft">Medic troopers heal for ' + f(x.medic_heal) + " plus " + x.medic_heal_pct + "% of missing health over " + x.medic_heal_sec + "s.</div>" : "");
+  }
   else if (g.k === "mid-boss") { add(f(x.health), "Starting health"); add(x.health_per_min != null ? "+" + f(x.health_per_min) : null, "Health per minute"); }
   else if (g.k === "backdoor") { var b = M.backdoor || {}; add(b.mitigation != null ? b.mitigation + "%" : null, "Less damage from heroes"); add(b.regen != null ? b.regen + "/s" : null, "Health regen"); }
   else if (g.k === "rejuvenator") {
@@ -2986,6 +2999,15 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
     }).join("");
     var pct = (M.camps || [])[0] && M.camps[0].souls_pct_per_min;
     if (out) return out + (pct ? '<div class="gslide"><div class="gslh"><span>Bounty at</span><b id="gsmin">0 min</b></div><input type="range" id="gsr" min="0" max="50" step="5" value="0" aria-label="Match minute"><div class="gsticks"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span></div><div class="gsft">Bounties grow about ' + pct + "% of their base value a minute (an estimate from the game data).</div></div>" : "");
+  }
+  else if (g.k === "walker") {
+    add(f(x.health), "Health"); add(f(x.souls), "Soul Bounty");
+    var A = [];
+    if (x.rocket_damage) A.push(["Rocket Barrage", x.rocket_damage + " damage, then fire for " + x.rocket_fire_dps + "/s over " + x.rocket_fire_sec + "s" + (x.rocket_shred ? ", and " + x.rocket_shred + "% bullet and spirit resist" : "") + (x.rocket_cd ? ". Every " + x.rocket_cd + "s." : ".")]);
+    if (x.laser_dps) A.push(["Laser", x.laser_dps + " damage a second plus " + x.laser_maxhp_dps + "% of max health a second, for up to " + x.laser_sec + "s."]);
+    if (x.stomp_cd) A.push(["Stomp", "A close-range stomp, every " + x.stomp_cd + "s."]);
+    if (x.wave_damage) A.push(["Shockwave", x.wave_damage + " damage in a wide ring" + (x.wave_at_health ? " once its health drops below " + Math.round(x.wave_at_health * 100) + "%." : ".")]);
+    return '<div class="stats">' + T.join("") + "</div>" + (A.length ? '<div class="grh">Attacks</div><div class="mlist">' + A.map(function (a) { return "<div><b>" + esc(a[0]) + "</b><span>" + esc(a[1]) + "</span></div>"; }).join("") + "</div>" : "");
   }
   else if (g.k === "patron") {
     add(f(x.health), "Phase 1 health"); add(f(x.phase2_health), "Phase 2 health");
@@ -3089,7 +3111,7 @@ function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); if (!FWD) FSTACK = []; }
   var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
-  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p>" + mechHtml(g) + sourcesHtml(g) + relatedHtml(g) + "</div>" +
+  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p>" + gameText(g) + mechHtml(g) + sourcesHtml(g) + relatedHtml(g) + "</div>" +
     // bottom row: back (when there is one), Close, then a small book button on the right that opens the full glossary
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button></div>';
   function bind() {
