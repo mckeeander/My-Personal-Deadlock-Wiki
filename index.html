@@ -515,7 +515,7 @@ html.lock,html.lock body{overflow:hidden}
 .nhs .rch .pnl{margin-top:2px}
 .rhdb{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;text-align:left}
 .ric.pnit{width:32px;height:32px}.ric.pnit.weapon{box-shadow:0 0 0 1.5px var(--weapon)}.ric.pnit.vitality{box-shadow:0 0 0 1.5px var(--vital)}.ric.pnit.spirit{box-shadow:0 0 0 1.5px var(--spirit)}
-.rgrp.stp{background:#2b2535;border-radius:10px;padding:10px 12px 8px}.rgrp.stp+.rgrp,.rgrp+.rgrp.stp{margin-top:12px}.nhs .rgrp.stp{background:var(--panel)}.ric.rstat{background:none}.ric.rstat img{width:24px;height:24px;object-fit:contain} /* Stats: a tinted panel with the hero's face, so it doesn't read as an ability */.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
+.rgrp.stp{background:#2b2535;border-radius:10px;padding:10px 12px 8px}.nhg .rgrp.stp,.nhg .rgrp.stp+.rgrp{margin-top:18px}.nhg .rgrp.stp{margin-bottom:6px}.nhs .rgrp.stp{background:var(--panel)}.ric.rstat{background:none}.ric.rstat img{width:24px;height:24px;object-fit:contain} /* Stats: a tinted panel with the hero's face, so it doesn't read as an ability */.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
 .gtlw{margin-top:12px;border-left:2px solid #4a405a;margin-left:6px}
 .gtl{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:8px 4px 8px 0;font:inherit;color:var(--fg);text-align:left;position:relative}
 .gtl::before{content:"";position:absolute;left:-6px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--panel);box-shadow:0 0 0 2px var(--gold)}
@@ -539,6 +539,7 @@ html.lock,html.lock body{overflow:hidden}
 .phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.phb.on img{opacity:1}
 .phsum{font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-left:8px}
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
+.iph{display:flex;align-items:center;gap:9px;width:100%;background:none;border:0;border-top:1px solid var(--line);margin-top:14px;padding:13px 0 4px;color:var(--gold);font:inherit;font-size:14px;text-align:left;-webkit-tap-highlight-color:transparent}.ipage{margin-bottom:8px}.ipl .pnl{margin-top:4px}
 .phy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;margin:16px 0 8px 4px}.phist.filt .phy{display:none!important}
 .phmore{width:100%;margin-top:4px;background:none;border:1px dashed #4a405a;border-radius:10px;padding:11px;color:var(--fg);font:inherit;font-size:14px}
 .phs{margin-top:10px}.phs .nsub{margin-bottom:4px}
@@ -1674,8 +1675,9 @@ var NICON = {
   notes: '<path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM9 8h6M9 12h6M9 16h4"/>',
   brawl: '<path d="M21 3v5l-11 9-4 4-3-3 4-4 9-11zM5 13l6 6M14.3 17.3L18 21l3-3-3.7-3.7M10 5.5L8 3H3v5l3 2.5"/>',
   inter: '<path d="M4 7h3a1 1 0 0 0 1-1V5a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-1a2 2 0 0 0-4 0v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a2 2 0 0 0 0-4H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/>' };
+function rowSvg(d, c) { return '<svg class="' + c + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + "</svg>"; }
 function nsum(label, kind, n) {
-  var sv = function (d, c) { return '<svg class="' + c + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + "</svg>"; };
+  var sv = rowSvg;
   return "<summary>" + sv(NICON[kind], "nsi") + "<span>" + label + "</span>" + (n ? '<span class="ncount">' + n + "</span>" : "") + sv('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>";
 }
 // Notes start collapsed; "extra" (the Interacts-with items) sits inside them so it collapses too
@@ -2060,7 +2062,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
 })();
 (function () {
   var x0 = 0, y0 = 0, t0 = 0, dx = 0, on = false, horiz = null, m = $("slide"); // the page and its footer slide together
-  function ok() { return (searchOn() || (state.tab === "heroes" && state.hero) || state.tab === "glossary" || state.tab === "news") && $("sheet").hidden; }
+  function ok() { return (searchOn() || (state.tab === "heroes" && state.hero) || state.tab === "glossary" || state.tab === "news" || state.tab === "item") && $("sheet").hidden; }
   window.swipeBack = function () { goBack(); }; // the tab swipe's rightward drag on a hero page does the same as the edge swipe
   window.backSwipeOn = ok; // the tab swipe asks: where this is on, the left edge means back; elsewhere the edge is free to change tabs
   function goBack() {
@@ -2104,9 +2106,9 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     }
     return false;
   }
-  function backPage() { return searchOn() || (state.tab === "heroes" && !!state.hero) || state.tab === "news" || state.tab === "glossary"; } // pages where a rightward swipe goes back (search: like Cancel)
+  function backPage() { return searchOn() || (state.tab === "heroes" && !!state.hero) || state.tab === "news" || state.tab === "glossary" || state.tab === "item"; } // pages where a rightward swipe goes back (search: like Cancel)
   function ok() {
-    return (searchOn() || ORDER.indexOf(state.tab) > -1 || state.tab === "news" || state.tab === "glossary") && $("sheet").hidden && !busy && (searchOn() || !typing()) &&
+    return (searchOn() || ORDER.indexOf(state.tab) > -1 || state.tab === "news" || state.tab === "glossary" || state.tab === "item") && $("sheet").hidden && !busy && (searchOn() || !typing()) &&
       !(window.visualViewport && window.visualViewport.scale > 1.02);
   }
   function settle() { m.style.transition = calm ? "none" : "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = ""; }
@@ -2418,33 +2420,50 @@ function phGroupsHtml(groups, h) { // a hero's changes in one patch, grouped by 
   return groups.map(function (g) {
     if (!g.ac && g.label === "Stats") return statGroupHtml(g, h);
     var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : "", name = ab ? nameOf(ab) : (g.ability || g.label || "");
-    return '<div class="rgrp"' + (ab ? ' data-pab="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
+    return '<div class="rgrp"' + (ab ? ' data-pab="' + esc(g.ac) + '" data-pf="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
   }).join("");
 }
 function statGroupHtml(g, h) { // a hero's base stats in a patch: their own tinted panel, under the hero's face
-  return '<div class="rgrp stp"><div class="rhd"><span class="ric rstat">' + (h ? '<img alt="" src="' + esc(pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h)) + '">' : "") + '</span>Base stats</div><div class="rch">' + pnList(g.lines) + "</div></div>";
+  return '<div class="rgrp stp" data-pf="stats"><div class="rhd"><span class="ric rstat">' + (h ? '<img alt="" src="' + esc(heroHead(h)) + '">' : "") + '</span>Base stats</div><div class="rch">' + pnList(g.lines) + "</div></div>";
 }
-function phSummary(groups) {
-  var n = groups.reduce(function (a, g) { return a + g.lines.length; }, 0);
-  return n + " change" + (n === 1 ? "" : "s");
-}
+function heroHead(h) { return pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h); }
+function isStats(g) { return !g.ac && g.label === "Stats"; }
 function revisionsHtml(h) { // Patch history: every official patch that touched this hero, newest first
   var P = state.ph && state.ph.heroes && state.ph.heroes[h.class_name];
   if (!P || !P.length) return revisionsHtml0(h);
-  var R = state.revs || [], abs = {};
-  P.forEach(function (p) { p.groups.forEach(function (g) { if (g.ac && state.byClass[g.ac]) abs[g.ac] = (abs[g.ac] || 0) + 1; }); });
+  var R = state.revs || [], abs = {}, stats = false;
+  P.forEach(function (p) { p.groups.forEach(function (g) { if (g.ac && state.byClass[g.ac]) abs[g.ac] = (abs[g.ac] || 0) + 1; if (isStats(g)) stats = true; }); });
   var order = ((h.items && ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return h.items[k]; })) || []).filter(function (c) { return abs[c]; });
   Object.keys(abs).forEach(function (c) { if (order.indexOf(c) < 0) order.push(c); });
-  var filt = order.length > 1 ? '<div class="phf"><button class="phb on" data-phf="">All</button>' + order.map(function (c) { return '<button class="phb" data-phf="' + esc(c) + '" aria-label="' + esc(nameOf(state.byClass[c])) + '">' + imgTag(itemImg(state.byClass[c])) + "</button>"; }).join("") + "</div>" : "";
-  var thisYear = String(new Date().getFullYear()), show = P.filter(function (p) { return p.date.slice(0, 4) >= thisYear; }).length || 1; // this year's patches; older ones wait behind the button
+  var filt = order.length + (stats ? 1 : 0) > 1 ? '<div class="phf"><button class="phb on" data-phf="">All</button>' +
+    (stats ? '<button class="phb" data-phf="stats" aria-label="Base stats"><img alt="" src="' + esc(heroHead(h)) + '"></button>' : "") +
+    order.map(function (c) { return '<button class="phb" data-phf="' + esc(c) + '" aria-label="' + esc(nameOf(state.byClass[c])) + '">' + imgTag(itemImg(state.byClass[c])) + "</button>"; }).join("") + "</div>" : "";
+  return phListHtml(P, filt, function (p) {
+    var stat = R.filter(function (e) { var dd = (new Date(e.date) - new Date(p.date)) / 864e5; return dd >= 0 && dd <= 3 && (e.heroes || {})[h.class_name]; })[0]; // the app's own before/after numbers for that patch
+    return '<div class="nhg">' + phGroupsHtml(p.groups, h) + "</div>" + (stat ? '<div class="phs"><div class="nsub">Stat changes</div>' + stat.heroes[h.class_name].map(function (g) { return revGroupHtml(g, h); }).join("") + "</div>" : "");
+  }, function (p) { return p.groups.map(function (g) { return g.ac || (isStats(g) ? "stats" : ""); }).join(" "); });
+}
+function itemHistoryHtml(it) { // the same list for a shop item: each patch's notes, plus the app's own before/after numbers
+  var P = itemHistory(it.class_name); if (!P.length) return "";
+  var R = state.revs || [];
+  return phListHtml(P, "", function (p) {
+    var e = R.filter(function (e) { var dd = (new Date(e.date) - new Date(p.date)) / 864e5; return dd >= 0 && dd <= 3 && (e.items || {})[it.class_name]; })[0], body = "";
+    if (e) {
+      var cs = e.items[it.class_name].changes.filter(function (c) { var q = c.key && (it.properties || {})[c.key]; return !c.key || (q && q.label); });
+      if (cs.length) body = '<div class="phs"><div class="nsub">Stat changes</div>' + revGroupHtml({ item: it.class_name, type: "shop", name: nameOf(it), changes: cs }, null) + "</div>";
+    }
+    return '<div class="ipl">' + pnList(p.lines) + "</div>" + body;
+  });
+}
+function itemHistory(cn) { return (state.ph && state.ph.items && state.ph.items[cn]) || []; }
+function phListHtml(P, filt, bodyOf, absOf) { // this year's patches open to view, older ones behind a button and grouped by year; one open at a time
+  var thisYear = String(new Date().getFullYear()), show = P.filter(function (p) { return p.date.slice(0, 4) >= thisYear; }).length || 1;
   var year = "", rows = P.map(function (p, i) {
     var old = i >= show, y = p.date.slice(0, 4), yh = old && y !== year ? '<div class="phy pho">' + y + "</div>" : "";
     if (old) year = y;
-    var stat = R.filter(function (e) { var dd = (new Date(e.date) - new Date(p.date)) / 864e5; return dd >= 0 && dd <= 3 && (e.heroes || {})[h.class_name]; })[0]; // the app's own before/after numbers for that patch
-    var sbody = stat ? '<div class="phs"><div class="nsub">Stat changes</div>' + stat.heroes[h.class_name].map(function (g) { return revGroupHtml(g, h); }).join("") + "</div>" : "";
+    var n = p.lines ? p.lines.length : p.groups.reduce(function (a, g) { return a + g.lines.length; }, 0);
     var src = p.source ? '<a class="pnsrc" href="' + esc(p.source) + '" target="_blank" rel="noopener">' + esc(p.title || "Official notes") + " ↗</a>" : "";
-    var abl = p.groups.map(function (g) { return g.ac || ""; }).join(" ");
-    return yh + '<details class="rpt' + (old ? " pho" : "") + '" data-abs="' + esc(abl) + '"' + (i === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '<i class="phsum">' + esc(phSummary(p.groups)) + '</i></span><span class="rcv">' + CHEV + "</span></summary>" + src + '<div class="nhg">' + phGroupsHtml(p.groups, h) + "</div>" + sbody + "</details>";
+    return yh + '<details class="rpt' + (old ? " pho" : "") + '" data-abs="' + esc(absOf ? absOf(p) : "") + '"' + (i === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '<i class="phsum">' + n + " change" + (n === 1 ? "" : "s") + '</i></span><span class="rcv">' + CHEV + "</span></summary>" + src + bodyOf(p) + "</details>";
   }).join("");
   var more = P.length > show ? '<button class="phmore">Show older patches (' + (P.length - show) + ")</button>" : "";
   return '<div class="sec">Patch history <span class="secn">' + P.length + "</span></div>" + filt + '<div id="revs" class="phist">' + rows + more + "</div>";
@@ -2584,6 +2603,24 @@ function itemSheet(cn, fromBack) {
   var it = state.byClass[cn]; if (!it) return;
   HERO_NAME = ""; CTX = null;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== cn) ISTACK.push(cn); if (!FWD) FSTACK = []; }
+  var html = itemBodyHtml(it) + itemHistRow(it) + '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button></div>';
+  html = glossOnce(html);
+  function bind() {
+    $("close").onclick = sinkSheet;
+    var bk = $("ibk"); if (bk) bk.onclick = sheetBack;
+    var ph = $("iph"); if (ph) ph.onclick = function () { openItemPage(cn); };
+  }
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!$("sheet").hidden && !calm && $("sheetin").firstChild) swapSheet(html, !!fromBack, bind);
+  else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
+}
+function itemHistRow(it) { // "Patch history  12  ›": the item's own page, with every patch that changed it
+  var n = itemHistory(it.class_name).length; if (!n) return "";
+  var sv = rowSvg;
+  return '<button class="iph" id="iph">' + sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', "nsi") + "<span>Patch history</span>" + '<span class="ncount">' + n + "</span>" + sv('<path d="M9 6l6 6-6 6"/>', "ncv") + "</button>";
+}
+function itemBodyHtml(it) { // an item's card: header, pills, its text and stats, what it builds from and into (the pop-up and the item page)
+  var cn = it.class_name;
   var slot = slotOf(it), act = String(it.activation || ""), kind = act === "passive" ? "Passive" : act === "instant_cast_toggle" ? "Toggle" : act ? "Active" : (it.is_active_item ? "Active" : "");
   var used = {}, secs = (it.tooltip_sections || []).map(function (sec) { return itemSecHtml(it, sec, used); }).join("");
   var hasText = (it.tooltip_sections || []).some(function (sec) { return (sec.section_attributes || []).some(function (a) { return a.loc_string; }); });
@@ -2594,16 +2631,35 @@ function itemSheet(cn, fromBack) {
     (it.item_tier ? '<span class="pill2">Tier ' + esc(it.item_tier) + "</span>" : "") + (kind ? '<span class="pill2">' + kind + "</span>" : "") + "</div>" +
     (topDesc ? '<div class="desc">' + topDesc + "</div>" : "") + secs +
     (comps.length ? '<div class="ihd">Builds from</div>' + comps.map(function (c) { return recipeRow(c, 0); }).join("") : "") +
-    (into.length ? '<div class="ihd">Builds into</div>' + intoTree(cn, 0, (function () { var o = {}; o[cn] = 1; return o; })()) : "") +
-    '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button></div>';
-  html = glossOnce(html);
-  function bind() {
-    $("close").onclick = sinkSheet;
-    var bk = $("ibk"); if (bk) bk.onclick = sheetBack;
-  }
-  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!$("sheet").hidden && !calm && $("sheetin").firstChild) swapSheet(html, !!fromBack, bind);
-  else { clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; bind(); }
+    (into.length ? '<div class="ihd">Builds into</div>' + intoTree(cn, 0, (function () { var o = {}; o[cn] = 1; return o; })()) : "");
+  return html;
+}
+// The item page: the item's card, then its patch history, as a page of its own (from the pop-up's Patch history row).
+// Back (the button or the edge swipe) returns to where you were, with the pop-up open again.
+function openItemPage(cn) {
+  var top = ISTACK[ISTACK.length - 1] || "";
+  var from = state.tab === "item" ? state.itemFrom : { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, search: searchOn() ? ($("sq") || {}).value || "" : null, sheet: top };
+  closeSheet();
+  slideForward(function () {
+    hideBack(); endSearch(); state.itemFrom = from; state.item = cn; state.tab = "item"; state.hero = null; state.from = null; setTabsUI("item");
+    renderItemPage(); window.scrollTo(0, 0);
+  });
+}
+function renderItemPage() {
+  var it = state.byClass[state.item]; if (!it) { itemBack(); return; }
+  var f = state.itemFrom || {}, h = f.hero && state.heroes.filter(function (x) { return x.class_name === f.hero; })[0];
+  var where = f.search != null ? "Search" : h ? h.name : { heroes: "All heroes", weapon: "Weapon", vitality: "Vitality", spirit: "Spirit", news: "What\u2019s New", glossary: "Glossary" }[f.tab] || "Back";
+  $("main").innerHTML = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + esc(where) + "</span></button>" +
+    '<div class="ipage">' + glossOnce(itemBodyHtml(it)) + "</div>" + '<div id="revwrap">' + itemHistoryHtml(it) + "</div>";
+  $("jbar").innerHTML = ""; updateJbar();
+  $("back").onclick = function () { slideBack(itemBack); };
+}
+function itemBack() { // to the page you opened the item from, its pop-up up again
+  var f = state.itemFrom || { tab: "heroes" }, cn = state.item; state.itemFrom = null; state.item = null;
+  if (f.search != null) { state.tab = f.tab; setTabsUI(f.tab); render(); showSearch(f.search); }
+  else { state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y); }
+  ISTACK = []; FSTACK = [];
+  setTimeout(function () { var k = f.sheet || cn; if (!k) return; if (k.indexOf("g:") === 0) glossSheet(k.slice(2)); else itemSheet(k); }, 180);
 }
 var SWAPT = 0, QUICK = false; // QUICK: the old content was already slid away by a swipe, so swapSheet skips its own fade-out
 function resetSwap() { var b = $("sheetin"); b.style.height = ""; b.style.overflow = ""; b.style.transition = ""; }
@@ -3349,6 +3405,7 @@ function render() {
   document.body.classList.remove("boot");
   if (state.tab === "glossary") return renderGlossary();
   if (state.tab === "news") return renderNews();
+  if (state.tab === "item") return renderItemPage();
   if (state.tab === "heroes") { state.hero ? renderHero(state.hero) : renderHeroes(); } else renderShop(state.tab);
 }
 function showError(e) {
@@ -3810,7 +3867,7 @@ $("main").addEventListener("click", function (e) {
     wrap.classList.toggle("filt", !!c0); if (c0) wrap.classList.add("all");
     var first = null;
     Array.prototype.forEach.call(wrap.querySelectorAll("details.rpt"), function (d) { var hit = !c0 || (" " + d.getAttribute("data-abs") + " ").indexOf(" " + c0 + " ") >= 0; d.classList.toggle("phx", !hit); if (hit && !first) first = d; d.open = false; });
-    Array.prototype.forEach.call(wrap.querySelectorAll(".rgrp[data-pab], .rgrp.stp"), function (g) { g.classList.toggle("phx", !!c0 && g.getAttribute("data-pab") !== c0); });
+    Array.prototype.forEach.call(wrap.querySelectorAll(".rgrp[data-pf]"), function (g) { g.classList.toggle("phx", !!c0 && g.getAttribute("data-pf") !== c0); });
     if (first) first.open = true;
     return;
   }
