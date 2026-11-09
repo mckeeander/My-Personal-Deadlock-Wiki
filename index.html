@@ -523,7 +523,8 @@ html.lock,html.lock body{overflow:hidden}
 .mrow.mr2{grid-template-columns:90px 1fr}.mr2 b{text-align:left;font-weight:500}.mr2 span{font-variant-numeric:tabular-nums;font-weight:600}.mrows .gsm{display:none}.gsg:not(.clip) .mrows .gsm{display:grid}
 .glane{margin-top:6px}.glane .gln{width:80%;margin-left:auto;margin-right:auto}.glane .glh{width:80%;margin-left:auto;margin-right:auto;text-align:center}.gsft.glf{margin-top:16px}
 .sug{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.sug .stat{padding:8px 4px}.sug .stat b{font-size:17px}
-.sul{display:flex;flex-wrap:wrap;gap:4px 0;font-size:14.5px;line-height:1.6;color:var(--fg);font-variant-numeric:tabular-nums}.sul span:not(:last-child)::after{content:"·";color:#7d7290;margin:0 7px}.sul + .gsft{margin-top:10px}
+.sul{display:grid;grid-template-columns:repeat(4,1fr);gap:4px 6px;padding:0 3px;font-size:14.5px;line-height:1.6;color:var(--fg);font-variant-numeric:tabular-nums}
+.sul i{display:inline-block;min-width:18px;margin-right:5px;font-style:normal;font-size:11px;color:#7d7290;text-align:right}.sul + .gsft{margin-top:10px}
 .suc{display:inline-block;line-height:1.25;min-width:54px;text-align:center;padding:6px 8px;border-radius:8px;background:var(--panel2);border:1px solid #3d344c;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg)}
 .suc.sua{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.suc.sm{min-width:0;padding:1px 6px;font-size:12px}.glh{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:12px 0 6px 2px}
 .gln{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:7px 12px;font:inherit;color:var(--fg);text-align:left;position:relative;margin-bottom:16px}
@@ -2713,7 +2714,7 @@ var GLOSS = [
 
   { k: "spirit-power", c: "scale", t: "Spirit Power", a: ["spirit power"], d: "The stat that makes abilities stronger. You gain it from [[boons|boons]], spirit items, [[investment|spirit shop spending]] and golden statues on the map. Any number with a ★ badge grows with it; see [[scaling|Scaling]]." },
   { k: "scaling", c: "scale", t: "Scaling (★ ×0.6)", a: ["scaling", "spirit scaling"], d: "The ★ ×N badge on a stat is its spirit scaling: final value = base + Spirit Power × N. For example, 22 damage per second with ×0.6 at 50 Spirit Power becomes 22 + 50 × 0.6 = 52. Some stats grow per [[boons|boon]] instead, shown as “+X / boon”." },
-  { k: "souls", c: "econ", t: "Souls", a: ["souls", "soul"], d: "Deadlock’s currency and experience in one. You earn them from troopers, heroes, objectives and more, and spend them in the shop. Your total souls earned unlock abilities, ability points and [[boons|boons]], shown below." },
+  { k: "souls", c: "econ", t: "Souls", a: ["souls", "soul"], d: "Deadlock’s currency and experience in one. You earn them from troopers, heroes, objectives and more, and spend them in the shop. Your total souls unlock abilities, ability points and [[boons|boons]], shown below. You start with 600." },
   { k: "boons", c: "scale", t: "Boons", a: ["boon", "boons"], d: "Each level-up grants a boon, which raises base health, bullet damage, melee damage and Spirit Power by set amounts per hero (the “+X / boon” values on hero pages). You can reach 35 boons." },
   { k: "ability-points", c: "scale", t: "Ability points & tiers", a: ["ability points", "ability point"], d: "Level-ups also give ability points. Each ability has three upgrade tiers costing 1, 2 and 5 points (8 in total), shown as ◆1, ◆2 and ◆5. Your ultimate unlocks at 3,800 souls (level 7)." },
   { k: "investment", c: "scale", t: "Shop investment bonus", a: ["investment", "investment bonus"], d: "Spending souls in one shop category gives free stats on top of the items themselves: weapon spending raises weapon damage, spirit spending raises Spirit Power, and vitality spending raises health. The bonus steps up as your total in that category grows." },
@@ -2925,7 +2926,7 @@ function unlocksHtml() { // soul totals (starting souls included) for each new a
   var st = (state.mc.economy && state.mc.economy.starting_souls) || 0, f = function (n) { return Number(n + st).toLocaleString(); };
   var ab = U.filter(function (u) { return u.AbilityUnlocks; }), bo = U.filter(function (u) { return u.PowerIncrease; });
   return '<div class="grh">New abilities at</div><div class="sug">' + ab.map(function (u, i) { return '<div class="stat"><b>' + f(u.RequiredSouls) + "</b><i>Ability " + (i + 1) + "</i></div>"; }).join("") + "</div>" +
-    '<div class="grh">Boons at</div><div class="sul">' + bo.map(function (u) { return "<span>" + f(u.RequiredSouls) + "</span>"; }).join("") + "</div>";
+    '<div class="grh">Boons at</div><div class="sul">' + bo.map(function (u, i) { return '<span><i>' + (i + 1) + "</i>" + f(u.RequiredSouls) + "</span>"; }).join("") + "</div>";
 }
 function laneHtml() { // the order you fight through a lane, top to bottom
   var M = state.mc || {}, f = function (n) { return n == null ? "" : Number(n).toLocaleString(); };
@@ -2957,7 +2958,7 @@ function timelineHtml() { // every event from the game data; each opens its term
 function mechHtml(g) { // the numbers behind a map term, from the game data
   var M = state.mc; if (!M || (g.c !== "map" && g.c !== "econ")) return "";
   var E = M.economy || {};
-  if (g.k === "souls") return econCard([[E.starting_souls, "Starting souls"]]) + unlocksHtml();
+  if (g.k === "souls") return unlocksHtml();
   if (g.k === "kill-bounty") return econCard([[E.first_kill_bonus != null ? "+" + E.first_kill_bonus : null, "First kill of the match"], [E.killer_assist_ratio != null ? "×" + E.killer_assist_ratio : null, "Killer’s share vs an assist"], [E.assist_window_sec != null ? E.assist_window_sec + "s" : null, "Assist window"]]) +
     (E.kill_min != null ? '<div class="gsft">The base bounty grows from ' + E.kill_min.toLocaleString() + " to " + E.kill_max.toLocaleString() + " souls over the first " + Math.round(E.kill_ramp_sec / 60) + " minutes. The actual amount also depends on the hero who died, so treat this as a rough guide.</div>" : "");
   if (g.k === "soul-orbs") return econCard([[E.trooper_instant_ratio != null ? Math.round(E.trooper_instant_ratio * 100) + "%" : null, "Paid out instantly"], [E.trooper_instant_ratio != null ? Math.round((1 - E.trooper_instant_ratio) * 100) + "%" : null, "Dropped as an orb"]]);
