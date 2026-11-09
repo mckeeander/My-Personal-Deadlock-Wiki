@@ -503,7 +503,7 @@ html.lock,html.lock body{overflow:hidden}
 .gchev{flex:none;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin:-6px -6px -6px auto;background:none;border:0;color:var(--gold);padding:0}
 .ghh{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.04em;margin:14px 0 6px 2px}.gh + .ghh{margin-top:4px}.gheff .gsp{width:28px;height:28px}.gheff .gsa{width:28px;height:28px}.gheff .gsa img{width:24px;height:24px}
 .gslink{display:inline-block;margin-top:14px;background:var(--panel2);border:1px solid #4a405a;border-radius:8px;padding:9px 14px;font:inherit;font-size:15px;color:var(--fg)}
-.gsx.gspw{color:var(--fg);min-height:44px;padding:5px 10px 5px 6px}.gsi.pw{background:var(--panel)}.gsi.pw img{width:20px;height:20px;object-fit:contain}
+.gsx.gspw{color:var(--fg);min-height:48px;padding:7px 10px 7px 9px}.gsx.gspw .gsi{width:30px;height:30px}.gsi.pw{background:var(--panel)}.gsi.pw img{width:20px;height:20px;object-fit:contain}
 .gsd{display:block;color:var(--dim);font-size:11px;margin-top:1px}
 .gsft{font-size:12px;color:var(--dim);margin:-2px 0 6px 3px;line-height:1.35}
 /* What's New: official patch notes */
@@ -2914,22 +2914,23 @@ function sourcesHtml(g) {
     }
     if (x.crate) { // permanent pickups: one value per level, each level dropping from a later minute
       var cv = state.pw.crates.pickups[x.crate], vs = cv.values.filter(function (v) { return v != null; });
-      return '<div class="gsrc gsx gspw"><span class="gsi pw crate"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8l8.5-4.5L20.5 8v8.5L12 21l-8.5-4.5z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21"/></svg></span><span class="gst"><b>Breakable Crates</b></span><em class="gsn">+' + vs.map(esc).join(" / +") + esc(cv.unit) + '<span class="gsd">permanent, per pickup</span></em></div>';
+      return '<div class="gsrc gsx gspw"><span class="gsi pw crate"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8l8.5-4.5L20.5 8v8.5L12 21l-8.5-4.5z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21"/></svg></span><span class="gst"><b>Breakable Crates</b></span><em class="gsn">' + vs.map(function (v) { return "+" + esc(v) + esc(cv.unit); }).join(" / ") + "</em></div>";
     }
     var pw = { Casting: "spirit", Gun: "fire_rate", Movement: "move_speed", Survival: "health" }[String(x.text || "").split(" ")[0]];
     var pwi = { spirit: "star", fire_rate: "bps", move_speed: "boot", health: "health" }[pw];
     var PWS = { "spirit-power": "Spirit Power", cooldown: "Cooldown Reduction", "fire-rate": "Fire Rate", "health-regen": "Health Regen", stamina: "Max Stamina", "move-speed": "Sprint Speed", sprint: "Sprint Speed" };
     var pd = state.pw && state.pw.powerups && state.pw.powerups[x.text], pv = pd && (pd.values || []).filter(function (v) { return v.stat === PWS[g.k]; })[0];
-    if (pv) note = '<em class="gsn">+' + esc(pv.min) + " → " + esc(pv.max) + esc(pv.unit) + (pv.stat !== g.t ? " " + esc(pv.stat) : "") + (pd.duration ? '<span class="gsd">for ' + Math.round(pd.duration) + "s</span>" : "") + "</em>";
-    if (pw && /Powerup$/.test(x.text)) return '<div class="gsrc gsx gspw"><span class="gsi pw ' + pw + '">' + siIcon(pwi) + '</span><span class="gst"><b>' + esc(x.text) + "</b></span>" + note + "</div>";
+    if (pv) note = '<em class="gsn">+' + esc(pv.min) + esc(pv.unit) + " → +" + esc(pv.max) + esc(pv.unit) + (pv.stat !== g.t ? " " + esc(pv.stat) : "") + "</em>";
+    if (pw && /Powerup$/.test(x.text)) return '<div class="gsrc gsx gspw"><span class="gsi pw ' + pw + '">' + siIcon(pwi) + '</span><span class="gst"><b>' + esc(x.text.replace(/Powerup$/, "Buff")) + "</b></span>" + note + "</div>";
     return '<div class="gsrc gsx"><span class="gst">' + esc(x.text || "") + "</span>" + note + "</div>";
   }
   function group(title, xs) {
     if (!xs.length) return "";
     var more = xs.length > SRC_LIMIT + 2 ? xs.length - SRC_LIMIT : 0; // only worth a button when it hides 3 or more
     var hasP = xs.some(function (x) { return !x.crate; }), hasC = xs.some(function (x) { return x.crate; }), lv = (state.pw && state.pw.crates && state.pw.crates.levels_from_min) || [0, 10, 30];
-    var foot = title === "Buffs" && state.pw ? '<div class="gsft">' + (hasP ? "Powerups grow from the first number at 5 minutes to the second at 40. " : "") + (hasC ? "Crates drop a better pickup later on: the first value from the start, the second from " + lv[1] + " minutes, the third from " + lv[2] + "." : "") + "</div>" : "";
-    return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + ' <span>' + xs.length + "</span></div>" + foot + xs.map(function (x, i) { return i >= SRC_LIMIT ? row(x).replace('class="gsrc', 'class="gsrc gsm') : row(x); }).join("") +
+    var dur = 160; try { var pk = Object.keys(state.pw.powerups); if (pk.length && state.pw.powerups[pk[0]].duration) dur = Math.round(state.pw.powerups[pk[0]].duration); } catch (e) {}
+    var foot = title === "Buffs" && state.pw ? '<div class="gsft">' + (hasP ? "Map buffs last " + dur + "s and get stronger as the match goes on, reaching full strength at 40 minutes. " : "") + (hasC ? "Crate pickups are permanent and stack. They improve at " + lv[1] + " and " + lv[2] + " minutes." : "") + "</div>" : "";
+    return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + (title === "Buffs" ? "" : ' <span>' + xs.length + "</span>") + "</div>" + foot + xs.map(function (x, i) { return i >= SRC_LIMIT ? row(x).replace('class="gsrc', 'class="gsrc gsm') : row(x); }).join("") +
       (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
   }
   var nt = notes.length ? '<ul class="gsnotes">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
