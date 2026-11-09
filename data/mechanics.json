@@ -34,7 +34,8 @@
    "health_per_min": 234
   },
   "rejuvenator": {
-   "duration": 180
+   "duration": 180,
+   "crystals": 3
   },
   "mid_boss_first_sec": 0,
   "crate_first_sec": 180,

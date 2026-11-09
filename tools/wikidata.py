@@ -246,7 +246,7 @@ def mechanics(repo):
                    "growth2": num(n, "npc_boss_tier3", "ObjectiveHealthGrowthPhase2", "GrowthPerMinute")},
         "mid_boss": {"health": num(n, "npc_super_neutral", "StartingHealth"), "health_per_min": num(n, "npc_super_neutral", "HealthGainPerMinute")},
         # the trooper-health and respawn multipliers in RejuvParams are left over from before the Jul/Aug 2025 rework (see patch notes); only the duration is current
-        "rejuvenator": {"duration": rj.get("RejuvinatorBuffDuration")},
+        "rejuvenator": {"duration": rj.get("RejuvinatorBuffDuration"), "crystals": rj.get("RejuvinatorDropCount")},
         "mid_boss_first_sec": num(n, "npc_super_neutral", "InitialSpawnDelay"),
         "crate_first_sec": ((g.get("BreakableSpawnTimeDesc") or [{}])[0] or {}).get("InitialSpawnTime"),
         "rift_interval_sec": (lambda c: c.get("citadel_koth_respawn_interval") if isinstance(c.get("citadel_koth_respawn_interval"), (int, float)) else None)(J("convars.json")),

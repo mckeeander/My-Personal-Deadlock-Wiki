@@ -521,6 +521,13 @@ html.lock,html.lock body{overflow:hidden}
 .gtl::before{content:"";position:absolute;left:-6px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--panel);box-shadow:0 0 0 2px var(--gold)}
 .gtt{flex:none;width:52px;padding-left:14px;font-variant-numeric:tabular-nums;color:var(--gold);font-weight:600;font-size:14px}.gtx{flex:1;font-size:14.5px}.gtc{color:var(--gold);font-size:18px;line-height:1}
 .blkn{color:var(--dim);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px}
+.mrows{margin-top:12px;border:1px solid #3d344c;border-radius:8px;overflow:hidden}
+.mrow{display:grid;grid-template-columns:1fr 64px 64px 64px;align-items:center;padding:9px 10px;background:var(--panel2);font-size:14px}.mrow + .mrow{border-top:1px solid #3d344c}
+.mrow span{color:var(--fg)}.mrow b{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}.mrh{background:var(--panel);font-size:11px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}.mrh b{font-weight:600;color:var(--dim)}
+.gslide{margin-top:14px;padding:10px 12px 4px;background:var(--panel2);border:1px solid #3d344c;border-radius:8px}
+.gslh{display:flex;justify-content:space-between;font-size:13px;color:var(--dim)}.gslh b{color:var(--gold);font-weight:600}
+#gsr{width:100%;margin:10px 0 2px;accent-color:var(--gold)}
+.gsticks{display:flex;justify-content:space-between;font-size:11px;color:#7d7290;padding:0 2px}.gslide .gsft{margin:8px 0 6px}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -2743,9 +2750,9 @@ var GLOSS = [
   { k: "shrine", c: "map", t: "Shrines", a: ["shrine", "shrines"], d: "Two shrines protect the [[patron|Patron]]. They can’t be damaged until a pair of [[base-guardian|Base Guardians]] is down." },
   { k: "patron", c: "map", t: "Patron", a: ["patron"], d: "The objective at the heart of each base, firing a powerful laser. Destroy the enemy Patron to win the match." },
   { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss"], d: "A huge neutral boss in the middle of the map that grows tougher every minute. Killing it drops the [[rejuvenator|Rejuvenator]]." },
-  { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv"], d: "Dropped by the [[mid-boss|Mid Boss]] as a crystal. Each heavy melee hit on it earns your team a revive, up to 3. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. The buff ends when the revives run out or the time is up." },
+  { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv"], d: "When the [[mid-boss|Mid Boss]] dies, three crystals land around its pit. Breaking one with a heavy melee gives your team a revive and fully heals whoever broke it. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. The buff ends when the revives run out or the time is up." },
   { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups"], d: "Glowing pickups around the map, broken open with a melee hit. Each gives a few minutes of extra stats, and they get stronger as the match goes on." },
-  { k: "breakable-crates", c: "map", t: "Breakable crates", a: ["breakable", "breakables", "crate", "crates"], d: "Crates and barrels that drop a small permanent stat boost when broken. They stack for the rest of the match, and later crates drop bigger ones." },
+  { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues", "breakable", "breakables", "crate", "crates"], d: "Golden statues around the map that drop a small permanent stat boost when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
   { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Monster camps around the map, in three sizes. They give souls, and their bounty grows a little every minute." },
   // added with the status-effect sources (adapted from the Deadlock Wiki's Status Effects page)
   { k: "move-speed", c: "move", t: "Move speed", a: ["move speed", "movement speed", "bonus move speed"], d: "How fast you walk. Buffs add to it, in m/s or as a percentage, and [[slow|slows]] take it away. [[sprint|Sprint]] adds more on top when you’re out of combat." },
@@ -2896,8 +2903,8 @@ function timelineHtml() { // every event from the game data; each opens its term
   var at = function (sec, label, k, note) { if (sec != null) ev.push({ s: sec, l: label, k: k, n: note || "" }); };
   at(M.mid_boss_first_sec, "Mid Boss is up", "mid-boss");
   (M.camps || []).forEach(function (c) { at(c.from_sec, ["Small", "Medium", "Large"][c.tier - 1] + " neutral camps", "neutral-camps"); });
-  at(M.crate_first_sec, "Breakable crates appear", "breakable-crates");
-  var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "Crates drop level 2 pickups", "breakable-crates"); if (lv[2]) at(lv[2] * 60, "Crates drop level 3 pickups", "breakable-crates");
+  at(M.crate_first_sec, "Golden Statues appear", "golden-statues");
+  var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "Statues drop level 2 pickups", "golden-statues"); if (lv[2]) at(lv[2] * 60, "Statues drop level 3 pickups", "golden-statues");
   var pk = state.pw && state.pw.powerups && Object.keys(state.pw.powerups)[0], pd = pk && state.pw.powerups[pk];
   if (pd) { at(pd.from_min * 60, "Map buffs start getting stronger", "map-buffs"); at(pd.to_min * 60, "Map buffs at full strength", "map-buffs"); }
   if (M.patron && M.patron.growth1_from_min) at(M.patron.growth1_from_min * 60, "Patron starts gaining health", "patron");
@@ -2917,15 +2924,15 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
   else if (g.k === "backdoor") { var b = M.backdoor || {}; add(b.mitigation != null ? b.mitigation + "%" : null, "Less damage from heroes"); add(b.regen != null ? b.regen + "/s" : null, "Health regen"); }
   else if (g.k === "rejuvenator") {
     var r = M.rejuvenator || {};
-    add(r.duration != null ? Math.round(r.duration / 60) + " min" : null, "Lasts up to"); add("3", "Team revives");
+    add(r.duration != null ? Math.round(r.duration / 60) + " min" : null, "Lasts up to"); add(M.rejuvenator && M.rejuvenator.crystals != null ? String(M.rejuvenator.crystals) : "3", "Crystals (one revive each)");
   }
   else if (g.k === "neutral-camps") {
     var out = (M.camps || []).map(function (c) {
-      T = []; add(f(c.souls), "Soul Bounty"); add(f(c.health), "Health");
+      T = []; T.push('<div class="stat"><b data-base="' + c.souls + '" data-pct="' + (c.souls_pct_per_min || 0) + '">' + f(c.souls) + "</b><i>Soul Bounty</i></div>"); add(f(c.health), "Health");
       return '<div class="blk">' + ["Small", "Medium", "Large"][c.tier - 1] + ' <span class="blkn">from ' + Math.round(c.from_sec / 60) + ' min</span></div><div class="stats">' + T.join("") + "</div>";
     }).join("");
     var pct = (M.camps || [])[0] && M.camps[0].souls_pct_per_min;
-    if (out) return out + (pct ? '<div class="gsft">Bounties grow about ' + pct + "% a minute.</div>" : "");
+    if (out) return out + (pct ? '<div class="gslide"><div class="gslh"><span>Bounty at</span><b id="gsmin">0 min</b></div><input type="range" id="gsr" min="0" max="50" step="5" value="0" aria-label="Match minute"><div class="gsticks"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span></div><div class="gsft">Bounties grow about ' + pct + "% of their base value a minute (an estimate from the game data).</div></div>" : "");
   }
   else if (g.k === "patron") {
     add(f(x.health), "Phase 1 health"); add(f(x.phase2_health), "Phase 2 health");
@@ -2939,10 +2946,10 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
       return '<div class="blk">' + esc(nm.replace(/ Powerup$/, " Buff")) + '</div><div class="stats">' + T.join("") + "</div>";
     }).join("") + '<div class="gsft">Each lasts ' + Math.round(P[pk0].duration || 160) + "s. Values grow from the first number at " + P[pk0].from_min + " minutes to the second at " + P[pk0].to_min + ".</div>";
   }
-  else if (g.k === "breakable-crates" && state.pw && state.pw.crates) {
-    var CR = state.pw.crates, cp = CR.pickups;
-    Object.keys(cp).forEach(function (nm) { add(cp[nm].values.filter(function (v) { return v != null; }).map(function (v) { return v + cp[nm].unit; }).join(" / "), nm); });
-    return '<div class="stats">' + T.join("") + '</div><div class="gsft">Values are for pickups from the start / ' + CR.levels_from_min[1] + " minutes / " + CR.levels_from_min[2] + " minutes.</div>";
+  else if (g.k === "golden-statues" && state.pw && state.pw.crates) {
+    var CR = state.pw.crates, cp = CR.pickups, L = CR.levels_from_min;
+    var head = '<div class="mrow mrh"><span>Pickup</span><b>Start</b><b>' + L[1] + ' min</b><b>' + L[2] + " min</b></div>";
+    return '<div class="mrows">' + head + Object.keys(cp).map(function (nm) { var v = cp[nm].values; return '<div class="mrow"><span>' + esc(nm) + "</span>" + [0, 1, 2].map(function (i) { return "<b>" + (v[i] != null ? esc(v[i] + cp[nm].unit) : "–") + "</b>"; }).join("") + "</div>"; }).join("") + "</div>";
   }
   else { add(f(x.health), "Health"); add(f(x.souls), "Soul Bounty"); add(f(x.dps_vs_heroes), "Damage to heroes per second"); }
   return T.length ? '<div class="stats">' + T.join("") + "</div>" : "";
@@ -2953,7 +2960,7 @@ function sourcesHtml(g) {
   var se = state.se && state.se.effects || [], list = (SRC_EXTRA[g.k] || []).slice(), notes = [], seen = {};
   var CRATE_TERM = { "spirit-power": "Spirit Power", "fire-rate": "Fire Rate", cooldown: "Cooldown Reduction", "weapon-damage": "Weapon Damage", "bullet-resist": "Bullet Resist", "spirit-resist": "Spirit Resist", "move-speed": "Move Speed" };
   var crate = state.pw && state.pw.crates && state.pw.crates.pickups && state.pw.crates.pickups[CRATE_TERM[g.k]];
-  if (crate) list.push({ text: "Breakable Crates", crate: CRATE_TERM[g.k] }); // permanent pickups from crates
+  if (crate) list.push({ text: "Golden Statues", crate: CRATE_TERM[g.k] }); // permanent pickups from golden statues
   se.forEach(function (e) { if (e.term !== g.k) return; list = list.concat(e.sources || []); (e.notes || []).forEach(function (n) { if (notes.indexOf(n) < 0) notes.push(n); }); });
   var live = srcLive(g.k);
   if (live) { // the game data's list wins; the wiki's own entries fill in what isn't an ability or item (powerups and the like)
@@ -2991,7 +2998,7 @@ function sourcesHtml(g) {
     }
     if (x.crate) { // permanent pickups: one value per level, each level dropping from a later minute
       var cv = state.pw.crates.pickups[x.crate], vs = cv.values.filter(function (v) { return v != null; });
-      return '<div class="gsrc gsx gspw"><span class="gsi pw crate"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8l8.5-4.5L20.5 8v8.5L12 21l-8.5-4.5z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21"/></svg></span><span class="gst"><b>Breakable Crates</b></span><em class="gsn">' + vs.map(function (v) { return esc(v) + esc(cv.unit); }).join(" / ") + "</em></div>";
+      return '<div class="gsrc gsx gspw"><span class="gsi pw crate"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8l8.5-4.5L20.5 8v8.5L12 21l-8.5-4.5z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21"/></svg></span><span class="gst"><b>Golden Statues</b></span><em class="gsn">' + vs.map(function (v) { return esc(v) + esc(cv.unit); }).join(" / ") + "</em></div>";
     }
     var pw = { Casting: "spirit", Gun: "fire_rate", Movement: "move_speed", Survival: "health" }[String(x.text || "").split(" ")[0]];
     var pwi = { spirit: "star", fire_rate: "bps", move_speed: "boot", health: "health" }[pw];
@@ -3006,7 +3013,7 @@ function sourcesHtml(g) {
     var more = xs.length > SRC_LIMIT + 2 ? xs.length - SRC_LIMIT : 0; // only worth a button when it hides 3 or more
     var hasP = xs.some(function (x) { return !x.crate; }), hasC = xs.some(function (x) { return x.crate; }), lv = (state.pw && state.pw.crates && state.pw.crates.levels_from_min) || [0, 10, 30];
     var dur = 160; try { var pk = Object.keys(state.pw.powerups); if (pk.length && state.pw.powerups[pk[0]].duration) dur = Math.round(state.pw.powerups[pk[0]].duration); } catch (e) {}
-    var foot = title === "Buffs" && state.pw ? '<div class="gsft">' + (hasP ? "Map buffs last " + dur + "s and get stronger as the match goes on, reaching full strength at 40 minutes. " : "") + (hasC ? "Crate pickups are permanent and stack. They improve at " + lv[1] + " and " + lv[2] + " minutes." : "") + "</div>" : "";
+    var foot = title === "Buffs" && state.pw ? '<div class="gsft">' + (hasP ? "Map buffs last " + dur + "s and get stronger as the match goes on, reaching full strength at 40 minutes. " : "") + (hasC ? "Statue pickups are permanent and stack. They improve at " + lv[1] + " and " + lv[2] + " minutes." : "") + "</div>" : "";
     return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + (title === "Buffs" ? "" : ' <span>' + xs.length + "</span>") + "</div>" + foot + xs.map(function (x, i) { return i >= SRC_LIMIT ? row(x).replace('class="gsrc', 'class="gsrc gsm') : row(x); }).join("") +
       (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
   }
@@ -3749,6 +3756,11 @@ function openSource(gs) { // an ability that causes an effect: open its hero and
     }, (EASE_DUR || 0) + 350);
   });
 }
+$("sheetin").addEventListener("input", function (e) {
+  if (e.target.id !== "gsr") return;
+  var m = +e.target.value; $("gsmin").textContent = m + " min";
+  Array.prototype.forEach.call(document.querySelectorAll("#sheetin [data-base]"), function (b) { b.textContent = Math.round(+b.dataset.base * (1 + +b.dataset.pct * m / 100)).toLocaleString(); });
+});
 $("sheetin").addEventListener("click", function (e) {
   var sa = e.target.closest ? e.target.closest(".gsall") : null;
   if (sa) { sa.parentNode.classList.remove("clip"); sa.remove(); return; }
