@@ -202,6 +202,28 @@ def powerups(repo):
     return out
 
 
+def crates(repo):
+    """Permanent pickups from breakable crates: the value at each level and when each level starts dropping."""
+    m = json.load(open(os.path.join(repo, "data", "json", "misc-data.json"), encoding="utf-8"))
+    g = json.load(open(os.path.join(repo, "data", "json", "generic-data.json"), encoding="utf-8"))
+    TYPES = {"spirit": ("Spirit Power", ""), "firerate": ("Fire Rate", "%"), "ammo": ("Ammo", "%"), "hp": ("Max Health", ""),
+             "cd": ("Cooldown Reduction", "%"), "wp": ("Weapon Damage", "%"), "bulletresist": ("Bullet Resist", "%"),
+             "spiritresist": ("Spirit Resist", "%"), "range": ("Ability Range", "%"), "movespeed": ("Move Speed", " m/s")}
+    loot = (g.get("BreakablePowerupLootParams") or {}).get("PickupsByMatchTimeMins") or {}
+    starts = sorted(int(k) for k in loot)
+    out = {}
+    for t, (stat, unit) in TYPES.items():
+        vals, weight = [], None
+        for suf in ("", "_lv2", "_lv3"):
+            sv = ((m.get(t + "_permanent_pickup" + suf) or {}).get("Modifer") or {}).get("ScriptValues") or []
+            v = float(sv[0]["value"]) if sv and "value" in sv[0] else None
+            if v is not None and t == "movespeed": v = v / 39.37  # game units to metres
+            vals.append(None if v is None else (("%.2f" % v).rstrip("0").rstrip(".")))
+        if loot: weight = (loot.get(str(starts[0])) or {}).get(t + "_permanent_pickup")
+        if any(vals): out[stat] = {"values": vals, "unit": unit, "weight": weight}
+    return {"levels_from_min": starts, "spawns": g.get("BreakableSpawnTimeDesc"), "pickups": out} if out else None
+
+
 def main():
     if len(sys.argv) < 2 or not os.path.isdir(sys.argv[1]):
         print("usage: wikidata.py <deadlock-data checkout>"); return 1
@@ -219,8 +241,9 @@ def main():
         json.dump({"source": "github.com/deadlock-wiki/deadlock-data (MIT)", "patches": patches},
                   open(os.path.join(DATA, "patchnotes.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     pw = powerups(repo)
+    cr = crates(repo)
     if pw:
-        json.dump({"source": "github.com/deadlock-wiki/deadlock-data (MIT), misc-data.json", "powerups": pw},
+        json.dump({"source": "github.com/deadlock-wiki/deadlock-data (MIT), misc-data.json", "powerups": pw, "crates": cr},
                   open(os.path.join(DATA, "powerups.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     miss = sorted({("hero " + h["hero"]) for p in patches for h in p["heroes"] if not h["hc"]} |
                   {("ability %s (%s)" % (g["ability"], h["hero"])) for p in patches for h in p["heroes"] for g in h["groups"] if "ability" in g and not g["ac"]} |
