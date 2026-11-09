@@ -186,16 +186,14 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .sc.bn{background:#1f3320;color:var(--vital)}
 .hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .hc{position:relative;padding:0;border:0;border-radius:6px;background:var(--panel2);box-shadow:0 0 0 1px var(--line);aspect-ratio:3/4} /* the outline is a 1px ring outside the tile, not a border: on iOS the tile border lost its top/bottom lines at fractional positions (zoomed in), whether clipped by the tile or its own layer; nothing can overlap or clip a ring that sits outside, and the tile is no longer forced onto its own layer */
-.hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;opacity:0;transition:opacity .28s ease-out var(--d,0ms)} /* fade only: a scaling image inside the rounded, clipped card made Safari clip the card border and the grid look like it jumped */
-.hc img.ld{opacity:1}
+.hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px} /* no fade of its own: in Safari a fading image gets its own graphics layer, drawn a pixel off from the name strip over it; on the first screen the whole tile fades in under a cover instead (.hrv) */
 body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
 /* first screen: the whole tile fades in, not just the portrait. Not with opacity: in Safari a fading element gets its own graphics layer, and those layers
    were drawn a couple of pixels off (every other row too low) until the fade ended. Instead a cover in the page colour sits over the tile (and its outline)
    and its colour fades out, which Safari paints in place like everything else. */
 .hc.hrv::after{content:"";position:absolute;inset:-2px;border-radius:8px;background-color:rgba(20,17,26,1);transition:background-color .85s ease-out;pointer-events:none}
-.hc.hrv.in::after{background-color:rgba(20,17,26,0)}.hc.hrv img{transition:none}
+.hc.hrv.in::after{background-color:rgba(20,17,26,0)}
 @media (prefers-reduced-motion:reduce){.hc.hrv::after,.credits{transition:none}}
-@media (prefers-reduced-motion:reduce){.hc img{transition:none}}
 .hc span{position:absolute;left:0;right:0;bottom:0;border-radius:0 0 6px 6px;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
