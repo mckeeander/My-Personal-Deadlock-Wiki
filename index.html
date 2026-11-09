@@ -504,6 +504,15 @@ html.lock,html.lock body{overflow:hidden}
 .ghh{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.04em;margin:14px 0 6px 2px}.gh + .ghh{margin-top:4px}.gheff .gsp{width:28px;height:28px}.gheff .gsa{width:28px;height:28px}.gheff .gsa img{width:24px;height:24px}
 .gslink{display:inline-block;margin-top:14px;background:var(--panel2);border:1px solid #4a405a;border-radius:8px;padding:9px 14px;font:inherit;font-size:15px;color:var(--fg)}
 .gsx.gspw{color:var(--fg);min-height:44px;padding:5px 10px 5px 6px}.gsi.pw{background:var(--panel)}.gsi.pw img{width:20px;height:20px;object-fit:contain}
+.gsd{display:block;color:var(--dim);font-size:11px;margin-top:1px}
+.gsft{font-size:12px;color:var(--dim);margin:-2px 0 6px 3px;line-height:1.35}
+/* What's New: official patch notes */
+.pnl{margin:4px 0 2px;padding-left:18px;font-size:14px;line-height:1.45;color:var(--fg)}.pnl li{margin:3px 0}.pnl li.sub{margin-left:16px;list-style:circle;color:#d6cee4}
+.pnh{font-size:12px;font-weight:600;color:var(--gold);letter-spacing:.04em;margin:10px 0 2px}
+.pni{white-space:nowrap}.pni img{width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:3px;border-radius:3px}.pni b{font-weight:600}
+.pnsrc{display:inline-block;font-size:12px;color:var(--dim);margin:0 0 4px}
+.pncred{font-size:11px;color:var(--dim);opacity:.8;margin:14px 2px 0}
+.nhs .rch .pnl{margin-top:2px}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -726,6 +735,8 @@ function dataSig(h, i) { // a cheap fingerprint of the game data, so a refresh t
 function save() { return idbSet(KEY, { t: state.fetchedAt, h: state.heroes, i: state.items, s: state.sig || null }); }
 function load() {
   idbGet("se").then(function (se) { if (se && se.effects) state.se = se; }, function () {});
+  idbGet("pn").then(function (pn) { if (pn && pn.patches) { state.pn = pn; setTimeout(newsDot, 0); } }, function () {});
+  idbGet("pw").then(function (pw) { if (pw && pw.powerups) state.pw = pw; }, function () {});
   return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
@@ -980,6 +991,8 @@ function fetchAll() {
     var sig = dataSig(state.heroes, state.items); state.same = !!state.sig && sig === state.sig; state.sig = sig; // same: this refresh found exactly what is already on screen
     state.fetchedAt = Date.now(); state.note = ""; index(); save();
     // community notes are optional: a failure here never blocks the main data
+    getJson("patchnotes.json").then(function (pn) { if (pn && pn.patches) { state.pn = pn; idbSet("pn", pn); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); } }, function () {}); // official patch notes (deadlock-wiki/deadlock-data)
+    getJson("powerups.json").then(function (pw) { if (pw && pw.powerups) { state.pw = pw; idbSet("pw", pw); } }, function () {});
     getJson("status_effects.json").then(function (se) { if (se && se.effects) { state.se = se; idbSet("se", se); } }, function () {}); // what causes each effect (from the wiki), shown in the glossary pop-ups
     getJson("revisions.json").then(function (rv) { // optional, like the notes: the hero page simply has no Revisions section without it
       if (Array.isArray(rv)) { state.revs = rv; idbSet("revs", rv); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); var w2 = $("revwrap"), h2 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w2 && h2) w2.innerHTML = revisionsHtml(h2); }
@@ -2829,7 +2842,7 @@ function srcLive(k) {
   });
   return out;
 }
-var SRC_EXTRA = { stamina: [{ text: "Movement Powerup", note: "Raises max stamina" }] };
+var SRC_EXTRA = { stamina: [{ text: "Movement Powerup", note: "Raises max stamina" }], cooldown: [{ text: "Casting Powerup" }], sprint: [{ text: "Movement Powerup" }] };
 function heroEffect(k) { // a hero-specific effect: the one ability that applies it
   var e = (state.se && state.se.effects || []).filter(function (x) { return x.term === k && x.kind === "hero"; })[0];
   return e && e.sources && e.sources[0] && e.sources[0].ac ? e.sources[0] : null;
@@ -2878,13 +2891,17 @@ function sourcesHtml(g) {
     }
     var pw = { Casting: "spirit", Gun: "fire_rate", Movement: "move_speed", Survival: "health" }[String(x.text || "").split(" ")[0]];
     var pwi = { spirit: "star", fire_rate: "bps", move_speed: "boot", health: "health" }[pw];
+    var PWS = { "spirit-power": "Spirit Power", cooldown: "Cooldown Reduction", "fire-rate": "Fire Rate", "health-regen": "Health Regen", stamina: "Max Stamina", "move-speed": "Sprint Speed", sprint: "Sprint Speed" };
+    var pd = state.pw && state.pw.powerups && state.pw.powerups[x.text], pv = pd && (pd.values || []).filter(function (v) { return v.stat === PWS[g.k]; })[0];
+    if (pv) note = '<em class="gsn">+' + esc(pv.min) + " → " + esc(pv.max) + esc(pv.unit) + (pv.stat !== g.t ? " " + esc(pv.stat) : "") + (pd.duration ? '<span class="gsd">for ' + Math.round(pd.duration) + "s</span>" : "") + "</em>";
     if (pw && /Powerup$/.test(x.text)) return '<div class="gsrc gsx gspw"><span class="gsi pw ' + pw + '">' + siIcon(pwi) + '</span><span class="gst"><b>' + esc(x.text) + "</b></span>" + note + "</div>";
     return '<div class="gsrc gsx"><span class="gst">' + esc(x.text || "") + "</span>" + note + "</div>";
   }
   function group(title, xs) {
     if (!xs.length) return "";
     var more = xs.length > SRC_LIMIT + 2 ? xs.length - SRC_LIMIT : 0; // only worth a button when it hides 3 or more
-    return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + ' <span>' + xs.length + "</span></div>" + xs.map(function (x, i) { return i >= SRC_LIMIT ? row(x).replace('class="gsrc', 'class="gsrc gsm') : row(x); }).join("") +
+    var foot = title === "Buffs" && state.pw ? '<div class="gsft">Powerup values grow from the first number at 5 minutes to the second at 40.</div>' : "";
+    return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + ' <span>' + xs.length + "</span></div>" + foot + xs.map(function (x, i) { return i >= SRC_LIMIT ? row(x).replace('class="gsrc', 'class="gsrc gsm') : row(x); }).join("") +
       (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
   }
   var nt = notes.length ? '<ul class="gsnotes">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
@@ -2927,7 +2944,52 @@ function sheetForward() { // undo a step back: bring back the card you just left
   FWD = true; try { if (nx.indexOf("g:") === 0) glossSheet(nx.slice(2)); else itemSheet(nx); } finally { FWD = false; }
 }
 // What's New: every patch, newest first, as a changelog (heroes A to Z, then shop items); built from the same revisions the hero pages use
+function pnText(t) { // a patch-note line: hero, ability and item names keep their icon
+  return esc(t).replace(/\[\[([hai]):([^\]]+)\]\]/g, function (m, k, nm) {
+    var img = "", lo = nm.toLowerCase();
+    if (k === "h") { var h = state.heroes.filter(function (x) { return x.name.toLowerCase() === lo || x.name.toLowerCase() === "the " + lo; })[0]; if (h) img = pick(h.images, ["icon_image_small", "icon_hero_card"]); }
+    else if (k === "i") { var cn = state.byName && state.byName[lo], it = cn && state.byClass[cn]; if (it) img = itemImg(it); }
+    else { var ab = (state.items || []).filter(function (x) { return x.type === "ability" && String(x.name || "").toLowerCase() === lo; })[0]; if (ab) img = itemImg(ab); }
+    return '<span class="pni">' + (img ? '<img alt="" src="' + esc(img) + '" onerror="this.remove()">' : "") + "<b>" + nm + "</b></span>";
+  });
+}
+function pnList(lines) {
+  var out = "", open = false;
+  lines.forEach(function (l) {
+    if (/^## /.test(l)) { if (open) { out += "</ul>"; open = false; } out += '<div class="pnh">' + pnText(l.slice(3)) + "</div>"; return; }
+    if (!open) { out += '<ul class="pnl">'; open = true; }
+    var sub = /^ {2}/.test(l);
+    out += "<li" + (sub ? ' class="sub"' : "") + ">" + pnText(l.trim()) + "</li>";
+  });
+  return out + (open ? "</ul>" : "");
+}
+function patchNotesHtml() {
+  var P = state.pn.patches;
+  return '<div id="revs" class="news">' + P.map(function (p, pi) {
+    var body = "";
+    if (p.general.length) body += '<section class="nhs"><div class="nsub">General</div>' + pnList(p.general) + "</section>";
+    if (p.items.length) body += '<section class="nhs"><div class="nsub">Items</div><div class="nhg">' + p.items.map(function (x) {
+      var it = x.ic && state.byClass[x.ic];
+      var head = x.item ? '<div class="rhd"><span class="ric">' + (it ? imgTag(itemArt(it), itemImg(it)) : "") + "</span>" + (it ? '<button class="link pitem" data-pitem="' + esc(x.ic) + '">' + esc(nameOf(it)) + "</button>" : esc(x.item)) + "</div>" : "";
+      return '<div class="rgrp">' + head + '<div class="rch">' + pnList(x.lines) + "</div></div>";
+    }).join("") + "</div></section>";
+    var hs = p.heroes.slice().sort(function (a, b) { return a.hero.replace(/^The /, "").localeCompare(b.hero.replace(/^The /, "")); });
+    hs.forEach(function (x) {
+      var h = x.hc && state.heroes.filter(function (y) { return y.class_name === x.hc; })[0];
+      var hd = h ? '<button class="nhh" data-nh="' + esc(h.class_name) + '"><img alt="" src="' + esc(heroImg(h)) + '"><b>' + esc(h.name) + "</b></button>" : '<div class="nhh"><b>' + esc(x.hero) + "</b></div>";
+      body += '<section class="nhs"' + (h ? ' data-hero="' + esc(h.class_name) + '"' : "") + ">" + hd + '<div class="nhg">' + x.groups.map(function (g) {
+        var ab = g.ac && state.byClass[g.ac], icon = ab ? imgTag(itemImg(ab)) : g.label === "Stats" ? siIcon("health") : "";
+        var name = ab ? nameOf(ab) : (g.ability || g.label || "");
+        return '<div class="rgrp"' + (ab ? ' data-gab="' + esc(g.ac) + '"' : "") + ">" + (name ? '<div class="rhd"><span class="ric">' + icon + "</span>" + esc(name) + "</div>" : "") + '<div class="rch">' + pnList(g.lines) + "</div></div>";
+      }).join("") + "</div></section>";
+    });
+    if (p.brawl.length) body += '<section class="nhs"><div class="nsub">Street Brawl</div>' + pnList(p.brawl) + "</section>";
+    var src = p.source ? '<a class="pnsrc" href="' + esc(p.source) + '" target="_blank" rel="noopener">' + esc(p.title || "Official notes") + " ↗</a>" : "";
+    return '<details class="rpt"' + (pi === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '</span><span class="rcv">' + CHEV + "</span></summary>" + src + body + "</details>";
+  }).join("") + '<p class="pncred">Patch notes from the Deadlock Wiki’s data (github.com/deadlock-wiki/deadlock-data).</p></div>';
+}
 function newsHtml() {
+  if (state.pn && state.pn.patches && state.pn.patches.length) return patchNotesHtml();
   var R = state.revs || [];
   if (!R.length) return '<p class="nnone">No recorded changes yet. Patches show up here after the daily data update finds them.</p>';
   var byName = function (a, b) { return String(a.name).localeCompare(String(b.name)); };
@@ -2964,14 +3026,16 @@ function renderNews() {
   newsSeen();
 }
 function newsSeen() { // the dot on the header button clears once you've opened the page
-  try { if (state.revs && state.revs.length) localStorage.setItem("dl.news", state.revs[0].date); } catch (e) {}
+  try { var nl = newsLatest(); if (nl) localStorage.setItem("dl.news", nl); } catch (e) {}
   newsDot();
 }
 function newsDot() {
   var d = $("ndot"); if (!d) return; var seen = null, ok = true;
   try { seen = localStorage.getItem("dl.news"); } catch (e) { ok = false; }
-  d.hidden = !(ok && state.revs && state.revs.length && seen !== state.revs[0].date && state.tab !== "news");
+  var nl = newsLatest();
+  d.hidden = !(ok && nl && seen !== nl && state.tab !== "news");
 }
+function newsLatest() { var p = state.pn && state.pn.patches; return p && p.length ? p[0].date : (state.revs && state.revs.length ? state.revs[0].date : null); }
 function openNews() {
   if (state.tab !== "news") { state.glossFrom = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, back: $("backpill").hidden ? null : BACK, quiet: true }; if (state.tab !== "glossary") state.homeFrom = state.glossFrom; if (state.glossFrom.back) hideBack(); }
   endSearch(); state.tab = "news"; state.hero = null; state.from = null; setTabsUI("news"); renderNews(); window.scrollTo(0, 0);

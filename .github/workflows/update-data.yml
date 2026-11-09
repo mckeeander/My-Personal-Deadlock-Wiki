@@ -515,6 +515,15 @@ jobs:
           PYEOF
           python3 wiki_pages.py
 
+      - name: Patch notes and powerups (deadlock-wiki/deadlock-data, MIT)
+        # The wiki's own data repo on GitHub: official patch notes and map powerup values. Plain git, so the wiki
+        # site's bot check doesn't apply. Only two folders are fetched; a failure leaves the last good copies.
+        continue-on-error: true
+        run: |
+          git clone -q --depth 1 --filter=blob:none --sparse https://github.com/deadlock-wiki/deadlock-data /tmp/deadlock-data
+          git -C /tmp/deadlock-data sparse-checkout set data/changelogs/wiki data/json
+          python3 tools/wikidata.py /tmp/deadlock-data
+
       - name: Save to repo
         run: |
           git config user.name "github-actions"

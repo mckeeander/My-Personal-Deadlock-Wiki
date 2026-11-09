@@ -1,0 +1,5003 @@
+{
+ "source": "github.com/deadlock-wiki/deadlock-data (MIT)",
+ "patches": [
+  {
+   "date": "2026-11-04",
+   "title": "Minor Update - 11-04-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1848664643339845",
+   "general": [],
+   "brawl": [],
+   "items": [
+    {
+     "item": "Healbane",
+     "ic": "upgrade_healbane",
+     "lines": [
+      "Stacks now diminish 20% more aggressively (at 2 stacks 57.8%->54.7%, at 4 stacks 82.2% to 72%)"
+     ]
+    }
+   ],
+   "heroes": [
+    {
+     "hero": "Apollo",
+     "hc": "hero_fencer",
+     "groups": [
+      {
+       "ability": "Riposte",
+       "ac": "ability_fencer_riposte",
+       "lines": [
+        "Pommel Hit now also disarms the enemy",
+        "Pummel hit now ends any preexisting parry on the target",
+        "T2 increased from +0.6s duration to +0.7s"
+       ]
+      },
+      {
+       "ability": "Itani Lo Sahn",
+       "ac": "ability_fencer_ultimate",
+       "lines": [
+        "T3 bonus damage increased from +50% to +60%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Baba",
+     "hc": "hero_baba",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Spirit Resistance scaling reduced from 0.7 to 0.5",
+        "Melee damage per boon reduced by 10%"
+       ]
+      },
+      {
+       "ability": "Baba's Brew",
+       "ac": "ability_baba_hexing_brew",
+       "lines": [
+        "Cooldown increased from 27s to 28s",
+        "Burn DPS spirit scaling reduced from 0.15 to 0.13",
+        "Cycle time increased from 1.5s to 1.6s"
+       ]
+      },
+      {
+       "ability": "Granny Long Legs",
+       "ac": "ability_baba_bench_run",
+       "lines": [
+        "Melee Resist reduced from 30% to 25%",
+        "Debuff Resist reduced from 30% to 25%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Celeste",
+     "hc": "hero_unicorn",
+     "groups": [
+      {
+       "ability": "Dazzling Trick",
+       "ac": "ability_unicorn_prismaticguard",
+       "lines": [
+        "T3 silence duration reduced from +1.25s to +0.75s"
+       ]
+      },
+      {
+       "ability": "Radiant Daggers",
+       "ac": "ability_unicorn_luminousstrike",
+       "lines": [
+        "Cast range reduced from 30m to 25m (moved to T2)",
+        "Spirit Amp per Stack reduced from +7% to +6% (moved to T3)"
+       ]
+      },
+      {
+       "ability": "Shining Wonder",
+       "ac": "ability_unicorn_dazzlingorb",
+       "lines": [
+        "Slow reduced from -32% Movement to -28%",
+        "Cooldown increased from 160s to 170s",
+        "Bounce range reduced from 15.5m to 15m",
+        "T1 move speed slow reduced from -16% to -14%",
+        "T2 bonus damage reduced from +90 to +80"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Deadman Danny",
+     "hc": "hero_deadpack",
+     "groups": [
+      {
+       "ability": "Close The Deal",
+       "ac": "ability_deadpack_ultimate",
+       "lines": [
+        "Bonus damage to under half health targets reduced from +75% to +55%"
+       ]
+      },
+      {
+       "ability": "Strix Salvo",
+       "ac": "ability_deadpack_chargeblast",
+       "lines": [
+        "Spirit scaling reduced by 8%"
+       ]
+      },
+      {
+       "ability": "Chimera Mk1",
+       "ac": "ability_deadpack_rocketeer",
+       "lines": [
+        "T2 reduced from 150 Heal On Hit to 125",
+        "T2 heal spirit scaling reduced from 2.0 to 1.7"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mo & Krill",
+     "hc": "hero_krill",
+     "groups": [
+      {
+       "ability": "Scorn",
+       "ac": "ability_intimidate",
+       "lines": [
+        "Heal from heroes increased from 1.2x to 1.3x"
+       ]
+      },
+      {
+       "ability": "Burrow",
+       "ac": "ability_burrow",
+       "lines": [
+        "Damage radius increased by +0.5m"
+       ]
+      },
+      {
+       "ability": "Sand Blast",
+       "ac": "ability_throw_sand",
+       "lines": [
+        "T2 slow from -24% Slow and -26% Dash distance to -28% for both"
+       ]
+      },
+      {
+       "ability": "Combo",
+       "ac": "ability_ult_combo",
+       "lines": [
+        "Health per kill increased from 40 to 50"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Nurse Harrow",
+     "hc": "hero_nurse",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage increased by 8%"
+       ]
+      },
+      {
+       "ability": "Lurking Terrors",
+       "ac": "ability_nurse_fear",
+       "lines": [
+        "Vertical angle increased from 50% to 65%",
+        "Fear buildup time reduced from 2s to 1.75s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Rat King",
+     "hc": "hero_ratking",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage increased from 5.7 to 5.8",
+        "Ammo increased from 24 to 26"
+       ]
+      },
+      {
+       "ability": "Scrap Grenade",
+       "ac": "ability_ratking_scrap_grenade",
+       "lines": [
+        "Meleeing the grenade fuse time extension reduced from 0.4s to 0.25s"
+       ]
+      },
+      {
+       "ability": "Rule, Ratannia!",
+       "ac": "ability_ratking_standard_bearer",
+       "lines": [
+        "Move Speed increased from +3m to +4m",
+        "T1 now also reduces cooldown by -25s"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-10-14",
+   "title": "Minor Update - 10-14-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1846651706676198",
+   "general": [],
+   "brawl": [
+    "[[h:Baba]] [[a:Threadsap]] duration lasts 35% less"
+   ],
+   "items": [
+    {
+     "item": "Radiant Regeneration",
+     "ic": "upgrade_resonant_healing",
+     "lines": [
+      "Spirit scaling reduced from 0.04 to 0.035"
+     ]
+    }
+   ],
+   "heroes": [
+    {
+     "hero": "Baba",
+     "hc": "hero_baba",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Spirit Resistance scaling reduced from 0.12 to 0.1",
+        "Now has -7% Base Bullet Resistance"
+       ]
+      },
+      {
+       "ability": "Threadsap",
+       "ac": "ability_baba_bubbling_brew",
+       "lines": [
+        "Spirit reduction on enemies now ends when [[h:Baba]] dies",
+        "Cooldown increased from 26s to 28s"
+       ]
+      },
+      {
+       "ability": "Granny Long Legs",
+       "ac": "ability_baba_bench_run",
+       "lines": [
+        "Cooldown increased from 30s to 32s",
+        "Repeat light melees while airborne now have diminishing forward momentum",
+        "Light melee upward launch reduced (looking up no longer lifts her as high)",
+        "Heavy melee ground pound no longer gains horizontal speed when landing on slopes"
+       ]
+      },
+      {
+       "ability": "Baba's Brew",
+       "ac": "ability_baba_hexing_brew",
+       "lines": [
+        "Barrier scaling reduced from 1.2 to 0.7",
+        "Barrier reduced from 100 to 90",
+        "Cooldown increased from 25s to 27s (moved to T2)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Deadman Danny",
+     "hc": "hero_deadpack",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Health regen increased from 2.5 to 3.25",
+        "Base health increased from 680 to 730",
+        "Gun - Base bullet damage for uncharged shots from 12 to 15 and charged shots from 44 to 48",
+        "Close the Deal - 1AP increased from +50 to +90",
+        "Rocket Jumping - Self damage from 6.5% max HP to 5% and is now spirit damage"
+       ]
+      },
+      {
+       "ability": "Chimera Mk1",
+       "ac": "ability_deadpack_rocketeer",
+       "lines": [
+        "Cooldown boon scaling increased from -0.25 to -0.45",
+        "Heal on hit spirit scaling increased from 1 to 2",
+        "Weapon scaling increased from 1.15 to 1.4",
+        "Slow effectiveness in air reduced by 15%"
+       ]
+      },
+      {
+       "ability": "Strix Salvo",
+       "ac": "ability_deadpack_chargeblast",
+       "lines": [
+        "Cooldown from 30s to 25s",
+        "Damage spirit scaling from 0.9 to 1.1",
+        "T2 increased from \"+20 damage / +35 mark damage\" to \"+30 damage / +45 mark damage\"",
+        "T3 increased from +0.2 spirit scaling to +0.35"
+       ]
+      },
+      {
+       "ability": "Close The Deal",
+       "ac": "ability_deadpack_ultimate",
+       "lines": [
+        "Bonus damage to under half health targets increased from +50% to +75%"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-10-05",
+   "title": "Minor Update - 10-05-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1845383656394833",
+   "general": [
+    "Fixed bugs that were causing troopers to walk too slowly in lane"
+   ],
+   "brawl": [],
+   "items": [],
+   "heroes": [
+    {
+     "hero": "Rat King",
+     "hc": "hero_ratking",
+     "groups": [
+      {
+       "ability": "Scrap Grenade",
+       "ac": "ability_ratking_scrap_grenade",
+       "lines": [
+        "Fixed some bugs with bouncing targeting",
+        "Damage increased from 65 to 70",
+        "T2 Damage increased from 65 to 70"
+       ]
+      },
+      {
+       "ability": "Rat Swarm",
+       "ac": "ability_ratking_ratnibble",
+       "lines": [
+        "Base Cooldown reduced from 28s to 24s"
+       ]
+      },
+      {
+       "ability": "Rule, Ratannia!",
+       "ac": "ability_ratking_standard_bearer",
+       "lines": [
+        "Cooldown increased from 130 to 160",
+        "Damage Reduction reduced from 20% to 15%",
+        "Radius reduced from 24m to 20m",
+        "Charge Duration reduced from 12s to 10s",
+        "Bonus Move speed no longer scales with Spirit",
+        "Now falls faster while charging",
+        "T1 +1m/s Move Speed to +2m/s Move Speed",
+        "T1 No longer gives -20s cooldown (Total cooldown from 110s to 160s)",
+        "T2 No longer grants +8s Charge Duration (Total charge duration from 20s to 10s)",
+        "T2 Flag Duration reduced from +8s to +5s",
+        "T3 Damage Reduction reduced from 15% to 10% (Total Damage Reduction from 35% to 25%)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Sinclair",
+     "hc": "hero_magician",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Base HP Regen reduced from 2 to 1",
+        "Gun - Falloff range reduced from 25-61 to 20-60",
+        "Gun - Reduced bullet base damage from 17.76 to 16.5"
+       ]
+      },
+      {
+       "ability": "Vexing Bolt",
+       "ac": "ability_magician_magicbolt",
+       "lines": [
+        "Now does half damage to objectives"
+       ]
+      },
+      {
+       "ability": "Spectral Assistant",
+       "ac": "ability_magician_cloneturret",
+       "lines": [
+        "Gun falloff range reduced from 25-61 to 20-60"
+       ]
+      },
+      {
+       "ability": "Rabbit Hex",
+       "ac": "ability_magician_animalhexarea",
+       "lines": [
+        "Radius reduced from 6.5m to 6m",
+        "T3 reduced from +3m Radius to +2m"
+       ]
+      },
+      {
+       "ability": "Audience Participation",
+       "ac": "ability_magician_copyult",
+       "lines": [
+        "Copy duration reduced from 12s to 9s",
+        "Copied cooldown increased from 40% to 60%"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-09-16",
+   "title": "Minor Update - 09-16-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1844115010490072",
+   "general": [
+    "Unstable Rift comeback resist max values now scale over the course of the game. Previously the max values were 35%. Now it is 10% + 1% per minute (around ~20% for the first one), with an upper limit of 40% at 30 minutes.",
+    "Removed a fixed amount of extra bonus souls you would get for being behind even a very slightly amount in net worth for both hero kill bounties as well as Unstable Rift bounties (this had a larger impact on the early to mid game)",
+    "Slightly reduced comeback bounties in general (this is in addition to the above change)",
+    "A portion of the comeback souls earned by players above enemy teams average net worth is instead distributed via the tick gold system that is given to the lowest 2 players (70% of the extra comeback value goes to them)",
+    "Guardian bounty increased by 10%",
+    "Walker bounty increased by 5%",
+    "Share for objectives bounty to nearby heroes reduced from 30% to 25% (the remaining gets split between all 6 players)",
+    "Respawn Time at 20 minutes increased from 35s to 38s (does not affect the max values later on, just a little higher earlier)",
+    "Using parry now pauses reloading",
+    "Parrying while doing a regular dash will now cancel the dash (and momentum) and parry on the spot",
+    "Getting stunned now pauses your reload rather than restarting it",
+    "Breakables in the underground tunnels initial spawn time increased from 3m to 5m",
+    "Breakables in the underground tunnels respawn rate increased from 3m to 5m",
+    "All move slow values reduced by ~20% globally",
+    "All ground dash slows reduced by ~10% globally",
+    "Slows now also affect air drag by 35% of the slow value (convar citadel_enable_slows_affect_air_drag",
+    "Dashes and light melee's no longer pause your gun's cycle time (this is a general change that affects high-cycle time weapons the most like [[h:Silver]] or [[h:Abrams]])"
+   ],
+   "brawl": [],
+   "items": [
+    {
+     "item": "Weakening Headshot",
+     "ic": "upgrade_headshot_booster2",
+     "lines": [
+      "Bullet Resist Reduction reduced from -13% to -12%"
+     ]
+    },
+    {
+     "item": "Hollow Point",
+     "ic": "upgrade_hollow_point_rounds",
+     "lines": [
+      "Bullet Resist Reduction increased from 9% to 10%"
+     ]
+    },
+    {
+     "item": "Toxic Bullets",
+     "ic": "upgrade_toxic_bullets",
+     "lines": [
+      "Spirit scaling increased from 0.005% to 0.006%"
+     ]
+    },
+    {
+     "item": "Shadow Weave",
+     "ic": "upgrade_cloaking_device_active",
+     "lines": [
+      "Now builds from [[i:Sprint Boots]]",
+      "Sprint speed increased from 1.5 to 2",
+      "Cooldown reduced from 45s to 37s"
+     ]
+    },
+    {
+     "item": "Cultist Sacrifice",
+     "ic": "upgrade_non_player_bonus_sacrifice",
+     "lines": [
+      "Bounty reduced from 180% to 170%"
+     ]
+    },
+    {
+     "item": "Ballistic Enchantment",
+     "ic": "upgrade_bulletshredimbue",
+     "lines": [
+      "Duration increased from 14s to 20s"
+     ]
+    },
+    {
+     "item": "Spiritual Overflow",
+     "ic": "upgrade_tech_overflow",
+     "lines": [
+      "Buildup is 35% slower",
+      "Spirit Power on proc reduced from 40 to 30",
+      "Fire Rate reduced from 30% to 25%"
+     ]
+    },
+    {
+     "item": "Restorative Locket",
+     "ic": "upgrade_restorative_locket",
+     "lines": [
+      "Heal per boon reduced from 0.5 to 0.45",
+      "Stack range reduced from 35m to 32m"
+     ]
+    },
+    {
+     "item": "Trophy Collector",
+     "ic": "upgrade_trophy_collector",
+     "lines": [
+      "Souls per minute reduced from 18 to 16"
+     ]
+    },
+    {
+     "item": "Veil Walker",
+     "ic": "upgrade_veil_walker",
+     "lines": [
+      "No longer builds from [[i:Sprint Boots]]",
+      "No longer grants +2 Sprint and +2 Out of Combat Regen (due to loss of component)",
+      "Movement speed bonus is now removed when the invisibility is removed",
+      "Spirit Power reduced from 10 to 6"
+     ]
+    },
+    {
+     "item": "Fortitude",
+     "ic": "upgrade_chonky",
+     "lines": [
+      "Max Health regen increased from 2% to 2.25%"
+     ]
+    },
+    {
+     "item": "Lifestrike",
+     "ic": "upgrade_boxing_glove",
+     "lines": [
+      "Heal on Melee hit increased from 100+1.5 to 120+1.75",
+      "Melee hit heal increased from 30% to 35%"
+     ]
+    },
+    {
+     "item": "Leech",
+     "ic": "upgrade_damage_recycler",
+     "lines": [
+      "Bullet and [[i:Spirit Lifesteal]] increased from 25% to 28%"
+     ]
+    },
+    {
+     "item": "Plated Armor",
+     "ic": "upgrade_deflecting_armor",
+     "lines": [
+      "Fixed on-hit damage prevention not blocking the following on-hit spirit damage effects: [[i:Mercurial Magnum]], [[h:Vindicta]]'s [[a:Flight]], [[h:Wraith]]'s [[a:Full Auto]], and [[i:Tesla Bullets]]/[[i:Capacitor]]"
+     ]
+    },
+    {
+     "item": "Diviner's Kevlar",
+     "ic": "upgrade_diviners_kevlar",
+     "lines": [
+      "Now grants +10% Ultimate Ability Cooldown Reduction"
+     ]
+    },
+    {
+     "item": "Golden Goose Egg",
+     "ic": "upgrade_goose_egg",
+     "lines": [
+      "Damage Penalty increased from -10% to -15%",
+      "Stored souls now count towards net worth (affects comeback reward calculations)",
+      "Souls per minute reduced from 90 to 80"
+     ]
+    },
+    {
+     "item": "Slowing Hex",
+     "ic": "upgrade_containment",
+     "lines": [
+      "Cooldown increased from 27s to 29s"
+     ]
+    },
+    {
+     "item": "Radiant Regeneration",
+     "ic": "upgrade_resonant_healing",
+     "lines": [
+      "Healing on Ability Cast per boon scaling reduced from 2 to 1.7"
+     ]
+    },
+    {
+     "item": "Tankbuster",
+     "ic": "upgrade_magic_shock",
+     "lines": [
+      "Current Health Bonus damage reduced from 8% to 7.5%"
+     ]
+    },
+    {
+     "item": "Decay",
+     "ic": "upgrade_rupture",
+     "lines": [
+      "DPS reduced by 25%",
+      "Duration increased by 20%"
+     ]
+    },
+    {
+     "item": "Mercurial Magnum",
+     "ic": "upgrade_ethereal_bullets",
+     "lines": [
+      "Base bullet damage scaling reduced from 0.49 to 0.38",
+      "Base bullet damage reduced from 25% to 20%"
+     ]
+    },
+    {
+     "item": "Focus Lens",
+     "ic": "upgrade_focus_lens",
+     "lines": [
+      "Damage increased from 30% to 35%",
+      "Cast range increased from 20m to 25m"
+     ]
+    }
+   ],
+   "heroes": [
+    {
+     "hero": "Abrams",
+     "hc": "hero_atlas",
+     "groups": [
+      {
+       "ability": "Infernal Resilience",
+       "ac": "citadel_ability_passive_beefy",
+       "lines": [
+        "T3 increased from +8% to +9%"
+       ]
+      },
+      {
+       "ability": "Seismic Impact",
+       "ac": "citadel_ability_bull_leap",
+       "lines": [
+        "T3 reduced from 6s [[i:Unstoppable]] to 5s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Celeste",
+     "hc": "hero_unicorn",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Stamina cooldown increased from 5 to 5.3"
+       ]
+      },
+      {
+       "ability": "Light Eater",
+       "ac": "ability_unicorn_radiantblast",
+       "lines": [
+        "Spirit lifesteal reduced from 20% to 18%",
+        "T3 decreased from +25 to +22"
+       ]
+      },
+      {
+       "ability": "Dazzling Trick",
+       "ac": "ability_unicorn_prismaticguard",
+       "lines": [
+        "Cooldown increased from 34s to 38s"
+       ]
+      },
+      {
+       "ability": "Radiant Daggers",
+       "ac": "ability_unicorn_luminousstrike",
+       "lines": [
+        "T2 reduced from +80 to +70"
+       ]
+      },
+      {
+       "ability": "Shining Wonder",
+       "ac": "ability_unicorn_dazzlingorb",
+       "lines": [
+        "Radius reduced from 16.5m to 15.5m",
+        "T3 Max Bounces reduced from +8 to +6"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Graves",
+     "hc": "hero_necro",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Health per boon increased from 33 to 35"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Haze",
+     "hc": "hero_haze",
+     "groups": [
+      {
+       "ability": "Fixation",
+       "ac": "ability_stacking_damage",
+       "lines": [
+        "Headshot stack count increased from +2 to +3",
+        "T3 weapon scaling increased from 0.0003 to 0.00035"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Holliday",
+     "hc": "hero_astro",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Health per boon increased from 41 to 43"
+       ]
+      },
+      {
+       "ability": "Crackshot",
+       "ac": "ability_crackshot",
+       "lines": [
+        "T2 now also applies -6% Bullet Resistance for 5s"
+       ]
+      },
+      {
+       "ability": "Bounce Pad",
+       "ac": "ability_bounce_pad",
+       "lines": [
+        "Lasso duration extention by increased from +1s to +1.25s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Ivy",
+     "hc": "hero_tengu",
+     "groups": [
+      {
+       "ability": "Stone Form",
+       "ac": "citadel_ability_tengu_stone_form",
+       "lines": [
+        "Radius reduced from 6m to 5.75m",
+        "T1 max health heal reduced from 7% to 6%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Kelvin",
+     "hc": "hero_kelvin",
+     "groups": [
+      {
+       "ability": "Frozen Shelter",
+       "ac": "ability_ice_dome",
+       "lines": [
+        "Base ability health regen now scales with spirit power (0.2)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Lady Geist",
+     "hc": "hero_ghost",
+     "groups": [
+      {
+       "ability": "Life Drain",
+       "ac": "ability_life_drain",
+       "lines": [
+        "T3 spirit scaling increased from +0.3 to +0.45"
+       ]
+      },
+      {
+       "ability": "Essence Bomb",
+       "ac": "ability_blood_bomb",
+       "lines": [
+        "T3 damage increased from 26% to 30%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Lash",
+     "hc": "hero_lash",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Gun falloff range reduced from 18m->54m to 16m->48m"
+       ]
+      },
+      {
+       "ability": "Ground Strike",
+       "ac": "citadel_ability_lash_down_strike",
+       "lines": [
+        "T3 spirit scaling increased from +0.03 to +0.04",
+        "T3 damage per meter scaling increased from 110% to 120%"
+       ]
+      },
+      {
+       "ability": "Grapple",
+       "ac": "citadel_ability_lash",
+       "lines": [
+        "T2 Weapon Damage buff duration reduced from 10s to 6s"
+       ]
+      },
+      {
+       "ability": "Flog",
+       "ac": "ability_lash_flog",
+       "lines": [
+        "Heal reduced from 50% to 40%",
+        "Angle increased from 38 to 40",
+        "T3 reduced from +40 degrees angle to +25",
+        "T3 reduced from +20% heal to +15%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Paige",
+     "hc": "hero_bookworm",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Heavy Melee spirit scaling increased from 0.3 to 0.45"
+       ]
+      },
+      {
+       "ability": "Captivating Read",
+       "ac": "ability_bookworm_aoemagic",
+       "lines": [
+        "T1 increased from -11s Cooldown to -14s",
+        "T3 increased from +1m to +2m"
+       ]
+      },
+      {
+       "ability": "Rallying Charge",
+       "ac": "ability_bookworm_knightcharge",
+       "lines": [
+        "Fixed some collision issues with"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Paradox",
+     "hc": "hero_chrono",
+     "groups": [
+      {
+       "ability": "Kinetic Carbine",
+       "ac": "citadel_ability_chrono_kinetic_carbine",
+       "lines": [
+        "Min damage multiplier reduced from 25% to 10% (max damage multiplier unaffected)",
+        "Min damage multiplier no longer gets increased by the T3"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Rem",
+     "hc": "hero_familiar",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Fixed a bug where multiple helpers could be sent to follow a single player for no effect"
+       ]
+      },
+      {
+       "ability": "Lil Helpers",
+       "ac": "ability_familiar_helpinghands",
+       "lines": [
+        "Now have a target UI when instant cast mode is selected"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Shiv",
+     "hc": "hero_shiv",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Alt fire base damage increased by 4%",
+        "Alt fire damage per boon increased from +0.2 to +0.24"
+       ]
+      },
+      {
+       "ability": "Serrated Knives",
+       "ac": "citadel_ability_shiv_dagger",
+       "lines": [
+        "While rage is full now deals 3.5% current HP damage on impact instead of ricocheting (0.01 spirit scaling)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Silver",
+     "hc": "hero_werewolf",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Health per boon increased from 28 to 31",
+        "Sprint speed increased from 1.5 to 2.5",
+        "Dashes and light melee's no longer pause your gun's cycle time",
+        "Weighted Bola now increases gravity during the debuff duration, and interrupts flying abilities (same rules as [[i:Phantom Strike]])"
+       ]
+      },
+      {
+       "ability": "Boot Kick",
+       "ac": "ability_werewolf_kickflip",
+       "lines": [
+        "Can only target heroes and objectives now"
+       ]
+      },
+      {
+       "ability": "Entangling Bola",
+       "ac": "ability_werewolf_netshot",
+       "lines": [
+        "Can only target heroes now"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Venator",
+     "hc": "hero_priest",
+     "groups": [
+      {
+       "ability": "Ira Domini",
+       "ac": "ability_priest_weaponswap",
+       "lines": [
+        "Now works with [[i:Ricochet]], all the shots will bounce",
+        "Can now split shot (releases 1 extra bolt on each side, 3 total)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Viscous",
+     "hc": "hero_viscous",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Alt fire damage growth reduced by 10%"
+       ]
+      },
+      {
+       "ability": "Splatter",
+       "ac": "viscous_goo_grenade",
+       "lines": [
+        "Detonation cooldown reduced from 0.15 to 0.12",
+        "T1 reduced from +2m to +1.5m"
+       ]
+      },
+      {
+       "ability": "The Cube",
+       "ac": "viscous_restorative_goo",
+       "lines": [
+        "Cast range reduced from 26m to 20m"
+       ]
+      },
+      {
+       "ability": "Puddle Punch",
+       "ac": "viscous_telepunch",
+       "lines": [
+        "Cooldown increased from 21s to 24s"
+       ]
+      },
+      {
+       "ability": "Goo Ball",
+       "ac": "viscous_goo_bowling_ball",
+       "lines": [
+        "T3 now also increases spirit scaling by 0.2"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Vyper",
+     "hc": "hero_viper",
+     "groups": [
+      {
+       "ability": "Slither",
+       "ac": "ability_viper_snakedash",
+       "lines": [
+        "T3 barrier duration reduced from 5s to 4s"
+       ]
+      },
+      {
+       "ability": "Petrifying Bola",
+       "ac": "ability_viper_petrifybola",
+       "lines": [
+        "Cooldown increased from 105s to 115s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Warden",
+     "hc": "hero_warden",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage per boon reduced from 0.28 to 0.25",
+        "Fire Rate spirit scaling reduced from 0.25 to 0.21"
+       ]
+      },
+      {
+       "ability": "Alchemical Flask",
+       "ac": "ability_warden_crowd_control",
+       "lines": [
+        "Projectile range and speed reduced by 30%"
+       ]
+      },
+      {
+       "ability": "Willpower",
+       "ac": "ability_warden_high_alert",
+       "lines": [
+        "T3 spirit scaling reduced from +2.7 to +2.1",
+        "T3 debuff resistance reduced from 40% to 30%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Wraith",
+     "hc": "hero_wraith",
+     "groups": [
+      {
+       "ability": "Card Trick",
+       "ac": "citadel_ability_card_toss",
+       "lines": [
+        "Heart heal reduced from 75 to 60",
+        "Heart heal spirit scaling reduced from 0.75 to 0.5",
+        "Diamond Bullet and Spirit Resist reduction reduced from -8% to -7%",
+        "T3 Diamond Bullet and Spirit Resist reduction reduced from -5% to -4%",
+        "T3 Clubs slow from +20% to +15%"
+       ]
+      },
+      {
+       "ability": "Project Mind",
+       "ac": "citadel_ability_projectmind",
+       "lines": [
+        "Fixed getting caught on edges/corners when aiming past it"
+       ]
+      },
+      {
+       "ability": "Full Auto",
+       "ac": "citadel_ability_wraith_rapidfire",
+       "lines": [
+        "Spirit damage per bullet scaling increased from 0.03 to 0.045"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Yamato",
+     "hc": "hero_yamato",
+     "groups": [
+      {
+       "ability": "Crimson Slash",
+       "ac": "citadel_ability_healing_slash",
+       "lines": [
+        "T3 now also increases the heal spirit scaling by +0.4"
+       ]
+      },
+      {
+       "ability": "Flying Slash",
+       "ac": "citadel_ability_flying_strike",
+       "lines": [
+        "Light melee scaling increased from 1.0 to 1.2"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-08-22",
+   "title": "Minor Update - 08-22-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1841579228672283",
+   "general": [],
+   "brawl": [],
+   "items": [
+    {
+     "item": "Radiant Regeneration",
+     "ic": "upgrade_resonant_healing",
+     "lines": [
+      "Heal on cast reduced from 70 to 65"
+     ]
+    },
+    {
+     "item": "Restorative Locket",
+     "ic": "upgrade_restorative_locket",
+     "lines": [
+      "Spirit Resistance reduced from 10% to 8%"
+     ]
+    }
+   ],
+   "heroes": [
+    {
+     "hero": "Celeste",
+     "hc": "hero_unicorn",
+     "groups": [
+      {
+       "ability": "Dazzling Trick",
+       "ac": "ability_unicorn_prismaticguard",
+       "lines": [
+        "Cooldown increased from 32s to 34s",
+        "T2 barrier rescaled from \"+80 and +0.7 scaling\" to \"+70 and +0.76\"",
+        "T3 cooldown increased from -18s to -20s",
+        "T3 reduced from +1.5s Silence to +1.25s"
+       ]
+      },
+      {
+       "ability": "Radiant Daggers",
+       "ac": "ability_unicorn_luminousstrike",
+       "lines": [
+        "Spirit Amp per stack reduced from +8% to +7%",
+        "T3 Spirit Amp per stack increased from +3% to +4%"
+       ]
+      },
+      {
+       "ability": "Shining Wonder",
+       "ac": "ability_unicorn_dazzlingorb",
+       "lines": [
+        "Bounce range reduced from 17.5m to 16.5m",
+        "Damage reduced from 165 to 140",
+        "Spirit scaling reduced from 0.9 to 0.6",
+        "T2 now also increases spirit scaling by +0.45"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-08-12",
+   "title": "Minor Update - 08-12-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1840944183775204",
+   "general": [],
+   "brawl": [],
+   "items": [],
+   "heroes": [
+    {
+     "hero": "Apollo",
+     "hc": "hero_fencer",
+     "groups": [
+      {
+       "ability": "Riposte",
+       "ac": "ability_fencer_riposte",
+       "lines": [
+        "Melee resist reduction increased from -22% to -25%",
+        "T2 changed from \"-30% Melee Resist\" to \"-25% Melee Resist and +0.4s Stun Duration\"",
+        "T3 increased from 60% Lifesteal for 7s to 75% Lifesteal for 13s"
+       ]
+      },
+      {
+       "ability": "Itani Lo Sahn",
+       "ac": "ability_fencer_ultimate",
+       "lines": [
+        "Fixed being canceled with movement abilities"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Billy",
+     "hc": "hero_punkgoat",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Base health regen reduced from 2.5 to 2.0"
+       ]
+      },
+      {
+       "ability": "Rising Ram",
+       "ac": "ability_punkgoat_goatflip",
+       "lines": [
+        "T3 changed from \"On Impact: Deal 7% max health as spirit damage\" to \"On hero hit: +10% Max HP for 16s\""
+       ]
+      },
+      {
+       "ability": "Chain Gang",
+       "ac": "ability_punkgoat_tether",
+       "lines": [
+        "Spirit scaling reduced from 1 to 0.7"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "The Doorman",
+     "hc": "hero_doorman",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Similar to the Walker change above, the turrets in the healing area in base now also wait on considering valid targets"
+       ]
+      },
+      {
+       "ability": "Doorway",
+       "ac": "ability_doorman_doorway",
+       "lines": [
+        "Range reduced from 70m to 65m"
+       ]
+      },
+      {
+       "ability": "Luggage Cart",
+       "ac": "ability_doorman_luggage_cart",
+       "lines": [
+        "Walker will no longer consider dragged enemies as valid targets to trigger the stomp on until soon after they are dropped off"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Drifter",
+     "hc": "hero_drifter",
+     "groups": [
+      {
+       "ability": "Rend",
+       "ac": "drifter_blood_blast",
+       "lines": [
+        "Spirit scaling reduced from 1.7 to 1.4"
+       ]
+      },
+      {
+       "ability": "Stalker's Mark",
+       "ac": "drifter_shadow_mark",
+       "lines": [
+        "Cooldown increased from 24s to 26s",
+        "T2 reduced from -12s Cooldown to -10s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Holliday",
+     "hc": "hero_astro",
+     "groups": [
+      {
+       "ability": "Powder Keg",
+       "ac": "ability_explosive_barrel",
+       "lines": [
+        "Now does half its damage immediately and half over 3s as a damage over time burn (same overall damage, multiple instances stack)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Ivy",
+     "hc": "hero_tengu",
+     "groups": [
+      {
+       "ability": "Stone Form",
+       "ac": "citadel_ability_tengu_stone_form",
+       "lines": [
+        "T3 stun duration reduced from +1s to +0.75s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Lash",
+     "hc": "hero_lash",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Falloff range reduced from 20m->58m to 18m->54m"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "McGinnis",
+     "hc": "hero_forge",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage base and growth values reduced by 5%",
+        "Spirit Resist per boon reduced from +0.625% to +0.35%",
+        "Mini Turrets no longer shoots heroes on ziplines",
+        "Mini Turrets no longer have 80% decaying resist for the first 6s",
+        "Mini Turrets health increased from 90 + 7.8/boon to 100 + 9/boon"
+       ]
+      },
+      {
+       "ability": "Medicinal Specter",
+       "ac": "citadel_ability_mobile_resupply",
+       "lines": [
+        "T1 changed from \"Provides +40% Spirit Resist\" to \"+1.5s Duration\"",
+        "T3 no longer increases duration by +1.5s",
+        "T3 now also increases spirit resistance by +40%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Paige",
+     "hc": "hero_bookworm",
+     "groups": [
+      {
+       "ability": "Plot Armor",
+       "ac": "ability_bookworm_knightbarrier",
+       "lines": [
+        "Weapon damage scaling increased from 0.2 to 0.3"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Seven",
+     "hc": "hero_gigawatt",
+     "groups": [
+      {
+       "ability": "Lightning Ball",
+       "ac": "citadel_ability_lightning_ball",
+       "lines": [
+        "T3 radius increased from +1.5m to +1.75m"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Vindicta",
+     "hc": "hero_hornet",
+     "groups": [
+      {
+       "ability": "Stake",
+       "ac": "citadel_ability_hornet_chain",
+       "lines": [
+        "T1 reduced from +65 Damage to +45"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Vyper",
+     "hc": "hero_viper",
+     "groups": [
+      {
+       "ability": "Petrifying Bola",
+       "ac": "ability_viper_petrifybola",
+       "lines": [
+        "Radius increased from 8m to 12m",
+        "Petrify duration increased from 2s to 2.2s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Wraith",
+     "hc": "hero_wraith",
+     "groups": [
+      {
+       "ability": "Card Trick",
+       "ac": "citadel_ability_card_toss",
+       "lines": [
+        "Heart heal spirit scaling reduced from 1 to 0.75"
+       ]
+      },
+      {
+       "ability": "Full Auto",
+       "ac": "citadel_ability_wraith_rapidfire",
+       "lines": [
+        "T3 spirit scaling reduced from +0.06 to +0.045"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-07-28",
+   "title": "Minor Update - 07-28-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1839041357039193",
+   "general": [
+    "Stamina bucket 3 heroes (slowest) have their ground dash time increased from 0.7s to 0.72s and air dash time from 0.49s to 0.51s",
+    "The Orb Spawners in base that give 10 souls on hit now split to nearby players on expire",
+    "Fixed the party member / team mate audio volume slider for voice communications"
+   ],
+   "brawl": [],
+   "items": [
+    {
+     "item": "Crushing Fists",
+     "ic": "upgrade_crushing_fists",
+     "lines": [
+      "Max stacks stun duration increased from 0.5s to 0.75s",
+      "Bullet Resist reduction increased from -4% to -5% per stack"
+     ]
+    },
+    {
+     "item": "Cursed Relic",
+     "ic": "upgrade_glitch",
+     "lines": [
+      "No longer has -14% Damage Output innate",
+      "Now applies a -25% Damage Output debuff for the 3.25s duration"
+     ]
+    },
+    {
+     "item": "Diviner's Kevlar",
+     "ic": "upgrade_diviners_kevlar",
+     "lines": [
+      "Spirit power increased from +35 to +40"
+     ]
+    },
+    {
+     "item": "Echo Shard",
+     "ic": "upgrade_ability_power_shard",
+     "lines": [
+      "Now has a 0.5s post-cast time",
+      "No longer grants +5% Fire Rate",
+      "Cooldown increased from 35s to 30s + the cooldown of the imbued ability"
+     ]
+    },
+    {
+     "item": "Ethereal Shift",
+     "ic": "upgrade_self_bubble",
+     "lines": [
+      "Cooldown increased from 35s to 37s"
+     ]
+    },
+    {
+     "item": "Frenzy",
+     "ic": "upgrade_fervor",
+     "lines": [
+      "Now has +10% Bullet Lifesteal as an innate"
+     ]
+    },
+    {
+     "item": "Fury Trance",
+     "ic": "upgrade_fury_trance",
+     "lines": [
+      "Active now grants +1m Move Speed",
+      "Active removes move speed penalty when shooting (like [[i:Fleetfoot]])"
+     ]
+    },
+    {
+     "item": "Lifestrike",
+     "ic": "upgrade_boxing_glove",
+     "lines": [
+      "When hitting a trooper and a hero at the same time, it now always prioritizes healing off the hero (same change for [[i:Melee Lifesteal]])"
+     ]
+    },
+    {
+     "item": "Mystic Shot",
+     "ic": "upgrade_crackshot",
+     "lines": [
+      "Cooldown reduced from 9s to 8s",
+      "Spirit scaling reduced from 1.2 to 0.9"
+     ]
+    },
+    {
+     "item": "Restorative Locket",
+     "ic": "upgrade_restorative_locket",
+     "lines": [
+      "Heal per boon increased from 0.32 to 0.5"
+     ]
+    },
+    {
+     "item": "Scourge",
+     "ic": "upgrade_discord",
+     "lines": [
+      "No longer grants +17% Debuff Resist innate bonus",
+      "Active now grants +20% Debuff Resist (retroactive on application)",
+      "Max Health per second reduced from 2.5% to 2.3%"
+     ]
+    },
+    {
+     "item": "Slowing Bullets",
+     "ic": "upgrade_slowing_bullets",
+     "lines": [
+      "No longer grants +15% Weapon Damage"
+     ]
+    },
+    {
+     "item": "Weighted Shots",
+     "ic": "upgrade_weighted_shots",
+     "lines": [
+      "Weapon Damage reduced from +40% to +30%"
+     ]
+    },
+    {
+     "item": "Spiritual Overflow",
+     "ic": "upgrade_tech_overflow",
+     "lines": [
+      "Now provides a bonus +10% Spirit Lifesteal on proc",
+      "Ability Duration reduced from +15% to +13%",
+      "Fire Rate reduced from +32% to +30%"
+     ]
+    },
+    {
+     "item": "Spirit Burn",
+     "ic": "upgrade_spirit_burn",
+     "lines": [
+      "No longer hits enemies in a 12m radius, only affects primary target now",
+      "Changed from the cooldown being on the item to being target based",
+      "Removed half cooldown against NPC",
+      "Explosion damage reduced from 110 to 50"
+     ]
+    },
+    {
+     "item": "Suppressor",
+     "ic": "upgrade_suppressor",
+     "lines": [
+      "Duration reduced from 5s to 4.5s"
+     ]
+    },
+    {
+     "item": "Tankbuster",
+     "ic": "upgrade_magic_shock",
+     "lines": [
+      "No longer procs off of items"
+     ]
+    }
+   ],
+   "heroes": [
+    {
+     "hero": "Apollo",
+     "hc": "hero_fencer",
+     "groups": [
+      {
+       "ability": "Riposte",
+       "ac": "ability_fencer_riposte",
+       "lines": [
+        "Base stun duration increased from 0.6s to 0.8s",
+        "T3 changed from +1.6s Stun Duration to +60% Bullet, Spirit and [[i:Melee Lifesteal]] against the target for 7s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Billy",
+     "hc": "hero_punkgoat",
+     "groups": [
+      {
+       "ability": "Rising Ram",
+       "ac": "ability_punkgoat_goatflip",
+       "lines": [
+        "T3 reduced from 8% Max Health to 7%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Calico",
+     "hc": "hero_nano",
+     "groups": [
+      {
+       "ability": "Ava",
+       "ac": "ability_nano_catform",
+       "lines": [
+        "T2 reduced from +45% Move Speed to +40%",
+        "T3 reduced from +20% damage amp to +18%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Celeste",
+     "hc": "hero_unicorn",
+     "groups": [
+      {
+       "ability": "Shining Wonder",
+       "ac": "ability_unicorn_dazzlingorb",
+       "lines": [
+        "Radius increased from 16.5m to 17.5m",
+        "Damage increased by 10%",
+        "Buffer duration increased from 3s to 3.25s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "The Doorman",
+     "hc": "hero_doorman",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage rescaled from 26 + 1.19/boon to 24 + 1.25"
+       ]
+      },
+      {
+       "ability": "Call Bell",
+       "ac": "ability_doorman_bomb",
+       "lines": [
+        "Charge Time increased from 6s to 7s"
+       ]
+      },
+      {
+       "ability": "Doorway",
+       "ac": "ability_doorman_doorway",
+       "lines": [
+        "Duration reduced from 20s to 15s",
+        "T1 duration increased from +15s to +20s",
+        "T3 range reduced from +45m to +40m"
+       ]
+      },
+      {
+       "ability": "Luggage Cart",
+       "ac": "ability_doorman_luggage_cart",
+       "lines": [
+        "Damage reduced from 80 to 60",
+        "T1 increased from +60 Damage to +80",
+        "Range reduced from 25m to 20m",
+        "T2 increased from +20m Cast Range to +25m"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Drifter",
+     "hc": "hero_drifter",
+     "groups": [
+      {
+       "ability": "Rend",
+       "ac": "drifter_blood_blast",
+       "lines": [
+        "Spirit scaling reduced from 1.8 to 1.7",
+        "T3 silence duration reduced from 2.3s to 2s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Dynamo",
+     "hc": "hero_dynamo",
+     "groups": [
+      {
+       "ability": "Singularity",
+       "ac": "citadel_ability_self_vacuum",
+       "lines": [
+        "Cooldown reduced from 265s to 250s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Haze",
+     "hc": "hero_haze",
+     "groups": [
+      {
+       "ability": "Sleep Dagger",
+       "ac": "ability_sleep_dagger",
+       "lines": [
+        "Wake up time spirit scaling reduced from 0.003 to 0.002",
+        "Damage spirit scaling reduced from 2.8 to 2.2",
+        "T2 changed from “-17s Cooldown and Applies 15 [[a:Fixation]] Stacks” to “+1s Sleep Duration and Applies 15 [[a:Fixation]] Stacks”",
+        "T3 changed from “+1s Sleep Duration and -50% Move and Dash Speed for 3s on wake-up” to “-17s Cooldown and -50% Move and Dash Speed for 3s on wake-up”"
+       ]
+      },
+      {
+       "ability": "Fixation",
+       "ac": "ability_stacking_damage",
+       "lines": [
+        "T3 reduced from +0.14 per Stack to +0.11",
+        "T3 now also scales with Weapon Damage (0.0003)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Ivy",
+     "hc": "hero_tengu",
+     "groups": [
+      {
+       "ability": "Stone Form",
+       "ac": "citadel_ability_tengu_stone_form",
+       "lines": [
+        "T3 spirit scaling reduced from +1.7 to +1.5"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Kelvin",
+     "hc": "hero_kelvin",
+     "groups": [
+      {
+       "ability": "Frozen Shelter",
+       "ac": "ability_ice_dome",
+       "lines": [
+        "Cooldown reduced from 195s to 185s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Lady Geist",
+     "hc": "hero_ghost",
+     "groups": [
+      {
+       "ability": "Life Drain",
+       "ac": "ability_life_drain",
+       "lines": [
+        "Changed from 75% Damage to Heal to 100%",
+        "DPS reduced to provide the same effective heal as before but with less DPS"
+       ]
+      },
+      {
+       "ability": "Malice",
+       "ac": "ability_blood_shards",
+       "lines": [
+        "Damage amplification reduced from 8% to 7%",
+        "T3 increased from +7% Damage Amp to +8%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mina",
+     "hc": "hero_vampirebat",
+     "groups": [
+      {
+       "ability": "Sanguine Retreat",
+       "ac": "ability_vampirebat_batblink",
+       "lines": [
+        "Recast time increased from 3.5s to 4s",
+        "T3 cast range increased from +3m to +4m"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mirage",
+     "hc": "hero_mirage",
+     "groups": [
+      {
+       "ability": "Fire Scarabs",
+       "ac": "mirage_fire_beetles",
+       "lines": [
+        "Duration reduced from 7s to 5s",
+        "T2 reduced from +2 Charges to +1 Charge",
+        "T2 now also increases duration by 2s"
+       ]
+      },
+      {
+       "ability": "Dust Devil",
+       "ac": "mirage_tornado",
+       "lines": [
+        "T3 no longer increases Lift Duration by +0.3s"
+       ]
+      },
+      {
+       "ability": "Djinn's Mark",
+       "ac": "mirage_sand_phantom",
+       "lines": [
+        "Fixed T3 still being -1s Cooldown instead of -0.75s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mo & Krill",
+     "hc": "hero_krill",
+     "groups": [
+      {
+       "ability": "Burrow",
+       "ac": "ability_burrow",
+       "lines": [
+        "Cooldown no longer starts after the conclusion of the ability, now starts immediately"
+       ]
+      },
+      {
+       "ability": "Combo",
+       "ac": "ability_ult_combo",
+       "lines": [
+        "Now lets you cast items while using it"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Paige",
+     "hc": "hero_bookworm",
+     "groups": [
+      {
+       "ability": "Rallying Charge",
+       "ac": "ability_bookworm_knightcharge",
+       "lines": [
+        "Cooldown reduced from 220s to 210s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Pocket",
+     "hc": "hero_synth",
+     "groups": [
+      {
+       "ability": "Flying Cloak",
+       "ac": "synth_plasma_flux",
+       "lines": [
+        "T3 reduced from -11s Cooldown to -10s"
+       ]
+      },
+      {
+       "ability": "Affliction",
+       "ac": "synth_affliction",
+       "lines": [
+        "DPS reduced by ~6% (also reduces the spirit scaling and the upgrades)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Shiv",
+     "hc": "hero_shiv",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Stamina regen increased from 5.5s to 6s"
+       ]
+      },
+      {
+       "ability": "Killing Blow",
+       "ac": "citadel_ability_shiv_killing_blow",
+       "lines": [
+        "Recast window reduced from 20s to 16s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Silver",
+     "hc": "hero_werewolf",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Gun falloff range reduced from 20m->46m to 17m→42m"
+       ]
+      },
+      {
+       "ability": "Slam Fire",
+       "ac": "ability_werewolf_unloadgun",
+       "lines": [
+        "Now does 100% bonus damage against NPCs (troopers and neutrals, not objectives)"
+       ]
+      },
+      {
+       "ability": "Lycan Curse",
+       "ac": "ability_werewolf_transformation",
+       "lines": [
+        "Precast time increased from 0.2 to 0.3",
+        "Precast movespeed reduced from 7.6m to 2.5m",
+        "T1 reduced from +20% Resists to +15%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Venator",
+     "hc": "hero_priest",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Sprint speed reduced from 1.5m to 1m",
+        "Bullet falloff range reduced from 20m-51m to 18m-47m"
+       ]
+      },
+      {
+       "ability": "Ira Domini",
+       "ac": "ability_priest_weaponswap",
+       "lines": [
+        "Cooldown no longer starts after the conclusion of the ability, now starts immediately",
+        "Blessed stakes damage increased from 100 to 115"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Viscous",
+     "hc": "hero_viscous",
+     "groups": [
+      {
+       "ability": "Splatter",
+       "ac": "viscous_goo_grenade",
+       "lines": [
+        "Damage reduced from 70 to 55",
+        "Spirit ratio reduced from 0.8 to 0.7",
+        "Base bounce count increased from 1 to 2",
+        "T3 bounce count reduced from +2 to +1"
+       ]
+      },
+      {
+       "ability": "The Cube",
+       "ac": "viscous_restorative_goo",
+       "lines": [
+        "T3 reduced from -25s Cooldown to -20s"
+       ]
+      },
+      {
+       "ability": "Puddle Punch",
+       "ac": "viscous_telepunch",
+       "lines": [
+        "Slow duration reduced from 4s to 3s",
+        "Slow increased from -20% to -30%",
+        "Cooldown reduced from 24s to 21s"
+       ]
+      },
+      {
+       "ability": "Goo Ball",
+       "ac": "viscous_goo_bowling_ball",
+       "lines": [
+        "T2 increased from +10% Resists to +20%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Yamato",
+     "hc": "hero_yamato",
+     "groups": [
+      {
+       "ability": "Flying Slash",
+       "ac": "citadel_ability_flying_strike",
+       "lines": [
+        "T2 reduced from +40 Spirit Power to +35",
+        "T3 charges from +2 to +1",
+        "T3 Charge Time increased from 4s to 5s"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-07-09",
+   "title": "Minor Update - 07-09-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1836506165584438",
+   "general": [
+    "Urn Runner sprint bonus reduced from +2m to 0 (trailing bonus reduced from +7m to +5m)",
+    "Urn Runner move speed bonus reduced from +3.5m to +2m",
+    "Urn Runner Stamina Recovery increased from +15% to +25%",
+    "Urn talking frequency increased from every 8s to every 6s",
+    "Urn talking sound distance increased (easier to hear a nearby Urn Runner)",
+    "Unstable Rift warning time reduced from 25s to 20s",
+    "Rift Troopers now have Spirit Resist (30/35/40/45%)",
+    "Rift Troopers now have Melee Resistance (25%)",
+    "Rift Troopers spawn interval increased from every 0.3s to 0.5s (spawns slightly more staggered)",
+    "Unstable Rift comeback resist aura radius increased from 20m to 35m",
+    "Rift Troopers max comeback count increased from 12 to 14",
+    "Objectives bounty split for nearby heroes reduced from 40% to 30% (this means slightly more portion of the bounty is split team wide rather than towards an individual player)"
+   ],
+   "brawl": [],
+   "items": [
+    {
+     "item": "Scourge",
+     "ic": "upgrade_discord",
+     "lines": [
+      "Max Health Per Second reduced from 2.6% to 2.5%"
+     ]
+    }
+   ],
+   "heroes": [
+    {
+     "hero": "Billy",
+     "hc": "hero_punkgoat",
+     "groups": [
+      {
+       "ability": "Rising Ram",
+       "ac": "ability_punkgoat_goatflip",
+       "lines": [
+        "T3 spirit scaling reduced from 0.035 to 0.03"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "The Doorman",
+     "hc": "hero_doorman",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage rescaled from 29.26 + 1.1/boon to 26 + 1.19",
+        "Crit scaling reduced from -25% to -30%"
+       ]
+      },
+      {
+       "ability": "Hotel Guest",
+       "ac": "ability_doorman_hotel",
+       "lines": [
+        "T3 increased from 13s Cooldown on Failure to Check Out to 15s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Drifter",
+     "hc": "hero_drifter",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage per boon reduced from +0.616 to +0.49"
+       ]
+      },
+      {
+       "ability": "Bloodscent",
+       "ac": "ability_drifter_hunger",
+       "lines": [
+        "T3 reduced from +12% to +11%"
+       ]
+      },
+      {
+       "ability": "Stalker's Mark",
+       "ac": "drifter_shadow_mark",
+       "lines": [
+        "Cooldown increased from 20s to 24s",
+        "T2 increased from -8s Cooldown to -12s",
+        "T3 reduced from +2% Bleed to +1.5%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Graves",
+     "hc": "hero_necro",
+     "groups": [
+      {
+       "ability": "Jar of Dead",
+       "ac": "ability_necro_hauntingskull",
+       "lines": [
+        "T1 heal spirit scaling increased from 0.1 to 0.16",
+        "Now build up faster from neutral creeps"
+       ]
+      },
+      {
+       "ability": "Grasping Hands",
+       "ac": "ability_necro_zombiewall",
+       "lines": [
+        "Immobilize duration reduced from 1.25s to 1s",
+        "T3 cooldown increased from -10s to -14s"
+       ]
+      },
+      {
+       "ability": "Essence Theft",
+       "ac": "ability_necro_fear",
+       "lines": [
+        "Now procs from melee hits",
+        "T3 now also increases Max Steal Targets from 3 to 4"
+       ]
+      },
+      {
+       "ability": "Borrowed Decree",
+       "ac": "ability_necro_gravestone",
+       "lines": [
+        "T1 changed from \"-15s Cooldown\" to \"-15s Cooldown and +25% Ghoul Speed\"",
+        "T2 changed from \"+25% Ghoul Speed and +10s Duration\" to \"-0.3s Time to Spawn and +10s Duration\""
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Haze",
+     "hc": "hero_haze",
+     "groups": [
+      {
+       "ability": "Sleep Dagger",
+       "ac": "ability_sleep_dagger",
+       "lines": [
+        "T2 now also applies 15 [[a:Fixation]] Stacks",
+        "T2 reduced from -18s Cooldown to -17s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Holliday",
+     "hc": "hero_astro",
+     "groups": [
+      {
+       "ability": "Powder Keg",
+       "ac": "ability_explosive_barrel",
+       "lines": [
+        "Spirit scaling reduced from 1.2 to 1.05"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mirage",
+     "hc": "hero_mirage",
+     "groups": [
+      {
+       "ability": "Fire Scarabs",
+       "ac": "mirage_fire_beetles",
+       "lines": [
+        "T3 spirit scaling reduced from +0.17 to +0.13"
+       ]
+      },
+      {
+       "ability": "Dust Devil",
+       "ac": "mirage_tornado",
+       "lines": [
+        "T3 spirit scaling reduced from +1 to +0.6"
+       ]
+      },
+      {
+       "ability": "Djinn's Mark",
+       "ac": "mirage_sand_phantom",
+       "lines": [
+        "Cooldown reduced from 3s to 2.75",
+        "T3 cooldown reduced from -1s Cooldown to -0.75s"
+       ]
+      },
+      {
+       "ability": "Traveler",
+       "ac": "mirage_teleport",
+       "lines": [
+        "T3 increased from -70s Cooldown to -90s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Pocket",
+     "hc": "hero_synth",
+     "groups": [
+      {
+       "ability": "Affliction",
+       "ac": "synth_affliction",
+       "lines": [
+        "Duration reduced from 11s to 10s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Shiv",
+     "hc": "hero_shiv",
+     "groups": [
+      {
+       "ability": "Serrated Knives",
+       "ac": "citadel_ability_shiv_dagger",
+       "lines": [
+        "T3 spirit scaling reduced from +0.09 to +0.07"
+       ]
+      },
+      {
+       "ability": "Slice and Dice",
+       "ac": "citadel_ability_shiv_dash",
+       "lines": [
+        "Spirit scaling reduced from 1.44 to 1.2",
+        "T2 reduced from -6% Spirit Resist to -4%"
+       ]
+      },
+      {
+       "ability": "Bloodletting",
+       "ac": "citadel_ability_shiv_defer_damage",
+       "lines": [
+        "Cooldown increased from 20s to 25s",
+        "T1 increased from -10s Cooldown to -15s",
+        "Damage Cleared reduced from 35% to 30%",
+        "T2 Damage Cleared increased from 35% to 40%"
+       ]
+      },
+      {
+       "ability": "Killing Blow",
+       "ac": "citadel_ability_shiv_killing_blow",
+       "lines": [
+        "Health Threshold reduced from 20% to 18%",
+        "T3 Health Threshold increased from +8% to +10%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Silver",
+     "hc": "hero_werewolf",
+     "groups": [
+      {
+       "ability": "Lycan Curse",
+       "ac": "ability_werewolf_transformation",
+       "lines": [
+        "Cooldown reduced from 80s to 60s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Victor",
+     "hc": "hero_frank",
+     "groups": [
+      {
+       "ability": "Shocking Reanimation",
+       "ac": "ability_frank_revive",
+       "lines": [
+        "Cooldown reduced from 275s to 240s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Viscous",
+     "hc": "hero_viscous",
+     "groups": [
+      {
+       "ability": "Splatter",
+       "ac": "viscous_goo_grenade",
+       "lines": [
+        "T3 spirit scaling reduced from +1.0 to +0.9"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Yamato",
+     "hc": "hero_yamato",
+     "groups": [
+      {
+       "ability": "Flying Slash",
+       "ac": "citadel_ability_flying_strike",
+       "lines": [
+        "Range reduced from 28m to 26m",
+        "T3 Charge Delay increased from 3s to 4s",
+        "T3 Ally Targeting now requires alt cast input"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-07-01",
+   "title": "Minor Update - 07-01-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1836506165566600",
+   "general": [],
+   "brawl": [],
+   "items": [],
+   "heroes": [
+    {
+     "hero": "Shiv",
+     "hc": "hero_shiv",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Alt Fire ammo cost reduced from 5 to 4",
+        "Weapon now has fixed pellet spread"
+       ]
+      },
+      {
+       "ability": "Slice and Dice",
+       "ac": "citadel_ability_shiv_dash",
+       "lines": [
+        "Is now back to doing spirit damage and reducing Spirit Resistance from enemies",
+        "Damage increased from 60 to 75"
+       ]
+      },
+      {
+       "ability": "Killing Blow",
+       "ac": "citadel_ability_shiv_killing_blow",
+       "lines": [
+        "T3 reduced from +10% Enemy Health Threshold to +8%"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-06-30",
+   "title": "Minor Update - 06-30-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1836506165563227",
+   "general": [
+    "King of the Hill objective has been rethemed and renamed to \"Unstable Rift\"",
+    "Unstable Rift no longer requires an Urn delivery to trigger the start of the event. It now has a variable start time of +/- 1 minute. There is a global announcement 25s before it spawns. 60s before that there is also an in-world only visual effect to let you know which lane it'll randomly spawn in.",
+    "Unstable Rift spawn interval increased from every 6 minutes to every 7 minutes",
+    "Unstable Rift comeback bonuses (resists in the area, extra comeback bounty, and trailing/leading team claiming timer) now all scale linearly based on the amount of NW they are trailing (scales from no bonus at 0% NW behind to full bonus at 15% NW behind)",
+    "The team that secures the Unstable Rift now also has a wave of 5 Rift Troopers sent down from the rift location. When trailing, spawns up to 12 troopers instead (using the same linear ramp from 0% NW to -15% NW)",
+    "Rift Troopers drop no souls when killed",
+    "Rift Troopers spawn with 100% extra health and damage (they also look larger and have custom VFX). Their bonus health and damage grow slightly per event (first one is 100%, then 120%, 140%, etc)",
+    "Any players in the Unstable Rift Zone are now revealed on the minimap",
+    "Unstable Rift bounty increased by 35% (to account for the 35% loss with no urn runner bounty, overall objective bounty is unchanged)",
+    "Unstable Rift no longer grants +1 permanent buff to each player (there is also no +3 buffs to the urn runner)",
+    "Urn running is now its own objective. Spawns on either end of the map (where the previous neutral pickup locations were), and gets delivered to the opposite end. Spawns at 10/15/20/25/etc.",
+    "Urn runner is no longer revealed and is not disarmed or silenced (going through a doorway or mirage teleport still drops it)",
+    "Urn cannot be manually dropped. It gets dropped when you get hit with a light or heavy melee, are stunned or are killed. It stays where it drops and does not walk back home.",
+    "Urn runner can no longer parry",
+    "Urn bounty value starts decaying after 45s from being picked up. It drains gradually over another 45s and then the urn is removed when the bounty is empty.",
+    "Urn is deposited immediately at the drop off point.",
+    "Urn bounty when deposited is worth 250 + 70/min for just the urn runner. Still has the comeback bounty component. Upon deposit all of the souls are released as orbs into the air (if another ally secures the orbs, they share the bounty with the urn runner).",
+    "Urn runner gets +4 permanent buffs on deposit",
+    "Urn is now louder when it talks and is easier to hear by nearby enemies",
+    "After 3 Minutes from spawn the Urn will start walking very slowly on his own towards the deposit location",
+    "Urn runner's passive bonuses while holding it now scales based on how behind you are, rather than being on or off (same as the Unstable Rift 0%-15% NW linear scaling). Bonuses are the same as the previous urn runner bonuses.",
+    "citadel_force_spawn_idol - This spawns the Urn",
+    "citadel_koth_dev_test_spawn - This moves your hero and spawns the Unstable Rift in the early warning state then quickly transitions to the 25s broadcasted timer",
+    "Reworked Boon reward table",
+    "Health per boon reduced by 5%",
+    "All ultimate base and upgrade cooldowns nerfed by 15% (rounded to the nearest multiple of 5)",
+    "Rejuv buff duration reduced from 4 minutes to 3",
+    "Respawn ramp changed from 8-30s from 5-19m to 8-35s from 5-20m",
+    "Guardian bounty reduced from 1500 to 1250",
+    "Walker bounty reduced from 4000 to 3500",
+    "First blood bounty reduced from 150 to 125",
+    "Base kill bounty reduced from 250 to 200 (max is still 2200 at 40m)",
+    "Trooper bounty rescaled from 116 + 1.16/m to 100 + 2/m (less before 20m, more after)",
+    "Trooper bounty ratio in the deniable flying orb increased from 40% to 50%",
+    "Minimum unsecured souls allowed to drop reduced from 150 to 50 + 5/min",
+    "Dash Jump input window increased from 0.2s to 0.25s duration (start time: 0.3s to end time: 0.55s)",
+    "Dash Jump distance increased from 18m to 19m",
+    "Dash Jump vertical impulse increased from 400 to 425",
+    "Jump Pads on top of the double sinner buildings have been removed",
+    "Hovering an item in the shop now shows you a preview for your investment bars"
+   ],
+   "brawl": [
+    "No longer locks you out of getting off the zipline in the first few seconds",
+    "Increased item randomness a bit",
+    "Fixed Enhanced [[i:Sharpshooter]] and Enhanced [[i:Spiritual Overflow]] not maintaining the bonuses from their enhanced components"
+   ],
+   "items": [
+    {
+     "item": "Mystic Shot",
+     "ic": "upgrade_crackshot",
+     "lines": [
+      "Cooldown increased from 8s to 9s"
+     ]
+    },
+    {
+     "item": "Toxic Bullets",
+     "ic": "upgrade_toxic_bullets",
+     "lines": [
+      "Bleed damage increased from 1.7% to 1.9%"
+     ]
+    },
+    {
+     "item": "Scourge",
+     "ic": "upgrade_discord",
+     "lines": [
+      "Max Health DPS reduced from 3.5% to 2.6%",
+      "Max Health DPS now scales with spirit power (0.0055)"
+     ]
+    },
+    {
+     "item": "Cursed Relic",
+     "ic": "upgrade_glitch",
+     "lines": [
+      "Damage Penalty increased from -10% to -14%"
+     ]
+    }
+   ],
+   "heroes": [
+    {
+     "hero": "Abrams",
+     "hc": "hero_atlas",
+     "groups": [
+      {
+       "ability": "Siphon Life",
+       "ac": "citadel_ability_bull_heal",
+       "lines": [
+        "T3 reduced from +3m Radius to +2m"
+       ]
+      },
+      {
+       "ability": "Shoulder Charge",
+       "ac": "citadel_ability_bull_charge",
+       "lines": [
+        "T3 reduced from -20s Cooldown to -18s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Apollo",
+     "hc": "hero_fencer",
+     "groups": [
+      {
+       "ability": "Riposte",
+       "ac": "ability_fencer_riposte",
+       "lines": [
+        "T1 increased from -7s Cooldown to -8s",
+        "Grace window to target after channel increased from +1s to +1.3s",
+        "Cast range increased from 25m to 35m",
+        "Targeting angle increased from 70 to 90"
+       ]
+      },
+      {
+       "ability": "Flawless Advance",
+       "ac": "ability_fencer_lunge",
+       "lines": [
+        "Heal on hero hit spirit scaling increased from 1 to 1.3"
+       ]
+      },
+      {
+       "ability": "Itani Lo Sahn",
+       "ac": "ability_fencer_ultimate",
+       "lines": [
+        "T3 increased from +40% Bonus Damage to +50%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Billy",
+     "hc": "hero_punkgoat",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage per boon reduced by 10%"
+       ]
+      },
+      {
+       "ability": "Bashdown",
+       "ac": "ability_punkgoat_ult",
+       "lines": [
+        "Melee scaling reduced from 1.1 to 0.9",
+        "T3 reduced from 60% Heavy Melee damage to 50%"
+       ]
+      },
+      {
+       "ability": "Rising Ram",
+       "ac": "ability_punkgoat_goatflip",
+       "lines": [
+        "T3 Max HP Damage reduced from 10% to 8%",
+        "T3 Max HP Damage spirit scaling increased from 0.017 to 0.035 (break even at 111 spirit power)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Celeste",
+     "hc": "hero_unicorn",
+     "groups": [
+      {
+       "ability": "Dazzling Trick",
+       "ac": "ability_unicorn_prismaticguard",
+       "lines": [
+        "Cooldown reduced from 35s to 32s"
+       ]
+      },
+      {
+       "ability": "Radiant Daggers",
+       "ac": "ability_unicorn_luminousstrike",
+       "lines": [
+        "Buff duration increased from 25s to 30s",
+        "Spirit scaling increased from 0.56 to 0.63"
+       ]
+      },
+      {
+       "ability": "Shining Wonder",
+       "ac": "ability_unicorn_dazzlingorb",
+       "lines": [
+        "Bounce range increased from 15.5m to 16.5m",
+        "Damage increased by 10%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "The Doorman",
+     "hc": "hero_doorman",
+     "groups": [
+      {
+       "ability": "Doorway",
+       "ac": "ability_doorman_doorway",
+       "lines": [
+        "Cooldown increased from 40s to 45s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Drifter",
+     "hc": "hero_drifter",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Health per boon increased from 41 to 43 (global hp boon reduction is after this)"
+       ]
+      },
+      {
+       "ability": "Rend",
+       "ac": "drifter_blood_blast",
+       "lines": [
+        "Cast time reduced from 0.5s to 0.4s",
+        "Post cast time reduced from 0.5s to 0.4s",
+        "T2 increased from -7s Cooldown to -8s"
+       ]
+      },
+      {
+       "ability": "Bloodscent",
+       "ac": "ability_drifter_hunger",
+       "lines": [
+        "T1 increased from +2m/s while near an isolated enemy to +3m/s",
+        "T2 increased from 18% missing health heal to +24%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Dynamo",
+     "hc": "hero_dynamo",
+     "groups": [
+      {
+       "ability": "Rejuvenating Aurora",
+       "ac": "citadel_ability_nikuman",
+       "lines": [
+        "Regeneration increased from 25/s to 30/s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Grey Talon",
+     "hc": "hero_orion",
+     "groups": [
+      {
+       "ability": "Rain of Arrows",
+       "ac": "ability_power_jump",
+       "lines": [
+        "Cooldown increased from 23s to 25s"
+       ]
+      },
+      {
+       "ability": "Guided Owl",
+       "ac": "ability_guided_arrow",
+       "lines": [
+        "Permanent spirit bonus reduced from 10 to 8"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Holliday",
+     "hc": "hero_astro",
+     "groups": [
+      {
+       "ability": "Powder Keg",
+       "ac": "ability_explosive_barrel",
+       "lines": [
+        "Velocity reduced slightly",
+        "Charge delay increased from 7s to 7.5s",
+        "Spirit scaling reduced from 1.4 to 1.2",
+        "T3 reduced from +100 Damage to +80"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Haze",
+     "hc": "hero_haze",
+     "groups": [
+      {
+       "ability": "Sleep Dagger",
+       "ac": "ability_sleep_dagger",
+       "lines": [
+        "T1 increased from -8% Bullet Resist to -10%",
+        "T2 increased from -17s Cooldown to -18s"
+       ]
+      },
+      {
+       "ability": "Smoke Bomb",
+       "ac": "ability_smoke_bomb",
+       "lines": [
+        "T3 increased from +40% Bullet Lifesteal to +50%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Ivy",
+     "hc": "hero_tengu",
+     "groups": [
+      {
+       "ability": "Entangling Thorns",
+       "ac": "citadel_ability_tengu_urn",
+       "lines": [
+        "Spirit scaling increased from 0.45 to 0.55"
+       ]
+      },
+      {
+       "ability": "Kudzu Connection",
+       "ac": "citadel_ability_tangotether",
+       "lines": [
+        "Replicated Healing per boon scale increased from +0.5 to +0.85"
+       ]
+      },
+      {
+       "ability": "Air Drop",
+       "ac": "citadel_ability_tengu_airlift",
+       "lines": [
+        "Cooldown reduction when used on allies increased from -25% to -30%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Lash",
+     "hc": "hero_lash",
+     "groups": [
+      {
+       "ability": "Ground Strike",
+       "ac": "citadel_ability_lash_down_strike",
+       "lines": [
+        "Cooldown reduced from 21s to 18s"
+       ]
+      },
+      {
+       "ability": "Flog",
+       "ac": "ability_lash_flog",
+       "lines": [
+        "Angle increased from 30 to 38"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mina",
+     "hc": "hero_vampirebat",
+     "groups": [
+      {
+       "ability": "Rake",
+       "ac": "ability_vampirebat_steallife",
+       "lines": [
+        "Missing health as damage increased from 5% to 6%"
+       ]
+      },
+      {
+       "ability": "Sanguine Retreat",
+       "ac": "ability_vampirebat_batblink",
+       "lines": [
+        "T3 now also increases range by +3m"
+       ]
+      },
+      {
+       "ability": "Nox Nostra",
+       "ac": "ability_vampirebat_batswarm",
+       "lines": [
+        "Damage increased from 4.45 to 4.6",
+        "T1 damage increased from +1.74 to +1.9"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mo & Krill",
+     "hc": "hero_krill",
+     "groups": [
+      {
+       "ability": "Sand Blast",
+       "ac": "ability_throw_sand",
+       "lines": [
+        "T2 slow increased from -25% to -30%",
+        "T3 increased from -20s Cooldown to -25s"
+       ]
+      },
+      {
+       "ability": "Combo",
+       "ac": "ability_ult_combo",
+       "lines": [
+        "Bonus max health per kill increased from 30+1/boon to 40+2/boon"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Paige",
+     "hc": "hero_bookworm",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Health per boon increased from 29 to 33",
+        "Bookworm T3 changed from \"+100 Damage, +30 DPS and +1 Charge\" to \"+100 Damage, +30 DPS and +12m Travel Range\""
+       ]
+      },
+      {
+       "ability": "Bookwyrm",
+       "ac": "ability_bookworm_dragonfire",
+       "lines": [
+        "T1 changed from \"+2s Trail Duration and +1m Radius\" to \"-12s Cooldown\"",
+        "T2 changed from \"+10m Range and -12s Cooldown\" to \"+1 Charge, +1m Radius and +2s Trail Duration\""
+       ]
+      },
+      {
+       "ability": "Plot Armor",
+       "ac": "ability_bookworm_knightbarrier",
+       "lines": [
+        "T1 fire rate spirit scaling increased from 0.13 to 0.16",
+        "T3 increased from 75% Barrier to 100%"
+       ]
+      },
+      {
+       "ability": "Rallying Charge",
+       "ac": "ability_bookworm_knightcharge",
+       "lines": [
+        "Is now properly counted as a \"miss\" (for the -50% CD Reduction) if the only thing that was impacted were non-heroes",
+        "T3 Max Amp increased from +50% to +70%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Paradox",
+     "hc": "hero_chrono",
+     "groups": [
+      {
+       "ability": "Kinetic Carbine",
+       "ac": "citadel_ability_chrono_kinetic_carbine",
+       "lines": [
+        "T2 now also increases move speed spirit scaling (0.06)",
+        "T3 changed from affecting Max Damage Scaling to affecting both Min and Max Damage Scaling"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Pocket",
+     "hc": "hero_synth",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage per boon reduced from 0.16 to 0.14"
+       ]
+      },
+      {
+       "ability": "Flying Cloak",
+       "ac": "synth_plasma_flux",
+       "lines": [
+        "T3 reduced from -12s Cooldown to -11s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Rem",
+     "hc": "hero_familiar",
+     "groups": [
+      {
+       "ability": "Tag Along",
+       "ac": "ability_familiar_attach",
+       "lines": [
+        "Healing per second spirit scaling reduced from 0.66 to 0.4",
+        "T3 missing health spirit scaling reduced from +0.02 to +0.016"
+       ]
+      },
+      {
+       "ability": "Lil Helpers",
+       "ac": "ability_familiar_helpinghands",
+       "lines": [
+        "Spirit Resist reduced from 15% to 12%",
+        "T1 changed from \"+1 Helper\" to \"+1 Helper and +1.5m/s Move Speed\"",
+        "T2 changed from \"+8% Spirit Resist and +1.5m/s Move Speed\" to \"+1 Helper and +15% Trooper Damage and Resist\"",
+        "T3 changed from \"+2 Helpers and +20% Trooper Damage and Resist\" to \"+1 Helper and +15% Spirit Resist\""
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Seven",
+     "hc": "hero_gigawatt",
+     "groups": [
+      {
+       "ability": "Lightning Ball",
+       "ac": "citadel_ability_lightning_ball",
+       "lines": [
+        "Charge delay reduced from 7s to 6s"
+       ]
+      },
+      {
+       "ability": "Storm Cloud",
+       "ac": "citadel_ability_storm_cloud",
+       "lines": [
+        "Time to expand increased from 1.5s to 3.5s",
+        "Damage interval increased from 0.25s to 0.3s (DPS unchanged)",
+        "T2 now also increases Initial Radius by +5m"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Shiv",
+     "hc": "hero_shiv",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Alt Fire damage now has a custom value per boon (+0.2)",
+        "Alt Fire ammo consumed per shot increased from 3 to 5",
+        "Alt Fire knockback movement is now disabled by slowing hex state"
+       ]
+      },
+      {
+       "ability": "Serrated Knives",
+       "ac": "citadel_ability_shiv_dagger",
+       "lines": [
+        "Cooldown reduced from 18s to 16s"
+       ]
+      },
+      {
+       "ability": "Slice and Dice",
+       "ac": "citadel_ability_shiv_dash",
+       "lines": [
+        "Now deals +25 light melee damage (75 total) instead of 60 spirit damage",
+        "Changed from -6% Spirit Resist to +4% Damage Amp"
+       ]
+      },
+      {
+       "ability": "Bloodletting",
+       "ac": "citadel_ability_shiv_defer_damage",
+       "lines": [
+        "T2 changed from \"+15% Incoming Damage Deferred\" to \"+35% Deferred Damage Cleared\"",
+        "T3 changed from \"+50% Deferred Damage Cleared\" to \"+15% Incoming Damage Deferred\""
+       ]
+      },
+      {
+       "ability": "Killing Blow",
+       "ac": "citadel_ability_shiv_killing_blow",
+       "lines": [
+        "Now deals damage to troopers and neutrals along the way",
+        "Executing a hero now instantly fills the rage bar",
+        "Now has the T3 \"recast within 20s on a hero kill\" as part of the base ability",
+        "Full Rage Damage Bonus reduced from +12% to +8%",
+        "Range reduced from 18m to 12m",
+        "T1 now also increases range by +6m",
+        "T2 increased from +10% Full Rage Bonus Damage to +16%",
+        "T3 increased from +5% Enemy health Threshold to +10%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Vindicta",
+     "hc": "hero_hornet",
+     "groups": [
+      {
+       "ability": "Stake",
+       "ac": "citadel_ability_hornet_chain",
+       "lines": [
+        "T2 reduced from -20s Cooldown to -22s"
+       ]
+      },
+      {
+       "ability": "Crow Familiar",
+       "ac": "citadel_ability_hornet_sting",
+       "lines": [
+        "T2 increased from -12s Cooldown to -16s",
+        "Collision radius between each crow increased slightly"
+       ]
+      },
+      {
+       "ability": "Assassinate",
+       "ac": "citadel_ability_hornet_snipe",
+       "lines": [
+        "Max Bonus Damage spirit scaling increased from 2 to 2.3"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Viscous",
+     "hc": "hero_viscous",
+     "groups": [
+      {
+       "ability": "Splatter",
+       "ac": "viscous_goo_grenade",
+       "lines": [
+        "T3 spirit scaling reduced from +1.1 to +1.0"
+       ]
+      },
+      {
+       "ability": "Puddle Punch",
+       "ac": "viscous_telepunch",
+       "lines": [
+        "T3 increased from -12s Cooldown to -14s"
+       ]
+      },
+      {
+       "ability": "Goo Ball",
+       "ac": "viscous_goo_bowling_ball",
+       "lines": [
+        "T3 increased from +6s Duration to +7s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Vyper",
+     "hc": "hero_viper",
+     "groups": [
+      {
+       "ability": "Screwjab Dagger",
+       "ac": "ability_viper_debuffdagger",
+       "lines": [
+        "T3 now also reduces charge delay from 4s to 2s"
+       ]
+      },
+      {
+       "ability": "Slither",
+       "ac": "ability_viper_snakedash",
+       "lines": [
+        "T3 spirit scaling increased from 0.6 to 0.8"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Warden",
+     "hc": "hero_warden",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage per boon reduced from 0.34 to 0.28"
+       ]
+      },
+      {
+       "ability": "Willpower",
+       "ac": "ability_warden_high_alert",
+       "lines": [
+        "T2 increased from -22s Cooldown to -24s",
+        "T3 increased from +2.5 spirit power scaling to +2.7"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-06-11",
+   "title": "Minor Update - 06-11-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1835236783562074",
+   "general": [
+    "Urn give up time reduced from 75s to 60s",
+    "Urn bounty reduced by 10% (unreduced for trailing team)",
+    "Breakables health permanent bonus reduced from 15/25/35 to 15/20/30 for level 1/2/3",
+    "Kill comeback bounty values increased by 8%"
+   ],
+   "brawl": [
+    "All ability and item range/radius values are reduced by 10%"
+   ],
+   "items": [
+    {
+     "item": "Opening Rounds",
+     "ic": "upgrade_pristine_emblem",
+     "lines": [
+      "Conditional Weapon Damage bonus reduced from 30% to 25%",
+      "Spirit Power increased from +4 to +7"
+     ]
+    },
+    {
+     "item": "Arcane Surge",
+     "ic": "upgrade_arcane_surge",
+     "lines": [
+      "Fixed various cases with the bonuses not working"
+     ]
+    }
+   ],
+   "heroes": [
+    {
+     "hero": "Apollo",
+     "hc": "hero_fencer",
+     "groups": [
+      {
+       "ability": "Disengaging Sigil",
+       "ac": "ability_fencer_throwblade",
+       "lines": [
+        "Velocity increased by 50%",
+        "Velocity's vertical:horizontal ratio changed from 1.5:1 to 1:1",
+        "Now allows input to alter the direction apollo launches himself (A/D biases to the left/right and W/S affect how much backwards motion is applied",
+        "T1 changed from \"+30 Damage\" to \"Gain +25% Fire Rate and Bullet Speed for 8s\"",
+        "T2 changed from \"Gain +30% Fire Rate and +50% Bullet Speed for 10s\" to \"On Player Hit: +1 Stamina restored and resets Air Jump/Dash limit\"",
+        "T3 changed from \"On Player Hit: +2 stamina restored and reset Air Jump/Dash limit\" to \"Recast within 4s\""
+       ]
+      },
+      {
+       "ability": "Flawless Advance",
+       "ac": "ability_fencer_lunge",
+       "lines": [
+        "Now allows [[h:Apollo]] to parry during it"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Bebop",
+     "hc": "hero_bebop",
+     "groups": [
+      {
+       "ability": "Exploding Uppercut",
+       "ac": "citadel_ability_uppercut",
+       "lines": [
+        "T3 increased from +17% Missing Health to +18%"
+       ]
+      },
+      {
+       "ability": "Sticky Bomb",
+       "ac": "citadel_ability_sticky_bomb",
+       "lines": [
+        "Fixed T3 duration ending once the bomb went off rather than the 5s duration",
+        "T3 changed from \"On Cast: +5m Move Speed and +20% Fire Rate for 5s\" to \"On Cast: +5m Move Speed and +25% Debuff Resistance for 6s\" (applies retroactively)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Calico",
+     "hc": "hero_nano",
+     "groups": [
+      {
+       "ability": "Gloom Bombs",
+       "ac": "ability_nano_clustergrenade",
+       "lines": [
+        "Melee resist debuff now stacks additively",
+        "T2 increased from -5% Melee Resist for 5s to -6% for 6s",
+        "Melee resist now applies on impact rather than explosion"
+       ]
+      },
+      {
+       "ability": "Return to Shadows",
+       "ac": "ability_nano_shadow_pulse",
+       "lines": [
+        "Damage increased from 140 to 150",
+        "T2 damage increased from +65 to +75",
+        "T3 heal increased from 350 to 450"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "The Doorman",
+     "hc": "hero_doorman",
+     "groups": [
+      {
+       "ability": "Call Bell",
+       "ac": "ability_doorman_bomb",
+       "lines": [
+        "Explosion damage spirit scaling reduced from 1.3 to 1.2",
+        "T3 spirit scaling reduced from 0.4 to 0.35"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Graves",
+     "hc": "hero_necro",
+     "groups": [
+      {
+       "ability": "Jar of Dead",
+       "ac": "ability_necro_hauntingskull",
+       "lines": [
+        "Collection rate reduced by 20% (takes longer to gain a charge)",
+        "Damage reduced from 17+0.27 to 16+0.25",
+        "Bounty increased from 5+0.25/boon to 7+0.5/boon"
+       ]
+      },
+      {
+       "ability": "Grasping Hands",
+       "ac": "ability_necro_zombiewall",
+       "lines": [
+        "T3 Immobilize duration reduced from +1s to +0.75s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Grey Talon",
+     "hc": "hero_orion",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Gun cycle time increased from 0.5775 to 0.6 (~4% DPS nerf)",
+        "Bullet damage growth reduced from +1.0 to +0.85"
+       ]
+      },
+      {
+       "ability": "Rain of Arrows",
+       "ac": "ability_power_jump",
+       "lines": [
+        "Cooldown increased from 22s to 23s",
+        "T2 reduced from -13s Cooldown to -12s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Holliday",
+     "hc": "hero_astro",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Fixed various issues with placing bounce pad on elevated areas"
+       ]
+      },
+      {
+       "ability": "Powder Keg",
+       "ac": "ability_explosive_barrel",
+       "lines": [
+        "Now has an alt cast behavior to place the barrel at her feet",
+        "Various improvements to the launch angles, velocities and feel of casting",
+        "Now starts with 2 charges",
+        "Charge Time increased from 3.5s to 7s",
+        "Spirit scaling reduced from 1.6 to 1.4",
+        "T2 changed from \"+58 Damage\" to \"+1 Charge\"",
+        "T3 changed from \"+2 Charges and +0.4s Displacement\" to \"+100 Damage, +0.5 Spirit Scaling and -5s Charge Time\""
+       ]
+      },
+      {
+       "ability": "Bounce Pad",
+       "ac": "ability_bounce_pad",
+       "lines": [
+        "Landing radius reduced from 12m to 9m",
+        "T3 changed from \"+68 Stomp Damage and [[i:Improved Spirit]] Scaling\" to \"+0.7s Stomp Stun\" (only triggers from [[h:Holliday]])"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Infernus",
+     "hc": "hero_inferno",
+     "groups": [
+      {
+       "ability": "Afterburn",
+       "ac": "ability_afterburn",
+       "lines": [
+        "Fixed Max duration refreshing not properly accounting for both Debuff Resist and +Ability Duration"
+       ]
+      },
+      {
+       "ability": "Concussive Combustion",
+       "ac": "ability_fire_bomb",
+       "lines": [
+        "Fixed cooldown not updating when getting the T2 or other CD reducing items when the ability is on cooldown"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Ivy",
+     "hc": "hero_tengu",
+     "groups": [
+      {
+       "ability": "Stone Form",
+       "ac": "citadel_ability_tengu_stone_form",
+       "lines": [
+        "Fixed a bug where could sometimes do significantly more damage than intended"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "McGinnis",
+     "hc": "hero_forge",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Mini Turrets T3 Fire Rate reduced from +30% to +25%"
+       ]
+      },
+      {
+       "ability": "Mini Turret",
+       "ac": "citadel_ability_shieldedsentry",
+       "lines": [
+        "DPS rescaled from 30+0.39 to 24+0.42 (break even at 200 spirit power)"
+       ]
+      },
+      {
+       "ability": "Heavy Barrage",
+       "ac": "citadel_ability_rocket_barrage",
+       "lines": [
+        "Fixed some rare cases where would stop working",
+        "DPS reduced from 22.5 to 21"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Paige",
+     "hc": "hero_bookworm",
+     "groups": [
+      {
+       "ability": "Rallying Charge",
+       "ac": "ability_bookworm_knightcharge",
+       "lines": [
+        "Distance for max amp reduced from 350m to 250m",
+        "T2 increased from -30s Cooldown to -50s"
+       ]
+      },
+      {
+       "ability": "Plot Armor",
+       "ac": "ability_bookworm_knightbarrier",
+       "lines": [
+        "Barrier spirit scaling increased from 1.3 to 1.5",
+        "T3 barrier spirit scaling increased from +0.3 to +0.5"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Pocket",
+     "hc": "hero_synth",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage growth reduced from +0.2 to +0.16"
+       ]
+      },
+      {
+       "ability": "Flying Cloak",
+       "ac": "synth_plasma_flux",
+       "lines": [
+        "T3 reduced from -13s Cooldown to -12s"
+       ]
+      },
+      {
+       "ability": "Affliction",
+       "ac": "synth_affliction",
+       "lines": [
+        "Now does half damage on objectives"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Seven",
+     "hc": "hero_gigawatt",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage growth reduced from 0.337 to 0.24"
+       ]
+      },
+      {
+       "ability": "Power Surge",
+       "ac": "ability_power_surge",
+       "lines": [
+        "T3 reduced from +12s Duration to +10s"
+       ]
+      },
+      {
+       "ability": "Storm Cloud",
+       "ac": "citadel_ability_storm_cloud",
+       "lines": [
+        "Now hits breakables"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Shiv",
+     "hc": "hero_shiv",
+     "groups": [
+      {
+       "ability": "Killing Blow",
+       "ac": "citadel_ability_shiv_killing_blow",
+       "lines": [
+        "Now has +30% more cooldown whenever it does not impact a player"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Silver",
+     "hc": "hero_werewolf",
+     "groups": [
+      {
+       "ability": "Lycan Curse",
+       "ac": "ability_werewolf_transformation",
+       "lines": [
+        "Cooldown increased from 40s to 70s",
+        "T3 no longer heals"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Viscous",
+     "hc": "hero_viscous",
+     "groups": [
+      {
+       "ability": "Puddle Punch",
+       "ac": "viscous_telepunch",
+       "lines": [
+        "T2 increased from +40% Lifesteal to +60%"
+       ]
+      },
+      {
+       "ability": "Goo Ball",
+       "ac": "viscous_goo_bowling_ball",
+       "lines": [
+        "T2 now also increases Bullet and Spirit Resist by +10%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Victor",
+     "hc": "hero_frank",
+     "groups": [
+      {
+       "ability": "Aura of Suffering",
+       "ac": "ability_frank_painaura",
+       "lines": [
+        "Radius reduced from 9m to 8m",
+        "T3 now also increases radius by +1m",
+        "Fixed some client performance issues when using"
+       ]
+      },
+      {
+       "ability": "Shocking Reanimation",
+       "ac": "ability_frank_revive",
+       "lines": [
+        "Cooldown increased from 230s to 240s",
+        "T3 reduced from -120s Cooldown to -110s",
+        "T3 increased from +150 Damage to +175"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Vindicta",
+     "hc": "hero_hornet",
+     "groups": [
+      {
+       "ability": "Assassinate",
+       "ac": "citadel_ability_hornet_snipe",
+       "lines": [
+        "Max Bonus Damage spirit scaling increased from 1.7 to 2.0"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Warden",
+     "hc": "hero_warden",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet falloff reduced from 20m->58m to 18m->47m"
+       ]
+      },
+      {
+       "ability": "Alchemical Flask",
+       "ac": "ability_warden_crowd_control",
+       "lines": [
+        "Spirit scaling reduced from 0.73 to 0.63",
+        "T2 reduced from +40 Damage to +35",
+        "T2 increased from -20% Weapon Damage to -25%"
+       ]
+      },
+      {
+       "ability": "Willpower",
+       "ac": "ability_warden_high_alert",
+       "lines": [
+        "Spirit scaling increased from +0.5 to +0.8"
+       ]
+      },
+      {
+       "ability": "Binding Word",
+       "ac": "ability_warden_lock_down",
+       "lines": [
+        "T3 reduced from -18s Cooldown to -14s"
+       ]
+      },
+      {
+       "ability": "Last Stand",
+       "ac": "ability_warden_riot_protocol",
+       "lines": [
+        "Lifesteal increased from 65% to 75%",
+        "T2 increased from -30s Cooldown to -35s",
+        "T3 increased from +3s Duration to +4s"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-06-04",
+   "title": "Minor Update - 06-04-2026",
+   "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1834602721188293",
+   "general": [
+    "Urn mechanics have been reworked.",
+    "Delivering the urn now starts a king of the hill style capture point, rather than using melee to flip the urn back and forth.",
+    "Both teams can progress at the same time, but the urn will only be fully claimed once there is only one team in the circle.",
+    "The Urn runner now gets their normal 35% bonus bounty and stats immediately on initial deposit (rather than on deposit conclusion only if your team won it)",
+    "Urn overall bounty reduced by 20% (unreduced for trailing team)",
+    "Progress radius is 20m",
+    "Progress rate is fixed regardless the number of allies in the area",
+    "Progress duration for favored/neutral/unfavored is 6/12/18s",
+    "If Urn has been in progress for over 75s, it will give up and throw all the souls as orbs into the sky (they will float for a long time)",
+    "Increased time allowed to run the urn before taking damage by 10s",
+    "Trailing team sprint speed bonus from +4m to +5m",
+    "Urn comeback resistance now also grants +35% Debuff Resistance ontop of the 35% Bullet and Spirit Resistance",
+    "Urn comeback resistance aura reduced from 60m to match the 20m progress radius",
+    "Drop off location is above the bridges on the side lanes, rather than below."
+   ],
+   "brawl": [],
+   "items": [],
+   "heroes": []
+  },
+  {
+   "date": "2026-05-31",
+   "title": "05-22-2026 Update (Reply)",
+   "source": "https://forums.playdeadlock.com/threads/05-22-2026-update.135477/post-263371",
+   "general": [],
+   "brawl": [],
+   "items": [],
+   "heroes": [
+    {
+     "hero": "Apollo",
+     "hc": "hero_fencer",
+     "groups": [
+      {
+       "ability": "Disengaging Sigil",
+       "ac": "ability_fencer_throwblade",
+       "lines": [
+        "T2 increased from +20% Fire Rate to +30%",
+        "T2 increased from +20% Fire Rate to +30% - [[h:Apollo]]: [[a:Flawless Advance]] T1 heal from 30+0.75 to 35+1.0 - [[h:Apollo]]: [[a:Flawless Advance]] T2 increased from -10s Cooldown to -12s - [[h:Apollo]]: [[a:Itani Lo Sahn]] damage increased from 190 to 200 - [[h:Apollo]]: [[a:Itani Lo Sahn]] spirit scaling..."
+       ]
+      },
+      {
+       "ability": "Flawless Advance",
+       "ac": "ability_fencer_lunge",
+       "lines": [
+        "T1 heal from 30+0.75 to 35+1.0",
+        "T2 increased from -10s Cooldown to -12s"
+       ]
+      },
+      {
+       "ability": "Itani Lo Sahn",
+       "ac": "ability_fencer_ultimate",
+       "lines": [
+        "damage increased from 190 to 200",
+        "spirit scaling increased from 2.3 to 2.6"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Graves",
+     "hc": "hero_necro",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Ghouls damage reduced by 15%",
+        "Ghouls bounty increased from 25+1/min to 35+2/min"
+       ]
+      },
+      {
+       "ability": "Jar of Dead",
+       "ac": "ability_necro_hauntingskull",
+       "lines": [
+        "damage reduced from 20 + 0.31/spirit to 17 + 0.27/spirit"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "McGinnis",
+     "hc": "hero_forge",
+     "groups": [
+      {
+       "ability": "Heavy Barrage",
+       "ac": "citadel_ability_rocket_barrage",
+       "lines": [
+        "range reduced from 50m to 36m",
+        "T1 [[a:Dash]] Slow reduced from 30% to 18% (regular slow still 30%)",
+        "T3 Damage Per Rocket reduced from +18 to +15"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Pocket",
+     "hc": "hero_synth",
+     "groups": [
+      {
+       "ability": "Flying Cloak",
+       "ac": "synth_plasma_flux",
+       "lines": [
+        "T3 reduced from -14s Cooldown to -13s"
+       ]
+      },
+      {
+       "ability": "Affliction",
+       "ac": "synth_affliction",
+       "lines": [
+        "T3 reduced from +18 DPS to +14"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Silver",
+     "hc": "hero_werewolf",
+     "groups": [
+      {
+       "ability": "Slam Fire",
+       "ac": "ability_werewolf_unloadgun",
+       "lines": [
+        "Current Health as Damage reduced from 3% to 2.5%",
+        "T3 reduced from 8% Current Health as Damage to 7%"
+       ]
+      },
+      {
+       "ability": "Entangling Bola",
+       "ac": "ability_werewolf_netshot",
+       "lines": [
+        "cooldown increased from 20s to 23s",
+        "T2 increased from -5s Cooldown to -8s"
+       ]
+      },
+      {
+       "ability": "Lycan Curse",
+       "ac": "ability_werewolf_transformation",
+       "lines": [
+        "Fire Rate reduced from 65% to 60%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Victor",
+     "hc": "hero_frank",
+     "groups": [
+      {
+       "ability": "Shocking Reanimation",
+       "ac": "ability_frank_revive",
+       "lines": [
+        "T3 reduced from -130s Cooldown to -120s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Yamato",
+     "hc": "hero_yamato",
+     "groups": [
+      {
+       "ability": "Power Slash",
+       "ac": "citadel_ability_power_slash",
+       "lines": [
+        "spirit scaling reduced from 2.1 to 1.85"
+       ]
+      },
+      {
+       "ability": "Flying Slash",
+       "ac": "citadel_ability_flying_strike",
+       "lines": [
+        "cast range reduced from 30m to 28m"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "2026-05-28",
+   "title": "05-22-2026 Update (Reply)",
+   "source": "https://forums.playdeadlock.com/threads/05-22-2026-update.135477/post-261657",
+   "general": [
+    "spawn time and interval changed from 10/15/20/25/etc to 12/18/24/30/etc",
+    "Urn timer now gets frozen with [[a:Frozen Shelter]]",
+    "Urn no longer provides the +35% Bullet and Spirit Resist aura for the behind team when it is being carried or dropped. The aura is now only active when it is being deposited.",
+    "Urn runner when behind now gains +35% Bullet and Spirit Resist for themselves only",
+    "Fixed the trailing team Urn runner's extra sprint bonus not working properly",
+    "Urn will do damage to the runner after a team has held it for 30s (was 50s before), however, this timer will freeze while there are enemies within a 40m radius of the urn runner.",
+    "Urn will now always add at least 2s to the team 30s held timer limit anytime it is picked up, even if it is instantly dropped",
+    "You are no longer prevented from picking up the urn for 12s after it is dropped after the previous 50s team held timer",
+    "The conditions for when the Urn decides to run back home have been reworked. The Urn will now stay in place on the ground as long as there are enemies in a 40m radius (enemies of the last person to have dropped or fumbled the Urn). If there are no enemies, then the Urn will wait up to 13s if there is a friendly player in a 40m radius.",
+    "If the Urn held timer is over 45s (keeping in mind this timer is frozen if there are nearby enemies), the next time it is dropped it will immediately run back home if there are no nearby enemies.",
+    "Parrying a trooper]] no longer resets your parry cooldown (however it won't end your parry early like a hero hit does)",
+    "Parrying a trooper now stuns the trooper",
+    "## Patch 2",
+    "Urn spawn time and interval changed from 10/15/20/25/etc to 12/18/24/30/etc - Urn timer now gets frozen with [[a:Frozen Shelter]] - Urn no longer provides the +35% Bullet and Spirit Resist aura for the behind team when it is being carried or dropped. The aura is now only active when it is being..."
+   ],
+   "brawl": [],
+   "items": [],
+   "heroes": []
+  },
+  {
+   "date": "2026-05-25",
+   "title": "05-22-2026 Update (Reply)",
+   "source": "https://forums.playdeadlock.com/threads/05-22-2026-update.135477/post-259788",
+   "general": [
+    "Urn drop off point is moved from the above bridge in the mid lane to under the bridge in the side lane",
+    "Urn timer extension when contested increased from 1.25s to 3s",
+    "Urn deposit timers for favored/neutral/unfavored increased from 3/5/10s to 5/10/15s",
+    "Urn comeback bullet and spirit resist auras reduced from 50% to 35%",
+    "Urn pickup spot is now where the old comeback drop off spots were for when your team is behind",
+    "Urn runner no longer has sprint disabled",
+    "Urn runner now has max sprint acceleration",
+    "Urn runner now gains +2m Sprint, +1 Stamina, +10% [[a:Dash]] Distance and +15% Stamina Regen",
+    "Urn runner for the team that is behind now gains an extra +4m Sprint",
+    "Urn collision radius increased by 20%",
+    "Various smaller urn holding timers and variables adjusted to account for the new location"
+   ],
+   "brawl": [],
+   "items": [],
+   "heroes": []
+  },
+  {
+   "date": "2026-05-22",
+   "title": "05-22-2026 Update",
+   "source": "https://forums.playdeadlock.com/threads/05-22-2026-update.135477/",
+   "general": [
+    "Base HP reduced by 10 for all heroes",
+    "HP per boon reduced by 3",
+    "Guardians scaling resistance from +75%->-50% over 12 minutes to +50%->-50% (takes more damage early)",
+    "Medium neutrals initial spawn time reduced from 6 minutes to 5 minutes",
+    "Breakables spawn time increased from 2 minutes to 3 minutes",
+    "Shrines are now invulnerable until one pair of Base Guardians are destroyed",
+    "Backdoor removal linger duration reduced from 20s to 14s",
+    "Knockup durations are now affected by debuff reduction",
+    "Removed two jump pads from around the middle of the map that point to outwards (to the left and right respectively)",
+    "Sliding no longer resets sprint speed",
+    "Stamina Regeneration is reduced by 25% for 5s after using a Wall [[a:Jump]]. This does not trigger when out of combat or when mantling soon after.",
+    "Bullet Velocity now stacks additively rather than diminishingly",
+    "Medic trooper heal duration increased from 2s to 4s (same overall heal amount)",
+    "When receiving multiple of the Medic trooper orb the duration will now be added ontop rather than stacking directly (so picking up 4 in a row will give the regen over 16s instead of over 4s, overall heal is the same just slower)",
+    "Medic Trooper heal increased from 12% missing hp to 13%",
+    "Fixed [[a:Parry]] FX not always matching state",
+    "Base Guardian Bullet Resistance increased from 10% to 20%",
+    "Shrine Bullet Resistance increased from 10% to 20%",
+    "Tier 2 Bullet Resistance increased from 25% to 35%",
+    "Midboss now starts spawned at the beginning of the game",
+    "Total Damage Reduction debuffs now stack diminishingly rather than additively ([[i:Inhibitor]], [[a:Fire Scarabs]], etc)",
+    "Movespeed diminish point increased from 11 to 12 (very slightly less aggressive diminishing scaling)",
+    "Weapon Investment Bonus now has a 6.4k line, changed from 4.8k/7.2k/9.6k/16k to 4.8k/6.4k/8k/11.2k/16k with bonuses from 46/55/70/85 to 46/54/62/74/86",
+    "Vitality Investment Bonus now has a 6.4k line, changed from 4.8k/7.2k/9.6k/16k to 4.8k/6.4k/8k/11.2k/16k with bonuses from 38/42/46/50 to 38/42/46/50 (final two tiers shifted up by +4)",
+    "Spirit Investment Bonus now has a 6.4k line, changed from 4.8k/7.2k/9.6k/16k to 4.8k/6.4k/8k/11.2k/16k with bonuses from 38/48/57/66 to 38/45/52/59/66",
+    "Fixed various item barrier durations not scaling with duration increases",
+    "Walkers will interrupt a rocket barrage during the 1s windup if stomp becomes an option.",
+    "Fixed a bug where walkers were spinning while lasering.",
+    "Smoothed zipline grabbing to fix some jitter",
+    "Added ropes to zipline binding (so if a player rebinds zipline to something other than SPACE it will also apply to mounting/dismounting ropes)",
+    "Removed delay on ziplines when using alternative key binds",
+    "Fixed the following abilities taking you out of zoom temporarily when cast: [[a:Blasted]], [[a:Gloom Bombs]], [[a:Shining Wonder]], [[a:Call Bell]], [[a:Luggage Cart]], [[a:Stalker's Mark]], [[a:Rejuvenating Aurora]], [[a:Charged Shot]], [[a:Powder Keg]], [[a:Bounce Pad]], [[a:Spirit Lasso]], [[a:Napalm]], [[a:Ice Path]], [[a:Flog]], [[a:Spectral Wall]], [[a:Rake]], [[a:Fire Scarabs]], [[a:Scorn]], [[a:Sand Blast]], [[a:Time Wall]], [[a:Paradoxical Swap]], [[a:Barrage]], [[a:Flying Cloak]], [[a:Pillow Toss]], [[a:Lightning Ball]], [[a:Entangling Bola]], [[a:Go For The Throat]], [[a:Vexing Bolt]], [[a:Consecrating Grenade]], Gut Shot, Snap Trap, [[a:Ira Domini]], [[a:Pain Battery]], [[a:Jumpstart]], [[a:Flight]], [[a:Crow Familiar]], [[a:Lethal Venom]], [[a:Petrifying Bola]], [[a:Alchemical Flask]], [[a:Card Trick]], [[i:Capacitor]], [[i:Restorative Locket]], [[i:Healing Nova]], [[i:Silence Wave]], [[i:Magic Carpet]], [[i:Refresher]]",
+    "Fixed the following items and abilities not working through veils: [[i:Heroic Aura]], [[i:Healing Rite]], [[i:Healing Nova]], [[i:Rescue Beam]], [[i:Divine Barrier]], [[a:Kudzu Connection]], Cube, [[a:Tag Along]], [[a:Lil Helpers]], [[i:Guardian Ward]], [[i:Scourge]], [[a:Plot Armor]]",
+    "## [[a:Soul Urn]]",
+    "We are experimenting with an alternate set of Urn mechanics. Please give us your thoughts on this after you've played with it some.",
+    "To pickup the Urn, rather than standing in place to channel, you now light or heavy melee the Urn to pick it up.",
+    "The Urn is now always dropped off on top of the bridge on the middle of the map.",
+    "Once dropped off, the Urn will go into a \"Depositing\" phase for a set amount of time, depending on which team the urn favors (3s/5s/10s for Favored/Neutral/Unfavored).",
+    "While in the Depositing phase, the enemy team can Heavy Melee the urn to have their team claim it and cause it to switch sides. This adds +1.25s to that team's timer.",
+    "If the urn is Favored or Unfavored (in a comeback state), then the Favored team will get +50% Bullet and Spirit Resist in a 60m radius around the urn while it is being carried, dropped or deposited.",
+    "After 35s (aggregate time held per team), the carrier will start taking 5% Max HP damage per second (previously was 45s and 0.15% Max HP damage).",
+    "Urn damage is lethal",
+    "Like before, when the Urn is fumbled, it will wait 13s if there is a player within 25m. However afterwards, with this new version, it can no longer be picked up anymore and will very quickly run back to its spawn position.",
+    "No longer silences you while carrying. You are still disarmed and movement silenced.",
+    "No longer grants +30% Bullet and Spirit Resist while carrying it",
+    "Area around deposting the urn is revealed (urn runner is also revealed as usual)",
+    "The rules for Favored/Unfavored remain the same (+15% soul difference for the first urn at 10:00, +10% for all future urns)",
+    "Souls are all instant after the deposit is complete",
+    "All rewards are the same. The last person to contest the urn gets the +3 Golden Idol buffs, falling back to the original carrier if nobody contested it.",
+    "## Items",
+    "Added a new T1 Vitality Item, [[i:Grit]]. Active grants you 200 Barrier for 4s duration. Innate grants 1 Out of Combat Regen. Cooldown: 60s. Upgrades to [[i:Weapon Shielding]], [[i:Spirit Shielding]], [[i:Reactive Barrier]] (these do not inherit the manual cast active) and [[i:Guardian Ward]].",
+    "Ballistic Enhancement: Now upgrades from [[i:Mystic Expansion]]",
+    "Ballistic Enhancement: Ability Range increased from +20% to +22%"
+   ],
+   "brawl": [
+    "Fixed the following Enhanced Items not maintaining their stats from components: [[i:Opening Rounds]], [[i:Tankbuster]], [[i:Kinetic Dash]], [[i:Radiant Regeneration]], [[i:Burst Fire]], [[i:Veil Walker]], [[i:Arcane Surge]], [[i:Fury Trance]], [[i:Leech]]"
+   ],
+   "items": [
+    {
+     "item": "Restorative Shot",
+     "ic": "upgrade_medic_bullets",
+     "lines": [
+      "NPC Healing increased from 15 to 20"
+     ]
+    },
+    {
+     "item": "Melee Charge",
+     "ic": "upgrade_melee_charge",
+     "lines": [
+      "Cooldown reduced from 7s to 5s"
+     ]
+    },
+    {
+     "item": "Active Reload",
+     "ic": "upgrade_active_reload",
+     "lines": [
+      "Lifesteal increased from 14% to 16%"
+     ]
+    },
+    {
+     "item": "Weakening Headshot",
+     "ic": "upgrade_headshot_booster2",
+     "lines": [
+      "Now works vs NPCs"
+     ]
+    },
+    {
+     "item": "Fleetfoot",
+     "ic": "upgrade_fleetfoot_boots",
+     "lines": [
+      "Now grants +6% Weapon Damage",
+      "Active slow resistance increased from 35% to 40%"
+     ]
+    },
+    {
+     "item": "Opening Rounds",
+     "ic": "upgrade_pristine_emblem",
+     "lines": [
+      "Spirit Power reduced from +7 to +4"
+     ]
+    },
+    {
+     "item": "Slowing Bullets",
+     "ic": "upgrade_slowing_bullets",
+     "lines": [
+      "[[a:Dash]] Distance slow reduced from -25% to -22%"
+     ]
+    },
+    {
+     "item": "Mystic Shot",
+     "ic": "upgrade_crackshot",
+     "lines": [
+      "Spirit scaling increased from 1 to 1.2"
+     ]
+    },
+    {
+     "item": "Recharging Rush",
+     "ic": "upgrade_rechargingbullets",
+     "lines": [
+      "Cooldown increased from 24s to 25s"
+     ]
+    },
+    {
+     "item": "Tesla Bullets",
+     "ic": "upgrade_chain_lightning",
+     "lines": [
+      "Proc cooldown reduced from 0.25s to 0.2s"
+     ]
+    },
+    {
+     "item": "Alchemical Fire",
+     "ic": "upgrade_thermal_detonator",
+     "lines": [
+      "Damage per Second spirit scaling increased from 0.152 to 0.2"
+     ]
+    },
+    {
+     "item": "Weighted Shots",
+     "ic": "upgrade_weighted_shots",
+     "lines": [
+      "[[a:Dash]] Distance slow reduced from -25% to -22%",
+      "Debuff resistance increased from 20% to 22%"
+     ]
+    },
+    {
+     "item": "Shadow Weave",
+     "ic": "upgrade_cloaking_device_active",
+     "lines": [
+      "Duration increased from 10s to 13s",
+      "[[a:Ambush]] Fire Rate increased from 20% to 25%",
+      "[[a:Ambush]] Spirit Power increased from 20 to 25",
+      "[[a:Ambush]] Melee Damage increased from 20% to 25%"
+     ]
+    },
+    {
+     "item": "Escalating Resilience",
+     "ic": "upgrade_reinforcing_casings",
+     "lines": [
+      "Max Ammo increased from 30% to 35%",
+      "Weapon Damage increased from 15% to 18%"
+     ]
+    },
+    {
+     "item": "Heroic Aura",
+     "ic": "upgrade_dps_aura",
+     "lines": [
+      "Radius increased from 30m to 35m"
+     ]
+    },
+    {
+     "item": "Sharpshooter",
+     "ic": "upgrade_sharpshooter",
+     "lines": [
+      "Now upgrades from [[i:High-Velocity Rounds]] (in addition to [[i:Long Range]]). Grants +60% Bullet Velocity.",
+      "Long range weapon damage reduced from 70% to 60%",
+      "Now has innate 10% Weapon Damage (from components)"
+     ]
+    },
+    {
+     "item": "Hunter's Aura",
+     "ic": "upgrade_bullet_armor_reduction_aura",
+     "lines": [
+      "Fire Rate reduction increased from -14% to -15%"
+     ]
+    },
+    {
+     "item": "Cultist Sacrifice",
+     "ic": "upgrade_non_player_bonus_sacrifice",
+     "lines": [
+      "Weapon Damage increased from 8% to 10%",
+      "Weapon Damage boon scaling increased from 0.7 to 0.8",
+      "Bonus Souls increased from 170% to 180%"
+     ]
+    },
+    {
+     "item": "Toxic Bullets",
+     "ic": "upgrade_toxic_bullets",
+     "lines": [
+      "No longer builds up from melee attacks"
+     ]
+    },
+    {
+     "item": "Capacitor",
+     "ic": "upgrade_capacitor",
+     "lines": [
+      "Proc cooldown reduced from 0.25s to 0.2s"
+     ]
+    },
+    {
+     "item": "Crushing Fists",
+     "ic": "upgrade_crushing_fists",
+     "lines": [
+      "Cooldown reduced from 7s to 5s",
+      "Melee damage increased from 20% to 22%"
+     ]
+    },
+    {
+     "item": "Frenzy",
+     "ic": "upgrade_fervor",
+     "lines": [
+      "Triggered debuff resistance increased from 30% to 40%"
+     ]
+    },
+    {
+     "item": "Crippling Headshot",
+     "ic": "upgrade_banshee_slugs",
+     "lines": [
+      "Now works vs NPCs",
+      "Bullet Resist reduction increased from -16% to -17%",
+      "Spirit Resist reduction increased from -16% to -17%"
+     ]
+    },
+    {
+     "item": "Spiritual Overflow",
+     "ic": "upgrade_tech_overflow",
+     "lines": [
+      "[[i:Spirit Lifesteal]] moved from Active to Innate (reduced from 16% to 13%)",
+      "Now builds from [[i:Spirit Lifesteal]] (gains the innates it has)"
+     ]
+    },
+    {
+     "item": "Glass Cannon",
+     "ic": "upgrade_glass_cannon",
+     "lines": [
+      "Max Health reduction reduced from -15% to -13%"
+     ]
+    },
+    {
+     "item": "Silencer",
+     "ic": "upgrade_proc_silence",
+     "lines": [
+      "Spirit Resistance reduced from 15% to 12%"
+     ]
+    },
+    {
+     "item": "Spellslinger",
+     "ic": "upgrade_enchanted_holsters",
+     "lines": [
+      "Cooldown Reduction reduced from 6% to 5%"
+     ]
+    },
+    {
+     "item": "Healing Rite",
+     "ic": "upgrade_health_stimpak",
+     "lines": [
+      "Spirit scaling increased from 0.93 to 1.1"
+     ]
+    },
+    {
+     "item": "Extra Regen",
+     "ic": "upgrade_endurance",
+     "lines": [
+      "Regen reduced from 3 to 2.5",
+      "Out of Combat regen increased from 1 to 1.5"
+     ]
+    },
+    {
+     "item": "Rebuttal",
+     "ic": "upgrade_melee_rebuttal",
+     "lines": [
+      "[[a:Parry]] cooldown reduced from -2s to -1.75s"
+     ]
+    },
+    {
+     "item": "Debuff Reducer",
+     "ic": "upgrade_debuff_reducer",
+     "lines": [
+      "Now grants +90 Health"
+     ]
+    },
+    {
+     "item": "Return Fire",
+     "ic": "upgrade_return_fire",
+     "lines": [
+      "Duration increased from 6s to 6.5s"
+     ]
+    },
+    {
+     "item": "Healing Booster",
+     "ic": "upgrade_healing_booster",
+     "lines": [
+      "Fixed various abilities and items not being boosted correctly"
+     ]
+    },
+    {
+     "item": "Restorative Locket",
+     "ic": "upgrade_restorative_locket",
+     "lines": [
+      "No longer has a minimum of 1 stamina restore",
+      "Max stamina restored reduced from 4 to 3"
+     ]
+    },
+    {
+     "item": "Reactive Barrier",
+     "ic": "upgrade_vex_barrier",
+     "lines": [
+      "Now grants +1 Out of Combat Regen (from components)"
+     ]
+    },
+    {
+     "item": "Spirit Shielding",
+     "ic": "upgrade_spirit_bubble",
+     "lines": [
+      "No longer grants +1.75m Move Speed on activation",
+      "Proc now also temporarily grants +18% Spirit Resistance (for the 8s duration)"
+     ]
+    },
+    {
+     "item": "Weapon Shielding",
+     "ic": "upgrade_weapon_shielding",
+     "lines": [
+      "No longer grants +1.75m Move Speed on activation",
+      "Proc now also temporarily grants +18% Bullet Resistance (for the 8s duration)"
+     ]
+    },
+    {
+     "item": "Guardian Ward",
+     "ic": "upgrade_guardian_ward",
+     "lines": [
+      "Barrier increased from 200 to 250",
+      "Cooldown increased from 45s to 60s",
+      "Now grants +1.5 Out of Combat Regen (from components)"
+     ]
+    },
+    {
+     "item": "Bullet Lifesteal",
+     "ic": "upgrade_vampire",
+     "lines": [
+      "Now grants +6% Weapon Damage"
+     ]
+    },
+    {
+     "item": "Battle Vest",
+     "ic": "upgrade_regenerating_bullet_shield",
+     "lines": [
+      "Weapon Damage increased from 15% to 18%"
+     ]
+    },
+    {
+     "item": "Dispel Magic",
+     "ic": "upgrade_reduce_debuff_duration",
+     "lines": [
+      "Cooldown increased from 40s to 45s"
+     ]
+    },
+    {
+     "item": "Spirit Lifesteal",
+     "ic": "upgrade_health_stealing_magic",
+     "lines": [
+      "Bonus Health increased from +70 to +90"
+     ]
+    },
+    {
+     "item": "Fury Trance",
+     "ic": "upgrade_fury_trance",
+     "lines": [
+      "Active duration increased from 6s to 6.5s",
+      "Gains the +6% Weapon Damage (from component)",
+      "Fire Rate increased from 30% to 32%"
+     ]
+    },
+    {
+     "item": "Majestic Leap",
+     "ic": "upgrade_rocket_booster",
+     "lines": [
+      "Now grants +50% air control for the duration of the barrier",
+      "Barrier boon scaling increased from 8 to 12"
+     ]
+    },
+    {
+     "item": "Fortitude",
+     "ic": "upgrade_chonky",
+     "lines": [
+      "Move speed increased from 1.25m to 1.5m"
+     ]
+    },
+    {
+     "item": "Veil Walker",
+     "ic": "upgrade_veil_walker",
+     "lines": [
+      "Heal per boon increased from 6 to 8",
+      "Invisibility duration increased from 7s to 8s"
+     ]
+    },
+    {
+     "item": "Counterspell",
+     "ic": "upgrade_counterspell",
+     "lines": [
+      "Spirit Power reduced from +8 to +5"
+     ]
+    },
+    {
+     "item": "Divine Barrier",
+     "ic": "upgrade_divine_barrier",
+     "lines": [
+      "Now grants +1.5 Out of Combat Regen (from components)"
+     ]
+    },
+    {
+     "item": "Juggernaut",
+     "ic": "upgrade_juggernaut",
+     "lines": [
+      "Fire Rate reduction increased from -36% to -40%",
+      "Move speed bonus increased from +2m to +2.5m"
+     ]
+    },
+    {
+     "item": "Spellbreaker",
+     "ic": "upgrade_spellbreaker",
+     "lines": [
+      "Now grants +90 Health (from components)"
+     ]
+    },
+    {
+     "item": "Indomitable",
+     "ic": "upgrade_auto_cleanse",
+     "lines": [
+      "Barrier scaling increased from 1.8 to 2.0",
+      "Now has +2 Out of Combat Regen (from components)",
+      "Bullet Resist increased from 8% to 10%",
+      "Spirit Resist increased from 8% to 10%"
+     ]
+    },
+    {
+     "item": "Witchmail",
+     "ic": "upgrade_absorbing_armor",
+     "lines": [
+      "Spirit Resist increased from 20% to 22%"
+     ]
+    },
+    {
+     "item": "Unstoppable",
+     "ic": "upgrade_unstoppable",
+     "lines": [
+      "Cooldown reduced from 65s to 60s"
+     ]
+    },
+    {
+     "item": "Infuser",
+     "ic": "upgrade_infuser",
+     "lines": [
+      "Duration increased from 6s to 7s",
+      "Gains +6 Spirit Power (from components)"
+     ]
+    },
+    {
+     "item": "Vampiric Burst",
+     "ic": "upgrade_surging_power",
+     "lines": [
+      "Duration increased from 4.5s to 5s",
+      "Now grants +6% Weapon Power (from components)"
+     ]
+    },
+    {
+     "item": "Leech",
+     "ic": "upgrade_damage_recycler",
+     "lines": [
+      "Updated bonus HP to match the components"
+     ]
+    },
+    {
+     "item": "Golden Goose Egg",
+     "ic": "upgrade_goose_egg",
+     "lines": [
+      "Permanent buff from every 100 souls to every 80"
+     ]
+    },
+    {
+     "item": "Mystic Regeneration",
+     "ic": "upgrade_mystic_regeneration",
+     "lines": [
+      "Regen duration increased from 6s to 7s"
+     ]
+    },
+    {
+     "item": "Rusted Barrel",
+     "ic": "upgrade_withering_whip",
+     "lines": [
+      "Bonus health increased from 50 to 60"
+     ]
+    },
+    {
+     "item": "Cold Front",
+     "ic": "upgrade_cold_front",
+     "lines": [
+      "Radius reduced from 12m to 10m",
+      "Damage height increased from 5m to 7m"
+     ]
+    },
+    {
+     "item": "Bullet Resist Shredder",
+     "ic": "upgrade_bullet_resist_shredder",
+     "lines": [
+      "No longer grants +65 Bonus Health",
+      "Bullet Resist increased from 8% to 9%",
+      "Now grants +9% Weapon Damage"
+     ]
+    },
+    {
+     "item": "Mystic Slow",
+     "ic": "upgrade_magic_slow",
+     "lines": [
+      "Bonus Health increased from +30 to +50"
+     ]
+    },
+    {
+     "item": "Arcane Surge",
+     "ic": "upgrade_arcane_surge",
+     "lines": [
+      "Fixed various interaction bugs with different abilities"
+     ]
+    },
+    {
+     "item": "Surge of Power",
+     "ic": "upgrade_magic_storm",
+     "lines": [
+      "Imbued Spirit Power increased from 24 to 25"
+     ]
+    },
+    {
+     "item": "Spirit Snatch",
+     "ic": "upgrade_spirit_snatch",
+     "lines": [
+      "Bonus damage spirit scaling increased from 0.744 to 0.84",
+      "Spirit Power Steal increased from 20 to 28"
+     ]
+    },
+    {
+     "item": "Decay",
+     "ic": "upgrade_rupture",
+     "lines": [
+      "Cooldown reduced from 32s to 30s"
+     ]
+    },
+    {
+     "item": "Disarming Hex",
+     "ic": "upgrade_greater_withering_whip",
+     "lines": [
+      "Duration increased from 4s to 4.25s"
+     ]
+    },
+    {
+     "item": "Torment Pulse",
+     "ic": "upgrade_tech_damage_pulse",
+     "lines": [
+      "Melee Resist increased from 15% to 18%"
+     ]
+    },
+    {
+     "item": "Radiant Regeneration",
+     "ic": "upgrade_resonant_healing",
+     "lines": [
+      "Regen duration increased from 6s to 7s"
+     ]
+    },
+    {
+     "item": "Rapid Recharge",
+     "ic": "upgrade_rapid_recharge",
+     "lines": [
+      "Spirit Power for Charged Abilities increased from +10 to +14"
+     ]
+    },
+    {
+     "item": "Magic Carpet",
+     "ic": "upgrade_magic_carpet",
+     "lines": [
+      "Now innately grants -15% Gravity and Air Control by +25%"
+     ]
+    },
+    {
+     "item": "Arctic Blast",
+     "ic": "upgrade_arctic_blast",
+     "lines": [
+      "Slowed targets now have their stamina regen frozen for the 4s slow duration",
+      "Radius increased from 12m to 16m",
+      "Damage height increased from 5m to 7m",
+      "No longer does 15% damage amp",
+      "Immobilize increased from 0.75s to 1s"
+     ]
+    },
+    {
+     "item": "Focus Lens",
+     "ic": "upgrade_focus_lens",
+     "lines": [
+      "Duration increased from 4s to 4.5s"
+     ]
+    },
+    {
+     "item": "Scourge",
+     "ic": "upgrade_discord",
+     "lines": [
+      "Debuff resist increased from 15% to 17%"
+     ]
+    },
+    {
+     "item": "Mercurial Magnum",
+     "ic": "upgrade_ethereal_bullets",
+     "lines": [
+      "Base Bullet Damage spirit scaling increased from 0.465 to 0.49"
+     ]
+    },
+    {
+     "item": "Vortex Web",
+     "ic": "upgrade_aoe_root",
+     "lines": [
+      "Fixed the debuff losing gravity modification when upgraded from [[i:Slowing Hex]]"
+     ]
+    }
+   ],
+   "heroes": [
+    {
+     "hero": "Abrams",
+     "hc": "hero_atlas",
+     "groups": [
+      {
+       "ability": "Infernal Resilience",
+       "ac": "citadel_ability_passive_beefy",
+       "lines": [
+        "T1 changed from \"+1.5 Health Regen\" to \"+200 Max Health\"",
+        "T2 changed from \"200 Max Health\" to \"+18% [[i:Melee Lifesteal]]\" (40% effective vs non-heroes)"
+       ]
+      },
+      {
+       "ability": "Seismic Impact",
+       "ac": "citadel_ability_bull_leap",
+       "lines": [
+        "T2 increased from +0.7s Stun Duration to +0.8s",
+        "T3 [[i:Unstoppable]] duration increased from 5s to 6s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Apollo",
+     "hc": "hero_fencer",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Improved the hero's hitboxes (easier to hit)",
+        "Base regen reduced from 2 to 1"
+       ]
+      },
+      {
+       "ability": "Riposte",
+       "ac": "ability_fencer_riposte",
+       "lines": [
+        "no longer automatically dashes. It now grants you a sub ability immediately to target the hero you want to jump to for a brief duration (can target the enemy before the parry to buffer it). Cast range is 25m.",
+        "no longer triggers on damage auras (things like [[a:Flame Dash]])",
+        "no longer triggers off of objective damage"
+       ]
+      },
+      {
+       "ability": "Flawless Advance",
+       "ac": "ability_fencer_lunge",
+       "lines": [
+        "hitbox reduced by 10%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Bebop",
+     "hc": "hero_bebop",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage per boon reduced from 0.139 to 0.115"
+       ]
+      },
+      {
+       "ability": "Exploding Uppercut",
+       "ac": "citadel_ability_uppercut",
+       "lines": [
+        "T2 weapon damage reduced from +40% to +30%"
+       ]
+      },
+      {
+       "ability": "Sticky Bomb",
+       "ac": "citadel_ability_sticky_bomb",
+       "lines": [
+        "T2 increased from +75 Damage to +85"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Billy",
+     "hc": "hero_punkgoat",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Health per boon increased from +48 to +59",
+        "Bullet damage per boon reduced from 0.165 to 0.142"
+       ]
+      },
+      {
+       "ability": "Rising Ram",
+       "ac": "ability_punkgoat_goatflip",
+       "lines": [
+        "cooldown increased from 30s to 32s",
+        "T2 increased from +0.3s Duration to +0.4s",
+        "T3 increased from -10s Cooldown to -13s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Calico",
+     "hc": "hero_nano",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Gloom Bomb T2 changed from \"+75 Damage to Barriers\" to \"-5% Melee Resist for 5s Per Bomb\" (stacks)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Celeste",
+     "hc": "hero_unicorn",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Improved the hero's hitboxes (easier to hit)",
+        "Stamina cooldown increased from 4.5s to 5s"
+       ]
+      },
+      {
+       "ability": "Radiant Daggers",
+       "ac": "ability_unicorn_luminousstrike",
+       "lines": [
+        "T2 changed from \"-18s Cooldown and +70 Damage\" to \"-22s Cooldown and +80 Damage\""
+       ]
+      },
+      {
+       "ability": "Shining Wonder",
+       "ac": "ability_unicorn_dazzlingorb",
+       "lines": [
+        "T2 increased from +50 Damage to +70"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Doorman",
+     "hc": "hero_doorman",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "[[a:Call Bell]] radius reduced from 6m to 5.5m",
+        "[[a:Call Bell]] T3 radius increased from +4m to +4.5m",
+        "[[a:Call Bell]] explosion damage spirit scaling reduced from 1.4 to 1.3",
+        "[[a:Call Bell]] inaccuracy debuff no longer diminishes from 100% to 0% over 1 second (the rest of the debuff is 4s)",
+        "[[a:Call Bell]] inaccuracy debuff reduced from -100% to -40% (lasts the full duration)",
+        "Doorways close sub ability now starts on cooldown for 8s",
+        "[[a:Doorway]] is no longer unsilenceable",
+        "Fixed recent bug causing [[a:Luggage Cart]] not being dispelled"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Drifter",
+     "hc": "hero_drifter",
+     "groups": [
+      {
+       "ability": "Rend",
+       "ac": "drifter_blood_blast",
+       "lines": [
+        "T3 no longer increases scaling by 0.4",
+        "T3 now also deals Heavy Melee Damage (0.55 scale)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Dynamo",
+     "hc": "hero_dynamo",
+     "groups": [
+      {
+       "ability": "Kinetic Pulse",
+       "ac": "citadel_ability_stomp",
+       "lines": [
+        "T2 reduced from -18% Bullet Resistance to -15%",
+        "spirit scaling reduced from 1.65 to 1.55"
+       ]
+      },
+      {
+       "ability": "Quantum Entanglement",
+       "ac": "citadel_ability_void_sphere",
+       "lines": [
+        "T3 changed from dispelling non-ult debuffs to reducing the duration of non-ult debuffs by 50%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Graves",
+     "hc": "hero_necro",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Sprint speed increased from 1.6 to 2.2",
+        "Updated dash ranges for Deadheads to be calculated from the center of [[h:Graves]] when they are following her",
+        "Fixed Fire Rate buffs for Deadheads not being applied to their next attack, but only on subsequent attacks",
+        "Fixed Deadheads being unable to dash through veils",
+        "Fixed Deadheads being unable to dash to targets at the very end of your attack range when they are in follow mode",
+        "Fixed Deadhead's damage taken from bullets being unaffected by fall-off",
+        "Added 0.1s buffer duration for Deadheads losing line-of-sight before they stop following an enemy",
+        "Fixed Deadheads becoming inactive if [[h:Graves]] dies while they are following her",
+        "Increased speed & acceleration of Deadheads only when they are following [[h:Graves]] - doesn't affect in-combat",
+        "Fixed certain projectiles (i.e Gray Talon's Bird) colliding with Deadheads",
+        "Update Grave's melee to also set the dash target for Deadheads",
+        "Bullet damage and growth reduced by -10%"
+       ]
+      },
+      {
+       "ability": "Grasping Hands",
+       "ac": "ability_necro_zombiewall",
+       "lines": [
+        "now spawns a ghoul in the base ability (T3 still increases it by 1)"
+       ]
+      },
+      {
+       "ability": "Jar of Dead",
+       "ac": "ability_necro_hauntingskull",
+       "lines": [
+        "spirit scaling reduced from 0.35 to 0.31 (they are better at dealing damage now)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Grey Talon",
+     "hc": "hero_orion",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Rain of Arrow stamina distance changed from being -9% to +25%"
+       ]
+      },
+      {
+       "ability": "Rain of Arrows",
+       "ac": "ability_power_jump",
+       "lines": [
+        "cooldown reduced from 30s to 22s",
+        "cast delay reduced from 0.5s to 0.2s",
+        "duration reduced from 7s to 4s",
+        "moving ability in air improved",
+        "Weapon Damage bonus reduced from +4 to +3",
+        "T1 changed from \"-14s Cooldown\" to \"+3 Weapon Damage and +30% Slow for 1.5s\"",
+        "T2 changed from \"+5 Weapon Damage and +40% Slow for 1.5s\" to \"-13s Cooldown\" (Total CD from 16s to 9s)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Haze",
+     "hc": "hero_haze",
+     "groups": [
+      {
+       "ability": "Fixation",
+       "ac": "ability_stacking_damage",
+       "lines": [
+        "T3 increased from +0.12 to +0.14"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Holliday",
+     "hc": "hero_astro",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Base bullet damage increased from 18.8 to 19.7",
+        "Health regen increased from 1 to 2"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Infernus",
+     "hc": "hero_inferno",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet size increased from 3 to 4"
+       ]
+      },
+      {
+       "ability": "Concussive Combustion",
+       "ac": "ability_fire_bomb",
+       "lines": [
+        "T3 increased from +0.75s Stun Duration to +0.9s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Kelvin",
+     "hc": "hero_kelvin",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "When interrupted on [[a:Ice Path]], it no longer creates an ice path below him and instead lets him fall to the ground"
+       ]
+      },
+      {
+       "ability": "Frost Grenade",
+       "ac": "ability_ice_grenade",
+       "lines": [
+        "damage spirit scaling reduced from 0.7 to 0.6"
+       ]
+      },
+      {
+       "ability": "Arctic Beam",
+       "ac": "ability_icebeam",
+       "lines": [
+        "DPS spirit scaling reduced from 0.5 to 0.38"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Lash",
+     "hc": "hero_lash",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage per boon reduced from 0.341 to 0.31"
+       ]
+      },
+      {
+       "ability": "Ground Strike",
+       "ac": "citadel_ability_lash_down_strike",
+       "lines": [
+        "damage per meter spirit scaling increased from 0.0372 to 0.04"
+       ]
+      },
+      {
+       "ability": "Grapple",
+       "ac": "citadel_ability_lash",
+       "lines": [
+        "T2 bonus damage no longer stacks with itself, but instead refreshes the duration",
+        "T3 now also grants +1 Charge"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "McGinnis",
+     "hc": "hero_forge",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage per boon increased from 0.17 to 0.18",
+        "Fixed [[a:Heavy Barrage]] not triggering [[i:Diviner's Kevlar]]"
+       ]
+      },
+      {
+       "ability": "Medicinal Specter",
+       "ac": "citadel_ability_mobile_resupply",
+       "lines": [
+        "radius increased from 5.5m to 6m"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mina",
+     "hc": "hero_vampirebat",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Innate -8% Debuff Resist",
+        "Fixed [[a:Rake]] sometimes not working with high ping"
+       ]
+      },
+      {
+       "ability": "Love Bites",
+       "ac": "ability_vampirebat_lovebites",
+       "lines": [
+        "T3 increased from -4s Cooldown to -5s",
+        "no longer applies the flat on hit damage to abilities (was doing 20% of its value on [[a:Nox Nostra]])"
+       ]
+      },
+      {
+       "ability": "Nox Nostra",
+       "ac": "ability_vampirebat_batswarm",
+       "lines": [
+        "T3 reduced from 1% Current HP to 0.5%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mirage",
+     "hc": "hero_mirage",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Updated [[a:Djinn's Mark]] visuals"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Mo & Krill",
+     "hc": "hero_krill",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Getting hit with a melee no longer knocks you up when you are burrowed"
+       ]
+      },
+      {
+       "ability": "Sand Blast",
+       "ac": "ability_throw_sand",
+       "lines": [
+        "T3 increased from +1s Duration to +1.5s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Paige",
+     "hc": "hero_bookworm",
+     "groups": [
+      {
+       "ability": "Bookwyrm",
+       "ac": "ability_bookworm_dragonfire",
+       "lines": [
+        "T2 improved from -8s Cooldown to -12s"
+       ]
+      },
+      {
+       "ability": "Rallying Charge",
+       "ac": "ability_bookworm_knightcharge",
+       "lines": [
+        "T3 increased from +135 Damage to +160",
+        "now has half cooldown if it hits no allies or enemies"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Paradox",
+     "hc": "hero_chrono",
+     "groups": [
+      {
+       "ability": "Time Wall",
+       "ac": "citadel_ability_chrono_time_wall",
+       "lines": [
+        "T1 duration increased from +2.5s to +3.5s",
+        "T3 increased from +1 Charge to +2",
+        "T3 Charge Delay reduced from 4s to 2s"
+       ]
+      },
+      {
+       "ability": "Kinetic Carbine",
+       "ac": "citadel_ability_chrono_kinetic_carbine",
+       "lines": [
+        "T3 increased from +50% Max Damage Scaling to +55%"
+       ]
+      },
+      {
+       "ability": "Paradoxical Swap",
+       "ac": "citadel_ability_chrono_swap",
+       "lines": [
+        "damage increased from 125 to 150"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Pocket",
+     "hc": "hero_synth",
+     "groups": [
+      {
+       "ability": "Flying Cloak",
+       "ac": "synth_plasma_flux",
+       "lines": [
+        "T2 weapon damage duration reduced from 8s to 6s"
+       ]
+      },
+      {
+       "ability": "Affliction",
+       "ac": "synth_affliction",
+       "lines": [
+        "cooldown increased from 140s to 150s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Rem",
+     "hc": "hero_familiar",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Reduced lockout period after ejecting from [[a:Tag Along]] from 1s to 0.3s"
+       ]
+      },
+      {
+       "ability": "Pillow Toss",
+       "ac": "ability_familiar_ability02",
+       "lines": [
+        "charge time reduced from 9s to 8s",
+        "T3 increased from +90 to +100 Damage"
+       ]
+      },
+      {
+       "ability": "Tag Along",
+       "ac": "ability_familiar_attach",
+       "lines": [
+        "burst heal now also applies to secondary allies that you jump to",
+        "lingering heal duration reduced from 3s to 2s (values rebalanced to be the same overall heal just faster)",
+        "T2 Barrier and Item Duration/Range effectiveness increased from 25% to 35%",
+        "T3 now also increases Missing Health Heal from 0.03 to 0.05 and Regen Per Second from 0.66 to 1.0",
+        "can now be cast through veils",
+        "time to fly to your ally is now 50% faster",
+        "heal duration is now displayed on the hud as well as the healthbar icon",
+        "fixed specific abilities/items that could kill [[h:Rem]] while he's napping",
+        "now allows friendly auras to affect [[h:Rem]]",
+        "eject is no longer affected by debuff resistance and now launches upwards slightly more to prevent hitting the ground",
+        "eject no longer briefly restricts movement abilities and input"
+       ]
+      },
+      {
+       "ability": "Naptime",
+       "ac": "ability_familiar_ability01",
+       "lines": [
+        "now provides +30% damage reduction in the base ability (T3 still adds +50%)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Seven",
+     "hc": "hero_gigawatt",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage growth reduced from 0.374 to 0.337",
+        "Crit reduction increased from 35% to 55%"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Shiv",
+     "hc": "hero_shiv",
+     "groups": [
+      {
+       "ability": "Slice and Dice",
+       "ac": "citadel_ability_shiv_dash",
+       "lines": [
+        "T2 reduced from -8% Spirit Resist to -6%"
+       ]
+      },
+      {
+       "ability": "Bloodletting",
+       "ac": "citadel_ability_shiv_defer_damage",
+       "lines": [
+        "Deferred Damage Cleared reduced from 40% to 35%",
+        "T3 increased from +45% Deferred Damage Cleared to +50%"
+       ]
+      },
+      {
+       "ability": "Killing Blow",
+       "ac": "citadel_ability_shiv_killing_blow",
+       "lines": [
+        "cooldown increased from 105s to 125s",
+        "full rage damage bonus reduced from 14% to 12%",
+        "T2 increased from +8% Full Rage Damage Bonus to +10%",
+        "T2 now also reduces cooldown by -30s"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Silver",
+     "hc": "hero_werewolf",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet Cycle Time reduced from 0.9s to 0.85s (overall DPS adjusted to remain the same)"
+       ]
+      },
+      {
+       "ability": "Entangling Bola",
+       "ac": "ability_werewolf_netshot",
+       "lines": [
+        "no longer prevents you from jumping and mantling",
+        "T2 changed from \"+0.75s Duration\" to \"-5s Cooldown\"",
+        "T3 changed from \"-5s Cooldown and [[i:Ricochet]] to 2 additional targets\" to \"+0.75s Duration and [[i:Ricochet]] to 2 additional targets\""
+       ]
+      },
+      {
+       "ability": "Lycan Curse",
+       "ac": "ability_werewolf_transformation",
+       "lines": [
+        "Fire Rate reduced from 80% to 65%",
+        "Fire Rate spirit scaling increased from 0.25 to 0.45"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Venator",
+     "hc": "hero_priest",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Health increased from 790+43/boon to 830+48/boon"
+       ]
+      },
+      {
+       "ability": "Hex-Lined Snap Trap",
+       "ac": "ability_priest_beartrap",
+       "lines": [
+        "T3 increased from +25% Damage Against Revealed Targets to +30%",
+        "T3 now also grants +1 Charge"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Victor",
+     "hc": "hero_frank",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage reduced from 13+0.3135 to 12+0.26"
+       ]
+      },
+      {
+       "ability": "Jumpstart",
+       "ac": "ability_frank_selfzap",
+       "lines": [
+        "T3 spirit scaling increased from +0.6 to +0.9"
+       ]
+      },
+      {
+       "ability": "Aura of Suffering",
+       "ac": "ability_frank_painaura",
+       "lines": [
+        "now does 50% damage to objectives"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Viscous",
+     "hc": "hero_viscous",
+     "groups": [
+      {
+       "ability": "Puddle Punch",
+       "ac": "viscous_telepunch",
+       "lines": [
+        "T1 now also increases damage by +20",
+        "T2 no longer increases damage by +30",
+        "T2 now also grants +40% Lifesteal (1/4th against non-heroes)"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Vyper",
+     "hc": "hero_viper",
+     "groups": [
+      {
+       "ability": "Screwjab Dagger",
+       "ac": "ability_viper_debuffdagger",
+       "lines": [
+        "T2 bullet resist per stack from -5% to -6%",
+        "T3 now also increases max stacks by 2"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Warden",
+     "hc": "hero_warden",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Bullet damage per boon reduced from 0.38 to 0.34"
+       ]
+      },
+      {
+       "ability": "Willpower",
+       "ac": "ability_warden_high_alert",
+       "lines": [
+        "T3 debuff resistance now retroactively applies to existing debuffs when cast"
+       ]
+      },
+      {
+       "ability": "Binding Word",
+       "ac": "ability_warden_lock_down",
+       "lines": [
+        "T2 no longer increases cast range by +12m"
+       ]
+      }
+     ]
+    },
+    {
+     "hero": "Yamato",
+     "hc": "hero_yamato",
+     "groups": [
+      {
+       "label": "Stats",
+       "lines": [
+        "Fixed [[a:Crimson Slash]] not being able to hit anything if the player is aimed too high or low"
+       ]
+      },
+      {
+       "ability": "Power Slash",
+       "ac": "citadel_ability_power_slash",
+       "lines": [
+        "post cast time reduced from 0.4s to 0.2s",
+        "spirit scaling increased from 1.86s to 2.1"
+       ]
+      },
+      {
+       "ability": "Flying Slash",
+       "ac": "citadel_ability_flying_strike",
+       "lines": [
+        "range increased from 25m to 30m",
+        "T2 no longer grants +20m Cast Range",
+        "T3 now also grants +15m Cast Range",
+        "T3 increased from +1 Charge to +2"
+       ]
+      },
+      {
+       "ability": "Shadow Transformation",
+       "ac": "citadel_ability_infinity_slash",
+       "lines": [
+        "T1 increased from +5 Weapon Damage to +7"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

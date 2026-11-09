@@ -1,0 +1,93 @@
+{
+ "source": "github.com/deadlock-wiki/deadlock-data (MIT), misc-data.json",
+ "powerups": {
+  "Casting Powerup": {
+   "duration": 160.0,
+   "from_min": 5,
+   "to_min": 40,
+   "values": [
+    {
+     "stat": "Spirit Power",
+     "min": "15",
+     "max": "65",
+     "unit": ""
+    },
+    {
+     "stat": "Cooldown Reduction",
+     "min": "12",
+     "max": "20",
+     "unit": "%"
+    }
+   ]
+  },
+  "Gun Powerup": {
+   "duration": 160.0,
+   "from_min": 5,
+   "to_min": 40,
+   "values": [
+    {
+     "stat": "Fire Rate",
+     "min": "12",
+     "max": "35",
+     "unit": "%"
+    },
+    {
+     "stat": "Ammo",
+     "min": "35",
+     "max": "70",
+     "unit": "%"
+    }
+   ]
+  },
+  "Movement Powerup": {
+   "duration": 160.0,
+   "from_min": 5,
+   "to_min": 40,
+   "values": [
+    {
+     "stat": "Max Stamina",
+     "min": "2",
+     "max": "4",
+     "unit": ""
+    },
+    {
+     "stat": "Sprint Speed",
+     "min": "1.5",
+     "max": "4",
+     "unit": " m/s"
+    },
+    {
+     "stat": "Zipline Speed",
+     "min": "40",
+     "max": "80",
+     "unit": "%"
+    },
+    {
+     "stat": "Stamina Recovery",
+     "min": "20",
+     "max": "50",
+     "unit": "%"
+    }
+   ]
+  },
+  "Survival Powerup": {
+   "duration": 160.0,
+   "from_min": 5,
+   "to_min": 40,
+   "values": [
+    {
+     "stat": "Max Health",
+     "min": "200",
+     "max": "750",
+     "unit": ""
+    },
+    {
+     "stat": "Health Regen",
+     "min": "4",
+     "max": "40",
+     "unit": "/s"
+    }
+   ]
+  }
+ }
+}
