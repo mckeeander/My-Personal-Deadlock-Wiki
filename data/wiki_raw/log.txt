@@ -1,3 +1,0 @@
-index failed: https://deadlock.wiki/w/api.php -> <HTTPError 403: 'Forbidden'>
-Status Effects failed: https://deadlock.wiki/w/api.php -> <HTTPError 403: 'Forbidden'>
-Mechanics failed: https://deadlock.wiki/w/api.php -> <HTTPError 403: 'Forbidden'>

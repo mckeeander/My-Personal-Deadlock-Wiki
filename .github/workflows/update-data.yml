@@ -48,6 +48,9 @@ jobs:
           if [ -f prev/heroes.json ] && [ -f prev/items.json ]; then python3 tools/revisions.py prev data; fi
 
       - name: Download wiki notes
+        # switched off: since Nov 3 deadlock.wiki refuses automated requests (403), so these only knocked and failed every day.
+        # The app keeps the last good wiki.json; new wiki content comes from pages exported by hand into data/wiki_raw/. Delete this line to switch back on.
+        if: false
         continue-on-error: true
         run: |
           pip install beautifulsoup4 || pip install --break-system-packages beautifulsoup4
@@ -422,6 +425,9 @@ jobs:
           python3 wiki_notes.py
 
       - name: Download wiki pages (raw, for building new sections)
+        # switched off: since Nov 3 deadlock.wiki refuses automated requests (403), so these only knocked and failed every day.
+        # The app keeps the last good wiki.json; new wiki content comes from pages exported by hand into data/wiki_raw/. Delete this line to switch back on.
+        if: false
         continue-on-error: true
         run: |
           cat > wiki_pages.py <<'PYEOF'

@@ -1,0 +1,558 @@
+''See also [[Crowd Control]] for a list of all Crowd Control effects.'' '''Status Effects''' are modifiers or effects applied to units or players after certain conditions have been met. Buffs are positive status effects, while debuffs are negative. They will last for a set duration unless cleared through certain items or abilities. Status effects can be displayed over an entity's health bar, as a transparent overlay on the entity's body, or not displayed at all.
+
+== Buffs ==
+
+{{StatusBox|isBuff=true|status=Barrier|status icon=Barrier}}{{Main|Damage Barrier}}
+
+=== Barrier ===
+A temporary shield that absorbs a set amount of incoming damage before breaking.
+'''Sources:'''
+* {{HeroIcon|The Doorman}}'s {{AbilityIcon|Doorway}} (Tier 2)
+* {{HeroIcon|Ivy}}'s {{AbilityIcon|Air Drop}} (Tier 1)
+* {{HeroIcon|Paige}}'s {{AbilityIcon|Plot Armor}}
+* {{HeroIcon|Rat King}}'s {{AbilityIcon|Royal Pestments}}
+* {{HeroIcon|Vyper}}'s {{AbilityIcon|Slither}} (Tier 3)
+* {{HeroIcon|Warden}}'s {{AbilityIcon|Willpower}}
+* {{HeroIcon|Wraith}}'s {{AbilityIcon|Project Mind}} (Tier 2)
+* {{ItemIcon|Divine Barrier}} (Active)
+* {{ItemIcon|Diviner's Kevlar}}
+* {{ItemIcon|Grit}}
+* {{ItemIcon|Guardian Ward}} (Active)
+* {{ItemIcon|Indomitable}}
+* {{ItemIcon|Majestic Leap}} (Active)
+* {{ItemIcon|Reactive Barrier}}
+* {{ItemIcon|Spirit Shielding}}
+* {{ItemIcon|Weapon Shielding}}
+
+{{StatusBox|isBuff=true|status=Fire Rate Buff|status icon=Fire Rate}}{{Main|Fire Rate}}
+
+=== Fire Rate Buff ===
+A temporary buff that increases the weapon's rate of fire.
+'''Sources:'''
+* [[Powerup|Gun Powerup]]
+* {{HeroIcon|Apollo}}'s {{AbilityIcon|Disengaging Sigil}} (Tier 1)
+* {{HeroIcon|Paige}}'s {{AbilityIcon|Plot Armor}} (Tier 1)
+* {{HeroIcon|Wraith}}'s {{AbilityIcon|Full Auto}}
+* {{HeroIcon|Ivy}}'s {{AbilityIcon|Kudzu Connection}}
+* {{HeroIcon|Mina}}'s {{AbilityIcon|Sanguine Retreat}} (Tier 1)
+* {{HeroIcon|Mirage}}'s {{AbilityIcon|Traveler}} (Tier 1)
+* {{HeroIcon|Sinclair}}'s {{AbilityIcon|Spectral Assistant}} (Tier 3)
+* {{HeroIcon|Silver}}'s {{AbilityIcon|Lycan Curse}}
+* {{HeroIcon|Silver}}'s {{AbilityIcon|Slam Fire}}
+* {{HeroIcon|Victor}}'s {{AbilityIcon|Shocking Reanimation}} (Tier 1)
+* {{ItemIcon|Active Reload}}
+* {{ItemIcon|Blood Tribute}}
+* {{ItemIcon|Burst Fire}}
+* {{ItemIcon|Cultist Sacrifice}}
+* {{ItemIcon|Frenzy}}
+* {{ItemIcon|Fury Trance}}
+* {{ItemIcon|Healing Tempo}}
+* {{ItemIcon|Heroic Aura}}
+* {{ItemIcon|Kinetic Dash}}
+* {{ItemIcon|Mercurial Magnum}}
+* {{ItemIcon|Quicksilver Reload}}
+* {{ItemIcon|Shadow Weave}}
+* {{ItemIcon|Spellslinger}}
+* {{ItemIcon|Spiritual Overflow}}
+* {{ItemIcon|Surge of Power}}
+* {{ItemIcon|Vampiric Burst}}
+
+{{StatusBox|isBuff=true|status=Health Regeneration|status icon=Healing}}{{Main|Health Regen}}
+
+=== Health Regeneration ===
+A temporary buff that restores health over time (HoT). This does not include instant heals or lifesteal.
+'''Sources:'''
+* [[Powerup|Survival Powerup]]
+* {{HeroIcon|Abrams}}' {{AbilityIcon|Infernal Resilience}} (conditional)
+* {{HeroIcon|Dynamo}}'s {{AbilityIcon|Rejuvenating Aurora}}
+* {{HeroIcon|Kelvin}}'s {{AbilityIcon|Frozen Shelter}}
+* {{HeroIcon|McGinnis}}'s {{AbilityIcon|Medicinal Specter}}
+* {{HeroIcon|Victor}}'s {{AbilityIcon|Jumpstart}}
+* {{ItemIcon|Fortitude}} (conditional)
+* {{ItemIcon|Healing Rite}}
+* {{ItemIcon|Healing Nova}}
+* {{ItemIcon|Mystic Regeneration}}
+* {{ItemIcon|Radiant Regeneration}}
+
+{{StatusBox|isBuff=true|status=Invincibility|status icon=Metal Skin Old}}
+
+=== Invincibility ===
+The user cannot be damaged or targeted by hostile effects for a short duration.
+'''Sources:'''
+* {{HeroIcon|Apollo}}'s {{AbilityIcon|Riposte}} and {{AbilityIcon|Itani Lo Sahn}} (During [[Slow Motion]])
+* {{HeroIcon|Calico}}'s {{AbilityIcon|Return to Shadows}}
+* {{HeroIcon|Dynamo}}'s {{AbilityIcon|Quantum Entanglement}}
+* {{HeroIcon|Ivy}}'s {{AbilityIcon|Stone Form}}
+* {{HeroIcon|Pocket}}'s {{AbilityIcon|Enchanter's Satchel}}
+* {{HeroIcon|Mina}}'s {{AbilityIcon|Sanguine Retreat}}
+* {{HeroIcon|Mirage}}'s {{AbilityIcon|Tornado}}
+* {{HeroIcon|Victor}}'s {{AbilityIcon|Shocking Reanimation}}
+* {{HeroIcon|Yamato}}'s {{AbilityIcon|Shadow Transformation}} (While transforming)
+* {{ItemIcon|Ethereal Shift}}
+
+{{StatusBox|isBuff=true|status=Lifesteal|status icon=Healing}}{{Main|Lifesteal}}
+
+=== Lifesteal ===
+A temporary buff that causes the user to heal for a percentage of the damage they deal.
+'''Sources:'''
+* {{HeroIcon|Haze}}'s {{AbilityIcon|Smoke Bomb}} (Tier 3) (Bullet Lifesteal)
+* {{HeroIcon|Ivy}}'s {{AbilityIcon|Kudzu Connection}} (Bullet Lifesteal)
+* {{ItemIcon|Active Reload}} (Bullet Lifesteal)
+* {{ItemIcon|Fury Trance}} (Bullet Lifesteal)
+* {{ItemIcon|Infuser}} (Spirit Lifesteal)
+* {{ItemIcon|Vampiric Burst}} (Bullet Lifesteal)
+* {{ItemIcon|Leech}} (Bullet and Spirit Lifesteal)
+
+{{StatusBox|isBuff=true|status=Movement Speed Buff|status icon=Move speed sprint}}{{Main|Move Speed}}
+
+=== Movement Speed Buff ===
+A temporary increase to movement speed.
+'''Sources:'''
+* [[Powerup|Movement Powerup]]
+* {{HeroIcon|Calico}}'s {{AbilityIcon|Ava}}
+* {{HeroIcon|Drifter}}'s {{AbilityIcon|Bloodscent}} (Tier 1 Upgrade and have an isolated enemy hero around)
+* {{HeroIcon|Dynamo}}'s {{AbilityIcon|Rejuvenating Aurora}}
+* {{HeroIcon|Haze}}'s {{AbilityIcon|Smoke Bomb}}
+* {{HeroIcon|Kelvin}}'s {{AbilityIcon|Ice Path}}
+* {{HeroIcon|Rat King}}'s {{AbilityIcon|Rule, Ratannia!}}
+* {{HeroIcon|Silver}}'s {{AbilityIcon|Lycan Curse}}
+* {{HeroIcon|Victor}}'s {{AbilityIcon|Jumpstart}}
+* {{HeroIcon|Warden}}'s {{AbilityIcon|Willpower}}
+* {{HeroIcon|Yamato}}'s {{AbilityIcon|Shadow Transformation}} (Tier 2 Upgrade)
+* {{ItemIcon|Active Reload}}
+* {{ItemIcon|Backstabber}} (conditional)
+* {{ItemIcon|Blood Tribute}}
+* {{ItemIcon|Burst Fire}} (conditional)
+* {{ItemIcon|Counterspell}}
+* {{ItemIcon|Dispel Magic}} (Active)
+* {{ItemIcon|Divine Barrier}} (Active)
+* {{ItemIcon|Ethereal Shift}}
+* {{ItemIcon|Fleetfoot}}
+* {{ItemIcon|Fortitude}}
+* {{ItemIcon|Frenzy}}
+* {{ItemIcon|Guardian Ward}}
+* {{ItemIcon|Healing Rite}}
+* {{ItemIcon|Healing Tempo}}
+* {{ItemIcon|Headhunter}}
+* {{ItemIcon|Heroic Aura}} (Active)
+* {{ItemIcon|Magic Carpet}}
+* {{ItemIcon|Radiant Regeneration}}
+* {{ItemIcon|Surge of Power}} (Conditional)
+* {{ItemIcon|Spirit Shielding}}
+* {{ItemIcon|Veil Walker}}
+* {{ItemIcon|Weapon Shielding}}
+
+{{StatusBox|isBuff=true|status=Resistance Buff|status icon=Bullet Armor}} {{Main|Damage Resistance}}
+
+=== Resistance Buff ===
+A temporary buff that reduces incoming damage from a specific source.
+'''Sources:'''
+* {{HeroIcon|Billy}}'s {{AbilityIcon|Chain Gang}} (during cast time)
+* {{HeroIcon|McGinnis}}’s {{AbilityIcon|Medicinal Specter}} (Tier 3 Upgrade - Spirit)
+* {{HeroIcon|Rat King}}'s {{HeroIcon|Rule, Ratannia!}} (Reduces incoming damage via [[Damage Reduction]])
+* {{HeroIcon|Yamato}}'s {{AbilityIcon|Power Slash}} (Tier 1 Upgrade - Bullet)
+* {{HeroIcon|Yamato}}'s {{AbilityIcon|Shadow Transformation}} (Bullet and Spirit)
+* {{ItemIcon|Blood Tribute}} (Debuff Resistance)
+* {{ItemIcon|Colossus}} (Bullet and Spirit)
+* {{ItemIcon|Escalating Resilience}} (stacking Bullet Resist on hit)
+* {{ItemIcon|Frenzy}} (Debuff, when below 50% health)
+* {{ItemIcon|Fury Trance}} (Spirit)
+* {{ItemIcon|Metal Skin}} (Bullet Immunity)
+* {{ItemIcon|Spirit Snatch}} (steals Spirit Resist on melee hit)
+* {{ItemIcon|Warp Stone}} (Bullet)
+
+{{StatusBox|isBuff=true|status=Spirit Power Buff|status icon=Spirit icon}}{{Main|Spirit Power}}
+
+=== Spirit Power Buff ===
+A temporary increase to Spirit Power.
+'''Sources:'''
+* [[Powerup|Casting Powerup]]
+* {{ItemIcon|Arcane Surge}}
+* {{ItemIcon|Counterspell}}
+* {{ItemIcon|Diviner's Kevlar}}
+* {{ItemIcon|Enchanter's Emblem}}
+* {{ItemIcon|Ethereal Shift}}
+* {{ItemIcon|Infuser}}
+* {{ItemIcon|Shadow Weave}}
+* {{ItemIcon|Spirit Snatch}}
+* {{ItemIcon|Spiritual Overflow}}
+
+{{StatusBox|isBuff=true|status=Stealth|status icon=Invisible}}
+
+=== Stealth ===
+[[File:haze_stealth_closetoenemy.png|thumb|250px|{{HeroIcon|Haze}} in stealth partially revealed due to being close to enemy Wraith]] A temporary buff that renders the user invisible. All steath sources share some common properties:
+* Being close to any enemy reveals a silhouette of the player.
+* Attacking or casting an ability breaks the stealth.
+* Receiving damage temporarily reveals the player with stealth. The specific numbers (e.g. distance to being revealed) are unique for each Stealth source and can be found on appropriate pages.
+'''Sources:'''
+* {{HeroIcon|Haze}}'s {{AbilityIcon|Smoke Bomb}}
+* {{ItemIcon|Shadow Weave}}
+* {{ItemIcon|Veil Walker}}
+* {{ItemIcon|Shadow Strike}}
+
+==== Abilities that don't break stealth ====
+{{AbilityTable|dontbreakstealth}}
+
+==== Items that don't break Stealth ====
+{| class="wikitable" ! Item ! Notes
+|-
+| {{ItemIcon|fleetfoot}} |
+|-
+| {{ItemIcon|Blood Tribute}} | Only when untoggling its active.
+|-
+| {{ItemIcon|Heroic Aura}} |
+|-
+| {{ItemIcon|Restorative Locket}} |
+|}
+{{StatusBox|isBuff=true|status=Hidden on Minimap|status icon=Invisible}}
+
+=== Hidden on minimap ===
+A temporary buff that renders the user unable to be seen on the minimap.
+* {{HeroIcon|Calico}}'s {{AbilityIcon|Ava}}
+
+{{StatusBox|isBuff=true|status=Unstoppable|status icon=Unstoppable Symbol}}
+
+=== Unstoppable ===
+A powerful buff that grants immunity to crowd control effects like Stun, Silence, Sleep, and Immobilize. The user can still take damage while Unstoppable.
+'''Sources:'''
+* {{HeroIcon|Abrams}}' {{AbilityIcon|Seismic Impact}} (Tier 3)
+* {{HeroIcon|Billy}}'s {{AbilityIcon|Chain Gang}} (Tier 3)
+* {{HeroIcon|The Doorman}}'s {{AbilityIcon|Hotel Guest}} (Tier 3)
+* {{HeroIcon|Warden}}'s {{AbilityIcon|Last Stand}} (Tier 3) (While channeling)
+* {{HeroIcon|Rem}}'s {{AbilityIcon|Naptime}} (Tier 3) (While channeling)
+* {{HeroIcon|Yamato}}'s {{AbilityIcon|Shadow Transformation}}
+* {{ItemIcon|Unstoppable}} (Active)
+
+{{StatusBox|isBuff=true|status=Weapon Damage Buff|status icon=Bullet Damage}}{{Main|Damage Amplification}}
+
+=== Weapon Damage Buff ===
+A temporary increase to weapon damage output.
+'''Sources:'''
+* {{HeroIcon|Paige}}'s {{AbilityIcon|Plot Armor}}
+* {{HeroIcon|Abrams}}'s {{AbilityIcon|Shoulder Charge}} (Tier 1)
+* {{HeroIcon|Bebop}}'s {{AbilityIcon|Exploding Uppercut}} (Tier 2)
+* {{HeroIcon|Billy}}'s {{AbilityIcon|Rising Ram}} (Tier 2)
+* {{HeroIcon|Lash}}'s {{AbilityIcon|Grapple}} (Tier 2)
+* {{ItemIcon|Berserker}}
+* {{ItemIcon|Split Shot}}
+
+== Debuffs ==
+
+{{StatusBox|isBuff=false|status=Bleed}}
+
+=== Bleed ===
+A negative status effect that deals damage equal to a percentage of a unit's health over time.
+'''Sources:'''
+* {{HeroIcon|Drifter}}'s {{AbilityIcon|Stalker's Mark}}
+* {{HeroIcon|Vindicta}}'s {{AbilityIcon|Crow Familiar}}
+* {{HeroIcon|Shiv}}'s {{AbilityIcon|Serrated Knives}}
+* {{ItemIcon|Decay}}
+* {{ItemIcon|Toxic Bullets}} Note: {{AbilityIcon|Serrated Knives}} applies a unique variant of bleed that deals flat damage rather than percent health damage.
+
+{{StatusBox|isBuff=false|status=Burn}}
+
+=== Burn ===
+A negative status effect that deals [[Spirit Damage]] over time.
+'''Sources:'''
+* {{HeroIcon|Holliday}}'s {{AbilityIcon|powder keg}}
+* {{HeroIcon|Infernus}}' {{AbilityIcon|Afterburn}}
+* {{HeroIcon|Venator}}'s {{AbilityIcon|Consecrating Grenade}} (deals [[Weapon Damage]] and [[Pure Damage]] instead of Spirit)
+* {{ItemIcon|Spirit Burn}}
+
+{{StatusBox|isBuff=false|status=Curse|status icon=Curse icon}}
+
+=== Curse ===
+A negative status effect that interrupts, [[Status Effects#Disarm|disarms]], and [[Status Effects#Silence|silences]] abilities and active items.
+'''Sources:'''
+* {{HeroIcon|Grey Talon}}'s {{AbilityIcon|Spirit Snare}}
+* {{ItemIcon|Cursed Relic}} (also removes non-ultimate buffs)
+* {{ItemIcon|Mystical Piano}} (also applies movement slow)
+* [[Patron]] and [[Shrine]]s defensive attack
+'''Adjacent Effects:'''
+* {{HeroIcon|Apollo}}'s {{AbilityIcon|Itani Lo Sahn}} applies an effect similar to Curse, but it also applies [[Slow Motion]] and does not interrupt abilities.
+
+{{StatusBox|status icon=Damage heart|status=Damage Output Reduction|isBuff=false}}{{Main|Damage Amplification#Damage Reduction}}
+
+=== Damage Output Reduction ===
+A negative status effect that reduces the damage output of the afflicted target. Some sources can reduce all damage types outputted, and others may only reduce a specific type.
+'''Sources:'''
+* {{HeroIcon|Infernus}}' {{AbilityIcon|Afterburn}} (Tier 2) - Decreases spirit damage output (Built-Up from Bullets)
+* {{HeroIcon|Mirage}}'s {{AbilityIcon|Fire Scarabs}} (Base and Tier 3) - Decreases all damage outputs
+* {{HeroIcon|Silver}}'s {{AbilityIcon|Boot Kick}} (Tier 3) - Decreases all damage outputs
+* {{HeroIcon|Warden}}'s {{AbilityIcon|Alchemical Flask}} (Base and Tier 2) - Decreases weapon damage output
+* {{HeroIcon|Graves}}' {{AbilityIcon|Essence Theft}} (Base and Tier 2) - Decreases weapon damage output (Built-Up from Bullets)
+* {{ItemIcon|Inhibitor}} - Decreases all damage outputs (Built-Up from Bullets)
+* {{ItemIcon|Silencer}} - Decreases spirit damage outputs (Built-Up from Bullets)
+
+{{StatusBox|isBuff=false|status=Disarm}}
+
+=== Disarm ===
+A negative status effect that prevents the afflicted target from firing their weapon. They are still capable of casting abilities and using melee attacks. Disarm affects abilities that modify the player's primary fire, such as {{HeroIcon|Venator}}'s {{AbilityIcon|Ira Domini}} and {{HeroIcon|Paradox}}'s {{AbilityIcon|Kinetic Carbine}}. However, it does not affect abilities that deal [[Weapon Damage]] without primary fire, such as {{HeroIcon|Haze}}'s {{AbilityIcon|Bullet Dance}} or {{HeroIcon|Venator}}'s {{AbilityIcon|Consecrating Grenade}} and {{AbilityIcon|Gutshot}}. It also doesn't affect {{HeroIcon|Vindicta}}'s {{AbilityIcon|Assassinate}}.
+'''Sources:'''
+* {{HeroIcon|Apollo}}'s {{AbilityIcon|Itani Lo Sahn}}
+* {{HeroIcon|Grey Talon}}'s {{AbilityIcon|Spirit Snare}}
+* {{HeroIcon|Mo & Krill}}'s {{AbilityIcon|Sand Blast}}
+* {{HeroIcon|Silver (Transformed)}}'s {{AbilityIcon|Tail Whack}}
+* {{ItemIcon|Cursed Relic}}
+* {{ItemIcon|Disarming Hex}}
+* {{ItemIcon|Mystical Piano}}
+* {{ItemIcon|Phantom Strike}}
+* [[Patron]] and [[Shrine]]s defensive attack
+
+{{StatusBox|isBuff=false|status=Displace|status icon=Status Displacement}}
+
+=== Displace ===
+A negative status effect that changes the direction and acceleration of the target's movement. '''Pull''', '''knockup''' and '''knockback''' are types of displace.
+'''Sources:'''
+* {{HeroIcon|Abrams}}' {{AbilityIcon|Shoulder Charge}}
+* {{HeroIcon|Abrams}}' {{AbilityIcon|Seismic Impact}}
+* {{HeroIcon|Baba}}'s {{AbilityIcon|Threadsap}} (Tier 3)
+* {{HeroIcon|Baba}}'s {{AbilityIcon|Granny Long Legs}}
+* {{HeroIcon|Bebop}}'s {{AbilityIcon|Exploding Uppercut}}
+* {{HeroIcon|Bebop}}'s {{AbilityIcon|Grapple Arm}}
+* {{HeroIcon|Billy}}'s {{AbilityIcon|Bashdown}}
+* {{HeroIcon|Billy}}'s {{AbilityIcon|Rising Ram}}
+* {{HeroIcon|Billy}}'s {{AbilityIcon|Chain Gang}}
+* {{HeroIcon|The Doorman}}'s {{AbilityIcon|Luggage Cart}}
+* {{HeroIcon|Dynamo}}'s {{AbilityIcon|Kinetic Pulse}}
+* {{HeroIcon|Dynamo}}'s {{AbilityIcon|Singularity}}
+* {{HeroIcon|Holliday}}'s {{AbilityIcon|Powder Keg}}
+* {{HeroIcon|Holliday}}'s {{AbilityIcon|Spirit Lasso}}
+* {{HeroIcon|Ivy}}'s {{AbilityIcon|Air Drop}}
+* {{HeroIcon|Lash}}'s {{AbilityIcon|Ground Strike}} (Tier 2)
+* {{HeroIcon|McGinnis}}'s {{AbilityIcon|Spectral Wall}}
+* {{HeroIcon|Mirage}}'s {{AbilityIcon|Tornado}}
+* {{HeroIcon|Mo & Krill}}'s {{AbilityIcon|Burrow}}
+* {{HeroIcon|Mo & Krill}}'s {{AbilityIcon|Combo}}
+* {{HeroIcon|Paige}}'s {{AbilityIcon|Rallying Charge}}
+* {{HeroIcon|Paradox}}'s {{AbilityIcon|Paradoxical Swap}}
+* {{HeroIcon|Rat King}}'s {{AbilityIcon|Rule, Ratannia!}}
+* {{HeroIcon|Rem}}'s {{AbilityIcon|Pillow Toss}}
+* {{HeroIcon|Silver}}'s {{AbilityIcon|Boot Kick}}
+* {{HeroIcon|Venator}}'s {{AbilityIcon|Gutshot}} and {{AbilityIcon|Ira Domini}}
+* {{HeroIcon|Viscous}}' {{AbilityIcon|Puddle Punch}}
+* {{HeroIcon|Viscous}}' {{AbilityIcon|Goo Ball}}
+* {{HeroIcon|Wraith}}'s {{AbilityIcon|Telekinesis}}
+* {{ItemIcon|Knockdown}} (If the target is not on the ground)
+* {{ItemIcon|Phantom Strike}} (If the target is not on the ground)
+* {{ItemIcon|Rescue Beam}}
+* {{ItemIcon|Vortex Web}}
+
+{{StatusBox|isBuff=false|status=Healing Reduction|status icon=Damage heart}}{{Main|Healing#Healing_Reduction|l1=Healing Reduction}}
+
+=== Healing Reduction ===
+A negative status effect that reduces the target's healing from all sources.
+'''Sources:'''
+* {{HeroIcon|Drifter}}'s {{AbilityIcon|Stalker's Mark}} (Tier 3)
+* {{HeroIcon|Pocket}}'s {{AbilityIcon|Affliction}} (Tier 3)
+* {{HeroIcon|Infernus}}' {{AbilityIcon|Napalm}} (Tier 3)
+* {{HeroIcon|Venator}}'s {{AbilityIcon|Consecrating Grenade}}
+* {{HeroIcon|Vindicta}}'s {{AbilityIcon|Crow Familiar}} (Tier 1)
+* {{HeroIcon|Vyper}}'s {{AbilityIcon|Lethal Venom}} (Tier 2)
+* {{ItemIcon|Cheat Death}} (Self)
+* {{ItemIcon|Crippling Headshot}}
+* {{ItemIcon|Decay}}
+* {{ItemIcon|Healbane}}
+* {{ItemIcon|Inhibitor}}
+* {{ItemIcon|Spirit Burn}}
+* {{ItemIcon|Toxic Bullets}}
+
+{{StatusBox|isBuff=false|status=Immobilized|status icon=Immobilize}}
+
+=== Immobilized ===
+A negative status effect that prevents the target from moving. While rooted in place, the target is free to use abilities and fire their weapon. It does not interrupt channeled abilities.
+'''Sources:'''
+* {{HeroIcon|Apollo}}'s {{AbilityIcon|Riposte}}
+* {{HeroIcon|Billy}}'s {{AbilityIcon|Bashdown}} (when pulling an enemy downwards)
+* {{HeroIcon|Graves}}' {{AbilityIcon|Grasping Hands}}
+* {{HeroIcon|Lash}}'s {{AbilityIcon|Ground Strike}} (when dragging an enemy to the ground)
+* {{HeroIcon|Paige}}'s {{AbilityIcon|Captivating Read}}
+* {{HeroIcon|Silver}}'s {{AbilityIcon|Boot Kick}} (when kick connects to the target)
+* {{HeroIcon|Venator}}'s {{AbilityIcon|Hex-Lined Snap Trap}}
+* {{HeroIcon|Warden}}'s {{AbilityIcon|Binding Word}}
+* {{ItemIcon|Arctic Blast}}
+
+{{StatusBox|isBuff=false|status=Movement Silence|status icon=MoveSlow}}
+
+=== Movement Silence ===
+A negative status effect that applies [[Movement Slow]] and prevents the target from casting movement-related abilities and active items, and in some cases further restricts movement. See {{ItemIcon|Slowing Hex}} for a list of abilities and items affected.
+'''Sources:'''
+* {{HeroIcon|Silver}}'s {{AbilityIcon|Entangling Bola}} (also prevents stamina use)
+* {{HeroIcon|Wraith}}'s {{AbilityIcon|Telekinesis}} (also prevents stamina use)
+* {{ItemIcon|Capacitor}} (also prevents stamina use)
+* {{ItemIcon|Slowing Hex}}
+* {{ItemIcon|Vortex Web}}
+
+{{StatusBox|isBuff=false|status=Movement Slow}} {{Main|Movement Slow}}
+
+=== Movement Slow ===
+A negative status effect that reduces the movement speed of the target, including sprint speed. Its effectiveness can be reduced through the use of items such as {{ItemIcon|Enduring Speed}}. ''For a comprehensive list of sources, see [[Movement Slow]].''
+
+{{StatusBox|isBuff=false|status=Silence}}
+
+=== Silence ===
+A negative status effect that prevents the target from casting abilities, but they can still use active items (with the exception of sources of [[Status Effects#Curse|curse]]). It neither disables passive abilities, nor interrupts channeled casts
+'''Sources:'''
+* {{HeroIcon|Apollo}}'s {{AbilityIcon|Itani Lo Sahn}}
+* {{HeroIcon|Baba}}'s {{AbilityIcon|Baba's Brew}} (Silencing)
+* {{HeroIcon|Celeste}}'s {{AbilityIcon|Dazzling Trick}}
+* {{HeroIcon|Drifter}}'s {{AbilityIcon|Rend}} (Tier 3)
+* {{HeroIcon|Grey Talon}}'s {{AbilityIcon|Spirit Snare}}
+* {{HeroIcon|Ivy}}'s {{AbilityIcon|Air Drop}} (Tier 3)
+* {{HeroIcon|Lady Geist}}'s {{AbilityIcon|Soul Exchange}} (Tier 2)
+* {{HeroIcon|Paradox}}'s {{AbilityIcon|Time Wall}} (Tier 2)
+* {{HeroIcon|Warden}}'s {{AbilityIcon|Binding Word}} (Tier 3)
+* {{HeroIcon|Mina}}'s {{AbilityIcon|Nox Nostra}}
+* {{ItemIcon|Cursed Relic}} (also silences active items)
+* {{ItemIcon|Focus Lens}}
+* {{ItemIcon|Fury Trance}} (Self, also silences stamina)
+* {{ItemIcon|Mystical Piano}}
+* {{ItemIcon|Silence Wave}}
+* {{ItemIcon|Silencer}}
+
+{{StatusBox|isBuff=false|status=Sleep}}
+
+=== Sleep ===
+A negative status effect that prevents the target from taking actions, but they may wake up upon taking damage. While sleeping, targets can move but extremely slowly. It does not interrupt channeled abilities.
+'''Sources:'''
+* {{HeroIcon|Haze}}'s {{AbilityIcon|Sleep Dagger}}
+* {{HeroIcon|Rem}}'s {{AbilityIcon|Naptime}}
+
+{{StatusBox|isBuff=false|status=Stun}}
+
+=== Stun ===
+A negative status effect that completely immobilizes the target and prevents them from taking any actions until the effect expires. Stuns interrupt channeled abilities.
+'''Sources:'''
+* [[Parry]]
+* Getting knocked off a [[Ziplines|zipline]]
+* Getting knocked off a [[Ropes|rope]]
+* [[Walker]]'s Stomp
+* {{HeroIcon|Abrams}}' {{AbilityIcon|Shoulder Charge}}
+* {{HeroIcon|Abrams}}' {{AbilityIcon|Seismic Impact}}
+* {{HeroIcon|The Doorman}}'s {{AbilityIcon|Luggage Cart}} (Tier 3)
+* {{HeroIcon|Dynamo}}'s {{AbilityIcon|Singularity}}
+* {{HeroIcon|Grey Talon}}'s {{AbilityIcon|Guided Owl}}
+* {{HeroIcon|Holliday}}'s {{AbilityIcon|Spirit Lasso}}
+* {{HeroIcon|Infernus}}' {{AbilityIcon|Concussive Combustion}}
+* {{HeroIcon|Ivy}}'s {{AbilityIcon|Stone Form}}
+* {{HeroIcon|Lash}}'s {{AbilityIcon|Death Slam}} (Tier 3 unlocks additional stun on hit)
+* {{HeroIcon|Mo & Krill}}'s {{AbilityIcon|Combo}}
+* {{HeroIcon|Paige}}'s {{AbilityIcon|Rallying Charge}}
+* {{HeroIcon|Seven}}'s {{AbilityIcon|Static Charge}}
+* {{HeroIcon|Venator}}'s {{AbilityIcon|Gutshot}} (If target hits a wall)
+* {{HeroIcon|Victor}}'s {{AbilityIcon|Shocking Reanimation}}
+* {{HeroIcon|Viscous}}' {{AbilityIcon|Goo Ball}}
+* {{HeroIcon|Wraith}}'s {{AbilityIcon|Telekinesis}}
+* {{ItemIcon|Crushing Fists}}
+* {{ItemIcon|Knockdown}}
+* {{ItemIcon|Lightning Scroll}}
+* {{ItemIcon|Mystical Piano}}
+
+{{StatusBox|isBuff=false|status=Time Stop|status icon=Kinetic Carbine}}
+
+=== Time Stop ===
+A negative status effect that slows the speed of the player's actions, including the effects of inertia and gravity. Also known as '''Time Slow''' or '''Slow Motion'''.
+'''Sources:'''
+* {{HeroIcon|Apollo}}'s {{AbilityIcon|Itani Lo Sahn}}
+* {{HeroIcon|Paradox}}'s {{AbilityIcon|Kinetic Carbine}} (also applies to self when aiming in the air)
+* {{HeroIcon|The Doorman}}'s {{AbilityIcon|Hotel Guest}} (on return) Note: {{HeroIcon|Paradox}}'s {{AbilityIcon|Pulse Grenade}} is listed as applying a "time slow" in the description, but it actually applies a Movement Slow.
+
+== Hero Specific Effects ==
+The following Status Effects are either exclusively relevant to or only applied by a specific Hero.
+
+{{StatusBox|isBuff=false|status=Affliction|status icon=Affliction}}
+
+=== Affliction ===
+A negative status effect applied by {{HeroIcon|Pocket}}'s {{AbilityIcon|Affliction}} ability. It deals constant damage over time for a long duration, however it is non-lethal and cannot reduce a target's health below 1. It also does not apply item procs.
+
+{{StatusBox|isBuff=false|status=Eternal Night|status icon=Eternal Night}}
+
+=== Eternal Night ===
+A negative status effect applied by {{HeroIcon|Drifter}}'s ability of the same name. Inflicted heroes have their vision severely limited.
+
+{{StatusBox|isBuff=false|status=Fixation|status icon=Fixation}}
+
+=== Fixation ===
+A negative status effect that increases the target's damage received from {{HeroIcon|Haze}}. It is unique to her, applied through her ability of the same name.
+
+{{StatusBox|isBuff=false|status=Hotel Guest|status icon=Hotel Guest}}
+
+=== Hotel Guest ===
+A negative status effect applied by {{HeroIcon|The Doorman}}'s ability of the same name. The target is sent to the [[Baroness Hotel]] and has to make their way to the elevator to escape.
+
+{{StatusBox|isBuff=false|status icon=Lethal Venom|status=Lethal Venom}}
+
+=== Lethal Venom ===
+A negative status effect applied exclusively by {{HeroIcon|Vyper}}'s ability of the same name. After a short delay, it deals Spirit Damage to the target. The max damage depends on the target's missing health.
+
+{{StatusBox|isBuff=false|status icon=Riposte|status=Marked for Lifesteal}}
+
+=== Marked for Lifesteal ===
+A negative status effect applied by {{HeroIcon|Apollo}}'s {{AbilityIcon|Riposte}} ability. {{HeroIcon|Apollo}} gains 75% Lifesteal against the riposted target.
+
+{{StatusBox|isBuff=false|status=Malice|status icon=Malice}}
+
+=== Malice ===
+A negative status effect applied exclusively by {{HeroIcon|Lady Geist}}'s ability of the same name. It inflicts a decaying Movement Slow on the target and increases the amount of damage Lady Geist deals to them. It can be stacked up to 5 times and refreshed.
+
+{{StatusBox|isBuff=false|status icon=Riposte|status=Parry Prevention}}
+
+=== Parry Prevention ===
+A negative status effect applied exclusively by {{HeroIcon|Apollo}}'s {{AbilityIcon|Riposte}} ability. The negative status prevents the riposted target from parrying.
+
+{{StatusBox|isBuff=false|status icon=Petrifying Bola|status=Petrified}}
+
+=== Petrified ===
+A negative status effect applied by {{HeroIcon|Vyper}}'s {{AbilityIcon|Petrifying Bola}}. Inflicted heroes are interrupted, unable to move and perform actions, but block all incoming damage, with the exception of {{HeroIcon|Vyper}}'s {{AbilityIcon|Lethal Venom}} (both the buildup and damage).
+
+{{StatusBox|isBuff=false|status=Rabbit Hex|status icon=Rabbit Hex}}
+
+=== Rabbit Hex ===
+A negative status effect applied by {{HeroIcon|Sinclair}}'s ability of the same name. Inflicted heroes change shape into a rabbit, with its corresponding hitbox, and move faster but have amplified received damage. The hero cannot perform any actions and abilities in rabbit form besides walking and jumping, but any actions and abilities initiated before the transformation are not interrupted.
+
+{{StatusBox|isBuff=false|status=Tether}}
+
+=== Tether ===
+A negative status effect applied by {{HeroIcon|Vindicta}}'s {{AbilityIcon|Stake}} ability. It binds all nearby targets to a central point, forcing them to stay within a short radius of the center.
+
+{{StatusBox|status icon=Blasted|status=Wrecked}}
+
+=== Wrecked ===
+A negative status effect applied by the passive of {{HeroIcon|Billy}}'s {{AbilityIcon|Blasted}} ability. Melee hits will inflict wrecked on enemies. When {{AbilityIcon|Blasted}} is activated, {{HeroIcon|Billy}} will gain additional bullet damage against Wrecked enemies.
+
+== Countering Debuffs ==
+Certain abilities and items can be used to mitigate or remove negative status effects.
+
+=== Temporary Buffs ===
+These effects grant a short-term immunity to certain debuffs. For a full list of sources, see the main entry for each buff.
+* '''[[#Invincibility|Invincibility]]''': Grants temporary immunity to all damage and hostile effects.
+* '''[[#Unstoppable|Unstoppable]]''': Grants temporary immunity to crowd control effects.
+* '''{{ItemIcon|Indomitable}}''': Grants immunity to a single crowd control effect.
+
+=== Purge ===
+These effects instantly remove currently active debuffs.
+{| class="wikitable" ! Name !! Removes debuffs from Ultimates?
+|-
+| {{HeroIcon|Dynamo}}'s {{AbilityIcon|Quantum Entanglement}} (Tier 3) || No
+|-
+| {{HeroIcon|Haze}}'s {{AbilityIcon|Smoke Bomb}} (Tier 3) || No
+|-
+| {{HeroIcon|Kelvin}}'s {{AbilityIcon|Frozen Shelter}} (Tier 3) || No
+|-
+| {{HeroIcon|Victor}}'s {{AbilityIcon|Shocking Reanimation}} || Yes
+|-
+| {{HeroIcon|Viscous}}' {{AbilityIcon|The Cube}} (Tier 3) || No
+|-
+| {{HeroIcon|Yamato}}'s {{AbilityIcon|Shadow Transformation}} || Yes
+|-
+| {{ItemIcon|Dispel Magic}} || No
+|-
+| {{ItemIcon|Divine Barrier}} || Yes
+|}
+=== Debuff Resistance (Stat) ===
+The following effects grant a '''[[Debuff Resist|Debuff Resistance]]''' stat, which reduces the duration of debuffs. Except for {{AbilityIcon|Willpower}}, this is a character stat, not a temporary buff.
+* {{HeroIcon|Abrams}}'s {{AbilityIcon|Infernal Resilience}} (Tier 3)
+* {{HeroIcon|Warden}}'s {{AbilityIcon|Willpower}} (Tier 3) {{Item stat table|Debuff Resist}}
+
+== Navigation ==
+{{Navbox gameplay}}
