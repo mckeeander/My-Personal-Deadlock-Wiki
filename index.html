@@ -189,7 +189,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .hc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;opacity:0;transition:opacity .28s ease-out var(--d,0ms)} /* fade only: a scaling image inside the rounded, clipped card made Safari clip the card border and the grid look like it jumped */
 .hc img.ld{opacity:1}
 body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
-.hc.hrv{opacity:0;transition:opacity .85s ease-out}.hc.hrv.in{opacity:1}.hc.hrv img{transition:none} /* first screen: the whole tile fades in, not just the portrait */
+.hc.hrv{opacity:0;transition:opacity .85s ease-out;will-change:opacity}.hc.hrv.in{opacity:1}.hc.hrv img{transition:none} /* first screen: the whole tile fades in, not just the portrait */
 @media (prefers-reduced-motion:reduce){.hc.hrv,.credits{transition:none}}
 @media (prefers-reduced-motion:reduce){.hc img{transition:none}}
 .hc span{position:absolute;left:0;right:0;bottom:0;border-radius:0 0 6px 6px;padding:14px 2px 4px;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(10,8,14,.9));overflow-wrap:anywhere}
@@ -692,13 +692,18 @@ function idbSet(k, v) {
     return new Promise(function (res) { var t = db.transaction("kv", "readwrite"); t.objectStore("kv").put(v, k); t.oncomplete = function () { res(true); }; t.onerror = function () { res(false); }; });
   }).catch(function () { return false; });
 }
-function save() { return idbSet(KEY, { t: state.fetchedAt, h: state.heroes, i: state.items }); }
+function dataSig(h, i) { // a cheap fingerprint of the game data, so a refresh that brought nothing new does not rebuild the page
+  var str = JSON.stringify(h) + "|" + JSON.stringify(i), x = 5381;
+  for (var k = 0; k < str.length; k++) x = ((x << 5) + x + str.charCodeAt(k)) | 0;
+  return str.length + ":" + x;
+}
+function save() { return idbSet(KEY, { t: state.fetchedAt, h: state.heroes, i: state.items, s: state.sig || null }); }
 function load() {
   return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
     if (Array.isArray(r[2])) { state.revs = r[2]; setTimeout(newsDot, 0); }
-    if (d && d.h && d.i && d.h.length) { state.heroes = d.h; state.items = d.i; state.fetchedAt = d.t || 0; index(); return true; }
+    if (d && d.h && d.i && d.h.length) { state.heroes = d.h; state.items = d.i; state.fetchedAt = d.t || 0; state.sig = d.s || null; index(); return true; }
     return false;
   });
 }
@@ -945,6 +950,7 @@ function fetchAll() {
     state.heroes = (Array.isArray(r[0]) ? r[0] : []).filter(function (h) { return !h.disabled && h.player_selectable !== false && (!h.in_development || h.development_state === "release"); }); // released heroes (Violet, Baba) still carry the in_development flag
     state.items = Array.isArray(r[1]) ? r[1] : [];
     state.heroes.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+    var sig = dataSig(state.heroes, state.items); state.same = !!state.sig && sig === state.sig; state.sig = sig; // same: this refresh found exactly what is already on screen
     state.fetchedAt = Date.now(); state.note = ""; index(); save();
     // community notes are optional: a failure here never blocks the main data
     getJson("revisions.json").then(function (rv) { // optional, like the notes: the hero page simply has no Revisions section without it
@@ -958,9 +964,19 @@ function fetchAll() {
 }
 
 /* ---------- rendering ---------- */
-function statusLine() {
+function statusText() {
   var d = state.fetchedAt ? new Date(state.fetchedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "never";
-  return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">Updated ' + esc(d) + " · " + state.heroes.length + ' heroes · <button class="link" id="rfr">Refresh now</button></p>';
+  return "Updated " + esc(d) + " · " + state.heroes.length + ' heroes · <button class="link" id="rfr">Refresh now</button>';
+}
+function statusLine() {
+  return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">' + statusText() + "</p>";
+}
+function afterFetch() { // a refresh that brought nothing new leaves the page exactly as it is (no rebuild, no flicker, no lost place); only the status line is brought up to date
+  if (!state.same) return render();
+  var rb = $("rfr"); if (!rb || !rb.parentNode) return;
+  var p = rb.parentNode, prev = p.previousElementSibling;
+  if (prev && prev.classList.contains("status")) prev.remove(); // a stale "couldn't refresh" note
+  p.innerHTML = statusText(); bindCommon();
 }
 var FIRSTLIST = true, HLIST_T0 = 0;
 function heroIn(b) { // a tile takes its turn (its slot counted from when the list appeared) once its portrait is in; one that arrives after its turn appears at once
@@ -3447,7 +3463,7 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) closeSheet(); }
   move(false);
 })();
 function refreshNow() {
-  fetchAll().then(render).catch(function (e) {
+  fetchAll().then(afterFetch).catch(function (e) {
     if (state.heroes.length) { state.note = "Couldn’t refresh (offline?). Showing saved data."; render(); } else showError(e);
   });
 };
@@ -3457,7 +3473,7 @@ setTimeout(function () { document.body.classList.remove("boot"); }, 6000); // fa
 load().then(function (had) {
 if (had) render(); else $("main").innerHTML = '<p class="status">Loading game data…</p>';
 if (!had || Date.now() - state.fetchedAt > MAX_AGE) {
-  fetchAll().then(render).catch(function (e) { if (!had) showError(e); });
+  fetchAll().then(afterFetch).catch(function (e) { if (!had) showError(e); });
 }
 });
 </script>
