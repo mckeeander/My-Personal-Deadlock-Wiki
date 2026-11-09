@@ -516,6 +516,11 @@ html.lock,html.lock body{overflow:hidden}
 .rhdb{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;text-align:left}
 .ric.pnit{width:32px;height:32px}.ric.pnit.weapon{box-shadow:0 0 0 1.5px var(--weapon)}.ric.pnit.vitality{box-shadow:0 0 0 1.5px var(--vital)}.ric.pnit.spirit{box-shadow:0 0 0 1.5px var(--spirit)}
 .ric.rstat{background:none}.ric.rstat .si{width:20px;height:20px;color:var(--vital)} /* Stats: a plain green (vitality) heart, so it doesn't read as an ability */.ric.pnit img{width:32px;height:32px;object-fit:cover}.nhg .rgrp:has(.pnit) .rch{margin-left:40px}
+.gtlw{margin-top:12px;border-left:2px solid #4a405a;margin-left:6px}
+.gtl{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:8px 4px 8px 0;font:inherit;color:var(--fg);text-align:left;position:relative}
+.gtl::before{content:"";position:absolute;left:-6px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--panel);box-shadow:0 0 0 2px var(--gold)}
+.gtt{flex:none;width:52px;padding-left:14px;font-variant-numeric:tabular-nums;color:var(--gold);font-weight:600;font-size:14px}.gtx{flex:1;font-size:14.5px}.gtc{color:var(--gold);font-size:18px;line-height:1}
+.blkn{color:var(--dim);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
 .gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -2729,6 +2734,7 @@ var GLOSS = [
   { k: "sprint", c: "move", t: "Sprint", a: ["sprint", "sprint speed"], d: "Extra move speed that kicks in after about 5 seconds out of combat. It ends when you enter combat or aim down sights." },
   { k: "slide", c: "move", t: "Slide", a: ["slide", "slides", "sliding"], d: "Crouching while moving fast, or on a slope, turns into a slide." },
   // map & objectives (numbers from the game data, shown in the pop-up)
+  { k: "match-timeline", c: "map", t: "Match timeline", a: ["timeline", "match timeline"], d: "When things happen in a match. Tap an event to read about it." },
   { k: "troopers", c: "map", t: "Troopers", a: ["trooper", "troopers", "minions", "creeps"], d: "Waves of soldiers that march down each lane for your team. Killing enemy troopers earns souls. Your own troopers matter for pushing: a Guardian or Walker with no enemy troopers near it is protected (see [[backdoor|Backdoor protection]])." },
   { k: "backdoor", c: "map", t: "Backdoor protection", a: ["backdoor", "backdoor protection", "backdooring"], d: "Lane objectives defend themselves when no enemy troopers are nearby: they take much less damage from heroes and heal quickly. Push with a trooper wave to take them down." },
   { k: "guardian", c: "map", t: "Guardian", a: ["guardian", "guardians", "tier 1"], d: "The first defence in each lane. It fires at heroes and troopers who get close, and uses [[backdoor|Backdoor protection]]." },
@@ -2737,7 +2743,9 @@ var GLOSS = [
   { k: "shrine", c: "map", t: "Shrines", a: ["shrine", "shrines"], d: "Two shrines protect the [[patron|Patron]]. They can’t be damaged until a pair of [[base-guardian|Base Guardians]] is down." },
   { k: "patron", c: "map", t: "Patron", a: ["patron"], d: "The objective at the heart of each base, firing a powerful laser. Destroy the enemy Patron to win the match." },
   { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss"], d: "A huge neutral boss in the middle of the map that grows tougher every minute. Killing it drops the [[rejuvenator|Rejuvenator]]." },
-  { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv"], d: "Dropped by the [[mid-boss|Mid Boss]]. The team that takes it gets a buff for a few minutes: tougher troopers and shorter respawns. It’s stronger each time a team takes it." },
+  { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv"], d: "Dropped by the [[mid-boss|Mid Boss]] as a crystal. Each heavy melee hit on it earns your team a revive, up to 3. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. The buff ends when the revives run out or the time is up." },
+  { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups"], d: "Glowing pickups around the map, broken open with a melee hit. Each gives a few minutes of extra stats, and they get stronger as the match goes on." },
+  { k: "breakable-crates", c: "map", t: "Breakable crates", a: ["breakable", "breakables", "crate", "crates"], d: "Crates and barrels that drop a small permanent stat boost when broken. They stack for the rest of the match, and later crates drop bigger ones." },
   { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Monster camps around the map, in three sizes. They give souls, and their bounty grows a little every minute." },
   // added with the status-effect sources (adapted from the Deadlock Wiki's Status Effects page)
   { k: "move-speed", c: "move", t: "Move speed", a: ["move speed", "movement speed", "bonus move speed"], d: "How fast you walk. Buffs add to it, in m/s or as a percentage, and [[slow|slows]] take it away. [[sprint|Sprint]] adds more on top when you’re out of combat." },
@@ -2883,25 +2891,60 @@ function heroEffectIcons(x) {
   var h = state.heroes.filter(function (y) { return y.class_name === x.hc; })[0], ab = state.byClass[x.ac];
   return '<span class="gheff">' + (h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "") + (ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "") + "</span>";
 }
+function timelineHtml() { // every event from the game data; each opens its term
+  var M = state.mc || {}, C = (state.pw && state.pw.crates) || {}, ev = [];
+  var at = function (sec, label, k, note) { if (sec != null) ev.push({ s: sec, l: label, k: k, n: note || "" }); };
+  at(M.mid_boss_first_sec, "Mid Boss is up", "mid-boss");
+  (M.camps || []).forEach(function (c) { at(c.from_sec, ["Small", "Medium", "Large"][c.tier - 1] + " neutral camps", "neutral-camps"); });
+  at(M.crate_first_sec, "Breakable crates appear", "breakable-crates");
+  var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "Crates drop level 2 pickups", "breakable-crates"); if (lv[2]) at(lv[2] * 60, "Crates drop level 3 pickups", "breakable-crates");
+  var pk = state.pw && state.pw.powerups && Object.keys(state.pw.powerups)[0], pd = pk && state.pw.powerups[pk];
+  if (pd) { at(pd.from_min * 60, "Map buffs start getting stronger", "map-buffs"); at(pd.to_min * 60, "Map buffs at full strength", "map-buffs"); }
+  if (M.patron && M.patron.growth1_from_min) at(M.patron.growth1_from_min * 60, "Patron starts gaining health", "patron");
+  ev.sort(function (a, b) { return a.s - b.s; });
+  var mm = function (s) { return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); };
+  var rows = ev.map(function (e) { return '<button class="gtl"' + (GBY[e.k] ? ' data-g="' + e.k + '"' : "") + '><span class="gtt">' + mm(e.s) + '</span><span class="gtx">' + esc(e.l) + "</span>" + (GBY[e.k] ? '<span class="gtc">›</span>' : "") + "</button>"; }).join("");
+  var rift = M.rift_interval_sec ? '<div class="gsft">The Unstable Rift also opens about every ' + Math.round(M.rift_interval_sec / 60) + " minutes.</div>" : "";
+  return rows ? '<div class="gtlw">' + rows + "</div>" + rift : "";
+}
 function mechHtml(g) { // the numbers behind a map term, from the game data
   var M = state.mc; if (!M || g.c !== "map") return "";
   var f = function (n) { return n == null ? null : Number(n).toLocaleString(); }, T = [];
   var add = function (v, l) { if (v != null) T.push('<div class="stat"><b>' + esc(v) + "</b><i>" + esc(l) + "</i></div>"); };
   var x = { troopers: M.trooper, guardian: M.guardian, walker: M.walker, "base-guardian": M.base_guardian, shrine: M.shrine, patron: M.patron, "mid-boss": M.mid_boss }[g.k] || {};
-  if (g.k === "troopers") { add(f(x.health), "Health"); add(f(x.melee_health), "Melee trooper health"); add(x.dps_vs_heroes != null ? f(x.dps_vs_heroes) + "/s" : null, "Damage to heroes"); }
+  if (g.k === "troopers") { add(f(x.health), "Health"); add(f(x.melee_health), "Melee trooper health"); add(f(x.dps_vs_heroes), "Damage to heroes per second"); }
   else if (g.k === "mid-boss") { add(f(x.health), "Starting health"); add(x.health_per_min != null ? "+" + f(x.health_per_min) : null, "Health per minute"); }
   else if (g.k === "backdoor") { var b = M.backdoor || {}; add(b.mitigation != null ? b.mitigation + "%" : null, "Less damage from heroes"); add(b.regen != null ? b.regen + "/s" : null, "Health regen"); }
   else if (g.k === "rejuvenator") {
-    var r = M.rejuvenator || {}, mul = function (a) { return a && a.length ? a.map(function (v) { return "×" + v; }).join(" / ") : null; };
-    add(r.duration != null ? r.duration + "s" : null, "Duration"); add(mul(r.trooper_health), "Trooper health"); add(mul(r.respawn), "Respawn time");
-    if (T.length) return '<div class="stats">' + T.join("") + '</div><div class="gsft">Each value is for the 1st / 2nd / 3rd time a team takes it.</div>';
+    var r = M.rejuvenator || {};
+    add(r.duration != null ? Math.round(r.duration / 60) + " min" : null, "Lasts up to"); add("3", "Team revives");
   }
   else if (g.k === "neutral-camps") {
-    (M.camps || []).forEach(function (c) { add(f(c.souls) + " souls", ["Small", "Medium", "Large"][c.tier - 1] + " · " + f(c.health) + " health · from " + Math.round(c.from_sec / 60) + " min"); });
+    var out = (M.camps || []).map(function (c) {
+      T = []; add(f(c.souls), "Soul Bounty"); add(f(c.health), "Health");
+      return '<div class="blk">' + ["Small", "Medium", "Large"][c.tier - 1] + ' <span class="blkn">from ' + Math.round(c.from_sec / 60) + ' min</span></div><div class="stats">' + T.join("") + "</div>";
+    }).join("");
     var pct = (M.camps || [])[0] && M.camps[0].souls_pct_per_min;
-    if (T.length) return '<div class="stats">' + T.join("") + "</div>" + (pct ? '<div class="gsft">Bounties grow about ' + pct + "% a minute.</div>" : "");
+    if (out) return out + (pct ? '<div class="gsft">Bounties grow about ' + pct + "% a minute.</div>" : "");
   }
-  else { add(f(x.health), "Health"); add(f(x.souls), "Souls"); add(x.dps_vs_heroes != null ? f(x.dps_vs_heroes) + "/s" : null, "Damage to heroes"); }
+  else if (g.k === "patron") {
+    add(f(x.health), "Phase 1 health"); add(f(x.phase2_health), "Phase 2 health");
+    if (T.length) return '<div class="stats">' + T.join("") + "</div>" + (x.growth1 ? '<div class="gsft">Each phase has its own health bar. From ' + (x.growth1_from_min || 20) + " minutes phase 1 gains " + f(x.growth1) + " health a minute" + (x.growth2 ? " and phase 2 gains " + f(x.growth2) : "") + ".</div>" : "");
+  }
+  else if (g.k === "match-timeline") return timelineHtml();
+  else if (g.k === "map-buffs" && state.pw && state.pw.powerups) {
+    var P = state.pw.powerups, pk0 = Object.keys(P)[0];
+    return Object.keys(P).map(function (nm) {
+      T = []; P[nm].values.forEach(function (v) { add(v.min + v.unit + " → " + v.max + v.unit, v.stat); });
+      return '<div class="blk">' + esc(nm.replace(/ Powerup$/, " Buff")) + '</div><div class="stats">' + T.join("") + "</div>";
+    }).join("") + '<div class="gsft">Each lasts ' + Math.round(P[pk0].duration || 160) + "s. Values grow from the first number at " + P[pk0].from_min + " minutes to the second at " + P[pk0].to_min + ".</div>";
+  }
+  else if (g.k === "breakable-crates" && state.pw && state.pw.crates) {
+    var CR = state.pw.crates, cp = CR.pickups;
+    Object.keys(cp).forEach(function (nm) { add(cp[nm].values.filter(function (v) { return v != null; }).map(function (v) { return v + cp[nm].unit; }).join(" / "), nm); });
+    return '<div class="stats">' + T.join("") + '</div><div class="gsft">Values are for pickups from the start / ' + CR.levels_from_min[1] + " minutes / " + CR.levels_from_min[2] + " minutes.</div>";
+  }
+  else { add(f(x.health), "Health"); add(f(x.souls), "Soul Bounty"); add(f(x.dps_vs_heroes), "Damage to heroes per second"); }
   return T.length ? '<div class="stats">' + T.join("") + "</div>" : "";
 }
 function sourcesHtml(g) {
@@ -3711,7 +3754,7 @@ $("sheetin").addEventListener("click", function (e) {
   if (sa) { sa.parentNode.classList.remove("clip"); sa.remove(); return; }
   var gs = e.target.closest ? e.target.closest("[data-shc]") : null;
   if (gs) { openSource(gs); return; }
-  var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
+  var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g], .gtl[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
 $("sheet").onclick = function (e) { if (e.target === $("sheet")) sinkSheet(); };
