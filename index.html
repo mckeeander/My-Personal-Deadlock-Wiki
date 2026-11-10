@@ -835,6 +835,7 @@ function load() {
   idbGet("mc").then(function (mc) { if (mc && mc.mechanics) state.mc = mc.mechanics; }, function () {});
   idbGet("ph").then(function (ph) { if (ph && ph.heroes) state.ph = ph; }, function () {});
   idbGet("pop").then(function (pp) { if (pp && pp.heroes) state.pop = pp; }, function () {});
+  idbGet("st").then(function (st) { if (st) state.st = st; }, function () {});
   return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
@@ -1105,6 +1106,7 @@ function fetchAll() {
     getJson("mechanics.json").then(function (mc) { if (mc && mc.mechanics) { state.mc = mc.mechanics; idbSet("mc", mc); } }, function () {}); // objectives and neutrals (deadlock-wiki/deadlock-data)
     getJson("powerups.json").then(function (pw) { if (pw && pw.powerups) { state.pw = pw; idbSet("pw", pw); } }, function () {});
     getJson("status_effects.json").then(function (se) { if (se && se.effects) { state.se = se; idbSet("se", se); } }, function () {}); // what causes each effect (from the wiki), shown in the glossary pop-ups
+    getJson("status.json").then(function (st) { state.st = st && typeof st === "object" ? st : null; idbSet("st", state.st); if (!state.hero && /^(heroes|weapon|vitality|spirit)$/.test(state.tab) && !searchOn()) afterNote(); }, function () {}); // did today's update pass its check
     getJson("revisions.json").then(function (rv) { // optional, like the notes: the hero page simply has no Revisions section without it
       if (Array.isArray(rv)) { state.revs = rv; idbSet("revs", rv); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); var w2 = $("revwrap"), h2 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w2 && h2) w2.innerHTML = revisionsHtml(h2); }
     }, function () {});
@@ -1125,7 +1127,15 @@ function whenText(ms) { // "today, 9:17 AM", "yesterday, 9:17 AM" or "Nov 3, 9:1
   if (diff === 1) return "yesterday, " + t;
   return d.toLocaleDateString([], { month: "short", day: "numeric", year: d.getFullYear() === now.getFullYear() ? undefined : "numeric" }) + ", " + t;
 }
+function failText() { // today's update ran but its data failed the safety check (or didn't download), so the job kept the day before's
+  var st = state.st; if (!st || st.ok !== false) return "";
+  var at = Date.parse(st.checked); if (isNaN(at) || Date.now() - at > STALE_AFTER) return ""; // an old failure: the "hasn't run" notice covers it
+  var why = String(st.reason || "it didn't pass its check"); // a hero name stays capitalised; the job's own reasons start in lower case
+  var day = whenText(at).split(",")[0], lead = day === "today" ? "Today’s" : day === "yesterday" ? "Yesterday’s" : "The " + day;
+  return lead + " data update wasn’t used: " + why + ". Showing the last good data" + (state.dataAt ? ", from " + whenText(state.dataAt).split(",")[0] : "") + ".";
+}
 function staleText() { // the daily download has stopped: say since when, so old numbers aren't mistaken for current ones
+  if (failText()) return failText();
   if (!state.dataAt || Date.now() - state.dataAt < STALE_AFTER) return "";
   var days = Math.floor((Date.now() - state.dataAt) / 864e5);
   return "The daily data update hasn’t run since " + whenText(state.dataAt).split(",")[0] + " (" + days + (days === 1 ? " day" : " days") + "). Numbers may be out of date; check the Actions tab on GitHub.";
@@ -1139,6 +1149,12 @@ function statusLine() {
   var st = staleText();
   return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") +
     (st ? '<p class="status stale">' + esc(st) + "</p>" : "") + '<p class="status">' + statusText() + "</p>";
+}
+function afterNote() { // the notice lines above the status line, redrawn when status.json arrives after the main data
+  var rb = $("rfr"); if (!rb || !rb.parentNode) return;
+  var p = rb.parentNode, prev = p.previousElementSibling;
+  while (prev && prev.classList.contains("stale")) { var pp = prev.previousElementSibling; prev.remove(); prev = pp; }
+  var st = staleText(); if (st) p.insertAdjacentHTML("beforebegin", '<p class="status stale">' + esc(st) + "</p>");
 }
 function afterFetch() { // a refresh that brought nothing new leaves the page exactly as it is (no rebuild, no flicker, no lost place); only the status line is brought up to date
   if (!state.same) return render();
