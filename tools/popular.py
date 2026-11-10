@@ -13,7 +13,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 API = "https://api.deadlock-api.com/v1"
 TOP = 0.05  # the share of matches to keep, by average rank
-KEEP = 6    # items kept per hero for each phase (early, mid, late)
+KEEP = 10   # items kept per hero for each phase (early, mid, late); the app shows six, after dropping parts of items already shown
 
 
 def get(path):

@@ -2443,11 +2443,17 @@ document.addEventListener("toggle", function (e) {
   if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else PH_OPEN = e.target.open ? state.hero : null;
 }, true);
 var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
+function partOf(a, b, seen) { // does item b build from item a, at any depth?
+  if (seen[b]) return false; seen[b] = 1;
+  return ((state.byClass[b] || {}).component_items || []).some(function (c) { return c === a || partOf(a, c, seen); });
+}
 function popularHtml(h) { // what top-ranked players buy on this hero, by when they buy it: half-width cards, the share of matches on the right
   var P = state.pop && state.pop.heroes && state.pop.heroes[h.class_name]; if (!P || !P.items.length) return "";
   var phases = [["Early game", "under 10 min", function (t) { return t < 600; }], ["Mid game", "10\u201320 min", function (t) { return t >= 600 && t < 1200; }], ["Late game", "20 min +", function (t) { return t >= 1200; }]];
   var body = phases.map(function (ph) {
-    var rows = P.items.filter(function (r) { return ph[2](r.t) && state.byClass[r.c]; }).slice(0, 6); if (!rows.length) return "";
+    var all = P.items.filter(function (r) { return ph[2](r.t) && state.byClass[r.c]; });
+    var rows = all.filter(function (r) { return !all.some(function (o) { return o !== r && partOf(r.c, o.c, {}); }); }).slice(0, 6); // an item that builds into one already in this section (Duration Extender under Superior Duration) gives way
+    if (!rows.length) return "";
     return '<div class="ppy">' + ph[0] + " <span>" + ph[1] + '</span></div><div class="ppg">' + rows.map(function (r) {
       var it = state.byClass[r.c], sl = slotOf(it);
       return '<button class="ppc" data-pitem="' + esc(r.c) + '"><span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(it), itemImg(it)) + '</span><span class="ppn">' + esc(nameOf(it)) + '</span><b>' + Math.round(r.p * 100) + "%</b></button>";
