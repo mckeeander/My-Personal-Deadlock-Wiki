@@ -411,7 +411,7 @@ details.notes > summary + *{margin-top:2px} /* content starts the same distance 
 @keyframes tipin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @keyframes tipfade{from{opacity:0}to{opacity:1}}
 details.lore:not([open]) summary{margin-bottom:0}
-.stats1{margin-top:20px}
+.stats1{margin-top:20px}details.bsd{margin-top:8px}details.bsd .stats1,details.wpd > summary + div{margin-top:16px}
 .sheet .in::before{content:"";display:block;width:42px;height:4px;border-radius:2px;background:var(--line);margin:-4px auto 10px}
 .bg div.spike{position:relative;border:2px solid var(--sp)}
 .bg div.spike u{position:absolute;top:-9px;left:50%;transform:translateX(-50%);text-decoration:none;font-size:9px;font-weight:700;letter-spacing:.12em;color:#1a1208;border-radius:6px;padding:1px 7px}
@@ -593,6 +593,7 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .nic{height:1.3em;width:auto;vertical-align:-.3em;margin:0 .2em 0 .1em;border-radius:4px}
 .nref{color:var(--fg);font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .swc{will-change:transform,opacity}
+.status.stale{color:var(--gold);border-left:2px solid var(--gold);padding-left:8px}
 </style>
 </head>
 <body class="boot">
@@ -793,7 +794,7 @@ function dataSig(h, i) { // a cheap fingerprint of the game data, so a refresh t
   for (var k = 0; k < str.length; k++) x = ((x << 5) + x + str.charCodeAt(k)) | 0;
   return str.length + ":" + x;
 }
-function save() { return idbSet(KEY, { t: state.fetchedAt, h: state.heroes, i: state.items, s: state.sig || null }); }
+function save() { return idbSet(KEY, { t: state.fetchedAt, u: state.dataAt || 0, h: state.heroes, i: state.items, s: state.sig || null }); }
 function load() {
   idbGet("se").then(function (se) { if (se && se.effects) state.se = se; }, function () {});
   idbGet("pn").then(function (pn) { if (pn && pn.patches) { state.pn = pn; setTimeout(newsDot, 0); } }, function () {});
@@ -805,7 +806,7 @@ function load() {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
     if (Array.isArray(r[2])) { state.revs = r[2]; setTimeout(newsDot, 0); }
-    if (d && d.h && d.i && d.h.length) { state.heroes = d.h; state.items = d.i; state.fetchedAt = d.t || 0; state.sig = d.s || null; index(); return true; }
+    if (d && d.h && d.i && d.h.length) { state.heroes = d.h; state.items = d.i; state.fetchedAt = d.t || 0; state.dataAt = d.u || 0; state.sig = d.s || null; index(); return true; }
     return false;
   });
 }
@@ -1046,9 +1047,19 @@ function getJson(name) {
   }
   return tryAt(0);
 }
+function getStamp() { // when the daily job last downloaded the game data (data/updated.txt); 0 when it can't be read
+  var urls = [RAW + "updated.txt?t=" + Date.now(), "data/updated.txt"];
+  function tryAt(i) {
+    return fetch(urls[i], { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.text(); }).then(function (t) {
+      var ms = Date.parse(String(t).trim()); if (isNaN(ms)) throw 0; return ms;
+    }).catch(function () { return i + 1 < urls.length ? tryAt(i + 1) : 0; });
+  }
+  return tryAt(0);
+}
 function fetchAll() {
   var rb = $("rfr"); if (rb) rb.textContent = "Refreshing…";
-  return Promise.all([getJson("heroes.json"), getJson("items.json")]).then(function (r) {
+  return Promise.all([getJson("heroes.json"), getJson("items.json"), getStamp()]).then(function (r) {
+    if (r[2]) state.dataAt = r[2];
     state.heroes = (Array.isArray(r[0]) ? r[0] : []).filter(function (h) { return !h.disabled && h.player_selectable !== false && (!h.in_development || h.development_state === "release"); }); // released heroes (Violet, Baba) still carry the in_development flag
     state.items = Array.isArray(r[1]) ? r[1] : [];
     state.heroes.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
@@ -1072,18 +1083,36 @@ function fetchAll() {
 }
 
 /* ---------- rendering ---------- */
+var STALE_AFTER = 36 * 3600 * 1000; // the job runs once a day, so a day and a half without a new download means it has stopped
+function whenText(ms) { // "today, 9:17 AM", "yesterday, 9:17 AM" or "Nov 3, 9:17 AM"
+  var d = new Date(ms), now = new Date(), t = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  var day = function (x) { return new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime(); };
+  var diff = Math.round((day(now) - day(d)) / 864e5);
+  if (diff === 0) return "today, " + t;
+  if (diff === 1) return "yesterday, " + t;
+  return d.toLocaleDateString([], { month: "short", day: "numeric", year: d.getFullYear() === now.getFullYear() ? undefined : "numeric" }) + ", " + t;
+}
+function staleText() { // the daily download has stopped: say since when, so old numbers aren't mistaken for current ones
+  if (!state.dataAt || Date.now() - state.dataAt < STALE_AFTER) return "";
+  var days = Math.floor((Date.now() - state.dataAt) / 864e5);
+  return "The daily data update hasn’t run since " + whenText(state.dataAt).split(",")[0] + " (" + days + (days === 1 ? " day" : " days") + "). Numbers may be out of date; check the Actions tab on GitHub.";
+}
 function statusText() {
-  var d = state.fetchedAt ? new Date(state.fetchedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "never";
-  return "Updated " + esc(d) + " · " + state.heroes.length + ' heroes · <button class="link" id="rfr">Refresh now</button>';
+  // the data's own age (when the daily job last downloaded it), not when this phone last fetched it
+  var d = state.dataAt ? "Game data from " + whenText(state.dataAt) : "Checked " + (state.fetchedAt ? whenText(state.fetchedAt) : "never");
+  return esc(d) + " · " + state.heroes.length + ' heroes · <button class="link" id="rfr">Refresh now</button>';
 }
 function statusLine() {
-  return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") + '<p class="status">' + statusText() + "</p>";
+  var st = staleText();
+  return (state.note ? '<p class="status" style="color:var(--gold)">' + esc(state.note) + "</p>" : "") +
+    (st ? '<p class="status stale">' + esc(st) + "</p>" : "") + '<p class="status">' + statusText() + "</p>";
 }
 function afterFetch() { // a refresh that brought nothing new leaves the page exactly as it is (no rebuild, no flicker, no lost place); only the status line is brought up to date
   if (!state.same) return render();
   var rb = $("rfr"); if (!rb || !rb.parentNode) return;
   var p = rb.parentNode, prev = p.previousElementSibling;
-  if (prev && prev.classList.contains("status")) prev.remove(); // a stale "couldn't refresh" note
+  while (prev && prev.classList.contains("status")) { var pp = prev.previousElementSibling; prev.remove(); prev = pp; } // a stale "couldn't refresh" or "update stopped" note
+  var st = staleText(); if (st) p.insertAdjacentHTML("beforebegin", '<p class="status stale">' + esc(st) + "</p>");
   p.innerHTML = statusText(); bindCommon();
 }
 var FIRSTLIST = true, HLIST_T0 = 0;
@@ -2449,9 +2478,11 @@ function statGroupHtml(g, h) { // a hero's base stats in a patch: their own tint
 }
 var PH_OPEN = null; // the hero whose Patch history you opened, so a data refresh re-drawing it keeps it open
 var POP_SHUT = null; // the hero whose Popular items you folded away
+var BS_OPEN = null, WP_OPEN = null; // the hero whose Base stats / Weapon you opened
 document.addEventListener("toggle", function (e) {
   var c = e.target.classList; if (!c || !c.contains("phd") || state.tab !== "heroes") return;
-  if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else PH_OPEN = e.target.open ? state.hero : null;
+  var mine = e.target.open ? state.hero : null;
+  if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else if (c.contains("bsd")) BS_OPEN = mine; else if (c.contains("wpd")) WP_OPEN = mine; else PH_OPEN = mine;
 }, true);
 var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
 function tierTab(it) { // the game's corner tab: a slot-coloured triangle in the top right with the tier in Roman numerals, casting a little shadow on the art
@@ -2532,12 +2563,13 @@ function renderHero(cn) {
   var tagsA = (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
-  html += '<div class="stats1">' + statBlock(h) + "</div>";
+  // base stats and the weapon fold shut like Patch history, so the abilities are near the top; each remembers being opened for this hero
+  html += '<details class="phd bsd"' + (BS_OPEN === cn ? " open" : "") + '><summary class="sec">Base stats' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><div class="stats1">' + statBlock(h) + "</div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
   if (state.altHero !== cn) { state.alt = false; state.altHero = cn; }
   var wc = weaponCard(h);
-  if (wc) html += '<div class="sec">Weapon</div>' + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc);
+  if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec">Weapon' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
   html += '<div class="sec">Abilities</div>' + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
   abs.forEach(function (a) {
@@ -2797,32 +2829,92 @@ function buildSearch() {
   });
   return (state.sidx = out);
 }
+function stem(w) { // "stuns", "stunned", "stunning" all search as "stun"; matching is by substring, so "charg" still finds "charge"
+  if (w.length <= 3) return w;
+  var x = w;
+  if (/ies$/.test(x)) x = x.slice(0, -3);
+  else if (/(ss|sh|ch|x)es$/.test(x)) x = x.slice(0, -2);
+  else if (/[^su]s$/.test(x)) x = x.slice(0, -1);
+  else if (x.length > 5 && /ing$/.test(x)) x = x.slice(0, -3);
+  else if (x.length > 5 && /ed$/.test(x)) x = x.slice(0, -2);
+  if (x !== w && /([b-df-hj-np-tv-z])\1$/.test(x) && !/(ll|ss)$/.test(x)) x = x.slice(0, -1); // stunned → stunn → stun, but keep "skill", "boss"
+  return x.length >= 3 ? x : w;
+}
+function qWords(q) { return q.toLowerCase().split(/\s+/).filter(Boolean).map(stem); }
 function runSearch(q, filter) {
-  var words = q.toLowerCase().split(/\s+/).filter(Boolean), ql = q.toLowerCase().trim(), res = [];
+  var words = qWords(q), ql = q.toLowerCase().trim(), res = [];
   if (!words.length) return res;
   buildSearch().forEach(function (e) {
     if (filter !== "all" && e.k !== filter) return;
     for (var i = 0; i < words.length; i++) if (e.hay.indexOf(words[i]) < 0) return;
     var nm = e.name.toLowerCase(), inName = words.every(function (w) { return nm.indexOf(w) >= 0; });
-    res.push({ e: e, sc: inName ? (nm === ql ? 0 : nm.indexOf(ql) === 0 ? 1 : 2) : e.k === "term" ? 4 : 3 });
+    res.push({ e: e, sc: inName ? (nm === ql ? 0 : nm.indexOf(ql) === 0 || nm.indexOf(words.join(" ")) === 0 ? 1 : 2) : e.k === "term" ? 4 : 3 });
   });
   var kord = { hero: 0, term: 1, ability: 2, item: 3 };
   res.sort(function (a, b) { return a.sc - b.sc || kord[a.e.k] - kord[b.e.k] || (a.e.name < b.e.name ? -1 : 1); });
   return res;
+}
+var SVOCAB = null;
+function vocab() { // every word in the search index, names counted extra so a typo prefers a hero or item name
+  if (SVOCAB && SVOCAB.idx === state.sidx) return SVOCAB.w;
+  var w = {};
+  buildSearch().forEach(function (e) {
+    e.hay.split(/[^a-z0-9']+/).forEach(function (t) { if (t.length >= 3) w[t] = (w[t] || 0) + 1; });
+    e.name.toLowerCase().split(/[^a-z0-9']+/).forEach(function (t) { if (t.length >= 3) w[t] = (w[t] || 0) + 1000; });
+  });
+  SVOCAB = { idx: state.sidx, w: w }; return w;
+}
+function editDist(a, b, max) { // Damerau-Levenshtein with transpositions ("abrmas"), giving up past max
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  var d = [], i, j;
+  for (i = 0; i <= a.length; i++) { d[i] = [i]; }
+  for (j = 1; j <= b.length; j++) d[0][j] = j;
+  for (i = 1; i <= a.length; i++) {
+    var lo = 99;
+    for (j = 1; j <= b.length; j++) {
+      var c = a[i - 1] === b[j - 1] ? 0 : 1;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + c);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+      if (d[i][j] < lo) lo = d[i][j];
+    }
+    if (lo > max) return max + 1;
+  }
+  return d[a.length][b.length];
+}
+function didYouMean(q) { // swap each word that appears nowhere for the closest known word; null when nothing changes
+  var w = vocab(), changed = false;
+  var out = q.toLowerCase().split(/\s+/).filter(Boolean).map(function (word) {
+    var st = stem(word);
+    if (st.length < 3 || buildSearch().some(function (e) { return e.hay.indexOf(st) >= 0; })) return word;
+    var max = word.length <= 4 ? 1 : 2, best = null, bd = max + 1, bn = 0;
+    Object.keys(w).forEach(function (t) {
+      var dd = editDist(word, t, max);
+      if (dd <= max && (dd < bd || (dd === bd && w[t] > bn))) { best = t; bd = dd; bn = w[t]; }
+    });
+    if (best) { changed = true; return best; }
+    return word;
+  });
+  return changed ? out.join(" ") : null;
 }
 function snippet(e, words) {
   var low = e.text.toLowerCase(), at = -1;
   for (var i = 0; i < words.length && at < 0; i++) at = low.indexOf(words[i]);
   if (at < 0) return "";
   var from = Math.max(0, at - 40), to = Math.min(e.text.length, at + 90), t = esc(e.text.slice(from, to));
-  words.forEach(function (w) { if (w.length > 1) t = t.replace(new RegExp("(" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig"), "<mark>$1</mark>"); });
+  words.forEach(function (w) { if (w.length > 1) t = t.replace(new RegExp("(" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[a-z]*)", "ig"), "<mark>$1</mark>"); }); // the whole word: "stun" marks "stuns"
   return (from > 0 ? "…" : "") + t + (to < e.text.length ? "…" : "");
 }
 function searchResults() {
   var q = state.sq.trim(); if (!q) return "";
-  var res = runSearch(q, state.sf), words = q.toLowerCase().split(/\s+/).filter(Boolean);
-  if (!res.length) return '<p class="status">Nothing matched “' + esc(q) + '”.</p>';
-  var html = '<p class="status">' + res.length + " result" + (res.length === 1 ? "" : "s") + "</p>";
+  var res = runSearch(q, state.sf), note = "";
+  if (!res.length) { // a typo: search for the nearest real words instead, and say so
+    var alt = didYouMean(q), ares = alt ? runSearch(alt, state.sf) : [];
+    if (!ares.length) return '<p class="status">Nothing matched “' + esc(q) + '”.</p>';
+    note = 'No results for “' + esc(q) + '”. Showing <b>' + esc(alt) + "</b>. ";
+    res = ares; q = alt;
+  }
+  var words = qWords(q);
+  var html = '<p class="status">' + note + res.length + " result" + (res.length === 1 ? "" : "s") + "</p>";
   res.slice(0, 60).forEach(function (r) {
     var e = r.e;
     html += '<button class="sr ' + e.k + (e.k === "item" && e.slot ? " cat-" + esc(e.slot) : "") + '" data-kind="' + e.k + '" data-cn="' + esc(e.cn) + '" data-h="' + esc(e.hero || "") + '">' + (e.k === "term" ? '<span class="gico">Aa</span>' : imgTag(e.img, e.fb)) +
