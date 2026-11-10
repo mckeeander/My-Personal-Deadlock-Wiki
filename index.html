@@ -3175,6 +3175,21 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
   else { add(f(x.health), "Health"); add(f(x.souls), "Soul Bounty"); add(f(x.dps_vs_heroes), "Damage to heroes per second"); }
   return T.length ? '<div class="stats">' + T.join("") + "</div>" : "";
 }
+function chargeList() { // abilities that start with charges (and how many), and those a tier upgrade gives charges to
+  var out = [];
+  state.heroes.forEach(function (h) {
+    if (h.disabled || h.player_selectable === false) return;
+    ["signature1", "signature2", "signature3", "signature4"].forEach(function (k) {
+      var a = state.byClass[(h.items || {})[k]]; if (!a) return;
+      var c = (a.properties || {}).AbilityCharges, n = Number(c && typeof c === "object" ? c.value : c) || 0, tiers = [];
+      (a.upgrades || []).forEach(function (u, i) { if ((u.property_upgrades || []).some(function (b) { return b.name === "AbilityCharges"; })) tiers.push(i + 1); });
+      if (n < 2 && !tiers.length) return;
+      var note = (n >= 2 ? n + " charges" : "") + (tiers.length ? (n >= 2 ? " · " : "") + "Tier " + tiers[0] : ""); // the tier, not a count: for some the data can't say "+2" from "2 in all"
+      out.push({ hero: h.name, hc: h.class_name, ability: nameOf(a), ac: a.class_name, note: note, base: n >= 2 });
+    });
+  });
+  return out;
+}
 function sourcesHtml(g) {
   var hx = g.c === "hero" && heroEffect(g.k);
   if (hx) return ""; // the chevron by its name links to the ability
@@ -3183,6 +3198,7 @@ function sourcesHtml(g) {
   var crate = state.pw && state.pw.crates && state.pw.crates.pickups && state.pw.crates.pickups[CRATE_TERM[g.k]];
   if (crate) list.push({ text: "Golden Statues", crate: CRATE_TERM[g.k] }); // permanent pickups from golden statues
   se.forEach(function (e) { if (e.term !== g.k) return; list = list.concat(e.sources || []); (e.notes || []).forEach(function (n) { if (notes.indexOf(n) < 0) notes.push(n); }); });
+  if (g.k === "charges") list = chargeList(); // every ability with charges, from the game data
   var live = srcLive(g.k);
   if (live) { // the game data's list wins; the wiki's own entries fill in what isn't an ability or item (powerups and the like)
     var have = {}; live.forEach(function (x) { have[x.ac || x.ic] = 1; });
@@ -3239,6 +3255,7 @@ function sourcesHtml(g) {
       (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
   }
   var nt = notes.length ? '<ul class="gsnotes">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
+  if (g.k === "charges") return '<div class="grh">Abilities</div>' + group("Starts with charges", abil.filter(function (x) { return x.base; })) + group("From an upgrade", abil.filter(function (x) { return !x.base; }));
   return nt + (list.length ? '<div class="grh">Sources</div>' + group("Buffs", power) + group("Heroes", whole) + group("Abilities", abil) + group("Items", items) + group("Other", other) : "");
 }
 function relatedHtml(g) {
