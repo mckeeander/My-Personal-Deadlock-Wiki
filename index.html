@@ -2431,29 +2431,20 @@ function isStats(g) { return !g.ac && g.label === "Stats"; }
 function revisionsHtml(h) { // Patch history: every official patch that touched this hero, newest first
   var P = state.ph && state.ph.heroes && state.ph.heroes[h.class_name];
   if (!P || !P.length) return revisionsHtml0(h);
-  var R = state.revs || [], abs = {}, stats = false;
+  var abs = {}, stats = false;
   P.forEach(function (p) { p.groups.forEach(function (g) { if (g.ac && state.byClass[g.ac]) abs[g.ac] = (abs[g.ac] || 0) + 1; if (isStats(g)) stats = true; }); });
   var order = ((h.items && ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return h.items[k]; })) || []).filter(function (c) { return abs[c]; });
   Object.keys(abs).forEach(function (c) { if (order.indexOf(c) < 0) order.push(c); });
   var filt = order.length + (stats ? 1 : 0) > 1 ? '<div class="phf"><button class="phb on" data-phf="">All</button>' +
     (stats ? '<button class="phb" data-phf="stats" aria-label="Base stats"><img alt="" src="' + esc(heroHead(h)) + '"></button>' : "") +
     order.map(function (c) { return '<button class="phb" data-phf="' + esc(c) + '" aria-label="' + esc(nameOf(state.byClass[c])) + '">' + imgTag(itemImg(state.byClass[c])) + "</button>"; }).join("") + "</div>" : "";
-  return phListHtml(P, filt, function (p) {
-    var stat = R.filter(function (e) { var dd = (new Date(e.date) - new Date(p.date)) / 864e5; return dd >= 0 && dd <= 3 && (e.heroes || {})[h.class_name]; })[0]; // the app's own before/after numbers for that patch
-    return '<div class="nhg">' + phGroupsHtml(p.groups, h) + "</div>" + (stat ? '<div class="phs"><div class="nsub">Stat changes</div>' + stat.heroes[h.class_name].map(function (g) { return revGroupHtml(g, h); }).join("") + "</div>" : "");
+  return phListHtml(P, filt, function (p) { // the official notes only: the app's own before/after numbers for the same patch just repeated them
+    return '<div class="nhg">' + phGroupsHtml(p.groups, h) + "</div>";
   }, function (p) { return p.groups.map(function (g) { return g.ac || (isStats(g) ? "stats" : ""); }).join(" "); });
 }
-function itemHistoryHtml(it) { // the same list for a shop item: each patch's notes, plus the app's own before/after numbers
+function itemHistoryHtml(it) { // the same list for a shop item: each patch's official notes
   var P = itemHistory(it.class_name); if (!P.length) return "";
-  var R = state.revs || [];
-  return phListHtml(P, "", function (p) {
-    var e = R.filter(function (e) { var dd = (new Date(e.date) - new Date(p.date)) / 864e5; return dd >= 0 && dd <= 3 && (e.items || {})[it.class_name]; })[0], body = "";
-    if (e) {
-      var cs = e.items[it.class_name].changes.filter(function (c) { var q = c.key && (it.properties || {})[c.key]; return !c.key || (q && q.label); });
-      if (cs.length) body = '<div class="phs"><div class="nsub">Stat changes</div>' + revGroupHtml({ item: it.class_name, type: "shop", name: nameOf(it), changes: cs }, null) + "</div>";
-    }
-    return '<div class="ipl">' + pnList(p.lines) + "</div>" + body;
-  });
+  return phListHtml(P, "", function (p) { return '<div class="ipl">' + pnList(p.lines) + "</div>"; });
 }
 function itemHistory(cn) { return (state.ph && state.ph.items && state.ph.items[cn]) || []; }
 function phListHtml(P, filt, bodyOf, absOf) { // this year's patches open to view, older ones behind a button and grouped by year; one open at a time
