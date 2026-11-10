@@ -47,6 +47,11 @@ jobs:
           # what changed for each hero since the last snapshot goes into data/revisions.json (shown under Revisions on hero pages)
           if [ -f prev/heroes.json ] && [ -f prev/items.json ]; then python3 tools/revisions.py prev data; fi
 
+      - name: Trim unused fields
+        # drops what the site never reads (about a third of the download); after Record revisions, which compares the full download
+        continue-on-error: true
+        run: python3 tools/trim.py data
+
       - name: Download wiki notes
         # switched off: since Nov 3 deadlock.wiki refuses automated requests (403), so these only knocked and failed every day.
         # The app keeps the last good wiki.json; new wiki content comes from pages exported by hand into data/wiki_raw/. Delete this line to switch back on.
