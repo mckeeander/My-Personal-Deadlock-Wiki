@@ -2437,7 +2437,11 @@ function statGroupHtml(g, h) { // a hero's base stats in a patch: their own tint
   return '<div class="rgrp stp" data-pf="stats"><div class="rhd"><span class="ric rstat">' + (h ? '<img alt="" src="' + esc(heroHead(h)) + '">' : "") + '</span>Base stats</div><div class="rch">' + pnList(g.lines) + "</div></div>";
 }
 var PH_OPEN = null; // the hero whose Patch history you opened, so a data refresh re-drawing it keeps it open
-document.addEventListener("toggle", function (e) { if (e.target.classList && e.target.classList.contains("phd") && state.tab === "heroes") PH_OPEN = e.target.open ? state.hero : null; }, true);
+var POP_SHUT = null; // the hero whose Popular items you folded away
+document.addEventListener("toggle", function (e) {
+  var c = e.target.classList; if (!c || !c.contains("phd") || state.tab !== "heroes") return;
+  if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else PH_OPEN = e.target.open ? state.hero : null;
+}, true);
 var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
 function popularHtml(h) { // what top-ranked players buy on this hero, by when they buy it: half-width cards, the share of matches on the right
   var P = state.pop && state.pop.heroes && state.pop.heroes[h.class_name]; if (!P || !P.items.length) return "";
@@ -2450,7 +2454,8 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
     }).join("") + "</div>";
   }).join("");
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
-  return '<div class="sec">Popular items</div><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body;
+  // folds like Patch history, but open unless you shut it on this hero
+  return '<details class="phd ppd"' + (POP_SHUT === h.class_name ? "" : " open") + '><summary class="sec">Popular items' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body + "</details>";
 }
 function heroHead(h) { return pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h); }
 function isStats(g) { return !g.ac && g.label === "Stats"; }
