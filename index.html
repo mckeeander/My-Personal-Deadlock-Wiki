@@ -534,6 +534,7 @@ html.lock,html.lock body{overflow:hidden}
 .glt{flex:1;display:flex;flex-direction:column;line-height:1.25}.glt b{font-weight:600;font-size:15px}.glt i{font-style:normal;font-size:12px;color:var(--dim)}
 .gig{margin-top:10px;font-size:13px;color:var(--dim)}.gig span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d7290;margin-right:8px}.gig b{color:var(--fg);font-weight:600}
 .mlist{display:flex;flex-direction:column;gap:6px}.mlist div{background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.4}.mlist b{display:block;font-weight:600}.mlist span{color:var(--dim);font-size:13px}
+details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}details.phd > summary::-webkit-details-marker{display:none}details.phd > summary .ncv{margin-left:auto;width:18px;height:18px;flex:none;color:var(--dim);transition:transform .2s ease}details.phd[open] > summary .ncv{transform:rotate(90deg)}details.phd.closing > summary .ncv{transform:none}
 .secn{font-size:13px;color:var(--dim);font-weight:500;letter-spacing:0;margin-left:6px}
 .phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
 .phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.phb.on img{opacity:1}
@@ -2426,6 +2427,8 @@ function phGroupsHtml(groups, h) { // a hero's changes in one patch, grouped by 
 function statGroupHtml(g, h) { // a hero's base stats in a patch: their own tinted panel, under the hero's face
   return '<div class="rgrp stp" data-pf="stats"><div class="rhd"><span class="ric rstat">' + (h ? '<img alt="" src="' + esc(heroHead(h)) + '">' : "") + '</span>Base stats</div><div class="rch">' + pnList(g.lines) + "</div></div>";
 }
+var PH_OPEN = null; // the hero whose Patch history you opened, so a data refresh re-drawing it keeps it open
+document.addEventListener("toggle", function (e) { if (e.target.classList && e.target.classList.contains("phd") && state.tab === "heroes") PH_OPEN = e.target.open ? state.hero : null; }, true);
 function heroHead(h) { return pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h); }
 function isStats(g) { return !g.ac && g.label === "Stats"; }
 function revisionsHtml(h) { // Patch history: every official patch that touched this hero, newest first
@@ -2440,14 +2443,14 @@ function revisionsHtml(h) { // Patch history: every official patch that touched 
     order.map(function (c) { return '<button class="phb" data-phf="' + esc(c) + '" aria-label="' + esc(nameOf(state.byClass[c])) + '">' + imgTag(itemImg(state.byClass[c])) + "</button>"; }).join("") + "</div>" : "";
   return phListHtml(P, filt, function (p) { // the official notes only: the app's own before/after numbers for the same patch just repeated them
     return '<div class="nhg">' + phGroupsHtml(p.groups, h) + "</div>";
-  }, function (p) { return p.groups.map(function (g) { return g.ac || (isStats(g) ? "stats" : ""); }).join(" "); });
+  }, function (p) { return p.groups.map(function (g) { return g.ac || (isStats(g) ? "stats" : ""); }).join(" "); }, PH_OPEN === h.class_name);
 }
 function itemHistoryHtml(it) { // the same list for a shop item: each patch's official notes
   var P = itemHistory(it.class_name); if (!P.length) return "";
-  return phListHtml(P, "", function (p) { return '<div class="ipl">' + pnList(p.lines) + "</div>"; });
+  return phListHtml(P, "", function (p) { return '<div class="ipl">' + pnList(p.lines) + "</div>"; }, null, true);
 }
 function itemHistory(cn) { return (state.ph && state.ph.items && state.ph.items[cn]) || []; }
-function phListHtml(P, filt, bodyOf, absOf) { // this year's patches open to view, older ones behind a button and grouped by year; one open at a time
+function phListHtml(P, filt, bodyOf, absOf, open) { // this year's patches open to view, older ones behind a button and grouped by year; one open at a time
   var thisYear = String(new Date().getFullYear()), show = P.filter(function (p) { return p.date.slice(0, 4) >= thisYear; }).length || 1;
   var year = "", rows = P.map(function (p, i) {
     var old = i >= show, y = p.date.slice(0, 4), yh = old && y !== year ? '<div class="phy pho">' + y + "</div>" : "";
@@ -2457,7 +2460,8 @@ function phListHtml(P, filt, bodyOf, absOf) { // this year's patches open to vie
     return yh + '<details class="rpt' + (old ? " pho" : "") + '" data-abs="' + esc(absOf ? absOf(p) : "") + '"' + (i === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '<i class="phsum">' + n + " change" + (n === 1 ? "" : "s") + '</i></span><span class="rcv">' + CHEV + "</span></summary>" + src + bodyOf(p) + "</details>";
   }).join("");
   var more = P.length > show ? '<button class="phmore">Show older patches (' + (P.length - show) + ")</button>" : "";
-  return '<div class="sec">Patch history <span class="secn">' + P.length + "</span></div>" + filt + '<div id="revs" class="phist">' + rows + more + "</div>";
+  // the whole section folds: the header is the toggle (shut on hero pages, open on an item page, where it is what you came for)
+  return '<details class="phd"' + (open ? " open" : "") + '><summary class="sec">Patch history <span class="secn">' + P.length + "</span>" + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>" + filt + '<div id="revs" class="phist">' + rows + more + "</div></details>";
 }
 function revisionsHtml0(h) {
   var R = state.revs; if (!R || !R.length) return "";
@@ -3906,7 +3910,7 @@ $("main").addEventListener("click", function (e) {
 // Revisions / What's New dates and the Notes / Interactions rows: the section grows open and folds shut (its height animates while the content fades and slides), instead of snapping.
 // Opening a native <details> just flips it, so the tap is taken over: the height is measured open and shut, animated, and the open attribute is set at the end of a close.
 document.addEventListener("click", function (e) {
-  var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary") : null; if (!sm) return;
+  var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary, details.phd > summary") : null; if (!sm) return;
   var d = sm.parentNode;
   if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
   e.preventDefault();
@@ -3957,7 +3961,7 @@ function foldDetails(d) {
   // near the bottom of the page, a patch folding shut would leave nothing to scroll into and the page would snap up.
   // So a spacer under the list takes up whatever the patches give back, keeping the page its length; once they're done
   // it shrinks away, and the page scrolls up smoothly as it goes.
-  var sp = list && spacerOf(list), sp0 = 0, y0 = window.pageYOffset || 0, y1 = y0;
+  var spl = list || (d.classList.contains("phd") ? d.parentNode : null), sp = spl && spacerOf(spl), sp0 = 0, y0 = window.pageYOffset || 0, y1 = y0;
   if (sp) { if (sp._stop) sp._stop(); sp0 = sp.offsetHeight; sp.style.height = "0px"; }
   if (opening && list) { // where the tapped patch ends up once the others are shut: near the top of the screen
     parts.forEach(function (q) { q.el.style.height = q.h1 + "px"; });
