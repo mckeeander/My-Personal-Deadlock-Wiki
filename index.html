@@ -2549,6 +2549,7 @@ function renderHero(cn) {
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : ""; updateJbar();
   $("back").onclick = function () {
+    if (BACK && BACK.sheet && !$("backpill").hidden) { $("backpill").click(); return; } // opened from a pop-up: back returns to it, as the pill does
     if (NEWSFROM && NEWSFROM.hero === cn) { slideBack(backToNews); return; } // opened from What's New: back goes there
     slideBack(function () { state.hero = null; render(); window.scrollTo(0, state.listY || 0); });
   };
@@ -3452,6 +3453,7 @@ $("backpill").onclick = function (e) {
     var f = bk.sheet;
     slideBack(function () {
       state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y);
+      if (f.search != null) { showSearch(f.search); window.scrollTo(0, f.sy || 0); } // the results you came from, over the page you were on
       ISTACK = []; FSTACK = [];
       setTimeout(function () { if (f.sheet) glossSheet(f.sheet); else if (f.item) itemSheet(f.item); }, 180);
     });
@@ -4072,11 +4074,11 @@ function foldDetails(d) {
 function openSource(gs) { // an ability that causes an effect: open its hero and scroll to it, with a way back to where you were
     var hc = gs.getAttribute("data-shc"), ac = gs.getAttribute("data-sac"), wantT = +gs.getAttribute("data-stier") || 0, top = ISTACK[ISTACK.length - 1] || "";
   var from = { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, sheet: top.indexOf("g:") === 0 ? top.slice(2) : null, item: top && top.indexOf("g:") !== 0 ? top : null };
-  if (searchOn()) from = null; // from search results the pill would have nothing to restore
+  if (searchOn()) { from.search = state.sq || ($("sq") || {}).value || ""; from.y = SEARCH_Y; from.sy = window.pageYOffset || 0; } // from search: back returns to the results, your search kept, with the pop-up open again
   closeSheet();
   slideForward(function () {
     hideBack(); endSearch(); state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(hc);
-    if (from) showBackSheet(from);
+    if (from) { showBackSheet(from); var bl = document.querySelector("#back .bl"); if (bl && BACK && BACK.sheet) bl.lastChild.textContent = from.search != null ? "Search" : ((from.sheet ? (GBY[from.sheet] || {}).t : nameOf(state.byClass[from.item] || {})) || bl.lastChild.textContent); } // the page's own back button goes the same way
     var el = ac && document.querySelector('[data-ab="' + ac + '"]');
     if (el) { if (el.closest(".f1")) setForm(true); EASE_DUR = 0; scrollToEl(el); } else window.scrollTo(0, 0);
     if (el && wantT && (SEL[ac] || 0) < wantT) setTimeout(function () { // the tier the source names, picked as if tapped: the stats glow as they change
