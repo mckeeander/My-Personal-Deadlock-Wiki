@@ -551,7 +551,7 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .ric.pnit,.gsi{position:relative}
 .itab{position:absolute;top:0;right:0;width:17px;height:17px;pointer-events:none;filter:drop-shadow(-1px 1px 1.2px rgba(0,0,0,.55))}
 .itab::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%);background:var(--itc)}
-.itab i{position:absolute;left:67%;top:31%;transform:translate(-50%,-50%);white-space:nowrap;font:800 7px/1 var(--body);font-style:normal;letter-spacing:-.02em;color:#1b1622}
+.itab i{position:absolute;left:calc(67% + 1px);top:calc(31% - 1px);transform:translate(-50%,-50%);white-space:nowrap;font:800 7px/1 var(--body);font-style:normal;letter-spacing:-.02em;color:#1b1622}
 .itab.weapon{--itc:var(--weapon)}.itab.vitality{--itc:var(--vital)}.itab.spirit{--itc:var(--spirit)}
 .phy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;margin:16px 0 8px 4px}.phist.filt .phy{display:none!important}
 .phmore{width:100%;margin-top:4px;background:none;border:1px dashed #4a405a;border-radius:10px;padding:11px;color:var(--fg);font:inherit;font-size:14px}
