@@ -496,7 +496,7 @@ html.lock,html.lock body{overflow:hidden}
 .gsn{flex:none;max-width:46%;font-style:normal;font-size:12px;color:var(--gold);text-align:right;line-height:1.25}
 .gtier{color:#a77ff0;margin-right:3px;font-size:11px} /* the ◆ of the tier boxes */
 .gric{width:17px;height:17px;vertical-align:-4px;margin:0 1px}
-.gsi.pw .si{width:20px;height:20px;color:inherit}.gsi.pw.crate{color:var(--gold);box-shadow:0 0 0 1.5px var(--gold)}
+.gsi.pw .si{width:20px;height:20px;color:inherit}.gsi.pw.crate{color:var(--gold);box-shadow:0 0 0 1.5px var(--gold);background:var(--panel2)}.gsi.pw.crate img{width:100%;height:100%;object-fit:cover}
 .gsi.pw.fire_rate{color:var(--weapon);box-shadow:0 0 0 1.5px var(--weapon)}.gsi.pw.spirit{color:var(--spirit);box-shadow:0 0 0 1.5px var(--spirit)}
 .gsi.pw.health{color:var(--vital);box-shadow:0 0 0 1.5px var(--vital)}.gsi.pw.move_speed{color:var(--nav);box-shadow:0 0 0 1.5px var(--nav)}
 .gheff{display:inline-flex;align-items:center;gap:4px;flex:none}.gheff .gsp + .gsa{margin-left:0}
@@ -3219,7 +3219,7 @@ function sourcesHtml(g) {
     }
     if (x.crate) { // permanent pickups: one value per level, each level dropping from a later minute
       var cv = state.pw.crates.pickups[x.crate], vs = cv.values.filter(function (v) { return v != null; });
-      return '<div class="gsrc gsx gspw"><span class="gsi pw crate"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8l8.5-4.5L20.5 8v8.5L12 21l-8.5-4.5z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21"/></svg></span><span class="gst"><b>Golden Statues</b></span><em class="gsn">' + vs.map(function (v) { return esc(v) + esc(cv.unit); }).join(" / ") + "</em></div>";
+      return '<div class="gsrc gsx gspw"><span class="gsi pw crate"><img alt="" src="img/golden-statue.png"></span><span class="gst"><b>Golden Statues</b></span><em class="gsn">' + vs.map(function (v) { return esc(v) + esc(cv.unit); }).join(" / ") + "</em></div>";
     }
     var pw = { Casting: "spirit", Gun: "fire_rate", Movement: "move_speed", Survival: "health" }[String(x.text || "").split(" ")[0]];
     var pwi = { spirit: "star", fire_rate: "bps", move_speed: "boot", health: "health" }[pw];
