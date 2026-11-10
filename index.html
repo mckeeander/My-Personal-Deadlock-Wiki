@@ -543,6 +543,11 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .phsum{font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-left:8px}
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
 .ipage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px} /* the item page: its card, set apart from the patch history below */.ipl .pnl{margin-top:4px}
+.ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
+.ppy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}.ppy span{font-weight:400;letter-spacing:.02em;text-transform:none;margin-left:4px}
+.ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ppc{display:flex;align-items:center;gap:9px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px 8px 8px;color:var(--fg);font:inherit;text-align:left;-webkit-tap-highlight-color:transparent}
+.ppc .ric{width:32px;height:32px}.ppn{flex:1;min-width:0;font-size:13px;line-height:1.25}.ppc b{font-size:13px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums}
 .phy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;margin:16px 0 8px 4px}.phist.filt .phy{display:none!important}
 .phmore{width:100%;margin-top:4px;background:none;border:1px dashed #4a405a;border-radius:10px;padding:11px;color:var(--fg);font:inherit;font-size:14px}
 .phs{margin-top:10px}.phs .nsub{margin-bottom:4px}
@@ -784,6 +789,7 @@ function load() {
   idbGet("pw").then(function (pw) { if (pw && pw.powerups) state.pw = pw; }, function () {});
   idbGet("mc").then(function (mc) { if (mc && mc.mechanics) state.mc = mc.mechanics; }, function () {});
   idbGet("ph").then(function (ph) { if (ph && ph.heroes) state.ph = ph; }, function () {});
+  idbGet("pop").then(function (pp) { if (pp && pp.heroes) state.pop = pp; }, function () {});
   return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
@@ -1039,6 +1045,7 @@ function fetchAll() {
     state.fetchedAt = Date.now(); state.note = ""; index(); save();
     // community notes are optional: a failure here never blocks the main data
     getJson("patchnotes.json").then(function (pn) { if (pn && pn.patches) { state.pn = pn; idbSet("pn", pn); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); } }, function () {}); // official patch notes (deadlock-wiki/deadlock-data)
+    getJson("popular.json").then(function (pp) { if (pp && pp.heroes) { state.pop = pp; idbSet("pop", pp); var w4 = $("popwrap"), h4 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w4 && h4) w4.innerHTML = popularHtml(h4); } }, function () {}); // what top-ranked players buy on each hero
     getJson("patchhistory.json").then(function (ph) { if (ph && ph.heroes) { state.ph = ph; idbSet("ph", ph); var w3 = $("revwrap"), h3 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w3 && h3) w3.innerHTML = revisionsHtml(h3); } }, function () {}); // every official patch, per hero
     getJson("mechanics.json").then(function (mc) { if (mc && mc.mechanics) { state.mc = mc.mechanics; idbSet("mc", mc); } }, function () {}); // objectives and neutrals (deadlock-wiki/deadlock-data)
     getJson("powerups.json").then(function (pw) { if (pw && pw.powerups) { state.pw = pw; idbSet("pw", pw); } }, function () {});
@@ -2431,6 +2438,20 @@ function statGroupHtml(g, h) { // a hero's base stats in a patch: their own tint
 }
 var PH_OPEN = null; // the hero whose Patch history you opened, so a data refresh re-drawing it keeps it open
 document.addEventListener("toggle", function (e) { if (e.target.classList && e.target.classList.contains("phd") && state.tab === "heroes") PH_OPEN = e.target.open ? state.hero : null; }, true);
+var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
+function popularHtml(h) { // what top-ranked players buy on this hero, by when they buy it: half-width cards, the share of matches on the right
+  var P = state.pop && state.pop.heroes && state.pop.heroes[h.class_name]; if (!P || !P.items.length) return "";
+  var phases = [["Early game", "under 10 min", function (t) { return t < 600; }], ["Mid game", "10\u201320 min", function (t) { return t >= 600 && t < 1200; }], ["Late game", "20 min +", function (t) { return t >= 1200; }]];
+  var body = phases.map(function (ph) {
+    var rows = P.items.filter(function (r) { return ph[2](r.t) && state.byClass[r.c]; }).slice(0, 6); if (!rows.length) return "";
+    return '<div class="ppy">' + ph[0] + " <span>" + ph[1] + '</span></div><div class="ppg">' + rows.map(function (r) {
+      var it = state.byClass[r.c], sl = slotOf(it);
+      return '<button class="ppc" data-pitem="' + esc(r.c) + '"><span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(it), itemImg(it)) + '</span><span class="ppn">' + esc(nameOf(it)) + '</span><b>' + Math.round(r.p * 100) + "%</b></button>";
+    }).join("") + "</div>";
+  }).join("");
+  var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
+  return '<div class="sec">Popular items</div><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body;
+}
 function heroHead(h) { return pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h); }
 function isStats(g) { return !g.ac && g.label === "Stats"; }
 function revisionsHtml(h) { // Patch history: every official patch that touched this hero, newest first
@@ -2497,6 +2518,7 @@ function renderHero(cn) {
     var alt = fp && fp.swap[a.class_name];
     html += alt ? '<div class="f0">' + abilityCard(a, h) + '</div><div class="f1">' + abilityCard(alt, h) + "</div>" : abilityCard(a, h);
   });
+  html += '<div id="popwrap">' + popularHtml(h) + "</div>";
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : ""; updateJbar();
@@ -3893,7 +3915,7 @@ $("main").addEventListener("click", function (e) {
     });
     return;
   }
-  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem]") : null;
+  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem]") : null;
   if (pi) { itemSheet(pi.getAttribute("data-pitem")); return; }
   var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
   var card = u.closest(".ab"), key = card && card.getAttribute("data-ab"), it = key && state.byClass[key]; if (!it) return;

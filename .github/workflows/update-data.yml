@@ -524,6 +524,13 @@ jobs:
           git -C /tmp/deadlock-data sparse-checkout set --no-cone /data/changelogs/wiki/ /data/json/ /data/localizations/english.json
           python3 tools/wikidata.py /tmp/deadlock-data
 
+      - name: Popular items (Deadlock API match statistics)
+        # what top-ranked players (about the top 5% of matches) buy on each hero over the last 30 days;
+        # one request per hero, well under the API's limits. A failure leaves the last good copy.
+        continue-on-error: true
+        timeout-minutes: 15
+        run: python3 tools/popular.py
+
       - name: Save to repo
         run: |
           git config user.name "github-actions"
