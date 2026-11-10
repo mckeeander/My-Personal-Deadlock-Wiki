@@ -555,7 +555,7 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .ric.pnit.weapon img,.ric.pnit.vitality img,.ric.pnit.spirit img{width:100%;height:100%}
 .ric.pnit::after,.gsi:not(.pw)::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1.5px var(--slc,transparent);pointer-events:none}
 .itab{position:absolute;top:0;right:0;width:18.5px;height:18.5px;pointer-events:none}
-.itab::after{content:"";position:absolute;inset:0;clip-path:polygon(0 0,100% 100%,0 100%);background:linear-gradient(to bottom left,rgba(0,0,0,.5) 50%,transparent 61%);-webkit-mask-image:linear-gradient(to bottom right,transparent 7%,#000 38%,#000 62%,transparent 93%);mask-image:linear-gradient(to bottom right,transparent 7%,#000 38%,#000 62%,transparent 93%)} /* and fades out along the fold toward the ring at both ends */ /* the shadow falls only on the art, along the diagonal */
+.itab::after{content:"";position:absolute;top:0;right:0;width:24.5px;height:24.5px;background:linear-gradient(to bottom left,transparent 37.8%,rgba(0,0,0,.5) 37.8%,transparent 46.5%)} /* the shadow along the fold, on the art side only: a strip longer than the fold, so its ends run under the ring and the icon's edge instead of stopping on the art */
 .itab::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%);background:var(--itc)}
 .itab i{position:absolute;left:11.9px;top:6.3px;transform:translate(-50%,-50%);white-space:nowrap;font:800 7px/1 var(--body);font-style:normal;letter-spacing:-.02em;color:#1b1622}
 .itab.weapon{--itc:var(--weapon)}.itab.vitality{--itc:var(--vital)}.itab.spirit{--itc:var(--spirit)}
