@@ -535,7 +535,7 @@ html.lock,html.lock body{overflow:hidden}
 .gig{margin-top:10px;font-size:13px;color:var(--dim)}.gig span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d7290;margin-right:8px}.gig b{color:var(--fg);font-weight:600}
 .mlist{display:flex;flex-direction:column;gap:6px}.mlist div{background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.4}.mlist b{display:block;font-weight:600}.mlist span{color:var(--dim);font-size:13px}
 details.phd{margin:36px 0 16px;padding:1px 0} /* margins live on the section, not its header, and the 1px keeps them from leaking out: otherwise they shift while it animates */
-details.phd > summary.sec{margin:0}details.phd > summary + *{margin-top:16px}
+details.phd > summary.sec{margin:0;padding-bottom:12px} /* more air above its line than the other section headers */details.phd > summary + *{margin-top:16px}
 details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}details.phd > summary::-webkit-details-marker{display:none}details.phd > summary .ncv{margin-left:auto;width:18px;height:18px;flex:none;color:var(--dim);transition:transform .2s ease}details.phd[open] > summary .ncv{transform:rotate(90deg)}details.phd.closing > summary .ncv{transform:none}
 .secn{font-size:13px;color:var(--dim);font-weight:500;letter-spacing:0;margin-left:6px}
 .phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
