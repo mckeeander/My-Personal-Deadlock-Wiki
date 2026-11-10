@@ -411,7 +411,7 @@ details.notes > summary + *{margin-top:2px} /* content starts the same distance 
 @keyframes tipin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @keyframes tipfade{from{opacity:0}to{opacity:1}}
 details.lore:not([open]) summary{margin-bottom:0}
-.stats1{margin-top:20px}details.bsd{margin-top:8px}details.bsd .stats1,details.wpd > summary + div{margin-top:16px}
+.stats1{margin-top:20px}details.bsd{margin-top:8px}details.bsd .stats1,details.wpd > summary + div,details.abd > summary + div{margin-top:16px}
 .sheet .in::before{content:"";display:block;width:42px;height:4px;border-radius:2px;background:var(--line);margin:-4px auto 10px}
 .bg div.spike{position:relative;border:2px solid var(--sp)}
 .bg div.spike u{position:absolute;top:-9px;left:50%;transform:translateX(-50%);text-decoration:none;font-size:9px;font-weight:700;letter-spacing:.12em;color:#1a1208;border-radius:6px;padding:1px 7px}
@@ -594,6 +594,39 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .nref{color:var(--fg);font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .swc{will-change:transform,opacity}
 .status.stale{color:var(--gold);border-left:2px solid var(--gold);padding-left:8px}
+
+/* Base stats views: Normal, All heroes (a line per stat, a dot per hero), One hero (side by side) */
+.smsw{position:relative;display:flex;gap:3px;margin:0 0 10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:3px}
+.smsw button{position:relative;z-index:1;flex:1;min-width:0;border:0;border-radius:9px;background:transparent;padding:10px 4px;color:var(--dim);font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-tap-highlight-color:transparent}
+.smsw button[aria-selected=true]{color:var(--gold)}
+.smsw .sth{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc((100% - 12px)/3);border-radius:9px;background:rgba(230,180,90,.16);box-shadow:inset 0 0 0 1px var(--gold);transform:translateX(calc(var(--i) * (100% + 3px)));transition:transform .28s cubic-bezier(.2,.8,.25,1)}
+.srow.rk{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);padding:8px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.srow.rk.one{cursor:default}
+.srow.rk .l{line-height:1.25}
+.rkv{display:block;margin-top:2px}.rkv b{color:var(--fg);font-weight:600}.rkv i{font-style:normal;font-size:12px;color:var(--dim);margin-left:6px;white-space:nowrap}
+.srow.rk.one .rkv{margin:0}.srow.rk.one .rkv i{margin:0 0 0 8px}
+.trw{display:block;min-width:0;padding:0 4px}
+.trk{position:relative;display:block;height:22px}
+.trk::before{content:"";position:absolute;left:0;right:0;top:10px;height:2px;border-radius:2px;background:var(--line)}
+.trk i{position:absolute;top:7px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#5f5470}
+.trk b{position:absolute;top:2px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--c);border:2px solid var(--panel);z-index:1}
+.rkl{display:flex;justify-content:space-between;gap:6px;font-size:11px;color:var(--dim);line-height:1.2}
+.rkl .lowb{font-style:italic;opacity:.8}
+.srow.rk.open{border-bottom:0}
+.rkx{list-style:none;margin:0 0 6px;padding:6px 8px;background:var(--panel2);border-radius:8px;columns:2;column-gap:14px;font-size:12px}
+.rkx li{display:flex;gap:6px;padding:2px 0;break-inside:avoid;color:var(--dim)}
+.rkx li.me{color:var(--c);font-weight:700}
+.rkx .rp{width:18px;text-align:right;flex:none;opacity:.7}.rkx .rn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rkx .rvv{flex:none;color:var(--fg)}.rkx li.me .rvv{color:inherit}
+.rkhint{font-size:12px;color:var(--dim);margin:2px 2px 0}
+.vrow{display:grid;grid-template-columns:minmax(0,1fr) 84px 84px;column-gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
+.vrow .l{color:var(--dim)}.vrow b{text-align:right;font-weight:600}.vrow b.win{color:var(--vital)}.vrow b.lose{color:var(--dim);font-weight:500}
+.vrow.vhd{border-top:0;padding-top:0}
+.vh{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--fg);text-align:right;min-width:0}
+.vh img{width:26px;height:26px;border-radius:6px;object-fit:cover;background:var(--panel2)}
+button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font-size:12px;font-weight:700}
+.vpt{font-family:var(--disp);font-size:18px;margin:2px 0 12px}
+.vpg .hc.on{box-shadow:0 0 0 2px var(--gold)}
+.vpg{margin-bottom:14px}
 </style>
 </head>
 <body class="boot">
@@ -2013,43 +2046,43 @@ var SICON = { "Health": "health", "Health regen": "regen", "Out-of-combat regen"
   "Move speed": "boot", "Sprint speed": "sprint", "Crouch speed": "boot", "Dash speed": "dash", "Stamina": "stamina", "Stamina cooldown": "stamrech", "Ground dash": "dash", "Air dash": "dash",
   "Damage per second": "dps", "Bullet damage": "dmg", "Ammo": "ammo", "Bullets per sec": "bps", "Reload time": "reload", "Bullet velocity": "vel", "Light melee": "fist", "Heavy melee": "fist", "Reload speed": "reload",
   "Spirit power": "star" };
-function statBlock(h) {
+function statRows(h) { // a hero's base stats as rows: shown as cards, ranked against every hero, or side by side with one
+  var rows = [];
   var s = h.starting_stats || {}, up = h.standard_level_up_upgrades || {};
   function v(k) { return s[k] && s[k].value != null ? s[k].value : null; }
-  // wiki layout: label right-aligned to the centre line, icon + value left-aligned from it
-  function row(l, val, extra) {
-    // value and its note share one wrapping box beside the icon, so a note that drops to a second line lines up under the number
-    return '<div class="srow"><span class="l">' + esc(l) + '</span><span class="v">' + siIcon(SICON[l]) + '<span class="vv">' + (val !== "" ? "<b>" + esc(val) + "</b>" : "") + (extra ? "<em>" + esc(extra) + "</em>" : "") + "</span></span></div>";
+  function add(c, l, val, extra, n) { // n: the number compared between heroes (bullet damage counts every pellet)
+    var num = n != null ? n : parseFloat(String(val !== "" ? val : extra || "").replace(/[^0-9.\-]/g, ""));
+    rows.push({ c: c, l: l, val: val, extra: extra || "", n: isNaN(num) ? null : num, unit: val !== "" ? String(val).replace(/^[+×]?[0-9.,\s×]+/, "").trim() : "/ boon" });
   }
   function boon(k, mult) { var n = Number(up[k]) * (mult || 1); return n > 0 ? "+" + fmtNum(n) + " / boon" : ""; }
   var vit = "", wep = "", spi = "";
   var w = state.byClass[(h.items || {}).weapon_primary], wi = (w && w.weapon_info) || {};
-  if (v("max_health") != null) vit += row("Health", fmtNum(v("max_health")), boon("MODIFIER_VALUE_BASE_HEALTH_FROM_LEVEL"));
-  if (v("base_health_regen") != null) vit += row("Health regen", fmtNum(v("base_health_regen")) + "/s");
-  if (v("ooc_health_regen")) vit += row("Out-of-combat regen", fmtNum(v("ooc_health_regen")) + "/s");
-  if (v("crit_damage_received_scale") != null && v("crit_damage_received_scale") !== 1) vit += row("Crit reduction", fmtNum((1 - v("crit_damage_received_scale")) * 100) + "%");
-  if (Number(up.MODIFIER_VALUE_BULLET_ARMOR_DAMAGE_RESIST) > 0) vit += row("Bullet resist", "", boon("MODIFIER_VALUE_BULLET_ARMOR_DAMAGE_RESIST"));
-  if (Number(up.MODIFIER_VALUE_TECH_RESIST) > 0) vit += row("Spirit resist", "", boon("MODIFIER_VALUE_TECH_RESIST"));
-  if (v("max_move_speed") != null) vit += row("Move speed", fmtNum(v("max_move_speed")) + " m/s");
-  if (v("sprint_speed") != null) vit += row("Sprint speed", "+" + fmtNum(v("sprint_speed")) + " m/s");
-  if (v("crouch_speed") != null) vit += row("Crouch speed", fmtNum(v("crouch_speed")) + " m/s");
-  if (v("ground_dash_distance_in_meters") && v("ground_dash_duration")) vit += row("Dash speed", fmtNum(Math.round(v("ground_dash_distance_in_meters") / v("ground_dash_duration") * 10) / 10) + " m/s");
-  if (v("stamina") != null) vit += row("Stamina", fmtNum(v("stamina")));
-  if (v("stamina_regen_per_second")) vit += row("Stamina cooldown", fmtNum(1 / v("stamina_regen_per_second")) + "s");
-  if (v("ground_dash_distance_in_meters")) vit += row("Ground dash", fmtNum(v("ground_dash_distance_in_meters")) + "m", fmtNum(v("ground_dash_duration")) + "s");
-  if (v("air_dash_distance_in_meters")) vit += row("Air dash", fmtNum(v("air_dash_distance_in_meters")) + "m", fmtNum(v("air_dash_duration")) + "s");
+  if (v("max_health") != null) add("vit", "Health", fmtNum(v("max_health")), boon("MODIFIER_VALUE_BASE_HEALTH_FROM_LEVEL"));
+  if (v("base_health_regen") != null) add("vit", "Health regen", fmtNum(v("base_health_regen")) + "/s");
+  if (v("ooc_health_regen")) add("vit", "Out-of-combat regen", fmtNum(v("ooc_health_regen")) + "/s");
+  if (v("crit_damage_received_scale") != null && v("crit_damage_received_scale") !== 1) add("vit", "Crit reduction", fmtNum((1 - v("crit_damage_received_scale")) * 100) + "%");
+  if (Number(up.MODIFIER_VALUE_BULLET_ARMOR_DAMAGE_RESIST) > 0) add("vit", "Bullet resist", "", boon("MODIFIER_VALUE_BULLET_ARMOR_DAMAGE_RESIST"));
+  if (Number(up.MODIFIER_VALUE_TECH_RESIST) > 0) add("vit", "Spirit resist", "", boon("MODIFIER_VALUE_TECH_RESIST"));
+  if (v("max_move_speed") != null) add("vit", "Move speed", fmtNum(v("max_move_speed")) + " m/s");
+  if (v("sprint_speed") != null) add("vit", "Sprint speed", "+" + fmtNum(v("sprint_speed")) + " m/s");
+  if (v("crouch_speed") != null) add("vit", "Crouch speed", fmtNum(v("crouch_speed")) + " m/s");
+  if (v("ground_dash_distance_in_meters") && v("ground_dash_duration")) add("vit", "Dash speed", fmtNum(Math.round(v("ground_dash_distance_in_meters") / v("ground_dash_duration") * 10) / 10) + " m/s");
+  if (v("stamina") != null) add("vit", "Stamina", fmtNum(v("stamina")));
+  if (v("stamina_regen_per_second")) add("vit", "Stamina cooldown", fmtNum(1 / v("stamina_regen_per_second")) + "s");
+  if (v("ground_dash_distance_in_meters")) add("vit", "Ground dash", fmtNum(v("ground_dash_distance_in_meters")) + "m", fmtNum(v("ground_dash_duration")) + "s");
+  if (v("air_dash_distance_in_meters")) add("vit", "Air dash", fmtNum(v("air_dash_distance_in_meters")) + "m", fmtNum(v("air_dash_duration")) + "s");
   var pel = wi.bullets || 1, bps = wi.bullets_per_second || wi.shots_per_second;
-  if (wi.damage_per_second) wep += row("Damage per second", fmtNum(Math.round(wi.damage_per_second * 10) / 10));
-  if (wi.bullet_damage != null) wep += row("Bullet damage", fmtNum(wi.bullet_damage) + (pel > 1 ? " × " + pel : ""), boon("MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL"));
-  if (wi.clip_size != null) wep += row("Ammo", fmtNum(wi.clip_size));
-  if (bps) wep += row("Bullets per sec", fmtNum(bps));
-  if (wi.reload_duration != null) wep += row("Reload time", fmtNum(wi.reload_duration) + "s");
-  if (wi.bullet_speed) wep += row("Bullet velocity", fmtNum(Math.round(wi.bullet_speed / 39.37)) + " m/s");
+  if (wi.damage_per_second) add("wep", "Damage per second", fmtNum(Math.round(wi.damage_per_second * 10) / 10));
+  if (wi.bullet_damage != null) add("wep", "Bullet damage", fmtNum(wi.bullet_damage) + (pel > 1 ? " × " + pel : ""), boon("MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL"), wi.bullet_damage * pel);
+  if (wi.clip_size != null) add("wep", "Ammo", fmtNum(wi.clip_size));
+  if (bps) add("wep", "Bullets per sec", fmtNum(bps));
+  if (wi.reload_duration != null) add("wep", "Reload time", fmtNum(wi.reload_duration) + "s");
+  if (wi.bullet_speed) add("wep", "Bullet velocity", fmtNum(Math.round(wi.bullet_speed / 39.37)) + " m/s");
   var lm = v("light_melee_damage"), hm = v("heavy_melee_damage");
-  if (lm != null) wep += row("Light melee", fmtNum(lm), boon("MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL"));
-  if (hm != null) wep += row("Heavy melee", fmtNum(hm), lm ? boon("MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL", hm / lm) : ""); // heavy scales in the same ratio as its base
-  if (v("reload_speed") != null && v("reload_speed") !== 1) wep += row("Reload speed", "×" + fmtNum(v("reload_speed")));
-  spi += row("Spirit power", fmtNum(v("tech_power") || 0), boon("MODIFIER_VALUE_TECH_POWER"));
+  if (lm != null) add("wep", "Light melee", fmtNum(lm), boon("MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL"));
+  if (hm != null) add("wep", "Heavy melee", fmtNum(hm), lm ? boon("MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL", hm / lm) : ""); // heavy scales in the same ratio as its base
+  if (v("reload_speed") != null && v("reload_speed") !== 1) add("wep", "Reload speed", "×" + fmtNum(v("reload_speed")));
+  add("spi", "Spirit power", fmtNum(v("tech_power") || 0), boon("MODIFIER_VALUE_TECH_POWER"));
   var sc = h.scaling_stats || {};
   Object.keys(sc).forEach(function (k) {
     var o = sc[k] || {}, who = o.scaling_stat === "ETechPower" ? "spirit" : o.scaling_stat === "EWeaponPower" ? "weapon" : nice(o.scaling_stat || "").toLowerCase();
@@ -2058,12 +2091,146 @@ function statBlock(h) {
       EFireRate: "Fire rate", EBaseHealthRegen: "Health regen", EHeavyMeleeDamage: "Heavy melee" };
     var per = "/ " + (who === "spirit" ? "Spirit Power" : who);
     var sv = Math.abs(o.scale) < 0.1 ? String(Number(Number(o.scale).toPrecision(2))) : fmtNum(o.scale);
-    if (AR[k]) spi += row(AR[k], "+" + sv + "%", per);
-    else spi += row(SN[k] || nice(k), "+" + sv, per);
+    if (AR[k]) add("spi", AR[k], "+" + sv + "%", per);
+    else add("spi", SN[k] || nice(k), "+" + sv, per);
   });
-  function blk(c, t, r) { return r ? '<section class="sblk ' + c + '"><h4>' + t + "</h4>" + r + "</section>" : ""; }
-  return '<div class="sgrid">' + blk("vit", "Vitality", vit) + blk("wep", "Weapon", wep) + blk("spi", "Spirit", spi) + "</div>";
+  return rows;
 }
+var SCAT = [["vit", "Vitality"], ["wep", "Weapon"], ["spi", "Spirit"]];
+function statBlock(h) { // the normal view: a card per category, label right-aligned to the centre line, icon + value left-aligned from it
+  function row(r) { // value and its note share one wrapping box beside the icon, so a note that drops to a second line lines up under the number
+    return '<div class="srow"><span class="l">' + esc(r.l) + '</span><span class="v">' + siIcon(SICON[r.l]) + '<span class="vv">' + (r.val !== "" ? "<b>" + esc(r.val) + "</b>" : "") + (r.extra ? "<em>" + esc(r.extra) + "</em>" : "") + "</span></span></div>";
+  }
+  var rows = statRows(h);
+  return '<div class="sgrid">' + SCAT.map(function (c) {
+    var r = rows.filter(function (x) { return x.c === c[0]; }); return r.length ? '<section class="sblk ' + c[0] + '"><h4>' + c[1] + "</h4>" + r.map(row).join("") + "</section>" : "";
+  }).join("") + "</div>";
+}
+/* ---------- comparing base stats: with every hero (a dot for each on one line) or side by side with one ---------- */
+var STATMODE = "n", VSHERO = null; // which view Base stats shows, kept as you move between heroes
+var LOWBETTER = { "Reload time": 1, "Stamina cooldown": 1 };
+function skey(r) { return r.c + "|" + r.l; }
+function statPool() { // every hero's rows by stat, built once per data load
+  if (statPool.sig === state.sig && statPool.p) return statPool.p;
+  var p = {};
+  state.heroes.forEach(function (h) { statRows(h).forEach(function (r) { if (r.n != null) (p[skey(r)] = p[skey(r)] || []).push({ h: h, n: r.n, r: r }); }); });
+  statPool.sig = state.sig; return (statPool.p = p);
+}
+function sbetter(r, a, b) { if (a == null || b == null || a === b) return 0; return (LOWBETTER[r.l] ? a < b : a > b) ? 1 : -1; }
+function sfmt(n, r) { // a number with its row's unit, for the ends of a line and the ranked list
+  if (r.l === "Bullet damage") return fmtNum(Math.round(n * 10) / 10) + " / shot";
+  var u = r.unit === "/ boon" ? " / boon" : r.unit ? (/^[a-z%/]/i.test(r.unit) && !/^(m\/s|m)$/.test(r.unit) ? r.unit : " " + r.unit) : "";
+  return (r.val && /^\+/.test(r.val) ? "+" : "") + fmtNum(n) + u;
+}
+function smodeSwitch(h) {
+  var o = VSHERO && state.heroes.filter(function (x) { return x.class_name === VSHERO && x.class_name !== h.class_name; })[0];
+  var i = STATMODE === "all" ? 1 : STATMODE === "vs" ? 2 : 0;
+  return '<div class="smsw" role="tablist" style="--i:' + i + '"><span class="sth"></span>' +
+    '<button data-sm="n" role="tab" aria-selected="' + (i === 0) + '">Normal</button>' +
+    '<button data-sm="all" role="tab" aria-selected="' + (i === 1) + '">All heroes</button>' +
+    '<button data-sm="vs" role="tab" aria-selected="' + (i === 2) + '">' + (o ? "vs " + esc(o.name) : "One hero") + "</button></div>";
+}
+function statView(h) {
+  if (STATMODE === "all") return statAll(h);
+  if (STATMODE === "vs") { var o = state.heroes.filter(function (x) { return x.class_name === VSHERO; })[0]; if (o && o !== h) return statVs(h, o); }
+  return statBlock(h);
+}
+function statAll(h) { // D: each stat as a line from the lowest hero to the highest, a dot per hero, this hero coloured, with its rank
+  var pool = statPool(), n = state.heroes.length;
+  return '<div class="sgrid rkg">' + SCAT.map(function (c) {
+    var rows = statRows(h).filter(function (r) { return r.c === c[0]; }); if (!rows.length) return "";
+    return '<section class="sblk ' + c[0] + '"><h4>' + c[1] + "</h4>" + rows.map(function (r) {
+      var xs = pool[skey(r)] || [], v = r.n;
+      var shown = esc(r.val !== "" ? r.val : r.extra);
+      if (v == null || xs.length < 2) return '<div class="srow rk one"><span class="l">' + esc(r.l) + '</span><span class="rkv"><b>' + shown + "</b></span></div>";
+      var lo = Infinity, hi = -Infinity; xs.forEach(function (x) { if (x.n < lo) lo = x.n; if (x.n > hi) hi = x.n; });
+      if (lo === hi) return '<div class="srow rk one"><span class="l">' + esc(r.l) + '</span><span class="rkv"><b>' + shown + "</b><i>every hero the same</i></span></div>";
+      var pos = function (x) { return (100 * (x - lo) / (hi - lo)).toFixed(2); };
+      var better = xs.filter(function (x) { return sbetter(r, x.n, v) > 0; }).length, ties = xs.filter(function (x) { return x.n === v; }).length;
+      var of = xs.length < n ? " of " + xs.length : "";
+      var rank = (ties > 1 ? "tied " : "") + "#" + (better + 1) + of;
+      var dots = xs.map(function (x) { return x.h === h ? "" : '<i style="left:' + pos(x.n) + '%"></i>'; }).join("");
+      var lowNote = LOWBETTER[r.l] ? '<span class="lowb">lower is better</span>' : "";
+      return '<div class="srow rk" data-sk="' + esc(skey(r)) + '"><span class="l">' + esc(r.l) + '<span class="rkv"><b>' + shown + "</b><i>" + rank + "</i></span></span>" +
+        '<span class="trw"><span class="trk">' + dots + '<b style="left:' + pos(v) + '%"></b></span><span class="rkl"><span>' + esc(sfmt(lo, r)) + "</span>" + lowNote + "<span>" + esc(sfmt(hi, r)) + "</span></span></span></div>";
+    }).join("") + "</section>";
+  }).join("") + '<p class="rkhint">Tap a stat to list every hero.</p></div>';
+}
+function rankList(h, sk) { // every hero for one stat, best first; this hero picked out
+  var xs = (statPool()[sk] || []).slice(); if (!xs.length) return "";
+  var r = xs[0].r;
+  xs.sort(function (a, b) { return sbetter(r, a.n, b.n) * -1 || (a.h.name < b.h.name ? -1 : 1); });
+  var place = 0, prev = null;
+  return '<ol class="rkx">' + xs.map(function (x, i) {
+    if (x.n !== prev) { place = i + 1; prev = x.n; }
+    return '<li' + (x.h === h ? ' class="me"' : "") + '><span class="rp">' + place + '</span><span class="rn">' + esc(x.h.name) + '</span><span class="rvv">' + esc(x.r.val !== "" ? x.r.val : sfmt(x.n, x.r)) + "</span></li>";
+  }).join("") + "</ol>";
+}
+function statVs(h, o) { // A: the two heroes side by side, the better number in each row green
+  var ra = statRows(h), rb = statRows(o);
+  function cell(r) { return r ? esc(r.val !== "" ? r.val : r.extra) : "—"; }
+  var head = function (x) { return '<b class="vh"><img alt="" src="' + esc(heroHead(x)) + '" onerror="this.style.visibility=\'hidden\'">' + esc(x.name) + "</b>"; };
+  return '<div class="sgrid vsg">' + SCAT.map(function (c) {
+    var keys = [], by = {};
+    ra.concat(rb).forEach(function (r) { if (r.c !== c[0]) return; var k = skey(r); if (!by[k]) { by[k] = {}; keys.push(k); } by[k][ra.indexOf(r) >= 0 ? "a" : "b"] = r; });
+    if (!keys.length) return "";
+    return '<section class="sblk ' + c[0] + '"><h4>' + c[1] + '</h4><div class="vrow vhd"><span></span>' + head(h) + '<button class="vh vpick" data-sm="pick">' + '<img alt="" src="' + esc(heroHead(o)) + '" onerror="this.style.visibility=\'hidden\'">' + esc(o.name) + "</button></div>" + keys.map(function (k) {
+      var x = by[k], ref = x.a || x.b, w = sbetter(ref, x.a ? x.a.n : null, x.b ? x.b.n : null);
+      return '<div class="vrow"><span class="l">' + esc(ref.l) + '</span><b class="' + (w > 0 ? "win" : w < 0 ? "lose" : "") + '">' + cell(x.a) + '</b><b class="' + (w < 0 ? "win" : w > 0 ? "lose" : "") + '">' + cell(x.b) + "</b></div>";
+    }).join("") + "</section>";
+  }).join("") + (rb.some(function (r) { return r.l === "Bullet damage"; }) ? '<p class="rkhint">Bullet damage compares the whole shot: every pellet counted.</p>' : "") + "</div>";
+}
+function vsPicker(h) { // pick the hero to compare with, in a pop-up
+  var html = '<h3 class="vpt">Compare ' + esc(h.name) + " with</h3><div class=\"hg vpg\">" + state.heroes.filter(function (x) { return x !== h; }).map(function (x) {
+    return '<button class="hc' + (x.class_name === VSHERO ? " on" : "") + '" data-vs="' + esc(x.class_name) + '"><img decoding="async" alt="" src="' + esc(heroImg(x)) + '" onload="this.classList.add(\'ld\')" onerror="this.classList.add(\'ld\')"><span>' + esc(x.name) + "</span></button>";
+  }).join("") + '</div><div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
+  clearTimeout(SWAPT); resetSwap(); ISTACK = []; FSTACK = [];
+  $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
+  $("close").onclick = sinkSheet;
+}
+function setStatMode(mode) { // switch views: the old rows fade, the card grows or shrinks to the new height, the new rows come in; on All heroes the dots spread out from this hero's own
+  var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], el = $("stats1"); if (!h || !el) return;
+  STATMODE = mode;
+  var sw = el.parentNode.querySelector(".smsw"); if (sw) sw.outerHTML = smodeSwitch(h);
+  var calm = !el.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if (calm) { el.innerHTML = statView(h); return; }
+  el.getAnimations().forEach(function (a) { a.cancel(); });
+  var h0 = el.offsetHeight;
+  el.innerHTML = statView(h);
+  var h1 = el.offsetHeight;
+  el.style.overflow = "hidden";
+  el.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: 340, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = function () { el.style.overflow = ""; };
+  Array.prototype.forEach.call(el.querySelectorAll(".srow, .vrow, .rkhint"), function (row, i) {
+    row.animate([{ opacity: 0, transform: "translateY(-4px)" }, { opacity: 1, transform: "none" }], { duration: 260, delay: Math.min(i, 24) * 14, easing: "ease-out", fill: "backwards" });
+  });
+  if (mode === "all") Array.prototype.forEach.call(el.querySelectorAll(".trk"), function (t, ri) {
+    var me = t.querySelector("b"); if (!me) return;
+    var mx = me.getBoundingClientRect().left;
+    Array.prototype.forEach.call(t.querySelectorAll("i"), function (d) {
+      var dx = mx - d.getBoundingClientRect().left;
+      d.animate([{ transform: "translateX(" + dx + "px)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 520, delay: 80 + Math.min(ri, 24) * 18, easing: "cubic-bezier(.2,.75,.25,1)", fill: "backwards" });
+    });
+  });
+}
+document.addEventListener("click", function (e) {
+  var t = e.target.closest ? e.target : null; if (!t) return;
+  var sm = t.closest("[data-sm]"), vs = t.closest("[data-vs]"), rk = t.closest(".srow.rk[data-sk]");
+  var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
+  if (sm) {
+    var m = sm.getAttribute("data-sm");
+    if (m === "pick" || (m === "vs" && (!VSHERO || VSHERO === h.class_name || STATMODE === "vs"))) { vsPicker(h); return; } // One hero, with no hero chosen yet (or tapped again): choose one
+    if (m !== STATMODE) setStatMode(m);
+    return;
+  }
+  if (vs) { VSHERO = vs.getAttribute("data-vs"); sinkSheet(); setStatMode("vs"); return; }
+  if (rk) { // a ranked stat: open or shut the list of every hero under it
+    var nx = rk.nextElementSibling;
+    if (nx && nx.classList.contains("rkx")) { nx.remove(); rk.classList.remove("open"); return; }
+    Array.prototype.forEach.call(document.querySelectorAll("#stats1 .rkx"), function (x) { x.previousElementSibling.classList.remove("open"); x.remove(); });
+    rk.insertAdjacentHTML("afterend", rankList(h, rk.getAttribute("data-sk"))); rk.classList.add("open");
+    var l = rk.nextElementSibling; if (l.animate) l.animate([{ opacity: 0, transform: "translateY(-4px)" }, { opacity: 1, transform: "none" }], { duration: 220, easing: "ease-out" });
+  }
+});
 // swipe from the left edge on a hero page to go back (same as the back pill if one is showing, else the hero list at the spot you left)
 // every way of going back (the back row, the pills, search Cancel, the edge swipe) plays the same exit: the page slides right and fades, the previous page slides in from the left
 var SLIDING = false, INSIDE = false;
@@ -2333,6 +2500,7 @@ function updateJbar() { // shown for the whole hero page; outlines the ability y
 }
 function jumpTo(cn) {
   var el = document.querySelector('#main [data-ab="' + cn + '"]'); if (!el) return;
+  var ad = el.closest("details.abd"); if (ad && !ad.open) { if (ad._stop) ad._stop(); ad.open = true; } // the abilities were folded away: open them to jump
   if (el.closest(".f1")) { if (!state.alt) setForm(true); } else if (el.closest(".f0") && state.alt) setForm(false);
   JLOCK = true; JTO = cn; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar();
   scrollToEl(el, true);
@@ -2478,11 +2646,11 @@ function statGroupHtml(g, h) { // a hero's base stats in a patch: their own tint
 }
 var PH_OPEN = null; // the hero whose Patch history you opened, so a data refresh re-drawing it keeps it open
 var POP_SHUT = null; // the hero whose Popular items you folded away
-var BS_OPEN = null, WP_OPEN = null; // the hero whose Base stats / Weapon you opened
+var BS_OPEN = null, WP_OPEN = null, AB_SHUT = null; // the hero whose Base stats / Weapon you opened, whose Abilities you folded away
 document.addEventListener("toggle", function (e) {
   var c = e.target.classList; if (!c || !c.contains("phd") || state.tab !== "heroes") return;
   var mine = e.target.open ? state.hero : null;
-  if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else if (c.contains("bsd")) BS_OPEN = mine; else if (c.contains("wpd")) WP_OPEN = mine; else PH_OPEN = mine;
+  if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else if (c.contains("bsd")) BS_OPEN = mine; else if (c.contains("wpd")) WP_OPEN = mine; else if (c.contains("abd")) AB_SHUT = e.target.open ? null : state.hero; else PH_OPEN = mine;
 }, true);
 var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
 function tierTab(it) { // the game's corner tab: a slot-coloured triangle in the top right with the tier in Roman numerals, casting a little shadow on the art
@@ -2564,18 +2732,20 @@ function renderHero(cn) {
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   // base stats and the weapon fold shut like Patch history, so the abilities are near the top; each remembers being opened for this hero
-  html += '<details class="phd bsd"' + (BS_OPEN === cn ? " open" : "") + '><summary class="sec">Base stats' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><div class="stats1">' + statBlock(h) + "</div></details>";
+  html += '<details class="phd bsd"' + (BS_OPEN === cn ? " open" : "") + '><summary class="sec">Base stats' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><div class="stats1">' + smodeSwitch(h) + '<div id="stats1">' + statView(h) + "</div></div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
   if (state.altHero !== cn) { state.alt = false; state.altHero = cn; }
   var wc = weaponCard(h);
   if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec">Weapon' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
-  html += '<div class="sec">Abilities</div>' + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
+  // the abilities fold like the sections above, but start open
+  html += '<details class="phd abd"' + (AB_SHUT === cn ? "" : " open") + '><summary class="sec">Abilities' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
   abs.forEach(function (a) {
     var alt = fp && fp.swap[a.class_name];
     html += alt ? '<div class="f0">' + abilityCard(a, h) + '</div><div class="f1">' + abilityCard(alt, h) + "</div>" : abilityCard(a, h);
   });
+  html += "</div></details>";
   html += '<div id="popwrap">' + popularHtml(h) + "</div>";
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
