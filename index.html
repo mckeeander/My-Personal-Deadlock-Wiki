@@ -548,6 +548,11 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ppc{display:flex;align-items:center;gap:9px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px 8px 8px;color:var(--fg);font:inherit;text-align:left;-webkit-tap-highlight-color:transparent}
 .ppc .ric{width:32px;height:32px}.ppn{flex:1;min-width:0;font-size:13px;line-height:1.25}.ppc b{font-size:13px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums}
+.ric.pnit,.gsi{position:relative}
+.itab{position:absolute;top:0;right:0;width:18px;height:18px;pointer-events:none;filter:drop-shadow(-1px 1px 1.2px rgba(0,0,0,.55))}
+.itab::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%);background:var(--itc)}
+.itab i{position:absolute;top:1px;right:1.5px;font:800 7.5px/1 var(--body);font-style:normal;letter-spacing:-.02em;color:#1b1622}
+.itab.weapon{--itc:var(--weapon)}.itab.vitality{--itc:var(--vital)}.itab.spirit{--itc:var(--spirit)}
 .phy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;margin:16px 0 8px 4px}.phist.filt .phy{display:none!important}
 .phmore{width:100%;margin-top:4px;background:none;border:1px dashed #4a405a;border-radius:10px;padding:11px;color:var(--fg);font:inherit;font-size:14px}
 .phs{margin-top:10px}.phs .nsub{margin-bottom:4px}
@@ -2443,6 +2448,10 @@ document.addEventListener("toggle", function (e) {
   if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else PH_OPEN = e.target.open ? state.hero : null;
 }, true);
 var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
+function tierTab(it) { // the game's corner tab: a slot-coloured triangle in the top right with the tier in Roman numerals, casting a little shadow on the art
+  var t = Number(it && it.item_tier) || 0, sl = slotOf(it); if (!t || !sl) return "";
+  return '<span class="itab ' + sl + '" aria-label="Tier ' + t + '"><i>' + ["", "I", "II", "III", "IV"][t] + "</i></span>";
+}
 function partOf(a, b, seen) { // does item b build from item a, at any depth?
   if (seen[b]) return false; seen[b] = 1;
   return ((state.byClass[b] || {}).component_items || []).some(function (c) { return c === a || partOf(a, c, seen); });
@@ -2456,7 +2465,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
     if (!rows.length) return "";
     return '<div class="ppy">' + ph[0] + " <span>" + ph[1] + '</span></div><div class="ppg">' + rows.map(function (r) {
       var it = state.byClass[r.c], sl = slotOf(it);
-      return '<button class="ppc" data-pitem="' + esc(r.c) + '"><span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(it), itemImg(it)) + '</span><span class="ppn">' + esc(nameOf(it)) + '</span><b>' + Math.round(r.p * 100) + "%</b></button>";
+      return '<button class="ppc" data-pitem="' + esc(r.c) + '"><span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(it), itemImg(it)) + tierTab(it) + '</span><span class="ppn">' + esc(nameOf(it)) + '</span><b>' + Math.round(r.p * 100) + "%</b></button>";
     }).join("") + "</div>";
   }).join("");
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
@@ -3200,7 +3209,7 @@ function sourcesHtml(g) {
     }
     if (x.item) {
       var it = state.byClass[x.ic], sl = it ? slotOf(it) : "";
-      return '<button class="gsrc"' + (x.ic ? ' data-item="' + esc(x.ic) + '"' : "") + '><span class="gsi' + (sl ? " " + sl : "") + '">' + (it ? imgTag(itemArt(it), itemImg(it)) : "") + '</span><span class="gst"><b>' + esc(it ? nameOf(it) : x.item) + "</b></span>" + note + "</button>"; // the shop art, as on the item's own card
+      return '<button class="gsrc"' + (x.ic ? ' data-item="' + esc(x.ic) + '"' : "") + '><span class="gsi' + (sl ? " " + sl : "") + '">' + (it ? imgTag(itemArt(it), itemImg(it)) + tierTab(it) : "") + '</span><span class="gst"><b>' + esc(it ? nameOf(it) : x.item) + "</b></span>" + note + "</button>"; // the shop art, as on the item's own card
     }
     if (x.crate) { // permanent pickups: one value per level, each level dropping from a later minute
       var cv = state.pw.crates.pickups[x.crate], vs = cv.values.filter(function (v) { return v != null; });
