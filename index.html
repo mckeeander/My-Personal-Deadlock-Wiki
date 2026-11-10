@@ -534,6 +534,8 @@ html.lock,html.lock body{overflow:hidden}
 .glt{flex:1;display:flex;flex-direction:column;line-height:1.25}.glt b{font-weight:600;font-size:15px}.glt i{font-style:normal;font-size:12px;color:var(--dim)}
 .gig{margin-top:10px;font-size:13px;color:var(--dim)}.gig span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d7290;margin-right:8px}.gig b{color:var(--fg);font-weight:600}
 .mlist{display:flex;flex-direction:column;gap:6px}.mlist div{background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.4}.mlist b{display:block;font-weight:600}.mlist span{color:var(--dim);font-size:13px}
+details.phd{margin:36px 0 16px;padding:1px 0} /* margins live on the section, not its header, and the 1px keeps them from leaking out: otherwise they shift while it animates */
+details.phd > summary.sec{margin:0}details.phd > summary + *{margin-top:16px}
 details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}details.phd > summary::-webkit-details-marker{display:none}details.phd > summary .ncv{margin-left:auto;width:18px;height:18px;flex:none;color:var(--dim);transition:transform .2s ease}details.phd[open] > summary .ncv{transform:rotate(90deg)}details.phd.closing > summary .ncv{transform:none}
 .secn{font-size:13px;color:var(--dim);font-weight:500;letter-spacing:0;margin-left:6px}
 .phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
@@ -2447,14 +2449,14 @@ function revisionsHtml(h) { // Patch history: every official patch that touched 
 }
 function itemHistoryHtml(it) { // the same list for a shop item: each patch's official notes
   var P = itemHistory(it.class_name); if (!P.length) return "";
-  return phListHtml(P, "", function (p) { return '<div class="ipl">' + pnList(p.lines) + "</div>"; }, null, true);
+  return phListHtml(P, "", function (p) { return '<div class="ipl">' + pnList(p.lines) + "</div>"; }, null, true, true);
 }
 function itemHistory(cn) { return (state.ph && state.ph.items && state.ph.items[cn]) || []; }
-function phListHtml(P, filt, bodyOf, absOf, open) { // this year's patches open to view, older ones behind a button and grouped by year; one open at a time
-  var thisYear = String(new Date().getFullYear()), show = P.filter(function (p) { return p.date.slice(0, 4) >= thisYear; }).length || 1;
+function phListHtml(P, filt, bodyOf, absOf, open, all) { // all: every patch shown (item pages), no button // this year's patches open to view, older ones behind a button and grouped by year; one open at a time
+  var thisYear = String(new Date().getFullYear()), show = all ? P.length : P.filter(function (p) { return p.date.slice(0, 4) >= thisYear; }).length || 1;
   var year = "", rows = P.map(function (p, i) {
-    var old = i >= show, y = p.date.slice(0, 4), yh = old && y !== year ? '<div class="phy pho">' + y + "</div>" : "";
-    if (old) year = y;
+    var old = i >= show, y = p.date.slice(0, 4), yh = (old || y < thisYear) && y !== year ? '<div class="phy' + (old ? " pho" : "") + '">' + y + "</div>" : ""; // earlier years under their own heading
+    if (old || y < thisYear) year = y;
     var n = p.lines ? p.lines.length : p.groups.reduce(function (a, g) { return a + g.lines.length; }, 0);
     var src = p.source ? '<a class="pnsrc" href="' + esc(p.source) + '" target="_blank" rel="noopener">' + esc(p.title || "Official notes") + " ↗</a>" : "";
     return yh + '<details class="rpt' + (old ? " pho" : "") + '" data-abs="' + esc(absOf ? absOf(p) : "") + '"' + (i === 0 ? " open" : "") + '><summary><span class="rd">' + esc(revDate(p.date)) + '<i class="phsum">' + n + " change" + (n === 1 ? "" : "s") + '</i></span><span class="rcv">' + CHEV + "</span></summary>" + src + bodyOf(p) + "</details>";
