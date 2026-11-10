@@ -2662,11 +2662,11 @@ function statGroupHtml(g, h) { // a hero's base stats in a patch: their own tint
 }
 var PH_OPEN = null; // the hero whose Patch history you opened, so a data refresh re-drawing it keeps it open
 var POP_SHUT = null; // the hero whose Popular items you folded away
-var BS_OPEN = null, WP_OPEN = null, AB_SHUT = null; // the hero whose Base stats / Weapon you opened, whose Abilities you folded away
+var BS_SHUT = null, WP_OPEN = null, AB_SHUT = null; // the hero whose Base stats you folded away, whose Weapon you opened, whose Abilities you folded away
 document.addEventListener("toggle", function (e) {
   var c = e.target.classList; if (!c || !c.contains("phd") || state.tab !== "heroes") return;
   var mine = e.target.open ? state.hero : null;
-  if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else if (c.contains("bsd")) BS_OPEN = mine; else if (c.contains("wpd")) WP_OPEN = mine; else if (c.contains("abd")) AB_SHUT = e.target.open ? null : state.hero; else PH_OPEN = mine;
+  if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else if (c.contains("bsd")) BS_SHUT = e.target.open ? null : state.hero; else if (c.contains("wpd")) WP_OPEN = mine; else if (c.contains("abd")) AB_SHUT = e.target.open ? null : state.hero; else PH_OPEN = mine;
 }, true);
 var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
 function tierTab(it) { // the game's corner tab: a slot-coloured triangle in the top right with the tier in Roman numerals, casting a little shadow on the art
@@ -2747,8 +2747,8 @@ function renderHero(cn) {
   var tagsA = (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
-  // base stats and the weapon fold shut like Patch history, so the abilities are near the top; each remembers being opened for this hero
-  html += '<details class="phd bsd"' + (BS_OPEN === cn ? " open" : "") + '><summary class="sec">Base stats' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><div class="stats1">' + smodeSwitch(h) + '<div id="stats1">' + statView(h) + "</div></div></details>";
+  // base stats starts open (it holds the comparison switch); the weapon folds shut like Patch history; each remembers your choice for this hero
+  html += '<details class="phd bsd"' + (BS_SHUT === cn ? "" : " open") + '><summary class="sec">Base stats' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><div class="stats1">' + smodeSwitch(h) + '<div id="stats1">' + statView(h) + "</div></div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
   if (state.altHero !== cn) { state.alt = false; state.altHero = cn; }
