@@ -639,21 +639,27 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scs{margin:0 0 18px}.scs h4{margin:0 0 8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:700;text-align:center}
 .scs.vit{--c:var(--vital)}.scs.wep{--c:var(--weapon)}.scs.spi{--c:var(--spirit)}
 .scw{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.scd{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 8px 12px;overflow:hidden}
-.scd::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.scd{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 8px 12px}
+.scd::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:2px solid var(--c);border-left-width:3px;border-right:0;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 12px,transparent 34px);mask-image:linear-gradient(to right,#000 12px,transparent 34px)} /* the category colour wraps round the left corners and fades along the top and bottom */
 .scd.boon::before{opacity:.45}
 .sch{display:flex;align-items:center;gap:6px;min-width:0}
 .sch > svg,.sch > img{width:17px;height:17px;flex:none;color:var(--c)}
 .sct{flex:1;min-width:0;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sch b{flex:none;font-size:18px;font-weight:700;color:var(--fg);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .scd.boon .sch b{color:var(--c)}.sch b.lv{font-size:15.5px}
-.scd .trk{height:18px;margin-top:6px}.scd .trk::before{top:8px}.scd .trk i{top:6px;width:6px;height:6px;margin-left:-3px}.scd .trk b{top:2px;width:14px;height:14px;margin-left:-7px}
-.scd .rkl{font-size:10.5px}
+/* the comparison line, quiet until you tap the card: thin, small dots, no ends; tapped, it opens out with the lowest and highest */
+.scd.cmp{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.scd .trk{height:10px;margin-top:12px;transition:height .25s ease,margin .25s ease}.scd .trk::before{top:4px;height:1.5px;opacity:.7;transition:top .25s ease}
+.scd .trk i{top:3px;width:4px;height:4px;margin-left:-2px;opacity:.55;transition:all .25s ease}.scd .trk b{top:0;width:10px;height:10px;margin-left:-5px;border-width:1.5px;transition:all .25s ease}
+.scd .rkl{font-size:10.5px;max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease}
+.scd.xo .trk{height:18px;margin-top:8px}.scd.xo .trk::before{top:8px;height:2px;opacity:1}.scd.xo .trk i{top:6px;width:6px;height:6px;margin-left:-3px;opacity:1}.scd.xo .trk b{top:2px;width:14px;height:14px;margin-left:-7px;border-width:2px}
+.scd.xo .rkl{max-height:28px;opacity:1}
+.scgh{margin:12px 2px 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}.scs h4 + .scgh{margin-top:0}
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
 .scd.stam{display:flex;align-items:center}.scd.stam .sch{flex:1}
-.scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scsm span{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-right:4px}
-.wviz{grid-column:1/-1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px 14px;position:relative;overflow:hidden}
-.wviz::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.wviz{grid-column:1/-1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px 14px;position:relative}
+.wviz::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:2px solid var(--c);border-left-width:3px;border-right:0;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 12px,transparent 34px);mask-image:linear-gradient(to right,#000 12px,transparent 34px)}
 .wvr{display:flex;align-items:center;gap:12px;margin-bottom:12px}.wvr.col{display:block}
 .wpel{display:grid;gap:3px;padding:6px;border:1px solid var(--line);border-radius:8px;flex:none}.wpel i{width:9px;height:9px;border-radius:50%;background:var(--c)}.wpel.one i{width:12px;height:12px}
 .wvt b{display:block;font-size:20px;font-weight:700;color:var(--fg)}.wvt span{font-size:13px;color:var(--dim)}
@@ -2125,7 +2131,10 @@ function statRows(h) { // a hero's base stats as rows: shown as cards, ranked ag
   if (wi.bullet_damage != null) add("wep", "Bullet damage", fmtNum(wi.bullet_damage) + (pel > 1 ? " × " + pel : ""), boon("MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL"), wi.bullet_damage * pel);
   if (wi.clip_size != null) add("wep", "Ammo", fmtNum(wi.clip_size));
   if (bps) add("wep", "Bullets per sec", fmtNum(bps));
-  if (wi.reload_duration != null) add("wep", "Reload time", fmtNum(wi.reload_duration) + "s");
+  if (wi.reload_duration != null && wi.reload_single_bullets && wi.clip_size) { // shell by shell (Abrams): the whole clip, start-up included, so it ranks fairly against a magazine swap
+    var full = Math.round(((wi.reload_single_bullets_initial_delay || 0) + wi.reload_duration * wi.clip_size) * 100) / 100;
+    add("wep", "Reload time", fmtNum(full) + "s", fmtNum(wi.reload_duration) + "s per shell", full);
+  } else if (wi.reload_duration != null) add("wep", "Reload time", fmtNum(wi.reload_duration) + "s");
   if (wi.bullet_speed) add("wep", "Bullet velocity", fmtNum(Math.round(wi.bullet_speed / 39.37)) + " m/s");
   var lm = v("light_melee_damage"), hm = v("heavy_melee_damage");
   if (lm != null) add("wep", "Light melee", fmtNum(lm), boon("MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL"));
@@ -2188,6 +2197,9 @@ function statView(h) {
    half-width cards: icon, title and value on one line, and under it a line from the lowest hero to the highest with a dot per hero.
    a stat's "per boon" growth gets its own card beside it. stats every hero shares go in small text; stamina is drawn as chevrons. */
 var CARD_HEROES = { "Abrams": 1 };
+var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
+  "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
+var VGRPS = [["h", "Health"], ["m", "Movement"], ["s", "Stamina"]];
 var SHORT = { "Health regen": "Regen", "Move speed": "Move", "Sprint speed": "Sprint", "Crouch speed": "Crouch", "Dash speed": "Dash", "Stamina cooldown": "Stamina CD",
   "Damage per second": "DPS", "Bullet damage": "Bullet", "Bullets per sec": "Fire rate", "Reload time": "Reload", "Bullet velocity": "Velocity", "Spirit power": "Spirit" };
 function boonOf(r) { var m = /^\+?([\d.]+)\s*\/\s*boon$/.exec(r.extra || ""); return m ? parseFloat(m[1]) : null; }
@@ -2214,40 +2226,48 @@ function statCards(h) {
   return '<div class="scg">' + SCAT.map(function (c) {
     var rs = rows.filter(function (r) { return r.c === c[0]; }); if (!rs.length) return "";
     var units = [], small = []; // a unit is one card, or a stat and its per-boon card, which must sit side by side
+    var grp = function (r) { return c[0] === "vit" ? (VGRP[r.l] || "h") : ""; };
     var viz = c[0] === "wep" ? weaponViz(h, rs) : "";
     rs.forEach(function (r) {
       var xs = pool[skey(r)] || [], icon = siIcon(SICON[r.l]), title = SHORT[r.l] || r.l, shown = esc(r.val !== "" ? r.val : r.extra);
       if (r.l === "Stamina" && r.n) { // stamina as chevrons, one per bar, no line
-        units.push([card(icon, title, '<span class="chev">' + new Array(Math.round(r.n) + 1).join(rowSvg('<path d="M9 6l6 6-6 6"/>', "")) + "</span>", "", "stam")]);
+        units.push(tag([card(icon, title, '<span class="chev">' + new Array(Math.round(r.n) + 1).join(rowSvg('<path d="M9 6l6 6-6 6"/>', "")) + "</span>", "", "stam")], r));
       } else if (r.n == null || xs.length < 2 || shared(xs, r.n)) {
         r.inSmall = true;
         small.push(esc(r.l) + " <b>" + shown + "</b>" + (r.extra && r.val !== "" && boonOf(r) == null ? " " + esc(r.extra) : ""));
       } else {
-        units.push([card(icon, title, r.val !== "" ? esc(r.val) : shown, cardLine(h, xs, r.n, r, function (x) { return sfmt(x, r); }))]);
+        units.push(tag([card(icon, title, r.val !== "" ? esc(r.val) : shown, cardLine(h, xs, r.n, r, function (x) { return sfmt(x, r); }), "cmp")], r));
       }
       var b = boonOf(r), bx = bp[skey(r)] || [];
       if (b != null) { // the stat's growth per boon, as its own card beside it
         if (bx.length < 2 || shared(bx, b)) small.push(esc(r.l) + " per boon <b>+" + fmtNum(b) + "</b>");
         else {
-          var bc = card(icon, r.inSmall ? title + " / boon" : "Per boon", "+" + fmtNum(b), cardLine(h, bx, b, { l: "" }, function (x) { return "+" + fmtNum(x); }), "boon");
-          if (r.inSmall || !units.length) units.push([bc]); else units[units.length - 1].push(bc); // beside its stat
+          var bc = card(icon, r.inSmall ? title + " / boon" : "Per boon", "+" + fmtNum(b), cardLine(h, bx, b, { l: "" }, function (x) { return "+" + fmtNum(x); }), "boon cmp");
+          if (r.inSmall || !units.length) units.push(tag([bc], r)); else units[units.length - 1].push(bc); // beside its stat
         }
       }
     });
-    // lay out two across: a pair that would start in the right-hand column waits while the next single card fills the gap
-    var cards = viz, col = 0, wait = [];
-    function put(u) { if (u.length === 2 && col === 1) { cards += '<span class="scgap"></span>'; col = 0; } cards += u.join(""); col = (col + u.length) % 2; }
-    units.forEach(function (u, i) {
-      if (u.length === 2 && col === 1) {
-        var j = -1; for (var k = i + 1; k < units.length; k++) if (units[k].length === 1 && !units[k].used) { j = k; break; }
-        if (j >= 0) { put(units[j]); units[j].used = true; }
-      }
-      if (!u.used) put(u);
-    });
-    return '<section class="scs ' + c[0] + '"><h4>' + c[1] + '</h4><div class="scw">' + cards + "</div>" +
-      (small.length ? '<p class="scsm"><span>Same for every hero</span> ' + small.join(" · ") + "</p>" : "") + "</section>";
+    function tag(u, r) { u.g = grp(r); return u; }
+    function lay(us) { // two across: a pair that would start in the right-hand column waits while the next single card fills the gap
+      var out = "", col = 0;
+      function put(u) { if (u.length === 2 && col === 1) { out += '<span class="scgap"></span>'; col = 0; } out += u.join(""); col = (col + u.length) % 2; }
+      us.forEach(function (u, i) {
+        if (u.length === 2 && col === 1) {
+          var j = -1; for (var k = i + 1; k < us.length; k++) if (us[k].length === 1 && !us[k].used) { j = k; break; }
+          if (j >= 0) { put(us[j]); us[j].used = true; }
+        }
+        if (!u.used) put(u);
+      });
+      return out;
+    }
+    var body = c[0] === "vit" ? VGRPS.map(function (gp) { // Vitality in three groups: health, movement, stamina
+      var us = units.filter(function (u) { return u.g === gp[0]; }); return us.length ? '<div class="scgh">' + gp[1] + '</div><div class="scw">' + lay(us) + "</div>" : "";
+    }).join("") : '<div class="scw">' + viz + lay(units) + "</div>";
+    return '<section class="scs ' + c[0] + '"><h4>' + c[1] + "</h4>" + body +
+      (small.length ? '<p class="scsm"><span>Same for every hero</span>' + small.join(" · ") + "</p>" : "") + "</section>";
   }).join("") + "</div>";
 }
+document.addEventListener("click", function (e) { var c = e.target.closest ? e.target.closest(".scd.cmp") : null; if (c && !e.target.closest("a,button")) c.classList.toggle("xo"); }); // the comparison line opens out, with its ends
 function weaponViz(h, rs) { // one shot drawn as its pellets, the clip as shells, and how they add up to DPS
   function R(l) { return rs.filter(function (r) { return r.l === l; })[0]; }
   var bd = R("Bullet damage"), ammo = R("Ammo"), bps = R("Bullets per sec"), dps = R("Damage per second"), rl = R("Reload time");
