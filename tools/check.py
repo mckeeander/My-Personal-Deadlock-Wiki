@@ -85,7 +85,7 @@ def main():
             try { state.tab = "heroes"; state.hero = h.class_name; render(); } catch (e) { bad.push(h.name + ": page broke (" + e.message + ")"); continue; }
             document.querySelectorAll("#main details").forEach(function (d) { d.open = true; });
             var m = document.querySelector("#main"), t = m.textContent;
-            var cards = m.querySelectorAll("section.ab").length, rows = m.querySelectorAll("#stats1 .srow").length;
+            var cards = m.querySelectorAll("section.ab").length, rows = m.querySelectorAll("#stats1 .scd, #stats1 .sctb, #stats1 .srow").length; // stat cards and shared tiles (the old list's rows too)
             if (cards < 4) bad.push(h.name + ": " + cards + " ability cards");
             if (rows < 8) bad.push(h.name + ": " + rows + " base stats");
             if (!m.querySelector("section.wpn")) bad.push(h.name + ": no weapon card");

@@ -1231,7 +1231,7 @@ function failText() { // today's update ran but its data failed the safety check
   var at = Date.parse(st.checked); if (isNaN(at) || Date.now() - at > STALE_AFTER) return ""; // an old failure: the "hasn't run" notice covers it
   var why = String(st.reason || "it didn't pass its check"); // a hero name stays capitalised; the job's own reasons start in lower case
   var day = whenText(at).split(",")[0], lead = day === "today" ? "Today’s" : day === "yesterday" ? "Yesterday’s" : "The " + day;
-  return lead + " data update wasn’t used: " + why + ". Showing the last good data" + (state.dataAt ? ", from " + whenText(state.dataAt).split(",")[0] : "") + ".";
+  return "The " + whenText(at).replace(/^today, /, "").replace(/^yesterday, /, "yesterday’s ") + " data update was skipped because it didn’t pass the app’s safety check (" + why + "). You’re seeing the last good update" + (state.dataAt ? ", from " + whenText(state.dataAt) : "") + "."; // when each one happened, so "skipped" and "showing" don't read as the same day
 }
 function staleText() { // the daily download has stopped: say since when, so old numbers aren't mistaken for current ones
   if (failText()) return failText();
