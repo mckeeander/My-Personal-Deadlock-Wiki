@@ -639,14 +639,15 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 /* the card layout for Normal base stats */
 .scs{margin:0 0 18px}.scs h4{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:700}
 .scs h4::after{content:"";flex:1;height:2px;border-radius:1px;background:linear-gradient(90deg,var(--c),transparent)} /* a rule in the section colour, fading out */
-.scg > .scs + .scs{margin-top:28px}
+.scg > .scs + .scs{margin-top:20px}
 .scbox{background:rgba(255,255,255,.025);border:1px solid #2f283d;border-radius:16px;padding:8px}
 .scbox .frm{background:none;border:0;padding:0;margin:0 0 10px}.scbox > :last-child{margin-bottom:0}.scbox .sctl{margin-top:10px}
 .wcmp .scbox{margin-top:0}
-.scbox > h4{margin:4px 4px 10px}
+.scbox > h4{margin:8px 6px 14px;font-size:14px}
 .wsec > .scbox{background:linear-gradient(170deg,#2e1f12,rgba(255,255,255,.025) 300px);border-color:#5a3f1f}
+.scs.vit > .scbox{background:linear-gradient(170deg,#16291a,rgba(255,255,255,.025) 300px);border-color:#2c4a30}.scs.spi > .scbox{background:linear-gradient(170deg,#251b36,rgba(255,255,255,.025) 300px);border-color:#43325e} /* each section fades in from its colour, like the weapon */
 .wsec .wpn.wpc{background:none;border:0;padding:2px 4px 4px}
-.wsec .wcmp{margin-top:12px;padding-top:12px;border-top:1px solid #4a3620}.wsec .wcmp .scbox{background:none;border:0;padding:0}
+.wsec .wcmp{margin-top:10px;padding-top:12px;border-top:1px solid #4a3620}.wsec .wcmp .scbox{background:none;border:0;padding:0}
 .scs.vit{--c:var(--vital)}.scs.wep{--c:var(--weapon)}.scs.spi{--c:var(--spirit)}
 .scw{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .scd{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px 8px 15px}
@@ -690,7 +691,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="glow"] .mcol{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .mcol > .scd{background:none} /* the only Spirit card: full width */
 .scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}.rlink{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 .scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
-.sctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px} /* each tile as wide as its name or value */.sctb{border:1px dashed #3d3450;border-radius:9px;padding:6px 10px;min-width:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sctl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:2px} /* each tile as wide as its name or value */.sctb{border:1px dashed #3d3450;border-radius:9px;padding:6px 10px;min-width:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .sctl span{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sctl b{font-size:13.5px;color:var(--fg)}.sctl em{font-style:normal;color:var(--dim);font-size:11px;margin-left:4px}
 .scnote{margin:8px 2px 0;font-size:12.5px;color:var(--dim)}
 .sctrial{margin:0 0 10px;text-align:center;font-size:11px;color:var(--dim);font-style:italic}
@@ -706,7 +707,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .wpn.wpc{text-align:left;padding:12px 14px}
 .wpc .wph{display:grid;grid-template-columns:44% 1fr;gap:12px;align-items:center}.wpc .wimg img{width:100%;height:auto;max-height:96px;max-width:none}
 .wpc h3{font-size:19px;margin:0 0 6px}.wpc .wtags{justify-content:flex-start;gap:4px;margin:0 0 8px}.wpc .wtags .chip{font-size:11.5px;padding:3px 7px}.wpc .wdps1{margin:0;font-size:13px}.wpc .wdps1 > svg{position:relative;top:-4px;left:3px}.wpc .wdps1 b{font-size:22px}
-.wpc .wrow{display:flex;align-items:center;gap:10px;margin-top:10px}.wpc .wph + .wrow{margin-top:14px;padding-top:12px;border-top:1px solid #3a2f25}
+.wpc .wrow{display:flex;align-items:center;gap:10px;margin-top:10px}.wpc .wph + .wrow{margin-top:18px;padding-top:18px;border-top:1px solid #3a2f25}
 .wpc .wrl2{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:700;width:58px;flex:none}
 .wpc .wrow.wfo{padding-bottom:22px}.wpc .fobw{flex:1;margin:0 4px}.wpc .flab{top:17px;font-size:10.5px}.wpc .flab.fend{left:auto;right:0;transform:none}
 .wpc .wclip{flex:1;--c:var(--weapon)}.wpc .wclip i{height:16px}.wpc .wrow em{font-style:normal;font-size:12px;color:var(--dim);white-space:nowrap}.wpc .wrow em b{color:var(--fg)}.wpn .wclipr{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin:14px 2px 6px}.wpn .wclipr b{color:var(--fg)}
