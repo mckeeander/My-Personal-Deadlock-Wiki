@@ -18,6 +18,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download data
+        id: download
+        continue-on-error: true # a failure here is handled below: yesterday's data is kept and the site says so
         run: |
           mkdir -p data prev
           cp data/heroes.json data/items.json prev/ 2>/dev/null || true # the last saved snapshot, to compare against
@@ -47,6 +49,11 @@ jobs:
           # what changed for each hero since the last snapshot goes into data/revisions.json (shown under Revisions on hero pages)
           if [ -f prev/heroes.json ] && [ -f prev/items.json ]; then python3 tools/revisions.py prev data; fi
 
+      - name: Trim unused fields
+        # drops what the site never reads (about a third of the download); after Record revisions, which compares the full download
+        continue-on-error: true
+        run: python3 tools/trim.py data
+
       - name: Download wiki notes
         # switched off: since Nov 3 deadlock.wiki refuses automated requests (403), so these only knocked and failed every day.
         # The app keeps the last good wiki.json; new wiki content comes from pages exported by hand into data/wiki_raw/. Delete this line to switch back on.
@@ -54,375 +61,7 @@ jobs:
         continue-on-error: true
         run: |
           pip install beautifulsoup4 || pip install --break-system-packages beautifulsoup4
-          cat > wiki_notes.py <<'PYEOF'
-          import copy, datetime, json, os, re, sys, time, urllib.parse, urllib.request
-          from bs4 import BeautifulSoup, Tag
-
-          DATA = os.environ.get("DATA_DIR", "data")
-          UA = "DeadlockCodex-personal/1.0 (+https://github.com/mckeeander/My-Personal-Deadlock-Wiki)"
-          BASES = ["https://deadlock.wiki/api.php", "https://deadlock.wiki/w/api.php"]
-          OFFLINE = os.environ.get("WIKI_OFFLINE_DIR")  # testing only: read <Hero>.html from this folder
-
-          def get(url):
-              req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json, text/html"})
-              with urllib.request.urlopen(req, timeout=40) as r:
-                  return r.read().decode("utf-8", "replace")
-
-          def page_html(title):
-              errs = []
-              if OFFLINE:
-                  fp = os.path.join(OFFLINE, title + ".html")
-                  return (open(fp, encoding="utf-8").read(), "offline", errs) if os.path.exists(fp) else (None, "offline", ["missing " + fp])
-              t = urllib.parse.quote(title.replace(" ", "_"), safe="")
-              for base in BASES:
-                  try:
-                      j = json.loads(get(base + "?action=parse&format=json&formatversion=2&redirects=1&prop=text&disableeditsection=1&page=" + t))
-                      if j.get("parse", {}).get("text"):
-                          return j["parse"]["text"], "api", errs
-                      errs.append(base + " -> " + str(j.get("error", {}).get("code", "no text")))
-                  except Exception as e:
-                      errs.append(base + " -> " + repr(e)[:140])
-              try:
-                  return get("https://deadlock.wiki/" + t), "page", errs
-              except Exception as e:
-                  errs.append("page -> " + repr(e)[:140])
-              return None, "none", errs
-
-          def norm(s):
-              s = re.sub(r"\.(png|webp|jpe?g|svg)$", "", s or "", flags=re.I)
-              s = re.sub(r"\s*\(.*?\)\s*", "", s)
-              s = re.sub(r"\s*icon$", "", s, flags=re.I)
-              return re.sub(r"[^a-z0-9]", "", s.lower())
-
-          def txt(t):
-              return re.sub(r"\s+", " ", t.get_text(" ", strip=True)).strip()
-
-          def txt_inline(t):
-              for br in t.find_all("br"):
-                  br.replace_with(" ")
-              s = re.sub(r"\s+", " ", t.get_text("")).strip()
-              return re.sub(r"\s+([.,;:!?)])", r"\1", s)
-
-
-          def figs_of(tags):
-              """Screenshots the wiki shows in a Notes area: [image url, caption]."""
-              out = []
-              for t in tags:
-                  if t.name != "figure":
-                      continue
-                  img = t.find("img")
-                  if img is None:
-                      continue
-                  cands = []
-                  for part in (img.get("srcset") or "").split(","):
-                      u = part.strip().split(" ")[0]
-                      if u:
-                          cands.append(u)
-                  src = (cands[-1] if cands else img.get("src")) or ""
-                  if src.startswith("//"):
-                      src = "https:" + src
-                  if not src.startswith("https://cdn.deadlock.wiki/"):
-                      continue
-                  cap = t.find("figcaption")
-                  out.append([src, txt(cap) if cap else ""])
-              return out
-
-          def best_src(img):
-              if img is None:
-                  return ""
-              cands = [p.strip().split(" ")[0] for p in (img.get("srcset") or "").split(",") if p.strip()]
-              src = (cands[-1] if cands else img.get("src")) or ""
-              if src.startswith("//"):
-                  src = "https:" + src
-              return src if src.startswith("https://cdn.deadlock.wiki/") else ""
-
-          def li_lines(root, inside):
-              """Bullet lines under root as [depth, text]; nested lists keep their depth."""
-              lines = []
-              for t in root.find_all("li"):
-                  depth = len([p for p in t.find_parents("li") if id(p) in inside])
-                  c = copy.copy(t)
-                  for u in c.find_all(["ul", "ol"]):
-                      u.decompose()
-                  s = txt_inline(c)
-                  if s and depth <= 2:
-                      lines.append([depth, s])
-              return lines
-
-          def panel_kind(p):
-              pid = re.sub(r"_\d+$", "", (p.get("id") or "").replace("tabber-", ""))
-              return pid.lower().replace("_", " ")
-
-          def interactions_of(panel):
-              """Each wiki interaction box: the item/stat it is about, good/bad/info, partial/disabled, its icon and text."""
-              out = []
-              for box in panel.find_all("div", class_="iconbox"):
-                  cls = box.get("class") or []
-                  kind = next((c.split("iconbox-type-")[1] for c in cls if c.startswith("iconbox-type-")), "info")
-                  state = box.get("data-iconbox-state") or ("disabled" if "iconbox-disabled" in cls else "partial" if "iconbox-partial" in cls else "")
-                  if "iconbox-enhanced" in cls:
-                      state = (state + " enhanced").strip()
-                  head = box.find(class_="iconbox-header")
-                  title = box.get("data-iconbox-title") or (txt(head) if head else "")
-                  ic = box.find(class_="iconbox-icon")
-                  icon = best_src(ic.find("img")) if ic else ""
-                  body = box.find(class_="iconbox-text")
-                  lines = []
-                  if body is not None:
-                      inside = set(id(x) for x in body.find_all(True))
-                      lines = li_lines(body, inside)
-                      if not lines:
-                          s = txt_inline(copy.copy(body))
-                          if s:
-                              lines = [[0, s]]
-                  if title or lines:
-                      out.append({"t": title, "k": kind, "s": state, "img": icon, "lines": lines})
-              return out
-
-          def hints_of(block):
-              """The icon row above the tabs: 'CC effect suppressed by Unstoppable' etc., keyed by item name."""
-              out = {}
-              for t in block:
-                  if t.name == "span" and "ability-hint-tip" in (t.get("class") or []):
-                      a = t.find("a")
-                      nm = (a.get("title") if a else "") or ""
-                      tip = txt(t)
-                      if nm and tip:
-                          out[nm] = tip
-              return out
-
-          def abilities_nodes(root):
-              head = None
-              for h in root.find_all(re.compile(r"^h[1-4]$")):
-                  if re.match(r"^\s*abilit", txt(h), re.I):
-                      head = h
-                      break
-              if head is None:
-                  return None
-              level = int(head.name[1])
-              anchor = head.parent if head.parent is not None and "mw-heading" in (head.parent.get("class") or []) else head
-              nodes = []
-              for sib in anchor.next_siblings:
-                  if isinstance(sib, Tag):
-                      hh = sib if re.match(r"^h[1-6]$", sib.name or "") else (sib.find(re.compile(r"^h[1-6]$")) if "mw-heading" in (sib.get("class") or []) else None)
-                      if hh is not None and int(hh.name[1]) <= level:
-                          break
-                  nodes.append(sib)
-              return nodes
-
-          def extract(html, ability_names, itemmap):
-              soup = BeautifulSoup(html, "html.parser")
-              root = soup.find(class_="mw-parser-output") or soup
-              nodes = abilities_nodes(root)
-              scope = "abilities-section" if nodes else "whole-page"
-              frag = BeautifulSoup("<div></div>", "html.parser").div
-              for n in (nodes if nodes else list(root.children)):
-                  frag.append(copy.copy(n))
-              tags = [t for t in frag.descendants if isinstance(t, Tag)]
-              skip = {"a", "li", "p", "td", "th", "script", "style", "img", "br", "ul", "ol"}
-              pos = {}
-              for name in ability_names:
-                  nn = norm(name)
-                  for i, t in enumerate(tags):
-                      if t.name in skip or t.find_parent(["li", "p", "a"]):
-                          continue
-                      if norm(txt(t)) == nn:
-                          pos[name] = i
-                          break
-              order = sorted(pos.items(), key=lambda kv: kv[1])
-              out, dbg = {}, [scope + ", found headings: " + ", ".join(n for n, _ in order)]
-              for k, (name, i) in enumerate(order):
-                  end = order[k + 1][1] if k + 1 < len(order) else len(tags)
-                  block = tags[i + 1:end]
-                  bset = set(id(b) for b in block)
-                  start = None
-                  for j, t in enumerate(block):
-                      if t.name not in ("li", "ul", "ol", "p", "a") and not t.find_parent("li") and txt(t).lower().rstrip(":") == "notes":
-                          start = j
-                          break
-                  seq = block[start + 1:] if start is not None else block
-                  panels = [t for t in block if "tabber__panel" in (t.get("class") or [])]
-                  note_panels = [p for p in panels if panel_kind(p) == "notes"]
-                  inter = []
-                  for p in panels:
-                      if panel_kind(p) == "interactions":
-                          inter += interactions_of(p)
-                  notes = []
-                  if note_panels:  # tabbed layout: Notes tab only (Show All repeats it, Interactions are kept separately)
-                      seq = []
-                      for p in note_panels:
-                          notes += li_lines(p, set(id(x) for x in p.find_all(True)))
-                  elif panels:
-                      seq = []
-                  for t in seq:
-                      if t.name != "li":
-                          continue
-                      depth = len([p for p in t.find_parents("li") if id(p) in bset])
-                      c = copy.copy(t)
-                      for u in c.find_all(["ul", "ol"]):
-                          u.decompose()
-                      s = txt_inline(c)
-                      if s and depth <= 2:
-                          notes.append([depth, s])
-                  items = []
-                  for t in block:
-                      cands = []
-                      if t.name == "a":
-                          cands += [t.get("title"), txt(t)]
-                      if t.name == "img":
-                          cands += [t.get("alt")]
-                      for cnd in cands:
-                          key = norm(cnd or "")
-                          if key in itemmap and itemmap[key] not in items:
-                              items.append(itemmap[key])
-                  out[name] = {"notes": notes, "items": items, "figs": figs_of(block)}
-                  if inter:
-                      out[name]["inter"] = inter
-                  hints = hints_of(block)
-                  if hints:
-                      out[name]["hints"] = hints
-                  dbg.append("  %s: %d notes, %d interactions, items=%s, notes-label=%s" % (name, len(notes), len(inter), items, start is not None))
-              for name in ability_names:
-                  if name not in out:
-                      dbg.append("  %s: NOT FOUND on page" % name)
-              return out, dbg, str(frag)
-
-
-          def weapon_extract(html):
-              """Best effort: the Weapon section's card title and its Notes list."""
-              soup = BeautifulSoup(html, "html.parser")
-              root = soup.find(class_="mw-parser-output") or soup
-              head = None
-              for h in root.find_all(re.compile(r"^h[1-4]$")):
-                  if re.match(r"^\s*weapon\s*$", txt(h), re.I):
-                      head = h
-                      break
-              if head is None:
-                  return None, "no Weapon heading", ""
-              level = int(head.name[1])
-              anchor = head.parent if head.parent is not None and "mw-heading" in (head.parent.get("class") or []) else head
-              frag = BeautifulSoup("<div></div>", "html.parser").div
-              for sib in anchor.next_siblings:
-                  if isinstance(sib, Tag):
-                      hh = sib if re.match(r"^h[1-6]$", sib.name or "") else (sib.find(re.compile(r"^h[1-6]$")) if "mw-heading" in (sib.get("class") or []) else None)
-                      if hh is not None and int(hh.name[1]) <= level:
-                          break
-                  frag.append(copy.copy(sib))
-              tags = [t for t in frag.descendants if isinstance(t, Tag)]
-              # card title: first short text element that is not a tag chip, the DPS line or the section label
-              name = ""
-              wn = frag.find(class_="weapon-name")
-              if wn is not None:
-                  name = txt(wn)
-              for t in ([] if name else tags):
-                  if t.name in ("li", "ul", "ol", "a", "script", "style", "img", "br", "td", "th", "tr", "table"):
-                      continue
-                  if t.find_parent(["li", "a"]):
-                      continue
-                  s = txt(t)
-                  cls = " ".join(t.get("class") or []).lower()
-                  if t.find(True) and not re.search(r"name|title", cls):
-                      continue
-                  if 2 <= len(s) <= 40 and not re.search(r"damage|range|fire|falloff|notes|weapon$|^\d", s, re.I):
-                      name = s
-                      break
-              start = None
-              for j, t in enumerate(tags):
-                  if t.name not in ("li", "ul", "ol", "p", "a") and not t.find_parent("li") and txt(t).lower().rstrip(":") == "notes":
-                      start = j
-                      break
-              notes = []
-              if start is not None:
-                  bset = set(id(b) for b in tags)
-                  for t in tags[start + 1:]:
-                      if t.name != "li":
-                          continue
-                      depth = len([p for p in t.find_parents("li") if id(p) in bset])
-                      c = copy.copy(t)
-                      for u in c.find_all(["ul", "ol"]):
-                          u.decompose()
-                      s = txt_inline(c)
-                      if s and depth <= 2:
-                          notes.append([depth, s])
-              return {"name": name, "notes": notes, "figs": figs_of(tags)}, "name=%r, %d notes, notes-label=%s" % (name, len(notes), start is not None), str(frag)
-
-          def main():
-              heroes = json.load(open(os.path.join(DATA, "heroes.json")))
-              items = json.load(open(os.path.join(DATA, "items.json")))
-              by = {x["class_name"]: x for x in items if x.get("class_name")}
-              itemmap = {}
-              for x in items:
-                  if x.get("type") == "upgrade" and x.get("shopable") is not False and not x.get("disabled") and x.get("name"):
-                      itemmap[norm(x["name"])] = x["name"]
-              prev = {}
-              try:
-                  prev = json.load(open(os.path.join(DATA, "wiki.json"))).get("heroes", {})
-              except Exception:
-                  pass
-              result, log, ok, fail = {}, [], 0, 0
-              for h in heroes:
-                  if h.get("disabled") or h.get("player_selectable") is False or (h.get("in_development") and h.get("development_state") != "release"):
-                      continue
-                  name = h["name"]
-                  abil = [by[h["items"][k]]["name"] for k in ("signature1", "signature2", "signature3", "signature4") if h.get("items", {}).get(k) in by]
-                  # an ultimate that swaps the hero's weapon and kit (Silver's wolf form): the wiki lists those abilities on the same page,
-                  # so their names are headings too; without them their notes pile onto the ability above
-                  sigs = [by[h["items"][k]] for k in ("signature1", "signature2", "signature3", "signature4") if h.get("items", {}).get(k) in by]
-                  ult = sigs[3] if len(sigs) == 4 else None
-                  deps = [by[c] for c in ((ult or {}).get("dependent_abilities") or {}) if c in by]
-                  if any(d.get("type") == "weapon" and (d.get("weapon_info") or {}).get("bullet_damage") for d in deps):
-                      for s0 in sigs:
-                          for c in (s0.get("dependent_abilities") or {}):
-                              d = by.get(c) or {}
-                              nm = d.get("name")
-                              if d.get("type") == "ability" and nm and nm != c and d.get("description") and nm not in abil:
-                                  abil.append(nm)
-                  html, how, errs = page_html(name)
-                  if not html:
-                      fail += 1
-                      log.append("%s: FAILED (%s)" % (name, "; ".join(errs)))
-                      if name in prev:
-                          result[name] = prev[name]
-                      continue
-                  try:
-                      data, dbg, frag = extract(html, abil, itemmap)
-                  except Exception as e:
-                      fail += 1
-                      log.append("%s: PARSE ERROR %r" % (name, e))
-                      if name in prev:
-                          result[name] = prev[name]
-                      continue
-                  ok += 1
-                  try:
-                      wdata, wdbg, wfrag = weapon_extract(html)
-                  except Exception as e:
-                      wdata, wdbg, wfrag = None, "weapon error %r" % e, ""
-                  if wdata and (wdata["notes"] or wdata["name"] or wdata["figs"]):
-                      data["__weapon"] = wdata
-                  if name == "Rem":
-                      open(os.path.join(DATA, "wiki_sample_weapon_Rem.html"), "w", encoding="utf-8").write(wfrag[:30000])
-                  result[name] = data
-                  log.append("%s: fetched via %s; %s" % (name, how, dbg[0]))
-                  log.extend(dbg[1:])
-                  log.append("  [weapon] " + wdbg)
-                  if name in ("Lash", "Drifter"):
-                      open(os.path.join(DATA, "wiki_sample_%s.html" % name), "w", encoding="utf-8").write(frag[:90000])
-                  if not OFFLINE:
-                      time.sleep(1.2)
-              got = sum(1 for v in result.values() for a in v.values() if a.get("notes") or a.get("items") or a.get("figs") or a.get("inter"))
-              log.insert(0, "heroes ok=%d failed=%d, abilities with notes/items=%d" % (ok, fail, got))
-              open(os.path.join(DATA, "wiki_debug.txt"), "w", encoding="utf-8").write("\n".join(log) + "\n")
-              if ok == 0 and prev:
-                  print("No hero pages fetched; keeping previous wiki.json")
-                  return
-              json.dump({"updated": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "source": "deadlock.wiki", "heroes": result},
-                        open(os.path.join(DATA, "wiki.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
-              print(log[0])
-
-          if __name__ == "__main__":
-              main()
-          PYEOF
-          python3 wiki_notes.py
+          python3 tools/wiki_notes.py
 
       - name: Download wiki pages (raw, for building new sections)
         # switched off: since Nov 3 deadlock.wiki refuses automated requests (403), so these only knocked and failed every day.
@@ -430,90 +69,7 @@ jobs:
         if: false
         continue-on-error: true
         run: |
-          cat > wiki_pages.py <<'PYEOF'
-          # Saves raw copies of chosen deadlock.wiki pages (rendered HTML and wikitext) plus an index of every
-          # article and category, so new sections can be built and tested against real content.
-          # Nothing is overwritten with an empty or failed result: the last good copy stays.
-          import datetime, json, os, time, urllib.parse, urllib.request
-
-          DATA = os.environ.get("DATA_DIR", "data")
-          RAW = os.path.join(DATA, "wiki_raw")
-          UA = "DeadlockCodex-personal/1.0 (+https://github.com/mckeeander/My-Personal-Deadlock-Wiki)"
-          BASES = ["https://deadlock.wiki/api.php", "https://deadlock.wiki/w/api.php"]
-          PAGES = ["Status Effects", "Mechanics"]  # pages to keep raw copies of; add more here
-          log = []
-
-          def get(url):
-              req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-              with urllib.request.urlopen(req, timeout=40) as r:
-                  return json.loads(r.read().decode("utf-8", "replace"))
-
-          def api(params):
-              q = urllib.parse.urlencode(dict(params, format="json", formatversion="2"))
-              last = None
-              for base in BASES:
-                  try:
-                      j = get(base + "?" + q)
-                      if "error" in j:
-                          last = base + " -> " + str(j["error"].get("code")); continue
-                      return j
-                  except Exception as e:
-                      last = base + " -> " + repr(e)[:160]
-              raise RuntimeError(last)
-
-          def listing(params, key):  # follows the API's "continue" until the list is complete
-              out, cont = [], {}
-              for _ in range(200):
-                  j = api(dict(params, **cont))
-                  out += j.get("query", {}).get(key, [])
-                  if "continue" not in j: break
-                  cont = j["continue"]; time.sleep(0.5)
-              return out
-
-          def save(path, text):
-              os.makedirs(os.path.dirname(path), exist_ok=True)
-              open(path, "w", encoding="utf-8").write(text)
-
-          def fname(title):
-              return "".join(c if c.isalnum() else "_" for c in title).strip("_")
-
-          os.makedirs(RAW, exist_ok=True)
-          # 1. every article (main namespace, no redirects) and every category with its size
-          try:
-              pages = listing({"action": "query", "list": "allpages", "apnamespace": 0, "apfilterredir": "nonredirects", "aplimit": "max"}, "allpages")
-              cats = listing({"action": "query", "list": "allcategories", "aclimit": "max", "acprop": "size"}, "allcategories")
-              if pages:
-                  idx = {"updated": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "source": "deadlock.wiki",
-                         "pages": sorted(p["title"] for p in pages),
-                         "categories": sorted(({"name": c.get("category") or c.get("title", ""), "pages": c.get("pages", c.get("size", 0))} for c in cats), key=lambda c: -c["pages"])}
-                  save(os.path.join(DATA, "wiki_pages.json"), json.dumps(idx, ensure_ascii=False, indent=1))
-                  log.append("index: %d pages, %d categories" % (len(pages), len(cats)))
-              else:
-                  log.append("index: empty result, kept previous")
-          except Exception as e:
-              log.append("index failed: " + str(e))
-          # 2. raw copies of the chosen pages
-          for t in PAGES:
-              try:
-                  j = api({"action": "parse", "page": t, "redirects": 1, "prop": "text|wikitext|categories|sections", "disableeditsection": 1})
-                  p = j.get("parse", {})
-                  if p.get("text") and p.get("wikitext"):
-                      base = os.path.join(RAW, fname(t))
-                      save(base + ".html", p["text"])
-                      save(base + ".wikitext", p["wikitext"])
-                      save(base + ".meta.json", json.dumps({"title": p.get("title"), "revid": p.get("revid"),
-                           "categories": [c.get("category") for c in p.get("categories", [])],
-                           "sections": [s.get("line") for s in p.get("sections", [])]}, ensure_ascii=False, indent=1))
-                      log.append("%s: html %d chars, wikitext %d chars, %d sections" % (t, len(p["text"]), len(p["wikitext"]), len(p.get("sections", []))))
-                  else:
-                      log.append("%s: no content, kept previous" % t)
-              except Exception as e:
-                  log.append("%s failed: %s" % (t, e))
-              time.sleep(1.2)
-          save(os.path.join(RAW, "log.txt"), "\n".join(log) + "\n")
-          print("\n".join(log))
-          PYEOF
-          python3 wiki_pages.py
+          python3 tools/wiki_pages.py
 
       - name: Patch notes and powerups (deadlock-wiki/deadlock-data, MIT)
         # The wiki's own data repo on GitHub: official patch notes and map powerup values. Plain git, so the wiki
@@ -531,6 +87,36 @@ jobs:
         timeout-minutes: 15
         run: python3 tools/popular.py
 
+      - name: Check the data
+        # the safety net: open the site in a headless browser on today's data and make sure every hero page, item,
+        # shop tab, the glossary and search still work (tools/check.py). Uses the runner's own Chrome.
+        id: check
+        if: steps.download.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          pip install -q playwright || pip install -q --break-system-packages playwright
+          python3 tools/check.py .
+
+      - name: Keep yesterday's data if today's failed
+        # writes data/status.json, which the site reads: on a failure every data file goes back to yesterday's copy
+        # and the site shows a notice saying why, and that the data is from the day before
+        env:
+          DOWNLOAD: ${{ steps.download.outcome }}
+          CHECK: ${{ steps.check.outcome }}
+        run: |
+          now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          if [ "$DOWNLOAD" = "success" ] && [ "$CHECK" = "success" ]; then
+            printf '{"ok":true,"checked":"%s"}\n' "$now" > data/status.json
+          else
+            if [ "$DOWNLOAD" != "success" ]; then reason="the game data download failed"
+            else reason=$(head -n 1 check_result.txt 2>/dev/null || true); [ -n "$reason" ] || reason="the data check didn't finish"; fi
+            git checkout -- data/
+            git clean -fdq data/
+            python3 -c "import json,sys; json.dump({'ok': False, 'checked': sys.argv[1], 'reason': sys.argv[2]}, open('data/status.json', 'w'))" "$now" "$reason"
+            echo "::warning::Kept yesterday's data: $reason"
+          fi
+
       - name: Save to repo
         run: |
           git config user.name "github-actions"
@@ -546,3 +132,10 @@ jobs:
               echo "Push attempt $i failed, retrying"; sleep 5
             done
           fi
+
+      - name: Report a failed update
+        # marks the run as failed (GitHub emails you about failed runs), after the notice and yesterday's data are saved
+        if: steps.download.outcome != 'success' || steps.check.outcome != 'success'
+        run: |
+          echo "Today's update was not used: $(python3 -c "import json; print(json.load(open('data/status.json')).get('reason',''))")"
+          exit 1
