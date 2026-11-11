@@ -637,7 +637,12 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .vpg{margin-bottom:14px}
 
 /* the card layout for Normal base stats */
-.scs{margin:0 0 18px}.scs h4{margin:0 0 8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:700;text-align:center}
+.scs{margin:0 0 18px}.scs h4{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:700}
+.scs h4::after{content:"";flex:1;height:2px;border-radius:1px;background:linear-gradient(90deg,var(--c),transparent)} /* a rule in the section colour, fading out */
+.scg > .scs + .scs{margin-top:28px}
+.scbox{background:rgba(255,255,255,.025);border:1px solid #2f283d;border-radius:16px;padding:8px}
+.scbox .frm{background:none;border:0;padding:0;margin:0 0 10px}.scbox > :last-child{margin-bottom:0}.scbox .sctl{margin-top:10px}
+.wcmp .scbox{margin-top:0}
 .scs.vit{--c:var(--vital)}.scs.wep{--c:var(--weapon)}.scs.spi{--c:var(--spirit)}
 .scw{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .scd{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px 8px 15px}
@@ -701,7 +706,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .wpc .wrl2{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:700;width:58px;flex:none}
 .wpc .wrow.wfo{padding-bottom:22px}.wpc .fobw{flex:1;margin:0 4px}.wpc .flab{top:17px;font-size:10.5px}.wpc .flab.fend{left:auto;right:0;transform:none}
 .wpc .wclip{flex:1;--c:var(--weapon)}.wpc .wclip i{height:16px}.wpc .wrow em{font-style:normal;font-size:12px;color:var(--dim);white-space:nowrap}.wpc .wrow em b{color:var(--fg)}.wpn .wclipr{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin:14px 2px 6px}.wpn .wclipr b{color:var(--fg)}
-.wcmp{margin-top:12px}.wcmp .scs{--c:var(--weapon)}.wcmp .scs h4{font-size:11px;color:var(--dim)}
+.wcmp{margin-top:10px}.wcmp .scs{margin:0}.wcmp .scs{--c:var(--weapon)}.wcmp .scs h4{font-size:11px;color:var(--dim)}
 .wviz{grid-column:1/-1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px 14px;position:relative}
 .wviz::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:2px solid var(--c);border-left-width:3px;border-right:0;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 12px,transparent 34px);mask-image:linear-gradient(to right,#000 12px,transparent 34px)}
 .wvr{display:flex;align-items:center;gap:12px;margin-bottom:12px}.wvr.col{display:block}
@@ -2375,7 +2380,7 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
     else if (small.length) foot = '<div class="sctl">' + small.map(function (t) { // tiles for the stats every hero shares; tapped, a card says so
       return '<button class="sctb" data-sl="' + esc(t.l) + '" data-sv="' + esc(String(t.v).replace(/<[^>]+>/g, "")) + '" data-sx="' + esc(t.x || "") + '" data-sn="' + esc(t.note || "") + '"' + (t.odd ? ' data-so="' + esc(t.odd.class_name) + '" data-son="' + esc(t.odd.name) + '"' : "") + ' data-sc="' + c[0] + '"><span>' + esc(t.l) + "</span><b>" + t.v + "</b>" + (t.x ? "<em>" + esc(t.x) + "</em>" : "") + "</button>";
     }).join("") + "</div>";
-    return '<section class="scs ' + c[0] + '">' + (c[1] ? "<h4>" + c[1] + "</h4>" : "") + body + foot + "</section>";
+    return '<section class="scs ' + c[0] + '">' + (c[1] ? "<h4>" + c[1] + "</h4>" : "") + '<div class="scbox">' + body + foot + "</div></section>"; // the title sits outside, the section's cards in one box
   }).join("");
 }
 document.addEventListener("click", function (e) { var c = e.target.closest ? e.target.closest(".scd.cmp[data-sk]") : null; if (c && !e.target.closest("a,button")) statSheet(c.getAttribute("data-sk"), c.getAttribute("data-st"), c.closest(".scs")); }); // a stat card opens every hero's value for it
