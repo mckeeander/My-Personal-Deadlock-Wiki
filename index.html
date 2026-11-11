@@ -679,6 +679,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="glow"] .scpair{background:radial-gradient(70% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .scpair > .scd{background:none}
 .frm{display:grid;gap:6px;padding:6px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid #2f283d;margin-bottom:6px}.frm2{grid-template-columns:1fr 1fr}.frm3{grid-template-columns:repeat(3,1fr)}
 .frm .scd{border-color:#3a3150;min-width:0}
+.scd.slim{padding-top:11px;padding-bottom:11px}.frm3 .scd.slim .sch{flex-wrap:nowrap}.frm3 .scd.slim .sch b{order:0;width:auto;margin:0 0 0 auto;font-size:17px}
 .jn{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;min-width:0;border:1px solid #3a3150;border-radius:12px;background:var(--panel)}
 .jn > .scd{border:0;border-radius:0;background:none!important}.jn > .scd + .scd{border-left:1px solid #3a3150}
 .scg[data-acc="glow"] .jn{background:radial-gradient(70% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}
@@ -687,7 +688,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scgh{margin:12px 2px 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}.scs h4 + .scgh{margin-top:0}
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
 .scd.stam{display:flex;align-items:center}.scd.stam .sch{flex:1}
-.scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scs.spi .scw > .scd:only-child{grid-column:1/-1}
+.scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scs.spi .scw{grid-template-columns:1fr} /* Spirit: each card a full row */
 
 .frm.mstk{grid-template-columns:1fr 1fr}.mcol{display:flex;flex-direction:column;border:1px solid #3a3150;border-radius:12px;background:var(--panel);overflow:hidden;min-width:0}
 .mcol > .scd{border:0;border-radius:0;background:none}.mcol > .scd + .scd{border-top:1px dashed #3a3150}.mcol > .scd + .scd .sch b{font-size:15px}
@@ -2177,7 +2178,7 @@ function siIcon(n) {
 }
 var SICON = { "Health": "health", "Health regen": "regen", "Out-of-combat regen": "regen", "Crit reduction": "crit", "Bullet resist": "bshield", "Spirit resist": "sshield",
   "Move speed": "boot", "Sprint speed": "sprint", "Crouch speed": "boot", "Dash speed": "dash", "Stamina": "stamina", "Stamina cooldown": "stamrech", "Ground dash": "dash", "Air dash": "dash",
-  "Damage per second": "dps", "Bullet damage": "dmg", "Ammo": "ammo", "Bullets per sec": "bps", "Reload time": "reload", "Bullet velocity": "vel", "Headshot bonus": "crit", "Move while firing": "boot", "Light melee": "fist", "Heavy melee": "fist", "Reload speed": "reload",
+  "Damage per second": "dps", "Bullet damage": "dmg", "Ammo": "ammo", "Bullets per sec": "bps", "Reload time": "reload", "Bullet velocity": "vel", "Headshot bonus": "crit", "Move while firing": "boot", "Fire rate": "bps", "Light melee": "fist", "Heavy melee": "fist", "Reload speed": "reload",
   "Spirit power": "star" };
 function statRows(h) { // a hero's base stats as rows: shown as cards, ranked against every hero, or side by side with one
   var rows = [];
@@ -2325,26 +2326,30 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
   }
   return [c0].map(function (c) {
     var rs = rows.filter(function (r) { return r.c === c[0] && !(opt.skip && opt.skip[r.l]) && !(c[0] === "spi" && r.l === "Ammo"); }); if (!rs.length) return ""; // spirit-scaled ammo shows with the weapon
+    if (c[0] === "spi" && rs.some(function (r) { return r.l === "Fire rate"; })) rs = rs.filter(function (r) { return r.l !== "Bullets per sec"; }); // Warden: fire rate said once
     var units = [], small = []; // a unit is one card, or a stat and its per-boon card, which must sit side by side
     var grp = function (r) { return c[0] === "vit" ? (VGRP[r.l] || "h") : c[0] === "wep" ? (WGRP[r.l] || "") : ""; };
     var viz = c[0] === "wep" && !opt.noviz ? weaponViz(h, rs) : "";
     rs.forEach(function (r) {
       var xs = pool[skey(r)] || [], icon = siIcon(SICON[r.l]), title = SHORT[r.l] || r.l, shown = esc(r.val !== "" ? r.val : r.extra);
+      var spsc = c[0] === "spi" && r.l !== "Spirit power"; if (spsc) title += " / Spirit"; // a stat that grows with Spirit Power: always its own card, never a shared tile
       if (r.val === "" && boonOf(r) != null) { // growth only (bullet resist on some heroes): its per-boon card says it all
         r.inSmall = true;
-      } else if (r.n == null || xs.length < 2 || shared(xs, r.n) || nearly(xs)) {
+      } else if (!spsc && (r.n == null || xs.length < 2 || shared(xs, r.n) || nearly(xs))) {
         r.inSmall = true;
         var nr = r.n != null && xs.length >= 2 && !shared(xs, r.n) && nearly(xs), note = "";
         if (nr) { var f = function (v) { return sfmt(v, r); }; var oddh = nr.odd.h.class_name; note = nr.odd.h === h ? h.name + " is the only hero with " + f(nr.odd.n) + ". Every other hero has " + f(nr.common) + "." : "Every hero has " + f(nr.common) + " except " + nr.odd.h.name + ", who has " + f(nr.odd.n) + "."; }
         small.push({ l: TILEL[r.l] || r.l, v: shown, x: r.extra && r.val !== "" && boonOf(r) == null ? r.extra : "", r: r, note: note, odd: nr && nr.odd.h !== h ? nr.odd.h : null });
       } else {
-        units.push(tag([card(icon, title, r.val !== "" ? esc(r.val) : shown, cardLine(h, xs, r.n, r, function (x) { return sfmt(x, r); }), "cmp", skey(r))], r));
+        var sl2 = xs.length <= 2 && boonOf(r) == null; // a stat only two heroes have: the same short line
+        units.push(tag([card(icon, title, r.val !== "" ? esc(r.val) : shown, sl2 ? "" : cardLine(h, xs, r.n, r, function (x) { return sfmt(x, r); }), sl2 ? "cmp slim" : "cmp", skey(r))], r));
       }
       var b = boonOf(r), bx = bp[skey(r)] || [];
       if (b != null) { // the stat's growth per boon, as its own card beside it
         if (bx.length < 2 || shared(bx, b)) small.push({ l: (TILEL[r.l] || r.l) + " / boon", v: "+" + fmtNum(b), x: "" });
         else {
-          var bc = card(GROW, r.inSmall ? title + " / boon" : "Per boon", "+" + fmtNum(b), cardLine(h, bx, b, { l: "" }, function (x) { return "+" + fmtNum(x); }), "boon cmp", "boon|" + skey(r));
+          var slim = r.inSmall && bx.length <= 2; // a lone growth only two heroes have: one short line, no comparison line (the pop-up still compares)
+          var bc = card(GROW, r.inSmall ? title + " / boon" : "Per boon", "+" + fmtNum(b), (slim ? "" : cardLine(h, bx, b, { l: "" }, function (x) { return "+" + fmtNum(x); })) + (r.c === "spi" && r.l === "Spirit power" ? '<span class="scsub">Starts at ' + shown + "</span>" : ""), slim ? "boon cmp slim" : "boon cmp", "boon|" + skey(r));
           if (r.inSmall || !units.length) units.push(tag([bc], r)); else units[units.length - 1].push(bc); // beside its stat
         }
       }
@@ -2387,7 +2392,7 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
       }
     } else body = '<div class="scw">' + viz + lay(units) + "</div>";
     var foot = "";
-    if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") body = body.replace(/<\/div><\/div>$/, '<span class="scsub">Starts at ' + small[0].v + "</span></div></div>"); // Spirit: the shared start, quietly inside its card
+    if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") foot = ""; // Spirit: the shared start is said inside its card
     else if (small.length) foot = '<div class="sctl">' + small.map(function (t) { // tiles for the stats every hero shares; tapped, a card says so
       return '<button class="sctb" data-sl="' + esc(t.l) + '" data-sv="' + esc(String(t.v).replace(/<[^>]+>/g, "")) + '" data-sx="' + esc(t.x || "") + '" data-sn="' + esc(t.note || "") + '"' + (t.odd ? ' data-so="' + esc(t.odd.class_name) + '" data-son="' + esc(t.odd.name) + '"' : "") + ' data-sc="' + c[0] + '"><span>' + esc(t.l) + "</span><b>" + t.v + "</b>" + (t.x ? "<em>" + esc(t.x) + "</em>" : "") + "</button>";
     }).join("") + "</div>";
@@ -2418,7 +2423,7 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
   var boon = sk.indexOf("boon|") === 0, key = boon ? sk.slice(5) : sk, r = (statPool()[key] || [])[0], xs;
   if (!r) return; r = r.r;
-  xs = (boon ? boonPool()[key] : statPool()[key]) || []; if (xs.length < 2) return;
+  xs = (boon ? boonPool()[key] : statPool()[key]) || []; if (!xs.length) return;
   var fmt = boon ? function (x) { return "+" + fmtNum(x) + " / boon"; } : function (x) { return sfmt(x, r); };
   var lowb = !boon && LOWBETTER[r.l], me = xs.filter(function (x) { return x.h === h; })[0];
   var sorted = xs.slice().sort(function (a, b) { return (lowb ? a.n - b.n : b.n - a.n) || (a.h.name < b.h.name ? -1 : 1); });
@@ -2431,6 +2436,10 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
     }).join("") + "</span></li>";
   }).join("");
   var cat = sk.indexOf("spi|") === 0 ? "spi" : sec ? (sec.classList.contains("vit") ? "vit" : sec.classList.contains("spi") ? "spi" : "wep") : "wep";
+  if (xs.length < 2) { // only this hero has it
+    var one = '<div class="gsh ssh ' + cat + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(boon ? r.l + " per boon" : sk.indexOf("spi|") === 0 && r.l !== "Spirit power" ? r.l + " per Spirit Power" : r.l) + '</h3><div class="ssv"><b>' + esc(fmt(xs[0].n)) + '</b></div><p class="ssame">Only ' + esc(xs[0].h.name) + " has this.</p></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
+    ISTACK = []; FSTACK = []; clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + one + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; $("close").onclick = sinkSheet; return;
+  }
   var html = '<div class="gsh ssh ' + cat + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(boon ? r.l + " per boon" : sk.indexOf("spi|") === 0 && r.l !== "Spirit power" ? r.l + " per Spirit Power" : r.l) + "</h3>" +
     '<div class="ssv"><b>' + esc(me ? fmt(me.n) : "") + "</b>" + (lowb ? "<span>lower is better</span>" : "") + "</div>" +
     '<div class="ssl">' + cardLine(h, xs, me ? me.n : 0, { l: "" }, fmt) + "</div>" + // the note above already says lower is better
