@@ -640,7 +640,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scs{margin:0 0 18px}.scs h4{margin:0 0 8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:700;text-align:center}
 .scs.vit{--c:var(--vital)}.scs.wep{--c:var(--weapon)}.scs.spi{--c:var(--spirit)}
 .scw{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.scd{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 8px 12px}
+.scd{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px 8px 15px}
 .scd::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:2px solid var(--c);border-left-width:3px;border-right:0;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 12px,transparent 34px);mask-image:linear-gradient(to right,#000 12px,transparent 34px)} /* the category colour wraps round the left corners and fades along the top and bottom */
 .scd.boon::before{opacity:.45}
 .sch{display:flex;align-items:center;gap:6px;min-width:0}
@@ -666,15 +666,16 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scpair{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px}
 .scpair > .scd{border:0;background:none}.scpair > .scd + .scd::after{content:"";position:absolute;left:0;top:12px;bottom:12px;border-left:1px solid var(--line)}
 .scg[data-acc="glow"] .scpair{background:radial-gradient(70% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .scpair > .scd{background:none}
-.frm{display:grid;gap:6px;padding:6px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid #2f283d;margin-bottom:8px}.frm2{grid-template-columns:1fr 1fr}.frm3{grid-template-columns:repeat(3,1fr)}
+.frm{display:grid;gap:6px;padding:6px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid #2f283d;margin-bottom:6px}.frm2{grid-template-columns:1fr 1fr}.frm3{grid-template-columns:repeat(3,1fr)}
 .frm .scd{border-color:#3a3150;min-width:0}
-.frm3 .scd{padding:9px 9px 8px}.frm3 .sch{flex-wrap:wrap;row-gap:2px}.frm3 .sch b{order:3;width:100%;font-size:19px;margin-top:2px}.frm3 .sch b.lv{font-size:16px}.frm3 .sct{font-size:10px}.frm3 .sch > svg{width:15px;height:15px}
+.frm3 .scd{padding:9px 9px 8px 12px}.frm3 .sch{flex-wrap:wrap;row-gap:2px}.frm3 .sch b{order:3;width:100%;font-size:19px;margin-top:2px}.frm3 .sch b.lv{font-size:16px}.frm3 .sct{font-size:10px}.frm3 .sch > svg{width:15px;height:15px}
 .wsec .frm{margin-top:12px}.wsec .frm + .scw{margin-top:0}.wsec .scw + .frm{margin-top:8px}.scs .scw + .frm{margin-top:8px}
 .scgh{margin:12px 2px 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}.scs h4 + .scgh{margin-top:0}
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
 .scd.stam{display:flex;align-items:center}.scd.stam .sch{flex:1}
-.scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
-.sctl{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:4px}.sctl div{border:1px dashed #3d3450;border-radius:9px;padding:6px 8px;min-width:0}
+.scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}
+.scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.sctl{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:2px}.sctb{border:1px dashed #3d3450;border-radius:9px;padding:6px 10px;min-width:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .sctl span{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sctl b{font-size:13.5px;color:var(--fg)}.sctl em{font-style:normal;color:var(--dim);font-size:11px;margin-left:4px}
 .scnote{margin:8px 2px 0;font-size:12.5px;color:var(--dim)}
 .sctrial{margin:0 0 10px;text-align:center;font-size:11px;color:var(--dim);font-style:italic}
@@ -2240,7 +2241,7 @@ var TILEL = { "Crouch speed": "Crouch" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
 var VGRPS = [["h", "Health"], ["m", "Movement"], ["s", "Stamina"]];
-var WGRP = { "Bullet damage": "d", "Light melee": "l", "Heavy melee": "k" };
+var WGRP = { "Bullet damage": "d", Ammo: "d", "Bullets per sec": "r", "Reload time": "r", "Bullet velocity": "r", "Light melee": "l", "Heavy melee": "k" };
 var SHORT = { "Health regen": "Regen", "Move speed": "Move", "Sprint speed": "Sprint", "Crouch speed": "Crouch", "Dash speed": "Dash", "Stamina cooldown": "Stamina CD",
   "Damage per second": "DPS", "Bullet damage": "Bullet", "Bullets per sec": "Fire rate", "Reload time": "Reload", "Bullet velocity": "Velocity", "Spirit power": "Spirit" };
 function boonOf(r) { var m = /^\+?([\d.]+)\s*\/\s*boon$/.exec(r.extra || ""); return m ? parseFloat(m[1]) : null; }
@@ -2318,22 +2319,32 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
     var body;
     if (c[0] === "vit") body = VGRPS.map(function (gp) { // Vitality in three groups: health (framed), movement, stamina
       var us = units.filter(function (u) { return u.g === gp[0]; }); if (!us.length) return "";
-      return '<div class="scgh">' + gp[1] + "</div>" + frame(us, gp[0] === "s" ? 2 : 3); // each group framed: health and movement three across, stamina two
+      return frame(us, gp[0] === "s" ? 2 : 3); // no group names for now: the frames do the grouping // each group framed: health and movement three across, stamina two
     }).join("");
     else if (c[0] === "wep") { // bullet and its growth framed, then the lone cards, then each melee with its growth framed
       var gs = function (k) { return units.filter(function (u) { return u.g === k; }); }, rest = gs("");
-      body = viz + ["d"].map(function (k) { var us = gs(k); return us.length ? frame(us, 2) : ""; }).join("") + (rest.length ? '<div class="scw">' + lay(rest) + "</div>" : "") +
-        ["l", "k"].map(function (k) { var us = gs(k); return us.length ? frame(us, 2) : ""; }).join("");
+      var fr = function (k) { var us = gs(k), n = 0; us.forEach(function (u) { n += u.length; }); return n ? frame(us, n >= 3 ? 3 : 2) : ""; };
+      body = viz + fr("d") + fr("r") + (rest.length ? '<div class="scw">' + lay(rest) + "</div>" : "") + fr("l") + fr("k"); // bullet, growth, ammo; fire rate, reload, velocity; each melee with its growth
     } else body = '<div class="scw">' + viz + lay(units) + "</div>";
     var foot = "";
-    if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") foot = '<p class="scnote">Every hero starts with ' + small[0].v + " Spirit Power</p>"; // Spirit: just the one shared stat, said plainly
-    else if (small.length) foot = '<p class="scsm"><span>Same for every hero</span></p><div class="sctl">' + small.map(function (t) { // tiles: label over value, no wrapping line
-      return "<div><span>" + esc(t.l) + "</span><b>" + t.v + "</b>" + (t.x ? "<em>" + esc(t.x) + "</em>" : "") + "</div>";
+    if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") body = body.replace(/<\/div><\/div>$/, '<span class="scsub">Starts at ' + small[0].v + "</span></div></div>"); // Spirit: the shared start, quietly inside its card
+    else if (small.length) foot = '<div class="sctl">' + small.map(function (t) { // tiles for the stats every hero shares; tapped, a card says so
+      return '<button class="sctb" data-sl="' + esc(t.l) + '" data-sv="' + esc(String(t.v).replace(/<[^>]+>/g, "")) + '" data-sx="' + esc(t.x || "") + '" data-sc="' + c[0] + '"><span>' + esc(t.l) + "</span><b>" + t.v + "</b>" + (t.x ? "<em>" + esc(t.x) + "</em>" : "") + "</button>";
     }).join("") + "</div>";
     return '<section class="scs ' + c[0] + '">' + (c[1] ? "<h4>" + c[1] + "</h4>" : "") + body + foot + "</section>";
   }).join("");
 }
 document.addEventListener("click", function (e) { var c = e.target.closest ? e.target.closest(".scd.cmp[data-sk]") : null; if (c && !e.target.closest("a,button")) statSheet(c.getAttribute("data-sk"), c.getAttribute("data-st"), c.closest(".scs")); }); // a stat card opens every hero's value for it
+document.addEventListener("click", function (e) { var t = e.target.closest ? e.target.closest(".sctb") : null; if (t) sameSheet(t); });
+function sameSheet(t) { // a stat every hero shares: the value and a line saying so, no comparison
+  var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
+  var full = { Crouch: "Crouch speed" }[t.getAttribute("data-sl")] || t.getAttribute("data-sl"), x = t.getAttribute("data-sx");
+  var html = '<div class="gsh ssh ' + t.getAttribute("data-sc") + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(full) + '</h3><div class="ssv"><b>' + esc(t.getAttribute("data-sv")) + "</b>" + (x ? "<span>" + esc(x) + "</span>" : "") + "</div>" +
+    '<p class="ssame">The same for all ' + state.heroes.length + " heroes, so there\u2019s nothing to compare.</p></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
+  ISTACK = []; FSTACK = [];
+  clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
+  $("close").onclick = sinkSheet;
+}
 function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from lowest to highest, then every hero in order, this one picked out
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
   var boon = sk.indexOf("boon|") === 0, key = boon ? sk.slice(5) : sk, r = (statPool()[key] || [])[0], xs;
