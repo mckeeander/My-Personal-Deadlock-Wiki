@@ -660,7 +660,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .ssx li{display:grid;grid-template-columns:24px 74px 1fr;align-items:start;gap:8px;padding:9px 4px;border-top:1px solid #2c2539;font-size:13px}.ssx li:first-child{border-top:0}
 .ssx .rp{text-align:right;font-size:12px;line-height:24px;font-variant-numeric:tabular-nums;color:var(--dim)}
 .ssx .rvv{line-height:24px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg)}
-.ssx .rhs{display:flex;flex-wrap:wrap;gap:4px 10px}.ssx .rh{display:inline-flex;align-items:center;gap:5px;line-height:24px;color:var(--dim);white-space:nowrap}.ssx .rh img{width:20px;height:20px;border-radius:5px;object-fit:cover}
+.ssx .rhs{display:flex;flex-wrap:wrap;gap:4px 10px}.ssx .rh{cursor:pointer;-webkit-tap-highlight-color:transparent;display:inline-flex;align-items:center;gap:5px;line-height:24px;color:var(--dim);white-space:nowrap}.ssx .rh img{width:20px;height:20px;border-radius:5px;object-fit:cover}
 .ssx li.me{background:color-mix(in srgb,var(--c) 12%,transparent);border-radius:8px;border-top-color:transparent}.ssx li.me + li{border-top-color:transparent}.ssx li.me .rvv,.ssx .rh.on{color:var(--c);font-weight:700}
 .scpair{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px}
 .scpair > .scd{border:0;background:none}.scpair > .scd + .scd::after{content:"";position:absolute;left:0;top:12px;bottom:12px;border-left:1px solid var(--line)}
@@ -2229,8 +2229,8 @@ function statView(h) {
 /* ---------- the card layout for Normal (on trial: Abrams first) ----------
    half-width cards: icon, title and value on one line, and under it a line from the lowest hero to the highest with a dot per hero.
    a stat's "per boon" growth gets its own card beside it. stats every hero shares go in small text; stamina is drawn as chevrons. */
-var CARD_HEROES = { "Abrams": 1, "Apollo": 1 };
-var ACCENT = { Abrams: ["glow"], Apollo: ["glow"] }; // the card style: a glow from the top-left corner
+var CARD_HEROES = new Proxy({}, { get: function () { return 1; } }); // every hero has the card layout now
+var ACCENT = new Proxy({}, { get: function () { return ["glow"]; } }); // the corner glow, everywhere // the card style: a glow from the top-left corner
 var TILEL = { "Crouch speed": "Crouch" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
@@ -2254,7 +2254,11 @@ function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot
 function statCards(h) { // Normal view on card heroes: Vitality, the weapon (its card and compared stats), Spirit
   var acc = ACCENT[h.name] || "";
   return '<div class="scg"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + "" +
-    SCAT.map(function (c) { return c[0] === "wep" ? '<section class="scs wep wsec"><h4>Weapon</h4>' + weaponCard(h) + "</section>" : catCards(h, c); }).join("") + "</div>"; // the whole weapon sits between Vitality and Spirit
+    SCAT.map(function (c) {
+      if (c[0] !== "wep") return catCards(h, c);
+      var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean), fp = formParts(h, abs);
+      return '<section class="scs wep wsec"><h4>Weapon</h4>' + (fp ? formSwitch(fp) + '<div class="f0">' + weaponCard(h) + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : weaponCard(h)) + "</section>";
+    }).join("") + "</div>"; // the whole weapon sits between Vitality and Spirit
 }
 function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out the weapon picture, opt.skip leaves out rows by label
   opt = opt || {};
@@ -2326,7 +2330,7 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   var list = groups.map(function (g) {
     var me = g.xs.some(function (x) { return x.h === h; });
     return '<li' + (me ? ' class="me"' : "") + '><span class="rp">' + g.place + '</span><span class="rvv">' + esc(fmt(g.n)) + '</span><span class="rhs">' + g.xs.map(function (x) {
-      return '<span class="rh' + (x.h === h ? " on" : "") + '"><img alt="" src="' + esc(heroHead(x.h)) + '">' + esc(x.h.name) + "</span>";
+      return '<span class="rh' + (x.h === h ? " on" : "") + '" data-rhero="' + esc(x.h.class_name) + '"><img alt="" src="' + esc(heroHead(x.h)) + '">' + esc(x.h.name) + "</span>";
     }).join("") + "</span></li>";
   }).join("");
   var cat = sec ? (sec.classList.contains("vit") ? "vit" : sec.classList.contains("spi") ? "spi" : "wep") : "wep";
@@ -2337,6 +2341,11 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   ISTACK = []; FSTACK = [];
   clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
   $("close").onclick = sinkSheet;
+  Array.prototype.forEach.call($("sheetin").querySelectorAll(".rh[data-rhero]"), function (c) { c.onclick = function () { // a hero in the list: open their page, with a way back here
+    var to = c.getAttribute("data-rhero"), fromHero = state.hero, fromY = window.pageYOffset || 0; closeSheet();
+    if (to === fromHero) return;
+    slideForward(function () { state.from = null; renderHero(to); showBack(fromHero, fromY); });
+  }; });
 }
 function weaponViz(h, rs) { // one shot drawn as its pellets, the clip as shells, and how they add up to DPS
   function R(l) { return rs.filter(function (r) { return r.l === l; })[0]; }
@@ -2709,7 +2718,7 @@ function jumpItems(abs, fp) { // one icon button per ability (two when a hero ha
 }
 var JLOCK = false, JT = 0, JTO = ""; // while a tapped jump is scrolling, the tapped ability stays highlighted so it does not flash through the abilities on the way; once the scroll stops (or you touch the screen) it follows where you actually are
 function jumpUnlock() { clearTimeout(JT); if (JLOCK) { JLOCK = false; updateJbar(); } }
-var JTAB = { hero_fencer: 1 }; // heroes trying the stats tab on the ability bar (Apollo, for now)
+var JTAB = {}; // heroes trying the stats tab on the ability bar (Apollo, for now)
 function jtabHtml() { // a small tab rising from the top of the ability bar: Vitality, Weapon and Spirit, one tap each
   var tab = function (c) { var t = document.querySelector('.tab[data-c="' + c + '"] svg'); return t ? t.outerHTML : ""; };
   return '<div class="jtab">' + [["vit", "Vitality", "vitality", "hv"], ["wep", "Weapon", "weapon", "hw"], ["spi", "Spirit", "spirit", "hs"]].map(function (x) {
@@ -2969,7 +2978,7 @@ function renderHero(cn) {
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
   if (state.altHero !== cn) { state.alt = false; state.altHero = cn; }
-  var wc = CARD_HEROES[h.name] && !fp ? "" : weaponCard(h); // card heroes show their weapon inside Base stats
+  var wc = ""; // the weapon now lives inside Base stats
   if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec">Weapon' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
   // the abilities fold like the sections above, but start open
   html += '<details class="phd abd"' + (AB_SHUT === cn ? "" : " open") + '><summary class="sec">Abilities' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
@@ -4009,7 +4018,8 @@ function glossBack() { // back to the page the glossary was opened from (Abrams,
 function topPill() { // glossary: a round ↑ on the right once you've scrolled past the category cards, and "‹ Back to Abrams" when you came from somewhere
   var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gcats"), inG = state.tab === "glossary" && !searchOn();
   var inN = state.tab === "news" && !searchOn(), nt = inN && document.querySelector("#main .gtitle");
-  var show = (inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0) || (inN && $("backpill").hidden && !!nt && nt.getBoundingClientRect().bottom < -300); // What's New: once you've scrolled a screen or so down
+  var inH = state.tab === "heroes" && !!state.hero && !searchOn(), hh = inH && document.querySelector("#main .hero-h"); // hero pages: once the header is a screen behind you
+  var show = (inH && $("backpill").hidden && !!hh && hh.getBoundingClientRect().bottom < -400) || (inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0) || (inN && $("backpill").hidden && !!nt && nt.getBoundingClientRect().bottom < -300); // What's New: once you've scrolled a screen or so down
   if (show !== !tp.hidden) { tp.hidden = !show; if (show) { tp.classList.remove("in"); void tp.offsetWidth; tp.classList.add("in"); } }
   var f = inG && state.glossFrom, nm = "";
   if (f) { var h = f.tab === "heroes" && f.hero && state.heroes.filter(function (x) { return x.class_name === f.hero; })[0]; nm = h ? h.name : { heroes: "Heroes", weapon: "Weapon", vitality: "Vitality", spirit: "Spirit" }[f.tab] || "page"; }
