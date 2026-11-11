@@ -702,7 +702,11 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scnote{margin:8px 2px 0;font-size:12.5px;color:var(--dim)}
 .sctrial{margin:0 0 10px;text-align:center;font-size:11px;color:var(--dim);font-style:italic}
 /* style trials, one per hero page: the wrapped edge gives way to each */
-.scg[data-acc] .scd::before{display:none}
+.scg[data-acc="edge"] .scd::before,.scg[data-acc="edge"] .jn::before,.scg[data-acc="edge"] .mcol::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:1.5px solid var(--c);border-right:0;border-bottom:0;pointer-events:none;-webkit-mask-image:linear-gradient(135deg,#000 0,rgba(0,0,0,.7) 14%,transparent 42%);mask-image:linear-gradient(135deg,#000 0,rgba(0,0,0,.7) 14%,transparent 42%)} /* the section colour runs along the top and left edges from the corner and fades on the diagonal */
+.scg[data-acc="edge"] .jn,.scg[data-acc="edge"] .mcol{position:relative}.scg[data-acc="edge"] .jn > .scd::before,.scg[data-acc="edge"] .mcol > .scd::before{display:none}
+.scg[data-acc="edge"] .scd.boon::before{opacity:1}
+.scg[data-acc="edge"] .sch > svg{box-sizing:content-box;width:13px;height:13px;padding:3.5px;border-radius:6px;background:color-mix(in srgb,var(--c) 18%,transparent)}
+.scg[data-acc="edge"] .frm3 .sch > svg{width:12px;height:12px;padding:3px}.scg[data-acc="edge"] .mcol::before{inset:0}.mcol .sct{letter-spacing:.03em}.mcol .sch b{font-size:17px}.scg[data-acc="edge"] .sch{gap:6px}
 .scg[data-acc="chip"] .sch > svg,.scg[data-acc="chip"] .sch > img{box-sizing:content-box;padding:5px;border-radius:8px;background:color-mix(in srgb,var(--c) 18%,transparent)}
 .scg[data-acc="wash"] .scd{background:linear-gradient(100deg,color-mix(in srgb,var(--c) 16%,var(--panel)) 0,var(--panel) 55%)}
 .scg[data-acc="glow"] .scd{background:radial-gradient(120% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}
@@ -2279,7 +2283,7 @@ function statView(h) {
    half-width cards: icon, title and value on one line, and under it a line from the lowest hero to the highest with a dot per hero.
    a stat's "per boon" growth gets its own card beside it. stats every hero shares go in small text; stamina is drawn as chevrons. */
 var CARD_HEROES = new Proxy({}, { get: function () { return 1; } }); // every hero has the card layout now
-var ACCENT = new Proxy({}, { get: function () { return ["glow"]; } }); // the corner glow, everywhere // the card style: a glow from the top-left corner
+var ACCENT = new Proxy({}, { get: function () { return ["edge"]; } }); // plain cards: a coloured edge round the top-left corner, the icon in a tinted chip // the card style: a glow from the top-left corner
 var TILEL = { "Crouch speed": "Crouch", "Move while firing": "Speed while firing" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
