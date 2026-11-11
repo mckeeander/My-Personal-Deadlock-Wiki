@@ -147,14 +147,13 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 /* jump to an ability: four icon buttons floating just above the bottom navigation for as long as a hero page is open; the one you are on is outlined in gold */
 #jbar{display:flex;visibility:hidden;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:6;justify-content:center;gap:10px;padding:8px;border-radius:19px;background:rgba(20,17,26,.82);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--line);box-shadow:0 6px 22px rgba(0,0,0,.7)}
 #jbar.show{visibility:visible}
-#hnav{display:none;position:fixed;right:22px;bottom:calc(env(safe-area-inset-bottom,0px) + 94px);z-index:7;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}#hnav.show{display:flex}
-.hnr{display:flex;gap:9px;justify-content:flex-end}#hnav{gap:11px}
-.hnb{--i:0;--j:0;position:relative;z-index:calc(10 + var(--i));width:50px;height:50px;flex:none;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid #433957;color:#e2dbee;pointer-events:auto;-webkit-tap-highlight-color:transparent;
-  box-shadow:0 12px 28px rgba(0,0,0,.8),0 4px 10px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.35);transition:transform .34s cubic-bezier(.2,.85,.25,1) calc(var(--i) * 28ms),opacity .25s ease calc(var(--i) * 28ms),border-color .15s,box-shadow .15s}
-.hnb svg{width:23px;height:23px}.hnb img{width:32px;height:32px;object-fit:contain}.hnb.hv{color:var(--vital)}.hnb.hw{color:var(--weapon)}.hnb.hs{color:var(--spirit)}
-.hnb.hit{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),0 0 18px 4px rgba(232,184,90,.55),0 12px 28px rgba(0,0,0,.8)}
-#hnav:not(.open) .hnb{transform:translateX(calc(var(--i) * 59px + var(--j) * 7px)) scale(calc(1 - var(--j) * .07));transition-delay:0s} /* folded: each row's buttons clump at the right, the first section on top and the rest peeking out behind it */
-@media (prefers-reduced-motion:reduce){.hnb{transition:none}}
+#jbar .jtab{position:absolute;left:50%;bottom:calc(100% - 1px);transform:translateX(-50%);display:flex;gap:6px;padding:6px 8px 5px;border:1px solid var(--line);border-bottom:0;border-radius:14px 14px 0 0;background:rgba(20,17,26,.94)}
+#jbar:has(.jtab){background:rgba(20,17,26,.94)} /* the tab and the bar read as one piece: both nearly opaque so the seam doesn't show */
+#jbar .jtab::before,#jbar .jtab::after{content:"";position:absolute;bottom:0;width:10px;height:10px;pointer-events:none}
+#jbar .jtab::before{right:100%;background:radial-gradient(circle at 0 0,transparent 9.5px,var(--line) 9.5px,var(--line) 10.5px,rgba(20,17,26,.94) 10.5px)}
+#jbar .jtab::after{left:100%;background:radial-gradient(circle at 100% 0,transparent 9.5px,var(--line) 9.5px,var(--line) 10.5px,rgba(20,17,26,.94) 10.5px)} /* curved shoulders where the tab meets the bar */
+.jtb{width:36px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:0}
+.jtb svg{width:19px;height:19px}.jtb.hv{color:var(--vital)}.jtb.hw{color:var(--weapon)}.jtb.hs{color:var(--spirit)}
 body.typing #jbar{display:none}
 #jbar:not(.alt) .f1,#jbar.alt .f0{display:none}
 .jb{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:0;}
@@ -673,7 +672,6 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
   </div>
 </header>
 <nav id="jbar" aria-label="Jump to ability"></nav>
-<nav id="hnav" aria-label="Jump to a section"></nav>
 <div class="topbar"><div class="toprow">
     <div class="brand" id="brand" role="button" aria-label="Deadlock: all heroes"><img class="logo" src="wordmark.png" alt="Deadlock" onerror="this.replaceWith(document.createTextNode('DEADLOCK CODEX'))"></div>
     
@@ -2621,41 +2619,25 @@ function jumpItems(abs, fp) { // one icon button per ability (two when a hero ha
 }
 var JLOCK = false, JT = 0, JTO = ""; // while a tapped jump is scrolling, the tapped ability stays highlighted so it does not flash through the abilities on the way; once the scroll stops (or you touch the screen) it follows where you actually are
 function jumpUnlock() { clearTimeout(JT); if (JLOCK) { JLOCK = false; updateJbar(); } }
-var HNAV = { hero_fencer: 1 }; // heroes trying the section menu (Apollo, for now)
-function hnavHtml(abs, fp) { // a clump of round buttons at the bottom right; tapped, each row fans out to the left
+var JTAB = { hero_fencer: 1 }; // heroes trying the stats tab on the ability bar (Apollo, for now)
+function jtabHtml() { // a small tab rising from the top of the ability bar: Vitality, Weapon and Spirit, one tap each
   var tab = function (c) { var t = document.querySelector('.tab[data-c="' + c + '"] svg'); return t ? t.outerHTML : ""; };
-  var row = function (bs) { return '<div class="hnr">' + bs.map(function (b, i) { return b.replace("<button ", '<button style="--i:' + (bs.length - 1 - i) + ";--j:" + i + '" '); }).join("") + "</div>"; };
-  var btn = function (go, label, inner) { return '<button class="hnb" data-hgo="' + esc(go) + '" aria-label="' + esc(label) + '">' + inner + "</button>"; };
-  var bag = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8h13l-1 12.5h-11z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>';
-  var hist = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3 2"/></svg>';
-  return row([btn("vit", "Vitality", tab("vitality")).replace('class="hnb"', 'class="hnb hv"'), btn("wep", "Weapon", tab("weapon")).replace('class="hnb"', 'class="hnb hw"'), btn("spi", "Spirit", tab("spirit")).replace('class="hnb"', 'class="hnb hs"')]) +
-    row(abs.map(function (a) { var op = ABOPT[a.class_name] || {}; return btn("ab:" + a.class_name, nameOf(a), imgTag(op.img || itemImg(a))); })) +
-    row([btn("pop", "Popular items", bag), btn("hist", "Patch history", hist)]);
+  return '<div class="jtab">' + [["vit", "Vitality", "vitality", "hv"], ["wep", "Weapon", "weapon", "hw"], ["spi", "Spirit", "spirit", "hs"]].map(function (x) {
+    return '<button class="jtb ' + x[3] + '" data-sgo="' + x[0] + '" aria-label="Jump to ' + x[1] + ' stats">' + tab(x[2]) + "</button>";
+  }).join("") + "</div>";
 }
-function hnavGo(go) {
+function hnavGo(go) { // jump to a section of the hero page
   if (go.indexOf("ab:") === 0) { jumpTo(go.slice(3)); return; }
   var el = { vit: "#main .sblk.vit", wep: "#main .sblk.wep", spi: "#main .sblk.spi", pop: "#popwrap details.phd", hist: "#revwrap details.phd" }[go];
   el = el && document.querySelector(el); if (!el) return;
   if (el.tagName === "DETAILS" && !el.open) el.open = true; // a folded section opens as you arrive
   scrollToEl(el, true);
 }
-document.addEventListener("click", function (e) {
-  var hn = $("hnav"); if (!hn || !hn.firstChild) return;
-  var inside = e.target.closest && e.target.closest("#hnav");
-  if (!inside) { hn.classList.remove("open"); return; } // a tap anywhere else folds it back
-  e.preventDefault(); e.stopPropagation();
-  if (!hn.classList.contains("open")) { hn.classList.add("open"); return; }
-  var b = e.target.closest(".hnb"); if (!b) return;
-  if (hn._hit) return;
-  b.classList.add("hit"); hn._hit = true; // the button glows gold, then the menu folds as the page goes there
-  setTimeout(function () { b.classList.remove("hit"); hn._hit = false; hn.classList.remove("open"); hnavGo(b.getAttribute("data-hgo")); }, 230);
-}, true);
+document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest(".jtb[data-sgo]") : null; if (b) hnavGo(b.getAttribute("data-sgo")); });
 function updateJbar() { // shown for the whole hero page; outlines the ability you are on (the last card whose top has passed the upper part of the screen)
   var bar = $("jbar"), show = state.tab === "heroes" && !!state.hero && !$("main").hidden && !!bar.firstChild, cur = "";
   if (show && JLOCK) cur = JTO; else if (show) Array.prototype.forEach.call(document.querySelectorAll("#main .ab"), function (c) { if (c.offsetParent !== null && c.getBoundingClientRect().top < window.innerHeight * .4) cur = c.getAttribute("data-ab"); });
   bar.classList.toggle("show", show); document.body.classList.toggle("jump", show);
-  var hn = $("hnav"), hs = state.tab === "heroes" && !!state.hero && !$("main").hidden && !!(hn && hn.firstChild);
-  if (hn) { hn.classList.toggle("show", hs); if (!hs) hn.classList.remove("open"); }
   Array.prototype.forEach.call(bar.querySelectorAll(".jb"), function (b) { b.classList.toggle("on", show && b.getAttribute("data-jump") === cur); });
 }
 function jumpTo(cn) {
@@ -2910,7 +2892,7 @@ function renderHero(cn) {
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : "";
-  var hn = $("hnav"); hn.classList.remove("open"); hn.innerHTML = HNAV[cn] && abs.length ? hnavHtml(abs, fp) : ""; if (hn.firstChild) $("jbar").innerHTML = ""; // trying out: the section menu instead of the ability bar
+  if (JTAB[cn] && abs.length) $("jbar").insertAdjacentHTML("afterbegin", jtabHtml()); // trying out: a tab on the bar for the stat blocks
   updateJbar();
   $("back").onclick = function () {
     if (BACK && BACK.sheet && !$("backpill").hidden) { $("backpill").click(); return; } // opened from a pop-up: back returns to it, as the pill does
