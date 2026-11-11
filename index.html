@@ -2339,8 +2339,7 @@ document.addEventListener("click", function (e) { var t = e.target.closest ? e.t
 function sameSheet(t) { // a stat every hero shares: the value and a line saying so, no comparison
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
   var full = { Crouch: "Crouch speed" }[t.getAttribute("data-sl")] || t.getAttribute("data-sl"), x = t.getAttribute("data-sx");
-  var html = '<div class="gsh ssh ' + t.getAttribute("data-sc") + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(full) + '</h3><div class="ssv"><b>' + esc(t.getAttribute("data-sv")) + "</b>" + (x ? "<span>" + esc(x) + "</span>" : "") + "</div>" +
-    '<p class="ssame">The same for all ' + state.heroes.length + " heroes, so there\u2019s nothing to compare.</p></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
+  var html = '<div class="gsh ssh ' + t.getAttribute("data-sc") + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(full) + '</h3><div class="ssv"><b>' + esc(t.getAttribute("data-sv")) + "</b>" + (x ? "<span>" + esc(x) + "</span>" : "") + "</div></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
   ISTACK = []; FSTACK = [];
   clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
   $("close").onclick = sinkSheet;
