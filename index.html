@@ -135,8 +135,8 @@ input[type=search]{width:100%;padding:11px 12px;background:var(--panel);border:1
 .it{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 2px;text-align:center;font-size:11px;line-height:1.2}
 .it img{width:44px;height:44px;object-fit:contain;display:block;margin:0 auto 4px}
 .it.act::after{content:"ACTIVE";display:block;font-size:9px;color:var(--gold);letter-spacing:.08em;margin-top:2px}
-.back{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:0;border-bottom:1px solid var(--line);color:var(--gold);padding:8px 0 12px;margin:0 0 20px;font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;text-align:left}
-.back .bl{display:flex;align-items:center;gap:7px}
+.back{display:inline-flex;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:999px;color:var(--fg);padding:8px 16px 8px 11px;margin:0 0 18px;font-family:var(--body);font-weight:600;font-size:14px;letter-spacing:0;text-transform:none;line-height:1.2;text-align:left} /* a button that leaves the page, not a section header */
+.back .bl{display:flex;align-items:center;gap:7px}.back .bl svg{color:var(--gold)}
 .back:active{opacity:.7}
 .hero-h{display:flex;gap:12px;align-items:center;margin-bottom:22px}
 .hero-h img{width:86px;aspect-ratio:3/4;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
@@ -2229,8 +2229,8 @@ function statView(h) {
 /* ---------- the card layout for Normal (on trial: Abrams first) ----------
    half-width cards: icon, title and value on one line, and under it a line from the lowest hero to the highest with a dot per hero.
    a stat's "per boon" growth gets its own card beside it. stats every hero shares go in small text; stamina is drawn as chevrons. */
-var CARD_HEROES = { "Abrams": 1 };
-var ACCENT = { Abrams: ["glow"] }; // the card style: a glow from the top-left corner
+var CARD_HEROES = { "Abrams": 1, "Apollo": 1 };
+var ACCENT = { Abrams: ["glow"], Apollo: ["glow"] }; // the card style: a glow from the top-left corner
 var TILEL = { "Crouch speed": "Crouch" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
@@ -2331,7 +2331,7 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   }).join("");
   var cat = sec ? (sec.classList.contains("vit") ? "vit" : sec.classList.contains("spi") ? "spi" : "wep") : "wep";
   var html = '<div class="gsh ssh ' + cat + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(boon ? r.l + " per boon" : r.l) + "</h3>" +
-    '<div class="ssv"><b>' + esc(me ? fmt(me.n) : "") + "</b><span>#" + mine + " of " + xs.length + (lowb ? " · lower is better" : "") + "</span></div>" +
+    '<div class="ssv"><b>' + esc(me ? fmt(me.n) : "") + "</b>" + (lowb ? "<span>lower is better</span>" : "") + "</div>" +
     '<div class="ssl">' + cardLine(h, xs, me ? me.n : 0, { l: "" }, fmt) + "</div>" + // the note above already says lower is better
     '<ol class="ssx">' + list + "</ol></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
   ISTACK = []; FSTACK = [];
@@ -2718,8 +2718,9 @@ function jtabHtml() { // a small tab rising from the top of the ability bar: Vit
 }
 function hnavGo(go) { // jump to a section of the hero page
   if (go.indexOf("ab:") === 0) { jumpTo(go.slice(3)); return; }
-  var el = { vit: "#main .sblk.vit", wep: "#main .sblk.wep", spi: "#main .sblk.spi", pop: "#popwrap details.phd", hist: "#revwrap details.phd" }[go];
+  var el = { vit: "#main .scs.vit, #main .sblk.vit", wep: "#main .scs.wep, #main .sblk.wep", spi: "#main .scs.spi, #main .sblk.spi", pop: "#popwrap details.phd", hist: "#revwrap details.phd" }[go];
   el = el && document.querySelector(el); if (!el) return;
+  var bs = el.closest("details"); if (bs && !bs.open) bs.open = true; // Base stats folded shut: open it on the way
   if (el.tagName === "DETAILS" && !el.open) el.open = true; // a folded section opens as you arrive
   scrollToEl(el, true);
 }
