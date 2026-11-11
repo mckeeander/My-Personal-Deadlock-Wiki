@@ -651,8 +651,14 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scd.cmp{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .scd .trk{height:10px;margin-top:12px;transition:height .25s ease,margin .25s ease}.scd .trk::before{top:4px;height:1.5px;opacity:.7;transition:top .25s ease}
 .scd .trk i{top:3px;width:4px;height:4px;margin-left:-2px;opacity:.55;transition:all .25s ease}.scd .trk b{top:0;width:10px;height:10px;margin-left:-5px;border-width:1.5px;transition:all .25s ease}
-.scd .rkl{font-size:10.5px;max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease}
-.scd.xo .rkl{max-height:28px;opacity:1}
+.scd .rkl{display:none}
+.ssh.vit{--c:var(--vital)}.ssh.wep{--c:var(--weapon)}.ssh.spi{--c:var(--spirit)}.ssh .gcat2{color:var(--c)}
+.ssv{display:flex;align-items:baseline;gap:10px;margin:4px 0 14px}.ssv b{font-size:28px;font-weight:700;color:var(--fg)}.ssv span{font-size:13px;color:var(--dim)}
+.ssl .trk{height:24px}.ssl .trk::before{top:11px;height:3px}.ssl .trk i{top:8px;width:9px;height:9px;margin-left:-4.5px}.ssl .trk b{top:3px;width:18px;height:18px;margin-left:-9px}
+.ssl .rkl{display:flex;font-size:12px;margin-top:4px}
+.ssx{list-style:none;margin:16px 0 0;padding:0}.ssx li{display:flex;align-items:center;gap:9px;padding:6px 4px;border-top:1px solid #2c2539;font-size:14px;color:var(--dim)}.ssx li:first-child{border-top:0}
+.ssx .rp{width:22px;text-align:right;font-variant-numeric:tabular-nums;opacity:.7}.ssx img{width:24px;height:24px;border-radius:6px;object-fit:cover}.ssx .rn{flex:1;color:var(--fg)}.ssx .rvv{font-variant-numeric:tabular-nums;color:var(--fg)}
+.ssx li.me{background:color-mix(in srgb,var(--c) 14%,transparent);border-radius:8px;border-top-color:transparent}.ssx li.me .rn,.ssx li.me .rvv{color:var(--c);font-weight:700}.ssx li.me + li{border-top-color:transparent}
 .scgh{margin:12px 2px 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}.scs h4 + .scgh{margin-top:0}
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
 .scd.stam{display:flex;align-items:center}.scd.stam .sch{flex:1}
@@ -665,12 +671,12 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc] .scd::before{display:none}
 .scg[data-acc="chip"] .sch > svg,.scg[data-acc="chip"] .sch > img{box-sizing:content-box;padding:5px;border-radius:8px;background:color-mix(in srgb,var(--c) 18%,transparent)}
 .scg[data-acc="wash"] .scd{background:linear-gradient(100deg,color-mix(in srgb,var(--c) 16%,var(--panel)) 0,var(--panel) 55%)}
-.scg[data-acc="glow"] .scd{background:radial-gradient(120% 140% at var(--gx,0) var(--gy,0),color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}
+.scg[data-acc="glow"] .scd{background:radial-gradient(120% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}
 .scg[data-acc="tint"] .scd{background:color-mix(in srgb,var(--c) 8%,var(--panel));border-color:color-mix(in srgb,var(--c) 28%,var(--line))}
 /* the weapon section on card heroes: DPS's comparison line, the clip, and the compared cards under the weapon */
 .scd.wdl{background:none;border:0;padding:0 18%;margin:-2px 0 8px;cursor:pointer}.scd.wdl::before{display:none}.scd.wdl .trk{margin-top:4px}
 .wpn .wclip{--c:var(--weapon)}.wclip.wfill{display:grid}.wclip.wfill i{width:auto}.wsec .wpn{margin:0}.wpn .wclipr{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin:14px 2px 6px}.wpn .wclipr b{color:var(--fg)}
-.wcmp{margin-top:14px}.wcmp .scs{--c:var(--weapon)}.wcmp .scs h4{font-size:11px;color:var(--dim)}
+.wcmp{margin-top:12px}.wcmp .scs{--c:var(--weapon)}.wcmp .scs h4{font-size:11px;color:var(--dim)}
 .wviz{grid-column:1/-1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px 14px;position:relative}
 .wviz::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:2px solid var(--c);border-left-width:3px;border-right:0;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 12px,transparent 34px);mask-image:linear-gradient(to right,#000 12px,transparent 34px)}
 .wvr{display:flex;align-items:center;gap:12px;margin-bottom:12px}.wvr.col{display:block}
@@ -2064,7 +2070,7 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
     var rs = statRows(h), R = function (l) { return rs.filter(function (r) { return r.c === "wep" && r.l === l; })[0]; }, dr = R("Damage per second"), am = R("Ammo"), rl = R("Reload time");
     if (am && am.n) { var nb = Math.round(am.n); clip = '<div class="wclipr"><span>Clip <b>' + esc(am.val) + " shots</b></span>" + (rl ? "<span>" + esc(rl.val) + " reload</span>" : "") + '</div><span class="wclip wfill" style="grid-template-columns:repeat(' + nb + ',1fr);gap:' + (nb > 40 ? 1 : nb > 20 ? 2 : 4) + 'px">' + new Array(nb + 1).join("<i></i>") + "</span>"; } // one shell per round, sharing the width
     var acc = ACCENT[h.name];
-    cmp = '<div class="scg wcmp"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + catCards(h, ["wep", "Compared with every hero"], { noviz: 1, skip: { "Damage per second": 1 } }) + "</div>";
+    cmp = '<div class="scg wcmp"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + catCards(h, ["wep", ""], { noviz: 1, skip: { "Damage per second": 1 } }) + "</div>";
     if (pel > 1) g = g.replace(/<div class="wc">(?:(?!<div class="wc">).)*?Damage per shot<\/i><\/div>/, ""); // the Bullet card below says it
   }
   return '<section class="wpn"><h3>' + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
@@ -2217,8 +2223,8 @@ function statView(h) {
 /* ---------- the card layout for Normal (on trial: Abrams first) ----------
    half-width cards: icon, title and value on one line, and under it a line from the lowest hero to the highest with a dot per hero.
    a stat's "per boon" growth gets its own card beside it. stats every hero shares go in small text; stamina is drawn as chevrons. */
-var CARD_HEROES = { "Abrams": 1, "Haze": 1, "Infernus": 1, "Seven": 1 };
-var ACCENT = { Abrams: ["chip", "icon chip"], Haze: ["wash", "colour wash from the left"], Infernus: ["glow", "corner glow"], Seven: ["tint", "tinted card"] }; // trying styles side by side: one per hero page
+var CARD_HEROES = { "Abrams": 1 };
+var ACCENT = { Abrams: ["glow"] }; // the card style: a glow from the top-left corner
 var TILEL = { "Crouch speed": "Crouch" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
@@ -2241,17 +2247,16 @@ function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot
 }
 function statCards(h) { // Normal view on card heroes: Vitality, the weapon (its card and compared stats), Spirit
   var acc = ACCENT[h.name] || "";
-  return '<div class="scg"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + (acc ? '<p class="sctrial">Style trial: ' + esc(acc[1]) + "</p>" : "") +
+  return '<div class="scg"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + "" +
     SCAT.map(function (c) { return c[0] === "wep" ? '<section class="scs wep wsec"><h4>Weapon</h4>' + weaponCard(h) + "</section>" : catCards(h, c); }).join("") + "</div>"; // the whole weapon sits between Vitality and Spirit
 }
 function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out the weapon picture, opt.skip leaves out rows by label
   opt = opt || {};
   var rows = statRows(h), pool = statPool(), bp = boonPool(), n = state.heroes.length;
   function shared(xs, v) { return xs.length >= n * 0.9 && xs.every(function (x) { return x.n === v; }); } // the same on every hero
-  function card(icon, title, value, line, cls) {
+  function card(icon, title, value, line, cls, sk) {
     var long = String(value).replace(/<[^>]+>/g, "").length >= 7; // "610 m/s": a smaller value so the title still fits beside it
-    var hs = 0, key = h.name + title; for (var q = 0; q < key.length; q++) hs = (hs * 31 + key.charCodeAt(q)) >>> 0; // the glow's centre, picked from the card's name
-    return '<div class="scd' + (cls ? " " + cls : "") + '" style="--gx:' + (hs % 101) + "%;--gy:" + ((hs >>> 8) % 101) + '%"><div class="sch">' + icon + '<span class="sct">' + esc(title) + "</span><b" + (long ? ' class="lv"' : "") + ">" + value + "</b></div>" + line + "</div>";
+    return '<div class="scd' + (cls ? " " + cls : "") + '"' + (sk ? ' data-sk="' + esc(sk) + '" data-st="' + esc(title) + '"' : "") + '><div class="sch">' + icon + '<span class="sct">' + esc(title) + "</span><b" + (long ? ' class="lv"' : "") + ">" + value + "</b></div>" + line + "</div>";
   }
   return [c0].map(function (c) {
     var rs = rows.filter(function (r) { return r.c === c[0] && !(opt.skip && opt.skip[r.l]); }); if (!rs.length) return "";
@@ -2266,13 +2271,13 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
         r.inSmall = true;
         small.push({ l: TILEL[r.l] || r.l, v: shown, x: r.extra && r.val !== "" && boonOf(r) == null ? r.extra : "", r: r });
       } else {
-        units.push(tag([card(icon, title, r.val !== "" ? esc(r.val) : shown, cardLine(h, xs, r.n, r, function (x) { return sfmt(x, r); }), "cmp")], r));
+        units.push(tag([card(icon, title, r.val !== "" ? esc(r.val) : shown, cardLine(h, xs, r.n, r, function (x) { return sfmt(x, r); }), "cmp", skey(r))], r));
       }
       var b = boonOf(r), bx = bp[skey(r)] || [];
       if (b != null) { // the stat's growth per boon, as its own card beside it
         if (bx.length < 2 || shared(bx, b)) small.push({ l: (TILEL[r.l] || r.l) + " / boon", v: "+" + fmtNum(b), x: "" });
         else {
-          var bc = card(icon, r.inSmall ? title + " / boon" : "Per boon", "+" + fmtNum(b), cardLine(h, bx, b, { l: "" }, function (x) { return "+" + fmtNum(x); }), "boon cmp");
+          var bc = card(icon, r.inSmall ? title + " / boon" : "Per boon", "+" + fmtNum(b), cardLine(h, bx, b, { l: "" }, function (x) { return "+" + fmtNum(x); }), "boon cmp", "boon|" + skey(r));
           if (r.inSmall || !units.length) units.push(tag([bc], r)); else units[units.length - 1].push(bc); // beside its stat
         }
       }
@@ -2301,7 +2306,29 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
     return '<section class="scs ' + c[0] + '">' + (c[1] ? "<h4>" + c[1] + "</h4>" : "") + body + foot + "</section>";
   }).join("");
 }
-document.addEventListener("click", function (e) { var c = e.target.closest ? e.target.closest(".cmp") : null; if (c && !e.target.closest("a,button")) c.classList.toggle("xo"); }); // the comparison line opens out, with its ends
+document.addEventListener("click", function (e) { var c = e.target.closest ? e.target.closest(".scd.cmp[data-sk]") : null; if (c && !e.target.closest("a,button")) statSheet(c.getAttribute("data-sk"), c.getAttribute("data-st"), c.closest(".scs")); }); // a stat card opens every hero's value for it
+function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from lowest to highest, then every hero in order, this one picked out
+  var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
+  var boon = sk.indexOf("boon|") === 0, key = boon ? sk.slice(5) : sk, r = (statPool()[key] || [])[0], xs;
+  if (!r) return; r = r.r;
+  xs = (boon ? boonPool()[key] : statPool()[key]) || []; if (xs.length < 2) return;
+  var fmt = boon ? function (x) { return "+" + fmtNum(x) + " / boon"; } : function (x) { return sfmt(x, r); };
+  var lowb = !boon && LOWBETTER[r.l], me = xs.filter(function (x) { return x.h === h; })[0];
+  var sorted = xs.slice().sort(function (a, b) { return (lowb ? a.n - b.n : b.n - a.n) || (a.h.name < b.h.name ? -1 : 1); });
+  var place = 0, prev = null, mine = 0;
+  var list = sorted.map(function (x, i) {
+    if (x.n !== prev) { place = i + 1; prev = x.n; } if (x.h === h) mine = place;
+    return '<li' + (x.h === h ? ' class="me"' : "") + '><span class="rp">' + place + '</span><img alt="" src="' + esc(heroHead(x.h)) + '"><span class="rn">' + esc(x.h.name) + '</span><span class="rvv">' + esc(fmt(x.n)) + "</span></li>";
+  }).join("");
+  var cat = sec ? (sec.classList.contains("vit") ? "vit" : sec.classList.contains("spi") ? "spi" : "wep") : "wep";
+  var html = '<div class="gsh ssh ' + cat + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(boon ? r.l + " per boon" : r.l) + "</h3>" +
+    '<div class="ssv"><b>' + esc(me ? fmt(me.n) : "") + "</b><span>#" + mine + " of " + xs.length + (lowb ? " · lower is better" : "") + "</span></div>" +
+    '<div class="ssl">' + cardLine(h, xs, me ? me.n : 0, boon ? { l: "" } : r, fmt) + "</div>" +
+    '<ol class="ssx">' + list + "</ol></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
+  ISTACK = []; FSTACK = [];
+  clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
+  $("close").onclick = sinkSheet;
+}
 function weaponViz(h, rs) { // one shot drawn as its pellets, the clip as shells, and how they add up to DPS
   function R(l) { return rs.filter(function (r) { return r.l === l; })[0]; }
   var bd = R("Bullet damage"), ammo = R("Ammo"), bps = R("Bullets per sec"), dps = R("Damage per second"), rl = R("Reload time");
