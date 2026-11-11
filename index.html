@@ -542,7 +542,7 @@ body.jump #toppill{bottom:calc(env(safe-area-inset-bottom,0px) + 86.5px)} /* on 
 .glt{flex:1;display:flex;flex-direction:column;line-height:1.25}.glt b{font-weight:600;font-size:15px}.glt i{font-style:normal;font-size:12px;color:var(--dim)}
 .gig{margin-top:10px;font-size:13px;color:var(--dim)}.gig span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d7290;margin-right:8px}.gig b{color:var(--fg);font-weight:600}
 .mlist{display:flex;flex-direction:column;gap:6px}.mlist div{background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.4}.mlist b{display:block;font-weight:600}.mlist span{color:var(--dim);font-size:13px}
-details.phd{margin:72px 0 16px;padding:1px 0} /* margins live on the section, not its header, and the 1px keeps them from leaking out: otherwise they shift while it animates */
+details.phd{margin:60px 0 16px;padding:1px 0}details.phd.bsd{margin-top:28px} /* the first chapter sits close under the hero */ /* margins live on the section, not its header, and the 1px keeps them from leaking out: otherwise they shift while it animates */
 details.phd > summary.sec{margin:0;padding-bottom:12px;font-family:var(--disp);font-size:28px;font-weight:700;letter-spacing:.04em;text-transform:none;color:var(--fg);border-bottom:1px solid #2c2539;position:relative}
 details.phd > summary.sec::before{content:"";position:absolute;left:0;bottom:-1px;width:40px;height:3px;border-radius:2px;background:var(--gold)} /* a short gold mark on a faint full-width line */ /* top-level sections: the display font over a gold rule */ /* more air above its line than the other section headers */details.phd > summary + *{margin-top:12px}
 details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}details.phd > summary::-webkit-details-marker{display:none}details.phd > summary .ncv{margin-left:auto;width:15px;height:15px;opacity:.5;flex:none;color:var(--dim);transition:transform .2s ease}details.phd[open] > summary .ncv{transform:rotate(90deg)}details.phd.closing > summary .ncv{transform:none}
@@ -679,7 +679,10 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="glow"] .scpair{background:radial-gradient(70% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .scpair > .scd{background:none}
 .frm{display:grid;gap:6px;padding:6px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid #2f283d;margin-bottom:6px}.frm2{grid-template-columns:1fr 1fr}.frm3{grid-template-columns:repeat(3,1fr)}
 .frm .scd{border-color:#3a3150;min-width:0}
-.frm3 .scd{padding:9px 9px 8px 12px}.frm3 > .scd:last-child:nth-child(3n+1){grid-column:1/-1} /* a lone fourth card takes the full row */.frm3 .sch{flex-wrap:wrap;row-gap:2px}.frm3 .sch b{order:3;width:100%;font-size:19px;margin-top:2px}.frm3 .sch b.lv{font-size:16px}.frm3 .sct{font-size:10px}.frm3 .sch > svg{width:15px;height:15px}
+.jn{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;min-width:0;border:1px solid #3a3150;border-radius:12px;background:var(--panel)}
+.jn > .scd{border:0;border-radius:0;background:none!important}.jn > .scd + .scd{border-left:1px solid #3a3150}
+.scg[data-acc="glow"] .jn{background:radial-gradient(70% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}
+.frm3 .scd{padding:9px 9px 8px 12px}.frm3 .sch{flex-wrap:wrap;row-gap:2px}.frm3 .sch b{order:3;width:100%;font-size:19px;margin-top:2px}.frm3 .sch b.lv{font-size:16px}.frm3 .sct{font-size:10px}.frm3 .sch > svg{width:15px;height:15px}
 .wsec .frm{margin-top:12px}.wsec .frm + .scw{margin-top:0}.wsec .scw + .frm{margin-top:8px}.scs .scw + .frm{margin-top:8px}
 .scgh{margin:12px 2px 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}.scs h4 + .scgh{margin-top:0}
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
@@ -2364,8 +2367,10 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
       return out;
     }
     function frame(us, cols) { // related stats in one frame, each still its own card: three across, the value under the name
-      var cs = []; us.forEach(function (u) { cs = cs.concat(u); });
-      return '<div class="frm frm' + cols + '">' + cs.join("") + "</div>";
+      var parts = [], slots = 0; // a stat and its growth join into one two-part card, a thin line between
+      us.forEach(function (u) { if (u.length === 2 && /class="scd[^"]*boon/.test(u[1])) { parts.push('<div class="jn">' + u.join("") + "</div>"); slots += 2; } else u.forEach(function (c) { parts.push(c); slots++; }); });
+      if (cols === 3 && slots % 3 === 1 && parts.length) parts[parts.length - 1] = parts[parts.length - 1].replace(/^<div class="/, '<div style="grid-column:1/-1" class="'); // a lone last card takes the full row
+      return '<div class="frm frm' + cols + '">' + parts.join("") + "</div>";
     }
     var body;
     if (c[0] === "vit") body = VGRPS.map(function (gp) { // Vitality in three groups: health (framed), movement, stamina
