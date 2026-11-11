@@ -687,7 +687,14 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="tint"] .scd{background:color-mix(in srgb,var(--c) 8%,var(--panel));border-color:color-mix(in srgb,var(--c) 28%,var(--line))}
 /* the weapon section on card heroes: DPS's comparison line, the clip, and the compared cards under the weapon */
 .scd.wdl{background:none;border:0;padding:0 18%;margin:-2px 0 8px;cursor:pointer}.scd.wdl::before{display:none}.scd.wdl .trk{margin-top:4px}
-.wpn .wclip{--c:var(--weapon)}.wclip.wfill{display:grid}.wclip.wfill i{width:auto}.wsec .wpn{margin:0}.wpn .wclipr{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin:14px 2px 6px}.wpn .wclipr b{color:var(--fg)}
+.wpn .wclip{--c:var(--weapon)}.wclip.wfill{display:grid}.wclip.wfill i{width:auto}.wsec .wpn{margin:0}
+.wpn.wpc{text-align:left;padding:12px 14px}
+.wpc .wph{display:grid;grid-template-columns:44% 1fr;gap:12px;align-items:center}.wpc .wimg img{width:100%;height:auto;max-height:96px;max-width:none}
+.wpc h3{font-size:19px;margin:0 0 6px}.wpc .wtags{justify-content:flex-start;gap:4px;margin:0 0 8px}.wpc .wtags .chip{font-size:11.5px;padding:3px 7px}.wpc .wdps1{margin:0;font-size:13px}.wpc .wdps1 b{font-size:22px}
+.wpc .wrow{display:flex;align-items:center;gap:10px;margin-top:10px}.wpc .wph + .wrow{margin-top:14px;padding-top:12px;border-top:1px solid #3a2f25}
+.wpc .wrl2{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:700;width:58px;flex:none}
+.wpc .fobw{flex:1;margin:0 4px 16px}.wpc .flab{top:12px;font-size:10.5px}.wpc .flab.fend{left:auto;right:0;transform:none}
+.wpc .wclip{flex:1;--c:var(--weapon)}.wpc .wclip i{height:16px}.wpc .wrow em{font-style:normal;font-size:12px;color:var(--dim);white-space:nowrap}.wpc .wrow em b{color:var(--fg)}.wpn .wclipr{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin:14px 2px 6px}.wpn .wclipr b{color:var(--fg)}
 .wcmp{margin-top:12px}.wcmp .scs{--c:var(--weapon)}.wcmp .scs h4{font-size:11px;color:var(--dim)}
 .wviz{grid-column:1/-1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px 14px;position:relative}
 .wviz::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:2px solid var(--c);border-left-width:3px;border-right:0;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 12px,transparent 34px);mask-image:linear-gradient(to right,#000 12px,transparent 34px)}
@@ -2077,13 +2084,25 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
       '<div class="fo">Full damage out to <b>' + meters(i.damage_falloff_start_range) + "</b>, falling to <b>" + fmtNum(Math.round((i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0) * 100)) + "%</b> at <b>" + meters(i.damage_falloff_end_range) + "</b>.</div>";
   }
   var title = (wa && wa.name) || WNAME[w.class_name] || nameOf(w);
-  var merged = !alt && !bare && CARD_HEROES[h.name], dline = "", clip = "", cmp = "";
+  var merged = !alt && !bare && CARD_HEROES[h.name], dline = "", clip = "", cmp = "", am = null, rl = null;
   if (merged) { // the base stats' weapon cards join this one: DPS gets its comparison line, the clip its shells, the rest follow as cards
-    var rs = statRows(h), R = function (l) { return rs.filter(function (r) { return r.c === "wep" && r.l === l; })[0]; }, dr = R("Damage per second"), am = R("Ammo"), rl = R("Reload time");
+    var rs = statRows(h), R = function (l) { return rs.filter(function (r) { return r.c === "wep" && r.l === l; })[0]; }, dr = R("Damage per second"); am = R("Ammo"); rl = R("Reload time");
     if (am && am.n) { var nb = Math.round(am.n); clip = '<div class="wclipr"><span>Clip <b>' + esc(am.val) + " shots</b></span>" + (rl ? "<span>" + esc(rl.val) + " reload</span>" : "") + '</div><span class="wclip wfill" style="grid-template-columns:repeat(' + nb + ',1fr);gap:' + (nb > 40 ? 1 : nb > 20 ? 2 : 4) + 'px">' + new Array(nb + 1).join("<i></i>") + "</span>"; } // one shell per round, sharing the width
     var acc = ACCENT[h.name];
     cmp = '<div class="scg wcmp"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + catCards(h, ["wep", ""], { noviz: 1, skip: { "Damage per second": 1 } }) + "</div>";
     if (pel > 1) g = g.replace(/<div class="wc">(?:(?!<div class="wc">).)*?Damage per shot<\/i><\/div>/, ""); // the Bullet card below says it
+  }
+  if (!bare) { // compact: the picture beside the name, tags and DPS, then slim falloff and clip rows; the numbers live in the cards below
+    var cn = am && am.n ? Math.round(am.n) : (i.clip_size || 0), crl = rl ? rl.val : (i.reload_duration != null ? fmtNum(i.reload_duration) + "s" : "");
+    var fo2 = "";
+    if (i.damage_falloff_start_range && i.damage_falloff_end_range) {
+      var pc = Math.round(i.damage_falloff_start_range / i.damage_falloff_end_range * 100);
+      fo2 = '<div class="wrow"><span class="wrl2">Falloff</span><div class="fobw"><div class="fob" style="background:linear-gradient(90deg,var(--weapon) 0%,var(--weapon) ' + pc + '%,#5a3a1a 100%)"></div><span class="fdot" style="left:' + pc + '%"></span>' +
+        '<span class="flab" style="left:' + pc + '%">' + meters(i.damage_falloff_start_range) + '</span><span class="flab fend">' + fmtNum(Math.round((i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0) * 100)) + "% at " + meters(i.damage_falloff_end_range) + "</span></div></div>";
+    }
+    var cl2 = cn ? '<div class="wrow"><span class="wrl2">Clip</span><span class="wclip wfill" style="grid-template-columns:repeat(' + Math.min(cn, 60) + ',1fr);gap:' + (cn > 40 ? 1 : cn > 20 ? 2 : 3) + 'px">' + new Array(Math.min(cn, 60) + 1).join("<i></i>") + "</span><em><b>" + cn + "</b>" + (crl ? " · " + esc(crl) : "") + "</em></div>" : "";
+    return '<section class="wpn wpc"><div class="wph">' + '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div><div><h3>" + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
+      (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" : "") + "</div></div>" + fo2 + cl2 + notesBlock(wa) + "</section>" + cmp;
   }
   return '<section class="wpn"><h3>' + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
     (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" + dline : "") +
@@ -2138,7 +2157,7 @@ function siIcon(n) {
 }
 var SICON = { "Health": "health", "Health regen": "regen", "Out-of-combat regen": "regen", "Crit reduction": "crit", "Bullet resist": "bshield", "Spirit resist": "sshield",
   "Move speed": "boot", "Sprint speed": "sprint", "Crouch speed": "boot", "Dash speed": "dash", "Stamina": "stamina", "Stamina cooldown": "stamrech", "Ground dash": "dash", "Air dash": "dash",
-  "Damage per second": "dps", "Bullet damage": "dmg", "Ammo": "ammo", "Bullets per sec": "bps", "Reload time": "reload", "Bullet velocity": "vel", "Light melee": "fist", "Heavy melee": "fist", "Reload speed": "reload",
+  "Damage per second": "dps", "Bullet damage": "dmg", "Ammo": "ammo", "Bullets per sec": "bps", "Reload time": "reload", "Bullet velocity": "vel", "Headshot bonus": "crit", "Move while firing": "boot", "Light melee": "fist", "Heavy melee": "fist", "Reload speed": "reload",
   "Spirit power": "star" };
 function statRows(h) { // a hero's base stats as rows: shown as cards, ranked against every hero, or side by side with one
   var rows = [];
@@ -2170,6 +2189,8 @@ function statRows(h) { // a hero's base stats as rows: shown as cards, ranked ag
   if (wi.bullet_damage != null) add("wep", "Bullet damage", fmtNum(wi.bullet_damage) + (pel > 1 ? " × " + pel : ""), boon("MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL"), wi.bullet_damage * pel);
   if (wi.clip_size != null) add("wep", "Ammo", fmtNum(wi.clip_size));
   if (bps) add("wep", "Bullets per sec", fmtNum(bps));
+  if (wi.crit_bonus_start != null && !NOGUN[(w || {}).class_name]) add("wep", "Headshot bonus", "+" + fmtNum(Math.round((wi.crit_bonus_start - 1) * 100)) + "%", "", Math.round((wi.crit_bonus_start - 1) * 100));
+  if (wi.shoot_move_speed_percent != null) add("wep", "Move while firing", fmtNum(Math.round(wi.shoot_move_speed_percent * 100)) + "%", "", Math.round(wi.shoot_move_speed_percent * 100));
   if (wi.reload_duration != null && wi.reload_single_bullets && wi.clip_size) { // shell by shell (Abrams): the whole clip, start-up included, so it ranks fairly against a magazine swap
     var full = Math.round(((wi.reload_single_bullets_initial_delay || 0) + wi.reload_duration * wi.clip_size) * 100) / 100;
     add("wep", "Reload time", fmtNum(full) + "s", fmtNum(wi.reload_duration) + "s per shell", full);
@@ -2241,9 +2262,9 @@ var TILEL = { "Crouch speed": "Crouch" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
 var VGRPS = [["h", "Health"], ["m", "Movement"], ["s", "Stamina"]];
-var WGRP = { "Bullet damage": "d", Ammo: "d", "Bullets per sec": "r", "Reload time": "r", "Bullet velocity": "r", "Light melee": "l", "Heavy melee": "k" };
+var WGRP = { "Bullet damage": "d", Ammo: "d", "Bullets per sec": "r", "Reload time": "r", "Bullet velocity": "r", "Headshot bonus": "x", "Move while firing": "x", "Light melee": "l", "Heavy melee": "k" };
 var SHORT = { "Health regen": "Regen", "Move speed": "Move", "Sprint speed": "Sprint", "Crouch speed": "Crouch", "Dash speed": "Dash", "Stamina cooldown": "Stamina CD",
-  "Damage per second": "DPS", "Bullet damage": "Bullet", "Bullets per sec": "Fire rate", "Reload time": "Reload", "Bullet velocity": "Velocity", "Spirit power": "Spirit" };
+  "Damage per second": "DPS", "Bullet damage": "Bullet", "Bullets per sec": "Fire rate", "Reload time": "Reload", "Bullet velocity": "Velocity", "Spirit power": "Spirit", "Headshot bonus": "Headshot", "Move while firing": "Move firing" };
 function boonOf(r) { var m = /^\+?([\d.]+)\s*\/\s*boon$/.exec(r.extra || ""); return m ? parseFloat(m[1]) : null; }
 function boonPool() { // every hero's "per boon" growth by stat
   if (boonPool.sig === state.sig && boonPool.p) return boonPool.p;
@@ -2324,7 +2345,7 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
     else if (c[0] === "wep") { // bullet and its growth framed, then the lone cards, then each melee with its growth framed
       var gs = function (k) { return units.filter(function (u) { return u.g === k; }); }, rest = gs("");
       var fr = function (k) { var us = gs(k), n = 0; us.forEach(function (u) { n += u.length; }); return n ? frame(us, n >= 3 ? 3 : 2) : ""; };
-      body = viz + fr("d") + fr("r") + (rest.length ? '<div class="scw">' + lay(rest) + "</div>" : "") + fr("l") + fr("k"); // bullet, growth, ammo; fire rate, reload, velocity; each melee with its growth
+      body = viz + fr("d") + fr("r") + fr("x") + (rest.length ? '<div class="scw">' + lay(rest) + "</div>" : "") + fr("l") + fr("k"); // bullet, growth, ammo; fire rate, reload, velocity; each melee with its growth
     } else body = '<div class="scw">' + viz + lay(units) + "</div>";
     var foot = "";
     if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") body = body.replace(/<\/div><\/div>$/, '<span class="scsub">Starts at ' + small[0].v + "</span></div></div>"); // Spirit: the shared start, quietly inside its card
