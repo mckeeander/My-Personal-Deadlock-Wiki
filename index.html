@@ -656,9 +656,12 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .ssh h3{font-size:15px;font-weight:600;color:var(--dim);letter-spacing:.01em;margin:4px 0 0}.ssv{display:flex;align-items:baseline;gap:10px;margin:2px 0 14px}.ssv b{font-size:32px;font-weight:700;color:var(--c)}.ssv span{font-size:13px;color:var(--dim)} /* the stat's name quiet, its value large in the category colour */
 .ssl .trk{height:24px}.ssl .trk::before{top:11px;height:3px}.ssl .trk i{top:9px;width:6px;height:6px;margin-left:-3px}.ssl .trk b{top:3px;width:18px;height:18px;margin-left:-9px}
 .ssl .rkl{display:flex;font-size:12px;margin-top:4px}
-.ssx{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:12px}.ssx li{display:flex;align-items:center;gap:7px;min-width:0;padding:6px 4px;border-top:1px solid #2c2539;font-size:13px;color:var(--dim)}.ssx li:nth-child(-n+2){border-top:0} /* two heroes a row */
-.ssx .rp{width:18px;flex:none;text-align:right;font-size:11.5px;font-variant-numeric:tabular-nums;opacity:.7}.ssx img{width:22px;height:22px;flex:none;border-radius:6px;object-fit:cover}.ssx .rn{flex:1;min-width:0;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ssx .rvv{flex:none}.ssx .rvv{font-variant-numeric:tabular-nums;color:var(--fg)}
-.ssx li.me{background:color-mix(in srgb,var(--c) 14%,transparent);border-radius:8px;border-top-color:transparent}.ssx li.me .rn,.ssx li.me .rvv{color:var(--c);font-weight:700}
+.ssx{list-style:none;margin:16px 0 0;padding:0}
+.ssx li{display:grid;grid-template-columns:24px 74px 1fr;align-items:start;gap:8px;padding:9px 4px;border-top:1px solid #2c2539;font-size:13px}.ssx li:first-child{border-top:0}
+.ssx .rp{text-align:right;font-size:12px;line-height:24px;font-variant-numeric:tabular-nums;color:var(--dim)}
+.ssx .rvv{line-height:24px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg)}
+.ssx .rhs{display:flex;flex-wrap:wrap;gap:4px 10px}.ssx .rh{display:inline-flex;align-items:center;gap:5px;line-height:24px;color:var(--dim);white-space:nowrap}.ssx .rh img{width:20px;height:20px;border-radius:5px;object-fit:cover}
+.ssx li.me{background:color-mix(in srgb,var(--c) 12%,transparent);border-radius:8px;border-top-color:transparent}.ssx li.me + li{border-top-color:transparent}.ssx li.me .rvv,.ssx .rh.on{color:var(--c);font-weight:700}
 .scpair{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px}
 .scpair > .scd{border:0;background:none}.scpair > .scd + .scd::after{content:"";position:absolute;left:0;top:12px;bottom:12px;border-left:1px solid var(--line)}
 .scg[data-acc="glow"] .scpair{background:radial-gradient(70% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .scpair > .scd{background:none}
@@ -2318,10 +2321,13 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   var fmt = boon ? function (x) { return "+" + fmtNum(x) + " / boon"; } : function (x) { return sfmt(x, r); };
   var lowb = !boon && LOWBETTER[r.l], me = xs.filter(function (x) { return x.h === h; })[0];
   var sorted = xs.slice().sort(function (a, b) { return (lowb ? a.n - b.n : b.n - a.n) || (a.h.name < b.h.name ? -1 : 1); });
-  var place = 0, prev = null, mine = 0;
-  var list = sorted.map(function (x, i) {
-    if (x.n !== prev) { place = i + 1; prev = x.n; } if (x.h === h) mine = place;
-    return '<li' + (x.h === h ? ' class="me"' : "") + '><span class="rp">' + place + '</span><img alt="" src="' + esc(heroHead(x.h)) + '"><span class="rn">' + esc(x.h.name) + '</span><span class="rvv">' + esc(fmt(x.n)) + "</span></li>";
+  var mine = 0, groups = []; // heroes on the same value share one row: the place and value once, then each hero as a chip
+  sorted.forEach(function (x, i) { var g = groups[groups.length - 1]; if (!g || g.n !== x.n) groups.push(g = { n: x.n, place: i + 1, xs: [] }); g.xs.push(x); if (x.h === h) mine = g.place; });
+  var list = groups.map(function (g) {
+    var me = g.xs.some(function (x) { return x.h === h; });
+    return '<li' + (me ? ' class="me"' : "") + '><span class="rp">' + g.place + '</span><span class="rvv">' + esc(fmt(g.n)) + '</span><span class="rhs">' + g.xs.map(function (x) {
+      return '<span class="rh' + (x.h === h ? " on" : "") + '"><img alt="" src="' + esc(heroHead(x.h)) + '">' + esc(x.h.name) + "</span>";
+    }).join("") + "</span></li>";
   }).join("");
   var cat = sec ? (sec.classList.contains("vit") ? "vit" : sec.classList.contains("spi") ? "spi" : "wep") : "wep";
   var html = '<div class="gsh ssh ' + cat + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(boon ? r.l + " per boon" : r.l) + "</h3>" +
@@ -2958,7 +2964,7 @@ function renderHero(cn) {
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   // base stats starts open (it holds the comparison switch); the weapon folds shut like Patch history; each remembers your choice for this hero
-  html += '<details class="phd bsd"' + (BS_SHUT === cn ? "" : " open") + '><summary class="sec">Base stats' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><div class="stats1">' + smodeSwitch(h) + '<div id="stats1">' + statView(h) + "</div></div></details>";
+  html += '<details class="phd bsd"' + (BS_SHUT === cn ? "" : " open") + '><summary class="sec">Base stats' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><div class="stats1">' + (CARD_HEROES[h.name] ? "" : smodeSwitch(h)) + '<div id="stats1">' + (CARD_HEROES[h.name] ? statCards(h) : statView(h)) + "</div></div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
   if (state.altHero !== cn) { state.alt = false; state.altHero = cn; }
