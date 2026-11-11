@@ -647,12 +647,11 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .sct{flex:1;min-width:0;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sch b{flex:none;font-size:18px;font-weight:700;color:var(--fg);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .scd.boon .sch b{color:var(--c)}.sch b.lv{font-size:15.5px}
-/* the comparison line, quiet until you tap the card: thin, small dots, no ends; tapped, it opens out with the lowest and highest */
+/* the comparison line: thin and quiet; tapping the card fades in the lowest and highest under it */
 .scd.cmp{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .scd .trk{height:10px;margin-top:12px;transition:height .25s ease,margin .25s ease}.scd .trk::before{top:4px;height:1.5px;opacity:.7;transition:top .25s ease}
 .scd .trk i{top:3px;width:4px;height:4px;margin-left:-2px;opacity:.55;transition:all .25s ease}.scd .trk b{top:0;width:10px;height:10px;margin-left:-5px;border-width:1.5px;transition:all .25s ease}
 .scd .rkl{font-size:10.5px;max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease}
-.scd.xo .trk{height:18px;margin-top:8px}.scd.xo .trk::before{top:8px;height:2px;opacity:1}.scd.xo .trk i{top:6px;width:6px;height:6px;margin-left:-3px;opacity:1}.scd.xo .trk b{top:2px;width:14px;height:14px;margin-left:-7px;border-width:2px}
 .scd.xo .rkl{max-height:28px;opacity:1}
 .scgh{margin:12px 2px 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}.scs h4 + .scgh{margin-top:0}
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
