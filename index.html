@@ -627,6 +627,32 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .vpt{font-family:var(--disp);font-size:18px;margin:2px 0 12px}
 .vpg .hc.on{box-shadow:0 0 0 2px var(--gold)}
 .vpg{margin-bottom:14px}
+
+/* the card layout for Normal base stats */
+.scs{margin:0 0 18px}.scs h4{margin:0 0 8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:700;text-align:center}
+.scs.vit{--c:var(--vital)}.scs.wep{--c:var(--weapon)}.scs.spi{--c:var(--spirit)}
+.scw{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scd{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 8px 12px;overflow:hidden}
+.scd::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.scd.boon::before{opacity:.45}
+.sch{display:flex;align-items:center;gap:6px;min-width:0}
+.sch > svg,.sch > img{width:17px;height:17px;flex:none;color:var(--c)}
+.sct{flex:1;min-width:0;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sch b{flex:none;font-size:18px;font-weight:700;color:var(--fg);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.scd.boon .sch b{color:var(--c)}.sch b.lv{font-size:15.5px}
+.scd .trk{height:18px;margin-top:6px}.scd .trk::before{top:8px}.scd .trk i{top:6px;width:6px;height:6px;margin-left:-3px}.scd .trk b{top:2px;width:14px;height:14px;margin-left:-7px}
+.scd .rkl{font-size:10.5px}
+.chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
+.scd.stam{display:flex;align-items:center}.scd.stam .sch{flex:1}
+.scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scsm span{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-right:4px}
+.wviz{grid-column:1/-1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px 14px;position:relative;overflow:hidden}
+.wviz::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.wvr{display:flex;align-items:center;gap:12px;margin-bottom:12px}.wvr.col{display:block}
+.wpel{display:grid;gap:3px;padding:6px;border:1px solid var(--line);border-radius:8px;flex:none}.wpel i{width:9px;height:9px;border-radius:50%;background:var(--c)}.wpel.one i{width:12px;height:12px}
+.wvt b{display:block;font-size:20px;font-weight:700;color:var(--fg)}.wvt span{font-size:13px;color:var(--dim)}
+.wvl{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:13px;color:var(--dim)}.wvl b{color:var(--fg);font-size:15px}.wvl .wrl{margin-left:auto}
+.wclip{display:flex;flex-wrap:wrap;gap:4px}.wclip i{width:12px;height:20px;border-radius:3px 3px 2px 2px;background:linear-gradient(var(--c) 70%,#b9892f 70%)}
+.wvsum{font-size:13px;color:var(--dim);padding-top:10px;border-top:1px solid var(--line)}.wvsum b{color:var(--fg)}
 </style>
 </head>
 <body class="boot">
@@ -2149,7 +2175,85 @@ function smodeSwitch(h) {
 function statView(h) {
   if (STATMODE === "all") return statAll(h);
   if (STATMODE === "vs") { var o = state.heroes.filter(function (x) { return x.class_name === VSHERO; })[0]; if (o && o !== h) return statVs(h, o); }
-  return statBlock(h);
+  return CARD_HEROES[h.name] ? statCards(h) : statBlock(h);
+}
+/* ---------- the card layout for Normal (on trial: Abrams first) ----------
+   half-width cards: icon, title and value on one line, and under it a line from the lowest hero to the highest with a dot per hero.
+   a stat's "per boon" growth gets its own card beside it. stats every hero shares go in small text; stamina is drawn as chevrons. */
+var CARD_HEROES = { "Abrams": 1 };
+var SHORT = { "Health regen": "Regen", "Move speed": "Move", "Sprint speed": "Sprint", "Crouch speed": "Crouch", "Dash speed": "Dash", "Stamina cooldown": "Stamina CD",
+  "Damage per second": "DPS", "Bullet damage": "Bullet", "Bullets per sec": "Fire rate", "Reload time": "Reload", "Bullet velocity": "Velocity", "Spirit power": "Spirit" };
+function boonOf(r) { var m = /^\+?([\d.]+)\s*\/\s*boon$/.exec(r.extra || ""); return m ? parseFloat(m[1]) : null; }
+function boonPool() { // every hero's "per boon" growth by stat
+  if (boonPool.sig === state.sig && boonPool.p) return boonPool.p;
+  var p = {};
+  state.heroes.forEach(function (h) { statRows(h).forEach(function (r) { var b = boonOf(r); if (b != null) (p[skey(r)] = p[skey(r)] || []).push({ h: h, n: b }); }); });
+  boonPool.sig = state.sig; return (boonPool.p = p);
+}
+function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot per hero, this hero's dot large
+  var lo = Infinity, hi = -Infinity; xs.forEach(function (x) { if (x.n < lo) lo = x.n; if (x.n > hi) hi = x.n; });
+  if (!(hi > lo)) return "";
+  var pos = function (x) { return (4 + 92 * (x - lo) / (hi - lo)).toFixed(2); };
+  return '<span class="trk">' + xs.map(function (x) { return x.h === h ? "" : '<i style="left:' + pos(x.n) + '%"></i>'; }).join("") + '<b style="left:' + pos(v) + '%"></b></span>' +
+    '<span class="rkl"><span>' + esc(fmt(lo)) + "</span>" + (LOWBETTER[r.l] ? '<span class="lowb">lower is better</span>' : "") + "<span>" + esc(fmt(hi)) + "</span></span>";
+}
+function statCards(h) {
+  var rows = statRows(h), pool = statPool(), bp = boonPool(), n = state.heroes.length;
+  function shared(xs, v) { return xs.length >= n * 0.9 && xs.every(function (x) { return x.n === v; }); } // the same on every hero
+  function card(icon, title, value, line, cls) {
+    var long = String(value).replace(/<[^>]+>/g, "").length >= 7; // "610 m/s": a smaller value so the title still fits beside it
+    return '<div class="scd' + (cls ? " " + cls : "") + '"><div class="sch">' + icon + '<span class="sct">' + esc(title) + "</span><b" + (long ? ' class="lv"' : "") + ">" + value + "</b></div>" + line + "</div>";
+  }
+  return '<div class="scg">' + SCAT.map(function (c) {
+    var rs = rows.filter(function (r) { return r.c === c[0]; }); if (!rs.length) return "";
+    var units = [], small = []; // a unit is one card, or a stat and its per-boon card, which must sit side by side
+    var viz = c[0] === "wep" ? weaponViz(h, rs) : "";
+    rs.forEach(function (r) {
+      var xs = pool[skey(r)] || [], icon = siIcon(SICON[r.l]), title = SHORT[r.l] || r.l, shown = esc(r.val !== "" ? r.val : r.extra);
+      if (r.l === "Stamina" && r.n) { // stamina as chevrons, one per bar, no line
+        units.push([card(icon, title, '<span class="chev">' + new Array(Math.round(r.n) + 1).join(rowSvg('<path d="M9 6l6 6-6 6"/>', "")) + "</span>", "", "stam")]);
+      } else if (r.n == null || xs.length < 2 || shared(xs, r.n)) {
+        r.inSmall = true;
+        small.push(esc(r.l) + " <b>" + shown + "</b>" + (r.extra && r.val !== "" && boonOf(r) == null ? " " + esc(r.extra) : ""));
+      } else {
+        units.push([card(icon, title, r.val !== "" ? esc(r.val) : shown, cardLine(h, xs, r.n, r, function (x) { return sfmt(x, r); }))]);
+      }
+      var b = boonOf(r), bx = bp[skey(r)] || [];
+      if (b != null) { // the stat's growth per boon, as its own card beside it
+        if (bx.length < 2 || shared(bx, b)) small.push(esc(r.l) + " per boon <b>+" + fmtNum(b) + "</b>");
+        else {
+          var bc = card(icon, r.inSmall ? title + " / boon" : "Per boon", "+" + fmtNum(b), cardLine(h, bx, b, { l: "" }, function (x) { return "+" + fmtNum(x); }), "boon");
+          if (r.inSmall || !units.length) units.push([bc]); else units[units.length - 1].push(bc); // beside its stat
+        }
+      }
+    });
+    // lay out two across: a pair that would start in the right-hand column waits while the next single card fills the gap
+    var cards = viz, col = 0, wait = [];
+    function put(u) { if (u.length === 2 && col === 1) { cards += '<span class="scgap"></span>'; col = 0; } cards += u.join(""); col = (col + u.length) % 2; }
+    units.forEach(function (u, i) {
+      if (u.length === 2 && col === 1) {
+        var j = -1; for (var k = i + 1; k < units.length; k++) if (units[k].length === 1 && !units[k].used) { j = k; break; }
+        if (j >= 0) { put(units[j]); units[j].used = true; }
+      }
+      if (!u.used) put(u);
+    });
+    return '<section class="scs ' + c[0] + '"><h4>' + c[1] + '</h4><div class="scw">' + cards + "</div>" +
+      (small.length ? '<p class="scsm"><span>Same for every hero</span> ' + small.join(" · ") + "</p>" : "") + "</section>";
+  }).join("") + "</div>";
+}
+function weaponViz(h, rs) { // one shot drawn as its pellets, the clip as shells, and how they add up to DPS
+  function R(l) { return rs.filter(function (r) { return r.l === l; })[0]; }
+  var bd = R("Bullet damage"), ammo = R("Ammo"), bps = R("Bullets per sec"), dps = R("Damage per second"), rl = R("Reload time");
+  if (!bd || !bps) return "";
+  var m = /× ?(\d+)/.exec(bd.val), pel = m ? +m[1] : 1, each = parseFloat(bd.val), shot = Math.round(bd.n * 10) / 10, sps = Math.round(bps.n / pel * 100) / 100;
+  var pellets = "";
+  if (pel > 1) { var cols = Math.ceil(Math.sqrt(pel)); pellets = '<span class="wpel" style="grid-template-columns:repeat(' + cols + ',9px)">' + new Array(pel + 1).join("<i></i>") + "</span>"; }
+  var shells = ammo && ammo.n ? '<span class="wclip">' + new Array(Math.min(Math.round(ammo.n), 60) + 1).join("<i></i>") + "</span>" : "";
+  return '<div class="wviz">' +
+    '<div class="wvr">' + (pellets || '<span class="wpel one"><i></i></span>') + '<div class="wvt"><b>' + (pel > 1 ? fmtNum(shot) + " per shot" : fmtNum(each) + " per bullet") + "</b><span>" +
+      (pel > 1 ? pel + " pellets × " + fmtNum(each) : "one bullet") + "</span></div></div>" +
+    (shells ? '<div class="wvr col"><div class="wvl"><span>Clip</span><b>' + esc(ammo.val) + " shots" + (rl ? '</b><span class="wrl">' + esc(rl.val) + " reload</span>" : "</b>") + "</div>" + shells + "</div>" : "") +
+    '<div class="wvsum"><b>' + fmtNum(sps) + "</b> shots a second × <b>" + fmtNum(pel > 1 ? shot : each) + "</b> = <b>" + (dps ? esc(dps.val) : "") + " DPS</b></div></div>";
 }
 function statAll(h) { // D: each stat as a line from the lowest hero to the highest, a dot per hero, this hero coloured, with its rank
   var pool = statPool(), n = state.heroes.length;
