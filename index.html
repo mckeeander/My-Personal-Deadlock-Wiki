@@ -694,7 +694,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .mcol > .scd{border:0;border-radius:0;background:none}.mcol > .scd + .scd{border-top:1px dashed #3a3150}.mcol > .scd + .scd .sch b{font-size:15px}
 .sch > svg.grow{width:15px;height:15px;opacity:.85}.scd.spg{--c:var(--spirit)}
 .scg[data-acc="glow"] .mcol{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .mcol > .scd{background:none} /* the only Spirit card: full width */
-.scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}.rlink{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+.scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}.rlink{background:none;border:0;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 .scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
 .sctl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:2px} /* each tile as wide as its name or value */.sctb.odd{border-color:var(--c)!important;color:var(--c)} /* this hero is the one exception */
 .sctb{border:1px dashed #3d3450;border-radius:9px;padding:6px 10px;min-width:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -703,6 +703,8 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .sctrial{margin:0 0 10px;text-align:center;font-size:11px;color:var(--dim);font-style:italic}
 /* style trials, one per hero page: the wrapped edge gives way to each */
 .scg[data-acc="edge"] .scd::before,.scg[data-acc="edge"] .jn::before,.scg[data-acc="edge"] .mcol::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:1.5px solid var(--c);border-right:0;border-bottom:0;pointer-events:none;-webkit-mask-image:linear-gradient(158deg,#000 0,rgba(0,0,0,.7) 16%,transparent 46%);mask-image:linear-gradient(158deg,#000 0,rgba(0,0,0,.7) 16%,transparent 46%);z-index:2} /* the section colour runs from the corner, further along the top than down the side, and sits above any inner divider */
+.scg[data-acc="edge"] .scd::after,.scg[data-acc="edge"] .jn::after,.scg[data-acc="edge"] .mcol::after{content:"";position:absolute;inset:-1px;border-radius:inherit;border:1px solid var(--c);border-left:0;border-top:0;pointer-events:none;opacity:.22;-webkit-mask-image:linear-gradient(338deg,#000 0,rgba(0,0,0,.5) 12%,transparent 30%);mask-image:linear-gradient(338deg,#000 0,rgba(0,0,0,.5) 12%,transparent 30%);z-index:2} /* a faint echo at the opposite corner */
+.scg[data-acc="edge"] .mcol::after{inset:0}.scg[data-acc="edge"] .jn > .scd::after,.scg[data-acc="edge"] .mcol > .scd::after{display:none}
 .scg[data-acc="edge"] .jn,.scg[data-acc="edge"] .mcol{position:relative}.scg[data-acc="edge"] .jn > .scd::before,.scg[data-acc="edge"] .mcol > .scd::before{display:none}
 .scg[data-acc="edge"] .scd.boon::before{opacity:1}
 .scg[data-acc="edge"] .sch > svg{box-sizing:content-box;width:13px;height:13px;padding:3.5px;border-radius:6px;background:color-mix(in srgb,var(--c) 18%,transparent)}
