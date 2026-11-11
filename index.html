@@ -2133,7 +2133,7 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
       fo2 = '<div class="wfch"><span class="wrl2">Damage by distance</span><svg viewBox="0 0 300 52" preserveAspectRatio="none" aria-hidden="true"><path d="' + pth + ' L300 52 L0 52Z" fill="color-mix(in srgb,var(--weapon) 16%,transparent)"/><path d="' + pth + '" fill="none" stroke="var(--weapon)" stroke-width="2.5" vector-effect="non-scaling-stroke"/><line x1="' + X(s0) + '" y1="0" x2="' + X(s0) + '" y2="52" stroke="#f6e3bf" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/></svg>' +
         '<div class="wfax">' + (s0 / mx < 0.5 ? '<span style="left:' + (s0 / mx * 100).toFixed(1) + '%">full to ' + meters(i.damage_falloff_start_range) + "</span>" : "") + '<span class="fe">' + (s0 / mx < 0.5 ? "" : "full to " + meters(i.damage_falloff_start_range) + ", ") + fmtNum(Math.round(fl * 100)) + "% at " + meters(i.damage_falloff_end_range) + "</span></div></div>"; // the two labels share one when the drop starts late
     }
-    var cl2 = cn ? '<div class="wrow"><span class="wrl2">Clip</span><span class="wclip wfill" style="grid-template-columns:repeat(' + Math.min(cn, 60) + ',1fr);gap:' + (cn > 40 ? 1 : cn > 20 ? 2 : 3) + 'px">' + new Array(Math.min(cn, 60) + 1).join("<i></i>") + "</span><em><b>" + cn + "</b>" + (crl ? " · " + esc(crl) : "") + "</em></div>" : "";
+    var cl2 = cn ? '<div class="wrow"><span class="wrl2">Clip</span><span class="wclip wfill" style="grid-template-columns:repeat(' + Math.min(cn, 60) + ',1fr);gap:' + (cn > 40 ? 1 : cn > 20 ? 2 : 3) + 'px">' + new Array(Math.min(cn, 60) + 1).join("<i></i>") + "</span><em><b>" + cn + "</b>" + (crl ? " · " + esc(crl) + " reload" : "") + "</em></div>" : "";
     return '<section class="wpn wpc"><div class="wph">' + '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div><div><h3>" + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
       (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" : "") + "</div></div>" + fo2 + cl2 + notesBlock(wa) + "</section>" + cmp;
   }
@@ -2311,13 +2311,13 @@ function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot
   var lo = Infinity, hi = -Infinity; xs.forEach(function (x) { if (x.n < lo) lo = x.n; if (x.n > hi) hi = x.n; });
   if (!(hi > lo)) return "";
   var pos = function (x) { return (4 + 92 * (x - lo) / (hi - lo)).toFixed(2); };
-  var dots;
+  var dots, me = 1;
   if (DOTSCALE[h.name]) { // one dot per value, sized by how many heroes share it (trying it on Abrams)
     var cnt = {}; xs.forEach(function (x) { if (x.h !== h) cnt[x.n] = (cnt[x.n] || 0) + 1; });
     dots = Object.keys(cnt).filter(function (k) { return +k !== v; }).map(function (k) { var d = Math.min(10, 3 + 2 * Math.sqrt(cnt[k] - 1)); return '<i class="ds" style="left:' + pos(+k) + "%;--d:" + d.toFixed(1) + 'px"></i>'; }).join("");
-    if (cnt[v]) dots += '<span class="dring" style="left:' + pos(v) + "%;--d:" + Math.min(26, 14 + 2.5 * Math.sqrt(cnt[v])).toFixed(1) + 'px"></span>'; // others on this hero's value: a faint ring round its dot
+    me = cnt[v] ? Math.min(1.7, 1 + 0.12 * Math.sqrt(cnt[v])) : 1; // others on this hero's value: its own dot grows too
   } else dots = xs.map(function (x) { return x.h === h ? "" : '<i style="left:' + pos(x.n) + '%"></i>'; }).join("");
-  return '<span class="trk">' + dots + '<b style="left:' + pos(v) + '%"></b></span>' +
+  return '<span class="trk">' + dots + '<b style="left:' + pos(v) + "%" + (DOTSCALE[h.name] && me > 1 ? ";transform:scale(" + me.toFixed(2) + ")" : "") + '"></b></span>' +
     '<span class="rkl"><span>' + esc(fmt(lo)) + "</span>" + (LOWBETTER[r.l] ? '<span class="lowb">lower is better</span>' : "") + "<span>" + esc(fmt(hi)) + "</span></span>";
 }
 function statCards(h) { // Normal view on card heroes: Vitality, the weapon (its card and compared stats), Spirit
