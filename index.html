@@ -657,6 +657,20 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
 .scd.stam{display:flex;align-items:center}.scd.stam .sch{flex:1}
 .scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.sctl{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:4px}.sctl div{border:1px dashed #3d3450;border-radius:9px;padding:6px 8px;min-width:0}
+.sctl span{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sctl b{font-size:13.5px;color:var(--fg)}.sctl em{font-style:normal;color:var(--dim);font-size:11px;margin-left:4px}
+.scnote{margin:8px 2px 0;font-size:12.5px;color:var(--dim);text-align:center}
+.sctrial{margin:0 0 10px;text-align:center;font-size:11px;color:var(--dim);font-style:italic}
+/* style trials, one per hero page: the wrapped edge gives way to each */
+.scg[data-acc] .scd::before{display:none}
+.scg[data-acc="chip"] .sch > svg,.scg[data-acc="chip"] .sch > img{box-sizing:content-box;padding:5px;border-radius:8px;background:color-mix(in srgb,var(--c) 18%,transparent)}
+.scg[data-acc="wash"] .scd{background:linear-gradient(100deg,color-mix(in srgb,var(--c) 16%,var(--panel)) 0,var(--panel) 55%)}
+.scg[data-acc="glow"] .scd{background:radial-gradient(120% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}
+.scg[data-acc="tint"] .scd{background:color-mix(in srgb,var(--c) 8%,var(--panel));border-color:color-mix(in srgb,var(--c) 28%,var(--line))}
+/* the weapon section on card heroes: DPS's comparison line, the clip, and the compared cards under the weapon */
+.scd.wdl{background:none;border:0;padding:0 18%;margin:-2px 0 8px;cursor:pointer}.scd.wdl::before{display:none}.scd.wdl .trk{margin-top:4px}
+.wpn .wclip{--c:var(--weapon)}.wpn .wclipr{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin:14px 2px 6px}.wpn .wclipr b{color:var(--fg)}
+.wcmp{margin-top:14px}.wcmp .scs{--c:var(--weapon)}.wcmp .scs h4{font-size:11px;color:var(--dim)}
 .wviz{grid-column:1/-1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px 14px;position:relative}
 .wviz::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:2px solid var(--c);border-left-width:3px;border-right:0;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 12px,transparent 34px);mask-image:linear-gradient(to right,#000 12px,transparent 34px)}
 .wvr{display:flex;align-items:center;gap:12px;margin-bottom:12px}.wvr.col{display:block}
@@ -2045,10 +2059,20 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
       '<div class="fo">Full damage out to <b>' + meters(i.damage_falloff_start_range) + "</b>, falling to <b>" + fmtNum(Math.round((i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0) * 100)) + "%</b> at <b>" + meters(i.damage_falloff_end_range) + "</b>.</div>";
   }
   var title = (wa && wa.name) || WNAME[w.class_name] || nameOf(w);
+  var merged = !alt && !bare && CARD_HEROES[h.name], dline = "", clip = "", cmp = "";
+  if (merged) { // the base stats' weapon cards join this one: DPS gets its comparison line, the clip its shells, the rest follow as cards
+    var rs = statRows(h), R = function (l) { return rs.filter(function (r) { return r.c === "wep" && r.l === l; })[0]; }, dr = R("Damage per second"), am = R("Ammo"), rl = R("Reload time");
+    var xs = dr && statPool()[skey(dr)];
+    if (xs && xs.length > 1) dline = '<div class="scd cmp wdl">' + cardLine(h, xs, dr.n, dr, function (x) { return sfmt(x, dr); }) + "</div>";
+    if (am && am.n) clip = '<div class="wclipr"><span>Clip <b>' + esc(am.val) + " shots</b></span>" + (rl ? "<span>" + esc(rl.val) + " reload</span>" : "") + '</div><span class="wclip">' + new Array(Math.min(Math.round(am.n), 60) + 1).join("<i></i>") + "</span>";
+    var acc = ACCENT[h.name];
+    cmp = '<div class="scg wcmp"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + catCards(h, ["wep", "Compared with every hero"], { noviz: 1, skip: { "Damage per second": 1 } }) + "</div>";
+    if (pel > 1) g = g.replace(/<div class="wc">(?:(?!<div class="wc">).)*?Damage per shot<\/i><\/div>/, ""); // the Bullet card below says it
+  }
   return '<section class="wpn"><h3>' + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
-    (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" : "") +
-    (bare ? "" : '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div>") + fo +
-    (g ? '<div class="wg">' + g + "</div>" : "") + notesBlock(wa) + "</section>";
+    (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" + dline : "") +
+    (bare ? "" : '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div>") + fo + clip +
+    (g ? '<div class="wg">' + g + "</div>" : "") + notesBlock(wa) + "</section>" + cmp;
 }
 // Hand-drawn stat icons (the game's own files can't be recoloured from another site), tinted by section
 var SI = {
@@ -2195,7 +2219,9 @@ function statView(h) {
 /* ---------- the card layout for Normal (on trial: Abrams first) ----------
    half-width cards: icon, title and value on one line, and under it a line from the lowest hero to the highest with a dot per hero.
    a stat's "per boon" growth gets its own card beside it. stats every hero shares go in small text; stamina is drawn as chevrons. */
-var CARD_HEROES = { "Abrams": 1 };
+var CARD_HEROES = { "Abrams": 1, "Haze": 1, "Infernus": 1, "Seven": 1 };
+var ACCENT = { Abrams: ["chip", "icon chip"], Haze: ["wash", "colour wash from the left"], Infernus: ["glow", "corner glow"], Seven: ["tint", "tinted card"] }; // trying styles side by side: one per hero page
+var TILEL = { "Crouch speed": "Crouch" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
 var VGRPS = [["h", "Health"], ["m", "Movement"], ["s", "Stamina"]];
@@ -2215,31 +2241,37 @@ function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot
   return '<span class="trk">' + xs.map(function (x) { return x.h === h ? "" : '<i style="left:' + pos(x.n) + '%"></i>'; }).join("") + '<b style="left:' + pos(v) + '%"></b></span>' +
     '<span class="rkl"><span>' + esc(fmt(lo)) + "</span>" + (LOWBETTER[r.l] ? '<span class="lowb">lower is better</span>' : "") + "<span>" + esc(fmt(hi)) + "</span></span>";
 }
-function statCards(h) {
+function statCards(h) { // Normal view on card heroes: Vitality and Spirit here; the weapon's cards live in the Weapon section
+  var acc = ACCENT[h.name] || "";
+  return '<div class="scg"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + (acc ? '<p class="sctrial">Style trial: ' + esc(acc[1]) + "</p>" : "") +
+    SCAT.filter(function (c) { return c[0] !== "wep"; }).map(function (c) { return catCards(h, c); }).join("") + "</div>";
+}
+function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out the weapon picture, opt.skip leaves out rows by label
+  opt = opt || {};
   var rows = statRows(h), pool = statPool(), bp = boonPool(), n = state.heroes.length;
   function shared(xs, v) { return xs.length >= n * 0.9 && xs.every(function (x) { return x.n === v; }); } // the same on every hero
   function card(icon, title, value, line, cls) {
     var long = String(value).replace(/<[^>]+>/g, "").length >= 7; // "610 m/s": a smaller value so the title still fits beside it
     return '<div class="scd' + (cls ? " " + cls : "") + '"><div class="sch">' + icon + '<span class="sct">' + esc(title) + "</span><b" + (long ? ' class="lv"' : "") + ">" + value + "</b></div>" + line + "</div>";
   }
-  return '<div class="scg">' + SCAT.map(function (c) {
-    var rs = rows.filter(function (r) { return r.c === c[0]; }); if (!rs.length) return "";
+  return [c0].map(function (c) {
+    var rs = rows.filter(function (r) { return r.c === c[0] && !(opt.skip && opt.skip[r.l]); }); if (!rs.length) return "";
     var units = [], small = []; // a unit is one card, or a stat and its per-boon card, which must sit side by side
     var grp = function (r) { return c[0] === "vit" ? (VGRP[r.l] || "h") : ""; };
-    var viz = c[0] === "wep" ? weaponViz(h, rs) : "";
+    var viz = c[0] === "wep" && !opt.noviz ? weaponViz(h, rs) : "";
     rs.forEach(function (r) {
       var xs = pool[skey(r)] || [], icon = siIcon(SICON[r.l]), title = SHORT[r.l] || r.l, shown = esc(r.val !== "" ? r.val : r.extra);
       if (r.l === "Stamina" && r.n) { // stamina as chevrons, one per bar, no line
         units.push(tag([card(icon, title, '<span class="chev">' + new Array(Math.round(r.n) + 1).join(rowSvg('<path d="M9 6l6 6-6 6"/>', "")) + "</span>", "", "stam")], r));
       } else if (r.n == null || xs.length < 2 || shared(xs, r.n)) {
         r.inSmall = true;
-        small.push(esc(r.l) + " <b>" + shown + "</b>" + (r.extra && r.val !== "" && boonOf(r) == null ? " " + esc(r.extra) : ""));
+        small.push({ l: TILEL[r.l] || r.l, v: shown, x: r.extra && r.val !== "" && boonOf(r) == null ? r.extra : "", r: r });
       } else {
         units.push(tag([card(icon, title, r.val !== "" ? esc(r.val) : shown, cardLine(h, xs, r.n, r, function (x) { return sfmt(x, r); }), "cmp")], r));
       }
       var b = boonOf(r), bx = bp[skey(r)] || [];
       if (b != null) { // the stat's growth per boon, as its own card beside it
-        if (bx.length < 2 || shared(bx, b)) small.push(esc(r.l) + " per boon <b>+" + fmtNum(b) + "</b>");
+        if (bx.length < 2 || shared(bx, b)) small.push({ l: (TILEL[r.l] || r.l) + " / boon", v: "+" + fmtNum(b), x: "" });
         else {
           var bc = card(icon, r.inSmall ? title + " / boon" : "Per boon", "+" + fmtNum(b), cardLine(h, bx, b, { l: "" }, function (x) { return "+" + fmtNum(x); }), "boon cmp");
           if (r.inSmall || !units.length) units.push(tag([bc], r)); else units[units.length - 1].push(bc); // beside its stat
@@ -2262,11 +2294,15 @@ function statCards(h) {
     var body = c[0] === "vit" ? VGRPS.map(function (gp) { // Vitality in three groups: health, movement, stamina
       var us = units.filter(function (u) { return u.g === gp[0]; }); return us.length ? '<div class="scgh">' + gp[1] + '</div><div class="scw">' + lay(us) + "</div>" : "";
     }).join("") : '<div class="scw">' + viz + lay(units) + "</div>";
-    return '<section class="scs ' + c[0] + '"><h4>' + c[1] + "</h4>" + body +
-      (small.length ? '<p class="scsm"><span>Same for every hero</span>' + small.join(" · ") + "</p>" : "") + "</section>";
-  }).join("") + "</div>";
+    var foot = "";
+    if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") foot = '<p class="scnote">Every hero starts with ' + small[0].v + " Spirit Power</p>"; // Spirit: just the one shared stat, said plainly
+    else if (small.length) foot = '<p class="scsm"><span>Same for every hero</span></p><div class="sctl">' + small.map(function (t) { // tiles: label over value, no wrapping line
+      return "<div><span>" + esc(t.l) + "</span><b>" + t.v + "</b>" + (t.x ? "<em>" + esc(t.x) + "</em>" : "") + "</div>";
+    }).join("") + "</div>";
+    return '<section class="scs ' + c[0] + '">' + (c[1] ? "<h4>" + c[1] + "</h4>" : "") + body + foot + "</section>";
+  }).join("");
 }
-document.addEventListener("click", function (e) { var c = e.target.closest ? e.target.closest(".scd.cmp") : null; if (c && !e.target.closest("a,button")) c.classList.toggle("xo"); }); // the comparison line opens out, with its ends
+document.addEventListener("click", function (e) { var c = e.target.closest ? e.target.closest(".cmp") : null; if (c && !e.target.closest("a,button")) c.classList.toggle("xo"); }); // the comparison line opens out, with its ends
 function weaponViz(h, rs) { // one shot drawn as its pellets, the clip as shells, and how they add up to DPS
   function R(l) { return rs.filter(function (r) { return r.l === l; })[0]; }
   var bd = R("Bullet damage"), ammo = R("Ammo"), bps = R("Bullets per sec"), dps = R("Damage per second"), rl = R("Reload time");
