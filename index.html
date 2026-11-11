@@ -679,6 +679,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="glow"] .scpair{background:radial-gradient(70% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .scpair > .scd{background:none}
 .frm{display:grid;gap:6px;padding:6px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid #2f283d;margin-bottom:6px}.frm2{grid-template-columns:1fr 1fr}.frm3{grid-template-columns:repeat(3,1fr)}
 .frm .scd{border-color:#3a3150;min-width:0}
+.trk i.ds{width:var(--d)!important;height:var(--d)!important;margin-left:calc(var(--d) / -2)!important;top:calc(50% - var(--d) / 2)!important;opacity:.6}.ssl .trk i.ds{width:calc(var(--d) * 1.5)!important;height:calc(var(--d) * 1.5)!important;margin-left:calc(var(--d) * -.75)!important;top:calc(12.5px - var(--d) * .75)!important}
 .scd.slim{padding-top:11px;padding-bottom:11px}.frm3 .scd.slim .sch{flex-wrap:nowrap}.frm3 .scd.slim .sch b{order:0;width:auto;margin:0 0 0 auto;font-size:17px}
 .jn{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;min-width:0;border:1px solid #3a3150;border-radius:12px;background:var(--panel)}
 .jn > .scd{border:0;border-radius:0;background:none!important}.jn > .scd + .scd{border-left:1px solid #3a3150}
@@ -2301,11 +2302,17 @@ function boonPool() { // every hero's "per boon" growth by stat
   state.heroes.forEach(function (h) { statRows(h).forEach(function (r) { var b = boonOf(r); if (b != null) (p[skey(r)] = p[skey(r)] || []).push({ h: h, n: b }); }); });
   boonPool.sig = state.sig; return (boonPool.p = p);
 }
+var DOTSCALE = { Abrams: 1 };
 function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot per hero, this hero's dot large
   var lo = Infinity, hi = -Infinity; xs.forEach(function (x) { if (x.n < lo) lo = x.n; if (x.n > hi) hi = x.n; });
   if (!(hi > lo)) return "";
   var pos = function (x) { return (4 + 92 * (x - lo) / (hi - lo)).toFixed(2); };
-  return '<span class="trk">' + xs.map(function (x) { return x.h === h ? "" : '<i style="left:' + pos(x.n) + '%"></i>'; }).join("") + '<b style="left:' + pos(v) + '%"></b></span>' +
+  var dots;
+  if (DOTSCALE[h.name]) { // one dot per value, sized by how many heroes share it (trying it on Abrams)
+    var cnt = {}; xs.forEach(function (x) { if (x.h !== h) cnt[x.n] = (cnt[x.n] || 0) + 1; });
+    dots = Object.keys(cnt).map(function (k) { var d = Math.min(10, 3 + 2 * Math.sqrt(cnt[k] - 1)); return '<i class="ds" style="left:' + pos(+k) + "%;--d:" + d.toFixed(1) + 'px"></i>'; }).join("");
+  } else dots = xs.map(function (x) { return x.h === h ? "" : '<i style="left:' + pos(x.n) + '%"></i>'; }).join("");
+  return '<span class="trk">' + dots + '<b style="left:' + pos(v) + '%"></b></span>' +
     '<span class="rkl"><span>' + esc(fmt(lo)) + "</span>" + (LOWBETTER[r.l] ? '<span class="lowb">lower is better</span>' : "") + "<span>" + esc(fmt(hi)) + "</span></span>";
 }
 function statCards(h) { // Normal view on card heroes: Vitality, the weapon (its card and compared stats), Spirit
@@ -4145,7 +4152,7 @@ function topPill() { // glossary: a round ↑ on the right once you've scrolled 
 new MutationObserver(function () { topPill(); }).observe($("main"), { childList: true });
 $("glbpill").onclick = function () { $("glbpill").hidden = true; slideBack(glossBack); };
 window.addEventListener("scroll", topPill, { passive: true });
-$("toppill").onclick = function () { easeScroll(0); };
+$("toppill").onclick = function () { if (state.tab === "heroes" && state.hero) { JLOCK = true; JTO = ""; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar(); } easeScroll(0); }; // no ability lit while it glides up past them
 $("tabs").addEventListener("click", function () { setTimeout(topPill, 0); });
 $("nbtn").onclick = function () { // a second tap while on the page goes back to where you were
   if (state.tab === "news" && !searchOn()) { slideForward(leaveToHome, true); return; } // a second tap returns to where you were
