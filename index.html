@@ -542,8 +542,8 @@ body.jump #toppill{bottom:calc(env(safe-area-inset-bottom,0px) + 86.5px)} /* on 
 .glt{flex:1;display:flex;flex-direction:column;line-height:1.25}.glt b{font-weight:600;font-size:15px}.glt i{font-style:normal;font-size:12px;color:var(--dim)}
 .gig{margin-top:10px;font-size:13px;color:var(--dim)}.gig span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d7290;margin-right:8px}.gig b{color:var(--fg);font-weight:600}
 .mlist{display:flex;flex-direction:column;gap:6px}.mlist div{background:var(--panel2);border:1px solid #3d344c;border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.4}.mlist b{display:block;font-weight:600}.mlist span{color:var(--dim);font-size:13px}
-details.phd{margin:36px 0 16px;padding:1px 0} /* margins live on the section, not its header, and the 1px keeps them from leaking out: otherwise they shift while it animates */
-details.phd > summary.sec{margin:0;padding-bottom:12px} /* more air above its line than the other section headers */details.phd > summary + *{margin-top:16px}
+details.phd{margin:52px 0 16px;padding:1px 0} /* margins live on the section, not its header, and the 1px keeps them from leaking out: otherwise they shift while it animates */
+details.phd > summary.sec{margin:0;padding-bottom:10px;font-family:var(--disp);font-size:24px;font-weight:700;letter-spacing:.04em;text-transform:none;color:var(--fg);border-bottom:2px solid var(--gold)} /* top-level sections: the display font over a gold rule */ /* more air above its line than the other section headers */details.phd > summary + *{margin-top:16px}
 details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}details.phd > summary::-webkit-details-marker{display:none}details.phd > summary .ncv{margin-left:auto;width:18px;height:18px;flex:none;color:var(--dim);transition:transform .2s ease}details.phd[open] > summary .ncv{transform:rotate(90deg)}details.phd.closing > summary .ncv{transform:none}
 .secn{font-size:13px;color:var(--dim);font-weight:500;letter-spacing:0;margin-left:6px}
 .phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
@@ -643,6 +643,10 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scbox{background:rgba(255,255,255,.025);border:1px solid #2f283d;border-radius:16px;padding:8px}
 .scbox .frm{background:none;border:0;padding:0;margin:0 0 10px}.scbox > :last-child{margin-bottom:0}.scbox .sctl{margin-top:10px}
 .wcmp .scbox{margin-top:0}
+.scbox > h4{margin:4px 4px 10px}
+.wsec > .scbox{background:linear-gradient(170deg,#2e1f12,rgba(255,255,255,.025) 300px);border-color:#5a3f1f}
+.wsec .wpn.wpc{background:none;border:0;padding:2px 4px 4px}
+.wsec .wcmp{margin-top:12px;padding-top:12px;border-top:1px solid #4a3620}.wsec .wcmp .scbox{background:none;border:0;padding:0}
 .scs.vit{--c:var(--vital)}.scs.wep{--c:var(--weapon)}.scs.spi{--c:var(--spirit)}
 .scw{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .scd{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px 8px 15px}
@@ -2297,7 +2301,7 @@ function statCards(h) { // Normal view on card heroes: Vitality, the weapon (its
     SCAT.map(function (c) {
       if (c[0] !== "wep") return catCards(h, c);
       var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean), fp = formParts(h, abs);
-      return '<section class="scs wep wsec"><h4>Weapon</h4>' + (fp ? formSwitch(fp) + '<div class="f0">' + weaponCard(h) + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : weaponCard(h)) + "</section>";
+      return '<section class="scs wep wsec"><div class="scbox"><h4>Weapon</h4>' + (fp ? formSwitch(fp) + '<div class="f0">' + weaponCard(h) + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : weaponCard(h)) + "</div></section>"; // one card: title, the gun, then its compared stats below a divider
     }).join("") + "</div>"; // the whole weapon sits between Vitality and Spirit
 }
 function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out the weapon picture, opt.skip leaves out rows by label
@@ -2380,7 +2384,7 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
     else if (small.length) foot = '<div class="sctl">' + small.map(function (t) { // tiles for the stats every hero shares; tapped, a card says so
       return '<button class="sctb" data-sl="' + esc(t.l) + '" data-sv="' + esc(String(t.v).replace(/<[^>]+>/g, "")) + '" data-sx="' + esc(t.x || "") + '" data-sn="' + esc(t.note || "") + '"' + (t.odd ? ' data-so="' + esc(t.odd.class_name) + '" data-son="' + esc(t.odd.name) + '"' : "") + ' data-sc="' + c[0] + '"><span>' + esc(t.l) + "</span><b>" + t.v + "</b>" + (t.x ? "<em>" + esc(t.x) + "</em>" : "") + "</button>";
     }).join("") + "</div>";
-    return '<section class="scs ' + c[0] + '">' + (c[1] ? "<h4>" + c[1] + "</h4>" : "") + '<div class="scbox">' + body + foot + "</div></section>"; // the title sits outside, the section's cards in one box
+    return '<section class="scs ' + c[0] + '"><div class="scbox">' + (c[1] ? "<h4>" + c[1] + "</h4>" : "") + body + foot + "</div></section>"; // the title inside the section's box
   }).join("");
 }
 document.addEventListener("click", function (e) { var c = e.target.closest ? e.target.closest(".scd.cmp[data-sk]") : null; if (c && !e.target.closest("a,button")) statSheet(c.getAttribute("data-sk"), c.getAttribute("data-st"), c.closest(".scs")); }); // a stat card opens every hero's value for it
