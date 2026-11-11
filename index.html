@@ -467,6 +467,7 @@ html.lock,html.lock body{overflow:hidden}
 .backpill[hidden]{display:none}
 #toppill{left:auto;right:max(22px,calc((100% - 600px)/2 + 22px));transform:none;width:41px;height:41px;padding:0;justify-content:center;border-radius:50%}
 #toppill.in{animation:topin .22s ease-out}
+body.jump #toppill{bottom:calc(env(safe-area-inset-bottom,0px) + 86.5px)} /* on hero pages: level with the ability bar */
 @keyframes topin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 #glbpill{padding:10px 18px}
 .backpill.in{animation:pillin .22s ease-out}
@@ -665,6 +666,10 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scpair{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px}
 .scpair > .scd{border:0;background:none}.scpair > .scd + .scd::after{content:"";position:absolute;left:0;top:12px;bottom:12px;border-left:1px solid var(--line)}
 .scg[data-acc="glow"] .scpair{background:radial-gradient(70% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .scpair > .scd{background:none}
+.frm{display:grid;gap:6px;padding:6px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid #2f283d;margin-bottom:8px}.frm2{grid-template-columns:1fr 1fr}.frm3{grid-template-columns:repeat(3,1fr)}
+.frm .scd{border-color:#3a3150;min-width:0}
+.frm3 .scd{padding:9px 9px 8px}.frm3 .sch{flex-wrap:wrap;row-gap:2px}.frm3 .sch b{order:3;width:100%;font-size:19px;margin-top:2px}.frm3 .sch b.lv{font-size:16px}.frm3 .sct{font-size:10px}.frm3 .sch > svg{width:15px;height:15px}
+.wsec .frm{margin-top:12px}.wsec .frm + .scw{margin-top:0}.wsec .scw + .frm{margin-top:8px}
 .scgh{margin:12px 2px 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}.scs h4 + .scgh{margin-top:0}
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
 .scd.stam{display:flex;align-items:center}.scd.stam .sch{flex:1}
@@ -2235,6 +2240,7 @@ var TILEL = { "Crouch speed": "Crouch" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
 var VGRPS = [["h", "Health"], ["m", "Movement"], ["s", "Stamina"]];
+var WGRP = { "Bullet damage": "d", "Bullets per sec": "d", "Light melee": "m", "Heavy melee": "m" };
 var SHORT = { "Health regen": "Regen", "Move speed": "Move", "Sprint speed": "Sprint", "Crouch speed": "Crouch", "Dash speed": "Dash", "Stamina cooldown": "Stamina CD",
   "Damage per second": "DPS", "Bullet damage": "Bullet", "Bullets per sec": "Fire rate", "Reload time": "Reload", "Bullet velocity": "Velocity", "Spirit power": "Spirit" };
 function boonOf(r) { var m = /^\+?([\d.]+)\s*\/\s*boon$/.exec(r.extra || ""); return m ? parseFloat(m[1]) : null; }
@@ -2271,12 +2277,12 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
   return [c0].map(function (c) {
     var rs = rows.filter(function (r) { return r.c === c[0] && !(opt.skip && opt.skip[r.l]); }); if (!rs.length) return "";
     var units = [], small = []; // a unit is one card, or a stat and its per-boon card, which must sit side by side
-    var grp = function (r) { return c[0] === "vit" ? (VGRP[r.l] || "h") : ""; };
+    var grp = function (r) { return c[0] === "vit" ? (VGRP[r.l] || "h") : c[0] === "wep" ? (WGRP[r.l] || "") : ""; };
     var viz = c[0] === "wep" && !opt.noviz ? weaponViz(h, rs) : "";
     rs.forEach(function (r) {
       var xs = pool[skey(r)] || [], icon = siIcon(SICON[r.l]), title = SHORT[r.l] || r.l, shown = esc(r.val !== "" ? r.val : r.extra);
-      if (r.l === "Stamina" && r.n) { // stamina as chevrons, one per bar, no line
-        units.push(tag([card(icon, title, '<span class="chev">' + new Array(Math.round(r.n) + 1).join(rowSvg('<path d="M9 6l6 6-6 6"/>', "")) + "</span>", "", "stam")], r));
+      if (r.val === "" && boonOf(r) != null) { // growth only (bullet resist on some heroes): its per-boon card says it all
+        r.inSmall = true;
       } else if (r.n == null || xs.length < 2 || shared(xs, r.n)) {
         r.inSmall = true;
         small.push({ l: TILEL[r.l] || r.l, v: shown, x: r.extra && r.val !== "" && boonOf(r) == null ? r.extra : "", r: r });
@@ -2305,9 +2311,19 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
       });
       return out;
     }
-    var body = c[0] === "vit" ? VGRPS.map(function (gp) { // Vitality in three groups: health, movement, stamina
-      var us = units.filter(function (u) { return u.g === gp[0]; }); return us.length ? '<div class="scgh">' + gp[1] + '</div><div class="scw">' + lay(us) + "</div>" : "";
-    }).join("") : '<div class="scw">' + viz + lay(units) + "</div>";
+    function frame(us, cols) { // related stats in one frame, each still its own card: three across, the value under the name
+      var cs = []; us.forEach(function (u) { cs = cs.concat(u); });
+      return '<div class="frm frm' + cols + '">' + cs.join("") + "</div>";
+    }
+    var body;
+    if (c[0] === "vit") body = VGRPS.map(function (gp) { // Vitality in three groups: health (framed), movement, stamina
+      var us = units.filter(function (u) { return u.g === gp[0]; }); if (!us.length) return "";
+      return '<div class="scgh">' + gp[1] + "</div>" + (gp[0] === "h" ? frame(us, 3) : '<div class="scw">' + lay(us) + "</div>");
+    }).join("");
+    else if (c[0] === "wep") { // damage (bullet, its growth, fire rate) and melee framed; the rest as cards
+      var dm = units.filter(function (u) { return u.g === "d"; }), ml = units.filter(function (u) { return u.g === "m"; }), rest = units.filter(function (u) { return !u.g; });
+      body = viz + (dm.length ? frame(dm, 3) : "") + (rest.length ? '<div class="scw">' + lay(rest) + "</div>" : "") + (ml.length ? frame(ml, 2) : "");
+    } else body = '<div class="scw">' + viz + lay(units) + "</div>";
     var foot = "";
     if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") foot = '<p class="scnote">Every hero starts with ' + small[0].v + " Spirit Power</p>"; // Spirit: just the one shared stat, said plainly
     else if (small.length) foot = '<p class="scsm"><span>Same for every hero</span></p><div class="sctl">' + small.map(function (t) { // tiles: label over value, no wrapping line
@@ -2344,7 +2360,7 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   Array.prototype.forEach.call($("sheetin").querySelectorAll(".rh[data-rhero]"), function (c) { c.onclick = function () { // a hero in the list: open their page, with a way back here
     var to = c.getAttribute("data-rhero"), fromHero = state.hero, fromY = window.pageYOffset || 0; closeSheet();
     if (to === fromHero) return;
-    slideForward(function () { state.from = null; renderHero(to); showBack(fromHero, fromY); });
+    slideForward(function () { state.from = null; renderHero(to); showBack(fromHero, fromY, { sk: sk, st: title, cat: cat }); });
   }; });
 }
 function weaponViz(h, rs) { // one shot drawn as its pellets, the clip as shells, and how they add up to DPS
@@ -3911,10 +3927,10 @@ function openGlossary(k) {
 }
 // "Back to Abrams" after following an ability link, so a quick look doesn't lose your place
 var BACK = null;
-function showBack(hero, y) {
+function showBack(hero, y, stat) { // stat: the pop-up you followed a hero from, opened again on the way back
   var h = state.heroes.filter(function (x) { return x.class_name === hero; })[0], b = $("backpill");
   if (!h || !b) return;
-  BACK = { hero: hero, y: y };
+  BACK = { hero: hero, y: y, stat: stat };
   b.innerHTML = "‹ Back to " + esc(h.name) + '<span class="bx" aria-label="Dismiss">×</span>';
   b.hidden = false; b.classList.remove("in"); void b.offsetWidth; b.classList.add("in");
 }
@@ -3968,6 +3984,7 @@ $("backpill").onclick = function (e) {
   slideBack(function () {
     if (bk.search != null) { showSearch(bk.search); return; }
     state.tab = "heroes"; state.from = null; setTabsUI("heroes"); renderHero(bk.hero); window.scrollTo(0, bk.y);
+    if (bk.stat) setTimeout(function () { statSheet(bk.stat.sk, bk.stat.st, document.querySelector("#stats1 .scs." + bk.stat.cat)); }, 180);
   });
 };
 function render() {
