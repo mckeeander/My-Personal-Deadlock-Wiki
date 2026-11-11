@@ -659,17 +659,17 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
 .sctl{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:4px}.sctl div{border:1px dashed #3d3450;border-radius:9px;padding:6px 8px;min-width:0}
 .sctl span{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sctl b{font-size:13.5px;color:var(--fg)}.sctl em{font-style:normal;color:var(--dim);font-size:11px;margin-left:4px}
-.scnote{margin:8px 2px 0;font-size:12.5px;color:var(--dim);text-align:center}
+.scnote{margin:8px 2px 0;font-size:12.5px;color:var(--dim)}
 .sctrial{margin:0 0 10px;text-align:center;font-size:11px;color:var(--dim);font-style:italic}
 /* style trials, one per hero page: the wrapped edge gives way to each */
 .scg[data-acc] .scd::before{display:none}
 .scg[data-acc="chip"] .sch > svg,.scg[data-acc="chip"] .sch > img{box-sizing:content-box;padding:5px;border-radius:8px;background:color-mix(in srgb,var(--c) 18%,transparent)}
 .scg[data-acc="wash"] .scd{background:linear-gradient(100deg,color-mix(in srgb,var(--c) 16%,var(--panel)) 0,var(--panel) 55%)}
-.scg[data-acc="glow"] .scd{background:radial-gradient(120% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}
+.scg[data-acc="glow"] .scd{background:radial-gradient(120% 140% at var(--gx,0) var(--gy,0),color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}
 .scg[data-acc="tint"] .scd{background:color-mix(in srgb,var(--c) 8%,var(--panel));border-color:color-mix(in srgb,var(--c) 28%,var(--line))}
 /* the weapon section on card heroes: DPS's comparison line, the clip, and the compared cards under the weapon */
 .scd.wdl{background:none;border:0;padding:0 18%;margin:-2px 0 8px;cursor:pointer}.scd.wdl::before{display:none}.scd.wdl .trk{margin-top:4px}
-.wpn .wclip{--c:var(--weapon)}.wpn .wclipr{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin:14px 2px 6px}.wpn .wclipr b{color:var(--fg)}
+.wpn .wclip{--c:var(--weapon)}.wclip.wfill{display:grid}.wclip.wfill i{width:auto}.wsec .wpn{margin:0}.wpn .wclipr{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin:14px 2px 6px}.wpn .wclipr b{color:var(--fg)}
 .wcmp{margin-top:14px}.wcmp .scs{--c:var(--weapon)}.wcmp .scs h4{font-size:11px;color:var(--dim)}
 .wviz{grid-column:1/-1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px 14px;position:relative}
 .wviz::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:2px solid var(--c);border-left-width:3px;border-right:0;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 12px,transparent 34px);mask-image:linear-gradient(to right,#000 12px,transparent 34px)}
@@ -2062,9 +2062,7 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
   var merged = !alt && !bare && CARD_HEROES[h.name], dline = "", clip = "", cmp = "";
   if (merged) { // the base stats' weapon cards join this one: DPS gets its comparison line, the clip its shells, the rest follow as cards
     var rs = statRows(h), R = function (l) { return rs.filter(function (r) { return r.c === "wep" && r.l === l; })[0]; }, dr = R("Damage per second"), am = R("Ammo"), rl = R("Reload time");
-    var xs = dr && statPool()[skey(dr)];
-    if (xs && xs.length > 1) dline = '<div class="scd cmp wdl">' + cardLine(h, xs, dr.n, dr, function (x) { return sfmt(x, dr); }) + "</div>";
-    if (am && am.n) clip = '<div class="wclipr"><span>Clip <b>' + esc(am.val) + " shots</b></span>" + (rl ? "<span>" + esc(rl.val) + " reload</span>" : "") + '</div><span class="wclip">' + new Array(Math.min(Math.round(am.n), 60) + 1).join("<i></i>") + "</span>";
+    if (am && am.n) { var nb = Math.round(am.n); clip = '<div class="wclipr"><span>Clip <b>' + esc(am.val) + " shots</b></span>" + (rl ? "<span>" + esc(rl.val) + " reload</span>" : "") + '</div><span class="wclip wfill" style="grid-template-columns:repeat(' + nb + ',1fr);gap:' + (nb > 40 ? 1 : nb > 20 ? 2 : 4) + 'px">' + new Array(nb + 1).join("<i></i>") + "</span>"; } // one shell per round, sharing the width
     var acc = ACCENT[h.name];
     cmp = '<div class="scg wcmp"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + catCards(h, ["wep", "Compared with every hero"], { noviz: 1, skip: { "Damage per second": 1 } }) + "</div>";
     if (pel > 1) g = g.replace(/<div class="wc">(?:(?!<div class="wc">).)*?Damage per shot<\/i><\/div>/, ""); // the Bullet card below says it
@@ -2241,10 +2239,10 @@ function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot
   return '<span class="trk">' + xs.map(function (x) { return x.h === h ? "" : '<i style="left:' + pos(x.n) + '%"></i>'; }).join("") + '<b style="left:' + pos(v) + '%"></b></span>' +
     '<span class="rkl"><span>' + esc(fmt(lo)) + "</span>" + (LOWBETTER[r.l] ? '<span class="lowb">lower is better</span>' : "") + "<span>" + esc(fmt(hi)) + "</span></span>";
 }
-function statCards(h) { // Normal view on card heroes: Vitality and Spirit here; the weapon's cards live in the Weapon section
+function statCards(h) { // Normal view on card heroes: Vitality, the weapon (its card and compared stats), Spirit
   var acc = ACCENT[h.name] || "";
   return '<div class="scg"' + (acc ? ' data-acc="' + acc[0] + '"' : "") + ">" + (acc ? '<p class="sctrial">Style trial: ' + esc(acc[1]) + "</p>" : "") +
-    SCAT.filter(function (c) { return c[0] !== "wep"; }).map(function (c) { return catCards(h, c); }).join("") + "</div>";
+    SCAT.map(function (c) { return c[0] === "wep" ? '<section class="scs wep wsec"><h4>Weapon</h4>' + weaponCard(h) + "</section>" : catCards(h, c); }).join("") + "</div>"; // the whole weapon sits between Vitality and Spirit
 }
 function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out the weapon picture, opt.skip leaves out rows by label
   opt = opt || {};
@@ -2252,7 +2250,8 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
   function shared(xs, v) { return xs.length >= n * 0.9 && xs.every(function (x) { return x.n === v; }); } // the same on every hero
   function card(icon, title, value, line, cls) {
     var long = String(value).replace(/<[^>]+>/g, "").length >= 7; // "610 m/s": a smaller value so the title still fits beside it
-    return '<div class="scd' + (cls ? " " + cls : "") + '"><div class="sch">' + icon + '<span class="sct">' + esc(title) + "</span><b" + (long ? ' class="lv"' : "") + ">" + value + "</b></div>" + line + "</div>";
+    var hs = 0, key = h.name + title; for (var q = 0; q < key.length; q++) hs = (hs * 31 + key.charCodeAt(q)) >>> 0; // the glow's centre, picked from the card's name
+    return '<div class="scd' + (cls ? " " + cls : "") + '" style="--gx:' + (hs % 101) + "%;--gy:" + ((hs >>> 8) % 101) + '%"><div class="sch">' + icon + '<span class="sct">' + esc(title) + "</span><b" + (long ? ' class="lv"' : "") + ">" + value + "</b></div>" + line + "</div>";
   }
   return [c0].map(function (c) {
     var rs = rows.filter(function (r) { return r.c === c[0] && !(opt.skip && opt.skip[r.l]); }); if (!rs.length) return "";
@@ -2933,7 +2932,7 @@ function renderHero(cn) {
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
   if (state.altHero !== cn) { state.alt = false; state.altHero = cn; }
-  var wc = weaponCard(h);
+  var wc = CARD_HEROES[h.name] && !fp ? "" : weaponCard(h); // card heroes show their weapon inside Base stats
   if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec">Weapon' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
   // the abilities fold like the sections above, but start open
   html += '<details class="phd abd"' + (AB_SHUT === cn ? "" : " open") + '><summary class="sec">Abilities' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
