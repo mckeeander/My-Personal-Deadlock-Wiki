@@ -673,7 +673,12 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scgh{margin:12px 2px 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}.scs h4 + .scgh{margin-top:0}
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
 .scd.stam{display:flex;align-items:center}.scd.stam .sch{flex:1}
-.scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scs.spi .scw > .scd:only-child{grid-column:1/-1} /* the only Spirit card: full width */
+.scsm{margin:8px 2px 0;font-size:12px;line-height:1.55;color:var(--dim)}.scsm b{color:var(--fg);font-weight:600}.scs.spi .scw > .scd:only-child{grid-column:1/-1}
+.sctl:has(> :nth-child(2):last-child){grid-template-columns:1fr 1fr} /* two tiles share the width */
+.frm.mstk{grid-template-columns:1fr 1fr}.mcol{display:flex;flex-direction:column;border:1px solid #3a3150;border-radius:12px;background:var(--panel);overflow:hidden;min-width:0}
+.mcol > .scd{border:0;border-radius:0;background:none}.mcol > .scd + .scd{border-top:1px dashed #3a3150}.mcol > .scd + .scd .sch b{font-size:15px}
+.sch > svg.grow{width:15px;height:15px;opacity:.85}
+.scg[data-acc="glow"] .mcol{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .mcol > .scd{background:none} /* the only Spirit card: full width */
 .scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}
 .scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
 .sctl{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:2px}.sctb{border:1px dashed #3d3450;border-radius:9px;padding:6px 10px;min-width:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -2259,10 +2264,11 @@ function statView(h) {
    a stat's "per boon" growth gets its own card beside it. stats every hero shares go in small text; stamina is drawn as chevrons. */
 var CARD_HEROES = new Proxy({}, { get: function () { return 1; } }); // every hero has the card layout now
 var ACCENT = new Proxy({}, { get: function () { return ["glow"]; } }); // the corner glow, everywhere // the card style: a glow from the top-left corner
-var TILEL = { "Crouch speed": "Crouch", "Headshot bonus": "Headshot", "Move while firing": "Move firing" };
+var TILEL = { "Crouch speed": "Crouch", "Move while firing": "Speed while firing" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
 var VGRPS = [["h", "Health"], ["m", "Movement"], ["s", "Stamina"]];
+var GROW = '<svg class="si grow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>'; // growth per boon: a rising arrow rather than the stat's own icon again
 var WGRP = { "Bullet damage": "d", Ammo: "d", "Bullets per sec": "r", "Reload time": "r", "Bullet velocity": "r", "Headshot bonus": "x", "Move while firing": "x", "Light melee": "l", "Heavy melee": "k" };
 var SHORT = { "Health regen": "Regen", "Move speed": "Move", "Sprint speed": "Sprint", "Crouch speed": "Crouch", "Dash speed": "Dash", "Stamina cooldown": "Stamina CD",
   "Damage per second": "DPS", "Bullet damage": "Bullet", "Bullets per sec": "Fire rate", "Reload time": "Reload", "Bullet velocity": "Velocity", "Spirit power": "Spirit", "Headshot bonus": "Headshot", "Move while firing": "Move firing" };
@@ -2354,7 +2360,11 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
     else if (c[0] === "wep") { // bullet and its growth framed, then the lone cards, then each melee with its growth framed
       var gs = function (k) { return units.filter(function (u) { return u.g === k; }); }, rest = gs("");
       var fr = function (k) { var us = gs(k), n = 0; us.forEach(function (u) { n += u.length; }); return n ? frame(us, n >= 3 ? 3 : 2) : ""; };
-      body = viz + fr("d") + fr("r") + fr("x") + (rest.length ? '<div class="scw">' + lay(rest) + "</div>" : "") + fr("l") + fr("k"); // bullet, growth, ammo; fire rate, reload, velocity; each melee with its growth
+      body = viz + fr("d") + fr("r") + fr("x") + (rest.length ? '<div class="scw">' + lay(rest) + "</div>" : "") + melee(); // bullet, growth, ammo; fire rate, reload, velocity; light and heavy melee side by side, each over its growth
+      function melee() {
+        var col = function (k) { var cs = []; gs(k).forEach(function (u) { cs = cs.concat(u); }); return cs.length ? '<div class="mcol">' + cs.map(function (c, i) { return i ? c.replace(/<svg[\s\S]*?<\/svg>/, GROW) : c; }).join("") + "</div>" : ""; };
+        var a = col("l"), b = col("k"); return a || b ? '<div class="frm mstk">' + a + b + "</div>" : "";
+      }
     } else body = '<div class="scw">' + viz + lay(units) + "</div>";
     var foot = "";
     if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") body = body.replace(/<\/div><\/div>$/, '<span class="scsub">Starts at ' + small[0].v + "</span></div></div>"); // Spirit: the shared start, quietly inside its card
@@ -2368,7 +2378,7 @@ document.addEventListener("click", function (e) { var c = e.target.closest ? e.t
 document.addEventListener("click", function (e) { var t = e.target.closest ? e.target.closest(".sctb") : null; if (t) sameSheet(t); });
 function sameSheet(t) { // a stat every hero shares: the value and a line saying so, no comparison
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
-  var full = { Crouch: "Crouch speed", Headshot: "Headshot bonus", "Move firing": "Move while firing" }[t.getAttribute("data-sl")] || t.getAttribute("data-sl"), x = t.getAttribute("data-sx"), note = t.getAttribute("data-sn");
+  var full = { Crouch: "Crouch speed", "Speed while firing": "Move speed while firing" }[t.getAttribute("data-sl")] || t.getAttribute("data-sl"), x = t.getAttribute("data-sx"), note = t.getAttribute("data-sn");
   var html = '<div class="gsh ssh ' + t.getAttribute("data-sc") + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(full) + '</h3><div class="ssv"><b>' + esc(t.getAttribute("data-sv")) + "</b>" + (x ? "<span>" + esc(x) + "</span>" : "") + "</div>" + (note ? '<p class="ssame">' + esc(note) + "</p>" : "") + "</div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
   ISTACK = []; FSTACK = [];
   clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
