@@ -658,7 +658,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .ssl .trk{height:24px}.ssl .trk::before{top:11px;height:3px}.ssl .trk i{top:9px;width:6px;height:6px;margin-left:-3px}.ssl .trk b{top:3px;width:18px;height:18px;margin-left:-9px}
 .ssl .rkl{display:flex;font-size:12px;margin-top:4px}
 .ssx{list-style:none;margin:16px 0 0;padding:0}
-.ssx li{display:grid;grid-template-columns:24px 74px 1fr;align-items:start;gap:8px;padding:9px 4px;border-top:1px solid #2c2539;font-size:13px}.ssx li:first-child{border-top:0}
+.ssx li{display:grid;grid-template-columns:74px 1fr;align-items:start;gap:8px;padding:9px 4px;border-top:1px solid #2c2539;font-size:13px}.ssx li:first-child{border-top:0}
 .ssx .rp{text-align:right;font-size:12px;line-height:24px;font-variant-numeric:tabular-nums;color:var(--dim)}
 .ssx .rvv{line-height:24px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg)}
 .ssx .rhs{display:flex;flex-wrap:wrap;gap:4px 10px}.ssx .rh{cursor:pointer;-webkit-tap-highlight-color:transparent;display:inline-flex;align-items:center;gap:5px;line-height:24px;color:var(--dim);white-space:nowrap}.ssx .rh img{width:20px;height:20px;border-radius:5px;object-fit:cover}
@@ -669,7 +669,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .frm{display:grid;gap:6px;padding:6px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid #2f283d;margin-bottom:8px}.frm2{grid-template-columns:1fr 1fr}.frm3{grid-template-columns:repeat(3,1fr)}
 .frm .scd{border-color:#3a3150;min-width:0}
 .frm3 .scd{padding:9px 9px 8px}.frm3 .sch{flex-wrap:wrap;row-gap:2px}.frm3 .sch b{order:3;width:100%;font-size:19px;margin-top:2px}.frm3 .sch b.lv{font-size:16px}.frm3 .sct{font-size:10px}.frm3 .sch > svg{width:15px;height:15px}
-.wsec .frm{margin-top:12px}.wsec .frm + .scw{margin-top:0}.wsec .scw + .frm{margin-top:8px}
+.wsec .frm{margin-top:12px}.wsec .frm + .scw{margin-top:0}.wsec .scw + .frm{margin-top:8px}.scs .scw + .frm{margin-top:8px}
 .scgh{margin:12px 2px 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}.scs h4 + .scgh{margin-top:0}
 .chev{display:flex;color:var(--c)}.chev svg{width:20px;height:20px;margin-left:-8px;stroke-width:3}.chev svg:first-child{margin-left:0}
 .scd.stam{display:flex;align-items:center}.scd.stam .sch{flex:1}
@@ -2240,7 +2240,7 @@ var TILEL = { "Crouch speed": "Crouch" };
 var VGRP = { Health: "h", "Health regen": "h", "Out-of-combat regen": "h", "Crit reduction": "h", "Bullet resist": "h", "Spirit resist": "h",
   "Move speed": "m", "Sprint speed": "m", "Crouch speed": "m", "Dash speed": "m", "Ground dash": "m", "Air dash": "m", Stamina: "s", "Stamina cooldown": "s" };
 var VGRPS = [["h", "Health"], ["m", "Movement"], ["s", "Stamina"]];
-var WGRP = { "Bullet damage": "d", "Bullets per sec": "d", "Light melee": "m", "Heavy melee": "m" };
+var WGRP = { "Bullet damage": "d", "Light melee": "l", "Heavy melee": "k" };
 var SHORT = { "Health regen": "Regen", "Move speed": "Move", "Sprint speed": "Sprint", "Crouch speed": "Crouch", "Dash speed": "Dash", "Stamina cooldown": "Stamina CD",
   "Damage per second": "DPS", "Bullet damage": "Bullet", "Bullets per sec": "Fire rate", "Reload time": "Reload", "Bullet velocity": "Velocity", "Spirit power": "Spirit" };
 function boonOf(r) { var m = /^\+?([\d.]+)\s*\/\s*boon$/.exec(r.extra || ""); return m ? parseFloat(m[1]) : null; }
@@ -2318,11 +2318,12 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
     var body;
     if (c[0] === "vit") body = VGRPS.map(function (gp) { // Vitality in three groups: health (framed), movement, stamina
       var us = units.filter(function (u) { return u.g === gp[0]; }); if (!us.length) return "";
-      return '<div class="scgh">' + gp[1] + "</div>" + (gp[0] === "h" ? frame(us, 3) : '<div class="scw">' + lay(us) + "</div>");
+      return '<div class="scgh">' + gp[1] + "</div>" + frame(us, gp[0] === "s" ? 2 : 3); // each group framed: health and movement three across, stamina two
     }).join("");
-    else if (c[0] === "wep") { // damage (bullet, its growth, fire rate) and melee framed; the rest as cards
-      var dm = units.filter(function (u) { return u.g === "d"; }), ml = units.filter(function (u) { return u.g === "m"; }), rest = units.filter(function (u) { return !u.g; });
-      body = viz + (dm.length ? frame(dm, 3) : "") + (rest.length ? '<div class="scw">' + lay(rest) + "</div>" : "") + (ml.length ? frame(ml, 2) : "");
+    else if (c[0] === "wep") { // bullet and its growth framed, then the lone cards, then each melee with its growth framed
+      var gs = function (k) { return units.filter(function (u) { return u.g === k; }); }, rest = gs("");
+      body = viz + ["d"].map(function (k) { var us = gs(k); return us.length ? frame(us, 2) : ""; }).join("") + (rest.length ? '<div class="scw">' + lay(rest) + "</div>" : "") +
+        ["l", "k"].map(function (k) { var us = gs(k); return us.length ? frame(us, 2) : ""; }).join("");
     } else body = '<div class="scw">' + viz + lay(units) + "</div>";
     var foot = "";
     if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") foot = '<p class="scnote">Every hero starts with ' + small[0].v + " Spirit Power</p>"; // Spirit: just the one shared stat, said plainly
@@ -2345,7 +2346,7 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   sorted.forEach(function (x, i) { var g = groups[groups.length - 1]; if (!g || g.n !== x.n) groups.push(g = { n: x.n, place: i + 1, xs: [] }); g.xs.push(x); if (x.h === h) mine = g.place; });
   var list = groups.map(function (g) {
     var me = g.xs.some(function (x) { return x.h === h; });
-    return '<li' + (me ? ' class="me"' : "") + '><span class="rp">' + g.place + '</span><span class="rvv">' + esc(fmt(g.n)) + '</span><span class="rhs">' + g.xs.map(function (x) {
+    return '<li' + (me ? ' class="me"' : "") + '><span class="rvv">' + esc(fmt(g.n)) + '</span><span class="rhs">' + g.xs.map(function (x) {
       return '<span class="rh' + (x.h === h ? " on" : "") + '" data-rhero="' + esc(x.h.class_name) + '"><img alt="" src="' + esc(heroHead(x.h)) + '">' + esc(x.h.name) + "</span>";
     }).join("") + "</span></li>";
   }).join("");
