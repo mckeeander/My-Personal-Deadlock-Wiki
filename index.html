@@ -696,7 +696,8 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="glow"] .mcol{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .mcol > .scd{background:none} /* the only Spirit card: full width */
 .scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}.rlink{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 .scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
-.sctl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:2px} /* each tile as wide as its name or value */.sctb{border:1px dashed #3d3450;border-radius:9px;padding:6px 10px;min-width:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sctl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:2px} /* each tile as wide as its name or value */.sctb.odd{border-color:var(--c)!important;color:var(--c)} /* this hero is the one exception */
+.sctb{border:1px dashed #3d3450;border-radius:9px;padding:6px 10px;min-width:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .sctl span{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sctl b{font-size:13.5px;color:var(--fg)}.sctl em{font-style:normal;color:var(--dim);font-size:11px;margin-left:4px}
 .scnote{margin:8px 2px 0;font-size:12.5px;color:var(--dim)}
 .sctrial{margin:0 0 10px;text-align:center;font-size:11px;color:var(--dim);font-style:italic}
@@ -2231,7 +2232,7 @@ function statRows(h) { // a hero's base stats as rows: shown as cards, ranked ag
     var per = "/ " + (who === "spirit" ? "Spirit Power" : who);
     var sv = Math.abs(o.scale) < 0.1 ? String(Number(Number(o.scale).toPrecision(2))) : fmtNum(o.scale);
     if (AR[k]) add("spi", AR[k], "+" + sv + "%", per);
-    else add("spi", SN[k] || nice(k), "+" + sv, per);
+    else add("spi", SN[k] || nice(k), "+" + sv + ({ "Move speed": " m/s", "Sprint speed": " m/s", "Health regen": "/s" }[SN[k]] || ""), per); // the unit of the stat it grows
   });
   return rows;
 }
@@ -2339,7 +2340,7 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
         r.inSmall = true;
         var nr = r.n != null && xs.length >= 2 && !shared(xs, r.n) && nearly(xs), note = "";
         if (nr) { var f = function (v) { return sfmt(v, r); }; var oddh = nr.odd.h.class_name; note = nr.odd.h === h ? h.name + " is the only hero with " + f(nr.odd.n) + ". Every other hero has " + f(nr.common) + "." : "Every hero has " + f(nr.common) + " except " + nr.odd.h.name + ", who has " + f(nr.odd.n) + "."; }
-        small.push({ l: TILEL[r.l] || r.l, v: shown, x: r.extra && r.val !== "" && boonOf(r) == null ? r.extra : "", r: r, note: note, odd: nr && nr.odd.h !== h ? nr.odd.h : null });
+        small.push({ l: TILEL[r.l] || r.l, v: shown, x: r.extra && r.val !== "" && boonOf(r) == null ? r.extra : "", r: r, note: note, odd: nr && nr.odd.h !== h ? nr.odd.h : null, self: !!(nr && nr.odd.h === h) });
       } else {
         var sl2 = xs.length <= 3 && boonOf(r) == null; // a stat only two heroes have: the same short line
         units.push(tag([card(icon, title, r.val !== "" ? esc(r.val) : shown, sl2 ? "" : cardLine(h, xs, r.n, r, function (x) { return sfmt(x, r); }), sl2 ? "cmp slim" : "cmp", skey(r))], r));
@@ -2394,7 +2395,7 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
     var foot = "";
     if (small.length === 1 && small[0].r && small[0].r.l === "Spirit power") foot = ""; // Spirit: the shared start is said inside its card
     else if (small.length) foot = '<div class="sctl">' + small.map(function (t) { // tiles for the stats every hero shares; tapped, a card says so
-      return '<button class="sctb" data-sl="' + esc(t.l) + '" data-sv="' + esc(String(t.v).replace(/<[^>]+>/g, "")) + '" data-sx="' + esc(t.x || "") + '" data-sn="' + esc(t.note || "") + '"' + (t.odd ? ' data-so="' + esc(t.odd.class_name) + '" data-son="' + esc(t.odd.name) + '"' : "") + ' data-sc="' + c[0] + '"><span>' + esc(t.l) + "</span><b>" + t.v + "</b>" + (t.x ? "<em>" + esc(t.x) + "</em>" : "") + "</button>";
+      return '<button class="sctb' + (t.self ? " odd" : "") + '" data-sl="' + esc(t.l) + '" data-sv="' + esc(String(t.v).replace(/<[^>]+>/g, "")) + '" data-sx="' + esc(t.x || "") + '" data-sn="' + esc(t.note || "") + '"' + (t.odd ? ' data-so="' + esc(t.odd.class_name) + '" data-son="' + esc(t.odd.name) + '"' : "") + ' data-sc="' + c[0] + '"><span>' + esc(t.l) + "</span><b>" + t.v + "</b>" + (t.x ? "<em>" + esc(t.x) + "</em>" : "") + "</button>";
     }).join("") + "</div>";
     return '<section class="scs ' + c[0] + '"><div class="scbox">' + (c[1] ? "<h4>" + c[1] + "</h4>" : "") + body + foot + "</div></section>"; // the title inside the section's box
   }).join("");
@@ -2425,7 +2426,7 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   if (!r) return; r = r.r;
   xs = (boon ? boonPool()[key] : statPool()[key]) || []; if (!xs.length) return;
   var fmt = boon ? function (x) { return "+" + fmtNum(x) + " / boon"; } : function (x) { return sfmt(x, r); };
-  if (!boon && sk.indexOf("spi|") === 0 && r.l !== "Spirit power") fmt = function (x) { return "+" + String(Number(Number(x).toPrecision(3))) + (r.unit === "%" ? "%" : ""); }; // growth per Spirit Power: exact, small numbers kept
+  if (!boon && sk.indexOf("spi|") === 0 && r.l !== "Spirit power") fmt = function (x) { return "+" + String(Number(Number(x).toPrecision(3))) + (r.unit === "%" || r.unit === "/s" ? r.unit : r.unit ? " " + r.unit : ""); }; // growth per Spirit Power: exact, small numbers kept
   var lowb = !boon && LOWBETTER[r.l], me = xs.filter(function (x) { return x.h === h; })[0];
   var sorted = xs.slice().sort(function (a, b) { return (lowb ? a.n - b.n : b.n - a.n) || (a.h.name < b.h.name ? -1 : 1); });
   var mine = 0, groups = []; // heroes on the same value share one row: the place and value once, then each hero as a chip
@@ -2451,7 +2452,7 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   Array.prototype.forEach.call($("sheetin").querySelectorAll(".rh[data-rhero]"), function (c) { c.onclick = function () { // a hero in the list: open their page, with a way back here
     var to = c.getAttribute("data-rhero"), fromHero = state.hero, fromY = window.pageYOffset || 0; closeSheet();
     if (to === fromHero) return;
-    slideForward(function () { state.from = null; renderHero(to); showBack(fromHero, fromY, { sk: sk, st: title, cat: cat }); });
+    slideForward(function () { state.from = null; renderHero(to); showBack(fromHero, fromY, { sk: sk, st: title, cat: cat }); setTimeout(function () { statSheet(sk, title, document.querySelector("#stats1 .scs." + cat)); }, 200); }); // their page, with the same stat open
   }; });
 }
 function weaponViz(h, rs) { // one shot drawn as its pellets, the clip as shells, and how they add up to DPS
