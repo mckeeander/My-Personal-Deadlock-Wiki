@@ -147,6 +147,13 @@ h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 /* jump to an ability: four icon buttons floating just above the bottom navigation for as long as a hero page is open; the one you are on is outlined in gold */
 #jbar{display:flex;visibility:hidden;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:6;justify-content:center;gap:10px;padding:8px;border-radius:19px;background:rgba(20,17,26,.82);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--line);box-shadow:0 6px 22px rgba(0,0,0,.7)}
 #jbar.show{visibility:visible}
+#hnav{display:none;position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 80px);z-index:7;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}#hnav.show{display:flex}
+.hnr{display:flex;gap:8px;justify-content:flex-end}
+.hnb{--i:0;position:relative;z-index:calc(10 - var(--i));width:44px;height:44px;flex:none;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid #433957;color:#e2dbee;pointer-events:auto;-webkit-tap-highlight-color:transparent;
+  box-shadow:0 12px 28px rgba(0,0,0,.8),0 4px 10px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.35);transition:transform .34s cubic-bezier(.2,.85,.25,1) calc(var(--i) * 28ms),opacity .25s ease calc(var(--i) * 28ms)}
+.hnb svg{width:20px;height:20px}.hnb img{width:28px;height:28px;object-fit:contain}
+#hnav:not(.open) .hnb{transform:translateX(calc(var(--i) * 46px)) scale(calc(1 - var(--i) * .07));transition-delay:0s} /* folded: each row's buttons clump on the rightmost one, peeking out a little to its left */
+@media (prefers-reduced-motion:reduce){.hnb{transition:none}}
 body.typing #jbar{display:none}
 #jbar:not(.alt) .f1,#jbar.alt .f0{display:none}
 .jb{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:0;}
@@ -605,6 +612,7 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
   </div>
 </header>
 <nav id="jbar" aria-label="Jump to ability"></nav>
+<nav id="hnav" aria-label="Jump to a section"></nav>
 <div class="topbar"><div class="toprow">
     <div class="brand" id="brand" role="button" aria-label="Deadlock: all heroes"><img class="logo" src="wordmark.png" alt="Deadlock" onerror="this.replaceWith(document.createTextNode('DEADLOCK CODEX'))"></div>
     
@@ -2296,10 +2304,39 @@ function jumpItems(abs, fp) { // one icon button per ability (two when a hero ha
 }
 var JLOCK = false, JT = 0, JTO = ""; // while a tapped jump is scrolling, the tapped ability stays highlighted so it does not flash through the abilities on the way; once the scroll stops (or you touch the screen) it follows where you actually are
 function jumpUnlock() { clearTimeout(JT); if (JLOCK) { JLOCK = false; updateJbar(); } }
+var HNAV = { hero_fencer: 1 }; // heroes trying the section menu (Apollo, for now)
+function hnavHtml(abs, fp) { // a clump of round buttons at the bottom right; tapped, each row fans out to the left
+  var tab = function (c) { var t = document.querySelector('.tab[data-c="' + c + '"] svg'); return t ? t.outerHTML : ""; };
+  var row = function (bs) { return '<div class="hnr">' + bs.map(function (b, i) { return b.replace('class="hnb"', 'class="hnb" style="--i:' + (bs.length - 1 - i) + '"'); }).join("") + "</div>"; };
+  var btn = function (go, label, inner) { return '<button class="hnb" data-hgo="' + esc(go) + '" aria-label="' + esc(label) + '">' + inner + "</button>"; };
+  var bag = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8h13l-1 12.5h-11z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>';
+  var hist = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3 2"/></svg>';
+  return row([btn("vit", "Vitality", tab("vitality")), btn("wep", "Weapon", tab("weapon")), btn("spi", "Spirit", tab("spirit"))]) +
+    row(abs.map(function (a) { var op = ABOPT[a.class_name] || {}; return btn("ab:" + a.class_name, nameOf(a), imgTag(op.img || itemImg(a))); })) +
+    row([btn("pop", "Popular items", bag), btn("hist", "Patch history", hist)]);
+}
+function hnavGo(go) {
+  if (go.indexOf("ab:") === 0) { jumpTo(go.slice(3)); return; }
+  var el = { vit: "#main .sblk.vit", wep: "#main .sblk.wep", spi: "#main .sblk.spi", pop: "#popwrap details.phd", hist: "#revwrap details.phd" }[go];
+  el = el && document.querySelector(el); if (!el) return;
+  if (el.tagName === "DETAILS" && !el.open) el.open = true; // a folded section opens as you arrive
+  scrollToEl(el, true);
+}
+document.addEventListener("click", function (e) {
+  var hn = $("hnav"); if (!hn || !hn.firstChild) return;
+  var inside = e.target.closest && e.target.closest("#hnav");
+  if (!inside) { hn.classList.remove("open"); return; } // a tap anywhere else folds it back
+  e.preventDefault(); e.stopPropagation();
+  if (!hn.classList.contains("open")) { hn.classList.add("open"); return; }
+  var b = e.target.closest(".hnb"); if (!b) return;
+  hn.classList.remove("open"); hnavGo(b.getAttribute("data-hgo"));
+}, true);
 function updateJbar() { // shown for the whole hero page; outlines the ability you are on (the last card whose top has passed the upper part of the screen)
   var bar = $("jbar"), show = state.tab === "heroes" && !!state.hero && !$("main").hidden && !!bar.firstChild, cur = "";
   if (show && JLOCK) cur = JTO; else if (show) Array.prototype.forEach.call(document.querySelectorAll("#main .ab"), function (c) { if (c.offsetParent !== null && c.getBoundingClientRect().top < window.innerHeight * .4) cur = c.getAttribute("data-ab"); });
   bar.classList.toggle("show", show); document.body.classList.toggle("jump", show);
+  var hn = $("hnav"), hs = state.tab === "heroes" && !!state.hero && !$("main").hidden && !!(hn && hn.firstChild);
+  if (hn) { hn.classList.toggle("show", hs); if (!hs) hn.classList.remove("open"); }
   Array.prototype.forEach.call(bar.querySelectorAll(".jb"), function (b) { b.classList.toggle("on", show && b.getAttribute("data-jump") === cur); });
 }
 function jumpTo(cn) {
@@ -2547,7 +2584,9 @@ function renderHero(cn) {
   html += '<div id="popwrap">' + popularHtml(h) + "</div>";
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
-  $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : ""; updateJbar();
+  $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : "";
+  var hn = $("hnav"); hn.classList.remove("open"); hn.innerHTML = HNAV[cn] && abs.length ? hnavHtml(abs, fp) : ""; if (hn.firstChild) $("jbar").innerHTML = ""; // trying out: the section menu instead of the ability bar
+  updateJbar();
   $("back").onclick = function () {
     if (BACK && BACK.sheet && !$("backpill").hidden) { $("backpill").click(); return; } // opened from a pop-up: back returns to it, as the pill does
     if (NEWSFROM && NEWSFROM.hero === cn) { slideBack(backToNews); return; } // opened from What's New: back goes there
