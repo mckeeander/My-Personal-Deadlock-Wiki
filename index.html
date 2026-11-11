@@ -679,7 +679,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="glow"] .scpair{background:radial-gradient(70% 140% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .scpair > .scd{background:none}
 .frm{display:grid;gap:6px;padding:6px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid #2f283d;margin-bottom:6px}.frm2{grid-template-columns:1fr 1fr}.frm3{grid-template-columns:repeat(3,1fr)}
 .frm .scd{border-color:#3a3150;min-width:0}
-.trk i.ds{width:var(--d)!important;height:var(--d)!important;margin-left:calc(var(--d) / -2)!important;top:calc(50% - var(--d) / 2)!important;opacity:.6}.ssl .trk i.ds{width:calc(var(--d) * 1.5)!important;height:calc(var(--d) * 1.5)!important;margin-left:calc(var(--d) * -.75)!important;top:calc(12.5px - var(--d) * .75)!important}
+.trk i.ds{width:var(--d)!important;height:var(--d)!important;margin-left:calc(var(--d) / -2)!important;top:calc(50% - var(--d) / 2)!important;opacity:1!important;background:#4a4160}.trk .dring{position:absolute;top:50%;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;border:1.5px solid var(--c);opacity:.35;z-index:1;pointer-events:none} /* how many share this hero's value */.ssl .trk .dring{width:calc(var(--d) * 1.35);height:calc(var(--d) * 1.35);margin:calc(var(--d) * -.675) 0 0 calc(var(--d) * -.675)}.ssl .trk i.ds{width:calc(var(--d) * 1.5)!important;height:calc(var(--d) * 1.5)!important;margin-left:calc(var(--d) * -.75)!important;top:calc(12.5px - var(--d) * .75)!important}
 .scd.slim{padding-top:11px;padding-bottom:11px}.frm3 .scd.slim .sch{flex-wrap:nowrap}.frm3 .scd.slim .sch b{order:0;width:auto;margin:0 0 0 auto;font-size:17px}
 .jn{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;min-width:0;border:1px solid #3a3150;border-radius:12px;background:var(--panel)}
 .jn > .scd{border:0;border-radius:0;background:none!important}.jn > .scd + .scd{border-left:1px solid #3a3150}
@@ -718,7 +718,10 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scd.wdl{background:none;border:0;padding:0 18%;margin:-2px 0 8px;cursor:pointer}.scd.wdl::before{display:none}.scd.wdl .trk{margin-top:4px}
 .wpn .wclip{--c:var(--weapon)}.wclip.wfill{display:grid}.wclip.wfill i{width:auto}.wsec .wpn{margin:0}
 .wpn.wpc{text-align:left;padding:12px 14px}
-.wpc .wph{display:grid;grid-template-columns:44% 1fr;gap:12px;align-items:center}.wpc .wimg img{width:100%;height:auto;max-height:96px;max-width:none}
+.wpc .wph{display:grid;grid-template-columns:40% 1fr;gap:12px;align-items:center}.wpc .wph > div:last-child{text-align:center}.wpc .wph .wtags,.wpc .wph .wdps1{justify-content:center}.wpc .wph h3{line-height:1.2}
+.wfch{margin-top:16px;padding-top:16px;border-top:1px solid #3a2f25}.wfch svg{display:block;width:100%;height:52px;margin-top:8px}
+.wfax{position:relative;height:16px;margin-top:3px;font-size:10.5px;color:var(--dim)}.wfax span{position:absolute;transform:translateX(-50%);white-space:nowrap}.wfax .fe{right:0;transform:none}
+.wfch + .wrow{margin-top:14px!important;padding-top:0!important;border-top:0!important}.wpc .wimg img{width:100%;height:auto;max-height:96px;max-width:none}
 .wpc h3{font-size:19px;margin:0 0 6px}.wpc .wtags{justify-content:flex-start;gap:4px;margin:0 0 8px}.wpc .wtags .chip{font-size:11.5px;padding:3px 7px}.wpc .wdps1{margin:0;font-size:13px}.wpc .wdps1 > svg{position:relative;top:-4px;left:3px}.wpc .wdps1 b{font-size:22px}
 .wpc .wrow{display:flex;align-items:center;gap:10px;margin-top:10px}.wpc .wph + .wrow{margin-top:18px;padding-top:18px;border-top:1px solid #3a2f25}
 .wpc .wrl2{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:700;width:58px;flex:none}
@@ -2124,10 +2127,11 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
   if (!bare) { // compact: the picture beside the name, tags and DPS, then slim falloff and clip rows; the numbers live in the cards below
     var cn = am && am.n ? Math.round(am.n) : (i.clip_size || 0), crl = rl ? rl.val : (i.reload_duration != null ? fmtNum(i.reload_duration) + "s" : "");
     var fo2 = "";
-    if (i.damage_falloff_start_range && i.damage_falloff_end_range) {
-      var pc = Math.round(i.damage_falloff_start_range / i.damage_falloff_end_range * 100);
-      fo2 = '<div class="wrow wfo"><span class="wrl2">Falloff</span><div class="fobw"><div class="fob" style="background:linear-gradient(90deg,var(--weapon) 0%,var(--weapon) ' + pc + '%,#5a3a1a 100%)"></div><span class="fdot" style="left:' + pc + '%"></span>' +
-        '<span class="flab" style="left:' + pc + '%">' + meters(i.damage_falloff_start_range) + '</span><span class="flab fend">' + fmtNum(Math.round((i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0) * 100)) + "% at " + meters(i.damage_falloff_end_range) + "</span></div></div>";
+    if (i.damage_falloff_start_range && i.damage_falloff_end_range) { // damage by distance: flat to where falloff starts, sloping down to its floor
+      var s0 = i.damage_falloff_start_range / 39.37, e0 = i.damage_falloff_end_range / 39.37, fl = i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0, mx = Math.ceil(e0 * 1.18 / 5) * 5;
+      var X = function (m) { return (m / mx * 300).toFixed(1); }, Y = function (v) { return (4 + (1 - v) * 44).toFixed(1); }, pth = "M0 " + Y(1) + " L" + X(s0) + " " + Y(1) + " L" + X(e0) + " " + Y(fl) + " L300 " + Y(fl);
+      fo2 = '<div class="wfch"><span class="wrl2">Damage by distance</span><svg viewBox="0 0 300 52" preserveAspectRatio="none" aria-hidden="true"><path d="' + pth + ' L300 52 L0 52Z" fill="color-mix(in srgb,var(--weapon) 16%,transparent)"/><path d="' + pth + '" fill="none" stroke="var(--weapon)" stroke-width="2.5" vector-effect="non-scaling-stroke"/><line x1="' + X(s0) + '" y1="0" x2="' + X(s0) + '" y2="52" stroke="#f6e3bf" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/></svg>' +
+        '<div class="wfax">' + (s0 / mx < 0.5 ? '<span style="left:' + (s0 / mx * 100).toFixed(1) + '%">full to ' + meters(i.damage_falloff_start_range) + "</span>" : "") + '<span class="fe">' + (s0 / mx < 0.5 ? "" : "full to " + meters(i.damage_falloff_start_range) + ", ") + fmtNum(Math.round(fl * 100)) + "% at " + meters(i.damage_falloff_end_range) + "</span></div></div>"; // the two labels share one when the drop starts late
     }
     var cl2 = cn ? '<div class="wrow"><span class="wrl2">Clip</span><span class="wclip wfill" style="grid-template-columns:repeat(' + Math.min(cn, 60) + ',1fr);gap:' + (cn > 40 ? 1 : cn > 20 ? 2 : 3) + 'px">' + new Array(Math.min(cn, 60) + 1).join("<i></i>") + "</span><em><b>" + cn + "</b>" + (crl ? " · " + esc(crl) : "") + "</em></div>" : "";
     return '<section class="wpn wpc"><div class="wph">' + '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div><div><h3>" + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
@@ -2310,7 +2314,8 @@ function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot
   var dots;
   if (DOTSCALE[h.name]) { // one dot per value, sized by how many heroes share it (trying it on Abrams)
     var cnt = {}; xs.forEach(function (x) { if (x.h !== h) cnt[x.n] = (cnt[x.n] || 0) + 1; });
-    dots = Object.keys(cnt).map(function (k) { var d = Math.min(10, 3 + 2 * Math.sqrt(cnt[k] - 1)); return '<i class="ds" style="left:' + pos(+k) + "%;--d:" + d.toFixed(1) + 'px"></i>'; }).join("");
+    dots = Object.keys(cnt).filter(function (k) { return +k !== v; }).map(function (k) { var d = Math.min(10, 3 + 2 * Math.sqrt(cnt[k] - 1)); return '<i class="ds" style="left:' + pos(+k) + "%;--d:" + d.toFixed(1) + 'px"></i>'; }).join("");
+    if (cnt[v]) dots += '<span class="dring" style="left:' + pos(v) + "%;--d:" + Math.min(26, 14 + 2.5 * Math.sqrt(cnt[v])).toFixed(1) + 'px"></span>'; // others on this hero's value: a faint ring round its dot
   } else dots = xs.map(function (x) { return x.h === h ? "" : '<i style="left:' + pos(x.n) + '%"></i>'; }).join("");
   return '<span class="trk">' + dots + '<b style="left:' + pos(v) + '%"></b></span>' +
     '<span class="rkl"><span>' + esc(fmt(lo)) + "</span>" + (LOWBETTER[r.l] ? '<span class="lowb">lower is better</span>' : "") + "<span>" + esc(fmt(hi)) + "</span></span>";
