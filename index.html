@@ -72,8 +72,8 @@ body.srch #sarea{padding-bottom:calc(env(safe-area-inset-bottom,0) + 96px)}
 .sclr svg{display:block}
 .sclr[hidden]{display:none}
 /* Cancel is always in the bar but collapsed; while search is open (.sbar.open) it grows, the field narrows to make room, and the word fades in. Closing runs it backwards. */
-.sx{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:10px 0;min-height:44px;max-width:0;margin-left:0;overflow:hidden;white-space:nowrap;opacity:0;pointer-events:none;transition:max-width .28s ease,margin-left .28s ease,opacity .2s ease}
-.sbar.open .sx{max-width:60px;margin-left:12px;opacity:1;pointer-events:auto;transition:max-width .28s ease,margin-left .28s ease,opacity .24s ease .08s}
+.sx{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:10px 0;min-height:44px;max-width:0;margin-left:0;overflow:hidden;white-space:nowrap;opacity:0;pointer-events:none;transition:max-width .28s cubic-bezier(.2,.7,.3,1),margin-left .28s cubic-bezier(.2,.7,.3,1),opacity .2s ease}
+.sbar.open .sx{max-width:var(--sxw,60px);margin-left:12px;opacity:1;pointer-events:auto;transition:max-width .28s cubic-bezier(.2,.7,.3,1),margin-left .28s cubic-bezier(.2,.7,.3,1),opacity .2s ease .08s}
 @media (prefers-reduced-motion:reduce){.sx,.sbar.open .sx{transition:none}}
 .gsearch input[type=search],.gsearch input[type=search]:focus{flex:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none;height:100%;outline:none}
 #sarea{max-width:600px;margin:0 auto;padding:12px 12px 8px}
@@ -140,6 +140,9 @@ input[type=search]{width:100%;padding:11px 12px;background:var(--panel);border:1
 .back:active{opacity:.7}
 .hero-h{display:flex;gap:12px;align-items:center;margin-bottom:22px}
 .hero-h img{width:86px;aspect-ratio:3/4;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+#main .hero-h{position:relative;overflow:hidden;align-items:stretch;padding:0 12px 0 0;border:1px solid var(--line);border-radius:16px;background:linear-gradient(120deg,rgba(255,255,255,.05),rgba(255,255,255,.015))}
+#main .hero-h::before{content:"";position:absolute;inset:0;background:var(--hbg) center/cover;filter:blur(26px) saturate(1.4);opacity:.35;transform:scale(1.3);z-index:0;pointer-events:none} /* the hero's own portrait, blurred, tints the card */
+#main .hero-h > *{position:relative;z-index:1}#main .hero-h > img{border:0;border-radius:0;height:auto;align-self:stretch;width:96px}#main .hero-h > div{padding:12px 0;align-self:center}
 h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .sub{color:var(--dim);font-size:14px;line-height:1.4;margin:8px 0 14px}
 .ab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px}
@@ -697,7 +700,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="glow"] .mcol{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .mcol > .scd{background:none} /* the only Spirit card: full width */
 .scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.nhr{white-space:nowrap}.rli{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}.nhr img{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}
 body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
-.sbk{flex:none;width:0;height:44px;margin-right:0;opacity:0;overflow:hidden;border-width:0;pointer-events:none;display:flex;align-items:center;justify-content:center;background:var(--panel);border:0 solid var(--line);border-radius:10px;color:var(--fg);padding:0;transition:width .26s cubic-bezier(.2,.7,.3,1),margin-right .26s cubic-bezier(.2,.7,.3,1),opacity .2s ease,border-width .26s}
+.sbk{flex:none;width:0;height:44px;margin-right:0;opacity:0;overflow:hidden;border-width:0;pointer-events:none;display:flex;align-items:center;justify-content:center;background:var(--panel);border:0 solid var(--line);border-radius:10px;color:var(--fg);padding:0;transition:width .28s cubic-bezier(.2,.7,.3,1),margin-right .28s cubic-bezier(.2,.7,.3,1),opacity .18s ease,border-width .28s cubic-bezier(.2,.7,.3,1)}
 .sbk.on{width:44px;margin-right:8px;opacity:1;border-width:1px;pointer-events:auto}.sbk svg{flex:none}
 @media (prefers-reduced-motion:reduce){.sbk{transition:none}}
 .hnavrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 20px;padding-bottom:16px;border-bottom:1px solid var(--line)} /* the page's navigation, set apart from the hero */.hnavrow .back{margin:0}
@@ -2944,7 +2947,9 @@ $("sbk").onclick = function () { // back, from a hero, an item page, What's New 
 function sbkShow(on) { // the search bar makes room for the back button (and gives it back) with a slide
   var b = $("sbk"); b.classList.toggle("on", !!on); b.tabIndex = on ? 0 : -1; b.setAttribute("aria-hidden", on ? "false" : "true"); document.body.classList.toggle("sbkon", !!on);
 }
-function sbkWanted() { return !$("main").hidden && !searchOn() && ((state.tab === "heroes" && !!state.hero) || state.tab === "item" || state.tab === "glossary" || state.tab === "news"); }
+(function () { var sx = $("sx"); if (!sx) return; var c = sx.cloneNode(true); c.removeAttribute("id"); c.style.cssText = "position:absolute;visibility:hidden;max-width:none;transition:none;left:-999px"; document.body.appendChild(c); var w = c.scrollWidth; c.remove(); if (w) sx.style.setProperty("--sxw", w + "px"); })(); // Cancel's own width, so it grows exactly as far as it needs, in step with the arrow
+function pageWantsBack() { return (state.tab === "heroes" && !!state.hero) || state.tab === "item" || state.tab === "glossary" || state.tab === "news"; }
+function sbkWanted() { return !$("main").hidden && !searchOn() && !$("sq").matches(":focus") && pageWantsBack(); }
 new MutationObserver(function () { sbkShow(sbkWanted()); }).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // pages that have a way back
 function heroLinks() { // the big sections, one tap each, under the hero's name
   var I = { stats: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>', abil: '<path d="M12 3l8 9-8 9-8-9z"/>', pop: '<path d="M5.5 8h13l-1 12.5h-11z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>', hist: '<path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3 2"/>' };
@@ -3190,7 +3195,7 @@ function renderHero(cn) {
   var cxn = Math.max(0, Math.min(3, Number(h.complexity) || 0)), dots = "";
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
   var tagsA = (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
-  var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
+  var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h" style="--hbg:url(&quot;' + esc(heroImg(h)) + '&quot;)"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
   // base stats starts open (it holds the comparison switch); the weapon folds shut like Patch history; each remembers your choice for this hero
   html += '<details class="phd bsd"' + (BS_SHUT === cn ? "" : " open") + '><summary class="sec">Base stats' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><div class="stats1">' + (CARD_HEROES[h.name] ? "" : smodeSwitch(h)) + '<div id="stats1">' + (CARD_HEROES[h.name] ? statCards(h) : statView(h)) + "</div></div></details>";
@@ -4304,7 +4309,7 @@ $("gbtn").onclick = function () { // a second tap while on the glossary goes bac
 // search: the bar is always there; while it has text the page underneath is hidden (not re-rendered), so clearing it puts you back exactly where you were
 var SEARCH_Y = 0;
 function searchOn() { return !$("sarea").hidden; }
-function searchBar(on) { var sb = document.querySelector(".sbar"), sx = $("sx"); if (sb) sb.classList.toggle("open", !!on); if (sx) { sx.setAttribute("aria-hidden", on ? "false" : "true"); sx.tabIndex = on ? 0 : -1; } } // Cancel slides in and out with the bar
+function searchBar(on) { var sb = document.querySelector(".sbar"), sx = $("sx"); if (sb) sb.classList.toggle("open", !!on); if (sx) { sx.setAttribute("aria-hidden", on ? "false" : "true"); sx.tabIndex = on ? 0 : -1; } sbkShow(!on && pageWantsBack()); } // Cancel and the back arrow trade places in one motion: same timing, same curve
 function drawResults() { state.sf = "all"; $("sres").innerHTML = searchResults(); $("sclr").hidden = !state.sq; }
 function showSearch(q) { // swap the page for the results area (the page is only hidden, not re-rendered)
   if (!searchOn()) {
@@ -4324,8 +4329,6 @@ function endSearch(keepScroll) { // close search: empty the bar and show the pag
   if (keepScroll) window.scrollTo(0, SEARCH_Y);
 }
 $("sq").addEventListener("blur", function () { document.body.classList.remove("kb"); });
-$("sq").addEventListener("focus", function () { sbkShow(false); }); // the search bar takes the full width while you type
-$("sq").addEventListener("blur", function () { setTimeout(function () { if (document.activeElement !== $("sq")) sbkShow(sbkWanted()); }, 50); });
 $("srchpill").onclick = function () { slideBack(function () { $("sq").blur(); endSearch(true); }); };
 $("sq").addEventListener("focus", function () { document.body.classList.add("kb"); });
 $("sq").addEventListener("blur", function () { if (!searchOn()) searchBar(false); }); // tapped in and out again without searching: the bar goes back
