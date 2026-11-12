@@ -10,7 +10,10 @@ Measured on 2026-11-12. Biggest wins first. Each step can be shipped and checked
 3. `dataSig()` runs `JSON.stringify` over heroes + items (~5.7 MB) on every load to decide whether anything changed. That alone is likely hundreds of ms on a phone.
 4. Each refresh then re-saves everything to IndexedDB.
 
-## Step 1: Only download data when it changed (biggest win)
+## Step 1: Only download data when it changed (DONE)
+
+Correction to the notes above: the app already skipped downloads when its saved copy was under 24 hours old, so it didn't re-download on every open. It did re-download everything once a day even when nothing changed, and could show data up to a day late. Now every open checks `updated.txt` and downloads only when it changed.
+
 
 - Fetch the tiny `data/updated.txt` (already exists; `getStamp()`) first.
 - If it matches the stamp saved with the IndexedDB copy, **skip every data download** and skip `dataSig()`.

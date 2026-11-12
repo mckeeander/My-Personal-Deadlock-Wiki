@@ -1182,10 +1182,10 @@ function propRec(it, key) {
 
 /* ---------- data ---------- */
 var RAW = "https://raw.githubusercontent.com/mckeeander/My-Personal-Deadlock-Wiki/main/data/";
-function getJson(name) {
-  var urls = [RAW + name + "?t=" + Date.now(), "data/" + name];
+function getJson(name, v) { // v: the data stamp, so the browser can keep each day's copy; without it, always fresh
+  var urls = [RAW + name + (v ? "?v=" + v : "?t=" + Date.now()), "data/" + name];
   function tryAt(i) {
-    return fetch(urls[i], { cache: "no-store" }).then(function (r) {
+    return fetch(urls[i], v ? {} : { cache: "no-store" }).then(function (r) {
       if (!r.ok) throw new Error(name + " returned " + r.status);
       return r.json();
     }).catch(function (e) { if (i + 1 < urls.length) return tryAt(i + 1); throw e; });
@@ -1201,31 +1201,48 @@ function getStamp() { // when the daily job last downloaded the game data (data/
   }
   return tryAt(0);
 }
-function fetchAll() {
+function fetchAll() { // asks first when the data was last updated (a few bytes), and downloads only if that changed
   var rb = $("rfr"); if (rb) rb.textContent = "Refreshing…";
-  return Promise.all([getJson("heroes.json"), getJson("items.json"), getStamp()]).then(function (r) {
+  return getStamp().then(function (stamp) {
+    if (stamp && stamp === state.dataAt && state.heroes.length) { // nothing new: keep everything saved, fetch only what's missing
+      state.same = true; state.fetchedAt = Date.now(); state.note = "";
+      extras(stamp, true);
+      return true;
+    }
+    return fetchData(stamp);
+  });
+}
+function fetchData(stamp) {
+  return Promise.all([getJson("heroes.json", stamp), getJson("items.json", stamp), Promise.resolve(stamp)]).then(function (r) {
     if (r[2]) state.dataAt = r[2];
     state.heroes = (Array.isArray(r[0]) ? r[0] : []).filter(function (h) { return !h.disabled && h.player_selectable !== false && (!h.in_development || h.development_state === "release"); }); // released heroes (Violet, Baba) still carry the in_development flag
     state.items = Array.isArray(r[1]) ? r[1] : [];
     state.heroes.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
-    var sig = dataSig(state.heroes, state.items); state.same = !!state.sig && sig === state.sig; state.sig = sig; // same: this refresh found exactly what is already on screen
+    var sig = stamp ? "s" + stamp : dataSig(state.heroes, state.items); state.same = !!state.sig && sig === state.sig; state.sig = sig; // same: this refresh found exactly what is already on screen (the stamp says so cheaply)
     state.fetchedAt = Date.now(); state.note = ""; index(); save();
+    return extras(stamp, false);
+  });
+}
+function extras(stamp, onlyMissing) { // the smaller files: all of them after new data, only the ones not saved yet otherwise; status.json always (it says whether today's update passed)
+  var v = stamp, need = function (have) { return !onlyMissing || !have; };
+  getJson("status.json").then(function (st) { state.st = st && typeof st === "object" ? st : null; idbSet("st", state.st); if (!state.hero && /^(heroes|weapon|vitality|spirit)$/.test(state.tab) && !searchOn()) afterNote(); }, function () {}); // did today's update pass its check
+  if (true) {
     // community notes are optional: a failure here never blocks the main data
-    getJson("patchnotes.json").then(function (pn) { if (pn && pn.patches) { state.pn = pn; idbSet("pn", pn); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); } }, function () {}); // official patch notes (deadlock-wiki/deadlock-data)
-    getJson("popular.json").then(function (pp) { if (pp && pp.heroes) { state.pop = pp; idbSet("pop", pp); var w4 = $("popwrap"), h4 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w4 && h4) w4.innerHTML = popularHtml(h4); } }, function () {}); // what top-ranked players buy on each hero
-    getJson("patchhistory.json").then(function (ph) { if (ph && ph.heroes) { state.ph = ph; idbSet("ph", ph); var w3 = $("revwrap"), h3 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w3 && h3) w3.innerHTML = revisionsHtml(h3); } }, function () {}); // every official patch, per hero
-    getJson("mechanics.json").then(function (mc) { if (mc && mc.mechanics) { state.mc = mc.mechanics; idbSet("mc", mc); } }, function () {}); // objectives and neutrals (deadlock-wiki/deadlock-data)
-    getJson("powerups.json").then(function (pw) { if (pw && pw.powerups) { state.pw = pw; idbSet("pw", pw); } }, function () {});
-    getJson("status_effects.json").then(function (se) { if (se && se.effects) { state.se = se; idbSet("se", se); } }, function () {}); // what causes each effect (from the wiki), shown in the glossary pop-ups
-    getJson("status.json").then(function (st) { state.st = st && typeof st === "object" ? st : null; idbSet("st", state.st); if (!state.hero && /^(heroes|weapon|vitality|spirit)$/.test(state.tab) && !searchOn()) afterNote(); }, function () {}); // did today's update pass its check
-    getJson("revisions.json").then(function (rv) { // optional, like the notes: the hero page simply has no Revisions section without it
+    if (need(state.pn)) getJson("patchnotes.json", v).then(function (pn) { if (pn && pn.patches) { state.pn = pn; idbSet("pn", pn); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); } }, function () {}); // official patch notes (deadlock-wiki/deadlock-data)
+    if (need(state.pop)) getJson("popular.json", v).then(function (pp) { if (pp && pp.heroes) { state.pop = pp; idbSet("pop", pp); var w4 = $("popwrap"), h4 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w4 && h4) w4.innerHTML = popularHtml(h4); } }, function () {}); // what top-ranked players buy on each hero
+    if (need(state.ph)) getJson("patchhistory.json", v).then(function (ph) { if (ph && ph.heroes) { state.ph = ph; idbSet("ph", ph); var w3 = $("revwrap"), h3 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w3 && h3) w3.innerHTML = revisionsHtml(h3); } }, function () {}); // every official patch, per hero
+    if (need(state.mc)) getJson("mechanics.json", v).then(function (mc) { if (mc && mc.mechanics) { state.mc = mc.mechanics; idbSet("mc", mc); } }, function () {}); // objectives and neutrals (deadlock-wiki/deadlock-data)
+    if (need(state.pw)) getJson("powerups.json", v).then(function (pw) { if (pw && pw.powerups) { state.pw = pw; idbSet("pw", pw); } }, function () {});
+    if (need(state.se)) getJson("status_effects.json", v).then(function (se) { if (se && se.effects) { state.se = se; idbSet("se", se); } }, function () {}); // what causes each effect (from the wiki), shown in the glossary pop-ups
+    if (need(state.revs)) getJson("revisions.json", v).then(function (rv) { // optional, like the notes: the hero page simply has no Revisions section without it
       if (Array.isArray(rv)) { state.revs = rv; idbSet("revs", rv); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); var w2 = $("revwrap"), h2 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w2 && h2) w2.innerHTML = revisionsHtml(h2); }
     }, function () {});
-    return getJson("wiki.json").then(function (w) {
+    if (!need(state.wiki)) return Promise.resolve(true);
+    return getJson("wiki.json", v).then(function (w) {
       if (w && w.heroes) { state.wiki = w; idbSet(WKEY, w); }
       return true;
     }, function () { return true; });
-  });
+  }
 }
 
 /* ---------- rendering ---------- */
@@ -4886,9 +4903,7 @@ if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.j
 setTimeout(function () { document.body.classList.remove("boot"); }, 6000); // failsafe: the credits always appear
 load().then(function (had) {
 if (had) render(); else $("main").innerHTML = '<p class="status">Loading game data…</p>';
-if (!had || Date.now() - state.fetchedAt > MAX_AGE) {
-  fetchAll().then(afterFetch).catch(function (e) { if (!had) showError(e); });
-}
+fetchAll().then(afterFetch).catch(function (e) { if (!had) showError(e); }); // every open asks whether there's a new update; it downloads only if so
 });
 </script>
 </body>
