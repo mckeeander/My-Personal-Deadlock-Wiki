@@ -333,6 +333,9 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .bon p{margin:8px 0 0;font-size:12px;color:var(--dim)}
 .tag.role{background:#2c2440;color:var(--spirit)}
 .tag.cx{background:var(--panel2);color:var(--dim)}
+#main .hero-h .tag{display:inline-block;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:11.5px;padding:4px 9px;border-radius:2px;box-shadow:2px 3px 0 rgba(0,0,0,.55)} /* like the game: stuck-on labels, each tilted a little */
+#main .hero-h .tag:nth-child(3n+1){transform:rotate(-2deg)}#main .hero-h .tag:nth-child(3n+2){transform:rotate(1.5deg)}#main .hero-h .tag:nth-child(3n){transform:rotate(-1deg)}
+#main .hero-h h1{margin-top:6px}
 .sfs{display:flex;gap:6px;margin:0 0 10px;flex-wrap:wrap}
 .sf{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--dim)}
 .sf.on{background:var(--panel2);color:var(--fg);border-color:var(--gold)}
@@ -3196,7 +3199,7 @@ function renderHero(cn) {
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
   var tagsA = (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h" style="--hbg:url(&quot;' + esc(heroImg(h)) + '&quot;)"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
-    (tagsA ? '<div class="tags">' + tagsA + "</div>" : "") + (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>";
+    (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>"; // no complexity tag: it helps pick a first hero, not look one up
   // base stats starts open (it holds the comparison switch); the weapon folds shut like Patch history; each remembers your choice for this hero
   html += '<details class="phd bsd"' + (BS_SHUT === cn ? "" : " open") + '><summary class="sec">Base stats' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><div class="stats1">' + (CARD_HEROES[h.name] ? "" : smodeSwitch(h)) + '<div id="stats1">' + (CARD_HEROES[h.name] ? statCards(h) : statView(h)) + "</div></div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
