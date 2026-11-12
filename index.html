@@ -335,7 +335,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .tag.cx{background:var(--panel2);color:var(--dim)}
 #main .hero-h .tag{display:inline-block;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:11.5px;padding:4px 9px;border-radius:2px;box-shadow:2px 3px 0 rgba(0,0,0,.55)} /* like the game: stuck-on labels, each tilted a little */
 #main .hero-h .tag:nth-child(3n+1){transform:rotate(-2deg)}#main .hero-h .tag:nth-child(3n+2){transform:rotate(1.5deg)}#main .hero-h .tag:nth-child(3n){transform:rotate(-1deg)}
-#main .hero-h h1{margin-top:6px}
+#main .hero-h h1{margin-top:6px}#main .hero-h .tags.one{margin-top:14px}
 .sfs{display:flex;gap:6px;margin:0 0 10px;flex-wrap:wrap}
 .sf{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--dim)}
 .sf.on{background:var(--panel2);color:var(--fg);border-color:var(--gold)}
@@ -3220,6 +3220,7 @@ function renderHero(cn) {
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
   sbkShow(sbkWanted());
+  var tg = document.querySelector("#main .hero-h .tags"); if (tg) requestAnimationFrame(function () { tg.classList.toggle("one", tg.offsetHeight < 34); }); // tags on one line get a little more room under the name
   var bk0 = $("back"); if (bk0 && !trialBack) { bk0.insertAdjacentHTML("afterend", heroLinks()); var row = document.createElement("div"); row.className = "hnavrow"; bk0.parentNode.insertBefore(row, bk0); row.appendChild(bk0); row.appendChild(document.querySelector("#main .hlks")); } // All heroes on the left, the section links on the right of the same line
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : "";
   if (JTAB[cn] && abs.length) $("jbar").insertAdjacentHTML("afterbegin", jtabHtml()); // trying out: a tab on the bar for the stat blocks
