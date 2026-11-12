@@ -72,8 +72,8 @@ body.srch #sarea{padding-bottom:calc(env(safe-area-inset-bottom,0) + 96px)}
 .sclr svg{display:block}
 .sclr[hidden]{display:none}
 /* Cancel is always in the bar but collapsed; while search is open (.sbar.open) it grows, the field narrows to make room, and the word fades in. Closing runs it backwards. */
-.sx{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:10px 0;min-height:44px;max-width:0;margin-left:0;overflow:hidden;white-space:nowrap;opacity:0;pointer-events:none;transition:max-width .28s cubic-bezier(.2,.7,.3,1),margin-left .28s cubic-bezier(.2,.7,.3,1),opacity .2s ease}
-.sbar.open .sx{max-width:var(--sxw,60px);margin-left:12px;opacity:1;pointer-events:auto;transition:max-width .28s cubic-bezier(.2,.7,.3,1),margin-left .28s cubic-bezier(.2,.7,.3,1),opacity .2s ease .08s}
+.sx{flex:none;background:none;border:0;color:var(--fg);font-size:15px;padding:10px 0;min-height:44px;max-width:0;margin-left:0;overflow:hidden;white-space:nowrap;opacity:0;pointer-events:none;transition:max-width .42s cubic-bezier(.4,0,.2,1),margin-left .42s cubic-bezier(.4,0,.2,1),opacity .26s ease}
+.sbar.open .sx{max-width:var(--sxw,60px);margin-left:12px;opacity:1;pointer-events:auto;transition:max-width .42s cubic-bezier(.4,0,.2,1),margin-left .42s cubic-bezier(.4,0,.2,1),opacity .26s ease .08s}
 @media (prefers-reduced-motion:reduce){.sx,.sbar.open .sx{transition:none}}
 .gsearch input[type=search],.gsearch input[type=search]:focus{flex:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none;height:100%;outline:none}
 #sarea{max-width:600px;margin:0 auto;padding:12px 12px 8px}
@@ -700,7 +700,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="glow"] .mcol{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .mcol > .scd{background:none} /* the only Spirit card: full width */
 .scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.nhr{white-space:nowrap}.rli{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}.nhr img{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}
 body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
-.sbk{flex:none;width:0;height:44px;margin-right:0;opacity:0;overflow:hidden;border-width:0;pointer-events:none;display:flex;align-items:center;justify-content:center;background:var(--panel);border:0 solid var(--line);border-radius:10px;color:var(--fg);padding:0;transition:width .28s cubic-bezier(.2,.7,.3,1),margin-right .28s cubic-bezier(.2,.7,.3,1),opacity .18s ease,border-width .28s cubic-bezier(.2,.7,.3,1)}
+.sbk{flex:none;width:0;height:44px;margin-right:0;opacity:0;overflow:hidden;border-width:0;pointer-events:none;display:flex;align-items:center;justify-content:center;background:var(--panel);border:0 solid var(--line);border-radius:10px;color:var(--fg);padding:0;transition:width .42s cubic-bezier(.4,0,.2,1),margin-right .42s cubic-bezier(.4,0,.2,1),opacity .26s ease,border-width .42s cubic-bezier(.4,0,.2,1)}
 .sbk.on{width:44px;margin-right:8px;opacity:1;border-width:1px;pointer-events:auto}.sbk svg{flex:none}
 @media (prefers-reduced-motion:reduce){.sbk{transition:none}}
 .hnavrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 20px;padding-bottom:16px;border-bottom:1px solid var(--line)} /* the page's navigation, set apart from the hero */.hnavrow .back{margin:0}
