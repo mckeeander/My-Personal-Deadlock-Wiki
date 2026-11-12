@@ -2946,6 +2946,7 @@ function heroLinks() { // the big sections, one tap each, under the hero's name
 function updateJbar() { // shown for the whole hero page; outlines the ability you are on (the last card whose top has passed the upper part of the screen)
   var bar = $("jbar"), show = state.tab === "heroes" && !!state.hero && !$("main").hidden && !!bar.firstChild, cur = "";
   if (show && JLOCK) cur = JTO; else if (show) Array.prototype.forEach.call(document.querySelectorAll("#main .ab"), function (c) { if (c.offsetParent !== null && c.getBoundingClientRect().top < window.innerHeight * .4) cur = c.getAttribute("data-ab"); });
+  if (show && !JLOCK && cur) { var abd = document.querySelector("#main details.abd"); if (abd && abd.getBoundingClientRect().bottom < window.innerHeight * .4) cur = ""; } // scrolled past the abilities: none lit
   bar.classList.toggle("show", show); document.body.classList.toggle("jump", show);
   Array.prototype.forEach.call(bar.querySelectorAll(".jb"), function (b) { b.classList.toggle("on", show && b.getAttribute("data-jump") === cur); });
 }
