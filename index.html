@@ -697,7 +697,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .scg[data-acc="glow"] .mcol{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .mcol > .scd{background:none} /* the only Spirit card: full width */
 .scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.nhr{white-space:nowrap}.rli{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}.nhr img{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}
 body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
-.sbk{flex:none;width:44px;height:44px;margin-right:8px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--gold);padding:0}.sbk[hidden]{display:none}
+.sbk{flex:none;width:44px;height:44px;margin-right:8px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--fg);padding:0}.sbk[hidden]{display:none}
 .hnavrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 20px;padding-bottom:16px;border-bottom:1px solid var(--line)} /* the page's navigation, set apart from the hero */.hnavrow .back{margin:0}
 .hlks{display:flex;gap:6px}.hlks .hlk{width:46px;height:37px;padding:0;border-radius:999px}.hlks .hlk span{display:none}.hlk{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:7px;padding:10px 4px;line-height:1;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--dim);font:inherit;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent}.hlk svg{width:16px;height:16px;flex:none;color:var(--gold);display:block}.hlk span{display:block;line-height:16px}.hlk:active,.hlk.on{border-color:var(--gold)}.hlk{transition:border-color .25s ease}.hlk:active{transition:none}
 .ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}.rlink{background:none;border:0;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
@@ -2934,7 +2934,7 @@ document.addEventListener("click", function (e) { var b = e.target.closest ? e.t
   EASE_DUR = 0; hnavGo(b.getAttribute("data-sgo"));
   if (b.classList.contains("hlk")) { b.classList.add("on"); clearTimeout(b._t); b._t = setTimeout(function () { b.classList.remove("on"); }, (EASE_DUR || 400) + 250); } // stays gold while the page glides there
 });
-var SBK_TRIAL = { Abrams: 1 };
+var SBK_TRIAL = new Proxy({}, { get: function () { return 1; } }); // every hero page: the back button beside the search bar, no navigation row
 $("sbk").onclick = function () { var b = $("back"); if (b) b.onclick(); };
 new MutationObserver(function () { var on = state.tab === "heroes" && !!state.hero && SBK_TRIAL[(state.heroes.filter(function (x) { return x.class_name === state.hero; })[0] || {}).name] && !$("main").hidden; $("sbk").hidden = !on; document.body.classList.toggle("sbkon", !!on); }).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // leaving the page puts the bar back
 function heroLinks() { // the big sections, one tap each, under the hero's name
