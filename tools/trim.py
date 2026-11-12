@@ -13,6 +13,8 @@ boss_damage_scale (abilities that do half damage to objectives), colors, physics
 usage: trim.py DATA_DIR
 """
 import json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import itemicons
 
 HERO_DROP = {"item_draft_bucketing", "popular_items", "hero_stats_ui", "stats_display", "item_slot_info", "models",
              "hideout_rich_presence", "search_name", "gender", "assigned_players_only", "limited_testing", "needs_testing",
@@ -35,7 +37,7 @@ def dep_names(v):
 
 def main(data):
     hp, ip = os.path.join(data, "heroes.json"), os.path.join(data, "items.json")
-    heroes, items = json.load(open(hp)), json.load(open(ip))
+    heroes, items = json.load(open(hp)), itemicons.expand(json.load(open(ip)), data) # items carried over from yesterday may hold tokens
     size0 = os.path.getsize(hp) + os.path.getsize(ip)
 
     # every name anything else on the site points at (patch history, revisions, wiki notes, the page itself) keeps its item
@@ -72,8 +74,10 @@ def main(data):
         for k in HERO_DROP: h.pop(k, None)
 
     json.dump(heroes, open(hp, "w"), ensure_ascii=False, separators=(",", ":"))
+    out, icons = itemicons.compact(out) # each inline icon stored once, links shortened: about a third smaller to download
     json.dump(out, open(ip, "w"), ensure_ascii=False, separators=(",", ":"))
-    size1 = os.path.getsize(hp) + os.path.getsize(ip)
+    json.dump(icons, open(os.path.join(data, "item_icons.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+    size1 = os.path.getsize(hp) + os.path.getsize(ip) + os.path.getsize(os.path.join(data, "item_icons.json"))
     print("trim: %.1f MB -> %.1f MB, %d unused abilities/weapons removed" % (size0 / 1e6, size1 / 1e6, dropped))
 
 

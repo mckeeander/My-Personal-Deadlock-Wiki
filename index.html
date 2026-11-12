@@ -1212,9 +1212,27 @@ function fetchAll() { // asks first when the data was last updated (a few bytes)
     return fetchData(stamp);
   });
 }
+function expandItems(items, ic) { // items.json keeps each inline icon once (item_icons.json) and short asset links; put them back
+  if (!ic || !Array.isArray(items)) return items;
+  var svg = ic.svg || [], pre = ic.prefix || "", tok = /@@S(\d+)@@/g;
+  function walk(v) {
+    if (typeof v === "string") {
+      if (v.indexOf("@@S") >= 0) v = v.replace(tok, function (m, n) { return svg[+n] || ""; });
+      if (v.charCodeAt(0) === 126 && v.indexOf("~A/") === 0) v = pre + v.slice(3);
+      return v;
+    }
+    if (Array.isArray(v)) { for (var i = 0; i < v.length; i++) v[i] = walk(v[i]); return v; }
+    if (v && typeof v === "object") { for (var k in v) v[k] = walk(v[k]); return v; }
+    return v;
+  }
+  return walk(items);
+}
 function fetchData(stamp) {
-  return Promise.all([getJson("heroes.json", stamp), getJson("items.json", stamp), Promise.resolve(stamp)]).then(function (r) {
+  var icons = getJson("item_icons.json", stamp).catch(function () { return null; }); // older data has none, and needs none
+  return Promise.all([getJson("heroes.json", stamp), getJson("items.json", stamp), Promise.resolve(stamp), icons]).then(function (r) {
     if (r[2]) state.dataAt = r[2];
+    if (!r[3] && Array.isArray(r[1]) && r[1].some(function (it) { var d = it && it.description; return d && typeof d === "object" && Object.keys(d).some(function (k) { return String(d[k]).indexOf("@@S") >= 0; }); })) throw new Error("item icons missing"); // never show tokens: keep the saved copy instead
+    r[1] = expandItems(r[1], r[3]);
     state.heroes = (Array.isArray(r[0]) ? r[0] : []).filter(function (h) { return !h.disabled && h.player_selectable !== false && (!h.in_development || h.development_state === "release"); }); // released heroes (Violet, Baba) still carry the in_development flag
     state.items = Array.isArray(r[1]) ? r[1] : [];
     state.heroes.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });

@@ -14,6 +14,8 @@ import datetime
 import json
 import os
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import itemicons
 
 # weapon numbers worth listing; the rest (DPS, damage per magazine, ...) are worked out from these
 WEAPON_KEYS = ["bullet_damage", "bullets", "clip_size", "cycle_time", "reload_duration", "reload_single",
@@ -23,7 +25,8 @@ WEAPON_KEYS = ["bullet_damage", "bullets", "clip_size", "cycle_time", "reload_du
 
 def load(d, name):
     with open(os.path.join(d, name), encoding="utf-8") as f:
-        return json.load(f)
+        v = json.load(f)
+    return itemicons.expand(v, d) if name == "items.json" else v # full icons and links back, so a shortened file doesn't read as changed
 
 
 def num(v):

@@ -28,7 +28,10 @@ Correction to the notes above: the app already skipped downloads when its saved 
 - Trade-off: a code update appears on the *second* open after it ships, not the first. Fine for a personal app; a small "updated, reload" hint is optional.
 - Check: in airplane mode and online, the page paints with no wait.
 
-## Step 3: Make items.json much smaller
+## Step 3: Make items.json much smaller (DONE, takes effect with the next daily update)
+
+Finding: almost every property field is used, so dropping fields saved little. The bulk was 474 copies of 14 inline SVG icons inside the descriptions (1.1 MB). `tools/itemicons.py` stores each icon once in `data/item_icons.json` and leaves a token; asset links are shortened. items.json download: 403 KB → 247 KB compressed (+8 KB icons). The app and `revisions.py` put the full text back; trim.py is safe to run twice.
+
 
 - `properties` is 3.0 MB of the 5 MB (`description` 0.68 MB, `tooltip_details` 0.59 MB).
 - `tools/trim.py` already exists. Extend it to keep only the property fields the app reads (`value`, `label`, `postfix`, `css_class`, `icon`, scaling info) and drop the rest. Have the daily job run it after downloading.

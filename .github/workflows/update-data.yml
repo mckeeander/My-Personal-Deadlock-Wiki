@@ -22,7 +22,7 @@ jobs:
         continue-on-error: true # a failure here is handled below: yesterday's data is kept and the site says so
         run: |
           mkdir -p data prev
-          cp data/heroes.json data/items.json prev/ 2>/dev/null || true # the last saved snapshot, to compare against
+          cp data/heroes.json data/items.json data/item_icons.json prev/ 2>/dev/null || true # the last saved snapshot, to compare against
           grab() {
             out="data/$1"; shift
             for u in "$@"; do
