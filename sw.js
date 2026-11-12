@@ -1,5 +1,5 @@
 // Deadlock service worker: keeps the page and item/hero art available offline.
-var SHELL = "codex-shell-v3", ART = "codex-art-v1", ART_MAX = 700;
+var SHELL = "codex-shell-v4", ART = "codex-art-v1", ART_MAX = 700;
 
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(SHELL).then(function (c) { return c.addAll(["./", "index.html", "manifest.webmanifest", "icon-192.png", "apple-touch-icon.png", "favicon-32.png"]); }).then(function () { return self.skipWaiting(); }));
@@ -21,8 +21,21 @@ self.addEventListener("fetch", function (e) {
   var r = e.request;
   if (r.method !== "GET") return;
   var u = new URL(r.url);
+  if (u.origin === location.origin && !/\/data\//.test(u.pathname)) {
+    // page and app files: the saved copy at once, and a fresh one fetched in the background for next time
+    var key = r.mode === "navigate" ? "index.html" : r;
+    var fresh = fetch(r).then(function (res) {
+      if (res && res.ok) { var copy = res.clone(); caches.open(SHELL).then(function (c) { c.put(key, copy); }); }
+      return res;
+    });
+    e.respondWith(caches.match(key, { ignoreSearch: true }).then(function (hit) {
+      if (hit) { e.waitUntil(fresh.catch(function () {})); return hit; }
+      return fresh.catch(function () { return r.mode === "navigate" ? caches.match("index.html") : Response.error(); });
+    }));
+    return;
+  }
   if (u.origin === location.origin) {
-    // page and app files: newest copy when online, saved copy when not
+    // the app's own data files (a fallback when GitHub can't be reached): newest copy when online, saved copy when not
     e.respondWith(fetch(r).then(function (res) {
       if (res && res.ok) { var copy = res.clone(); caches.open(SHELL).then(function (c) { c.put(r, copy); }); }
       return res;

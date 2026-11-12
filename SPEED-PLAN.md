@@ -21,7 +21,7 @@ Correction to the notes above: the app already skipped downloads when its saved 
 - Expected: most opens go from ~700 KB + 7 MB of parsing to a ~30-byte request.
 - Check: open twice. The second open makes one small request and no data parsing.
 
-## Step 2: Show the saved page first, update in the background
+## Step 2: Show the saved page first, update in the background (DONE)
 
 - Service worker: switch the app shell (`index.html` etc.) from network-first to **stale-while-revalidate**. Serve the saved copy instantly, then fetch the new one for next time.
 - Bump the cache name (`codex-shell-v4`) so the change takes effect.
