@@ -723,7 +723,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .wfch{margin-top:16px;padding-top:16px;border-top:1px solid #3a2f25}.wfch svg{display:block;width:100%;height:52px;margin-top:8px}
 .wfax{position:relative;height:16px;margin-top:3px;font-size:10.5px;color:var(--dim)}.wfax span{position:absolute;transform:translateX(-50%);white-space:nowrap}.wfax .fe{right:0;transform:none}
 .wfch + .wrow{margin-top:14px!important;padding-top:0!important;border-top:0!important}.wpc .wimg img{width:100%;height:auto;max-height:96px;max-width:none}
-.wpc h3{font-size:19px;margin:0 0 6px}.wpc .wtags{justify-content:flex-start;gap:4px;margin:0 0 8px}.wpc .wtags .chip{font-size:11.5px;padding:3px 7px}.wpc .wdps1{margin:0;font-size:13px}.wpc .wdps1 > svg{position:relative;top:-4px;left:3px}.wpc .wdps1 b{font-size:22px}
+.wpc h3{font-size:19px;margin:0 0 6px}.wpc .wtags{justify-content:flex-start;gap:4px;margin:0 0 8px}.wpc .wtags .chip{font-size:11.5px;padding:3px 7px}.wpc .wdps1{margin:0;font-size:13px;display:flex;align-items:center;justify-content:center;gap:5px}.wpc .wdps1 b{margin:0;line-height:1}.wpc .wdps1 .si{vertical-align:0;margin:0}.wpc .wdps1 > svg{position:relative;top:-1px;left:0}.wpc .wdps1 b{font-size:22px}
 .wpc .wrow{display:flex;align-items:center;gap:10px;margin-top:10px}.wpc .wph + .wrow{margin-top:18px;padding-top:18px;border-top:1px solid #3a2f25}
 .wpc .wrl2 .wcn{color:var(--fg);font-size:13px;letter-spacing:0;margin-left:3px}.wpc .wrl2{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:700;width:58px;flex:none}
 .wpc .wrow.wfo{padding-bottom:22px}.wpc .fobw{flex:1;margin:0 4px}.wpc .flab{top:17px;font-size:10.5px}.wpc .flab.fend{left:auto;right:0;transform:none}
@@ -3569,7 +3569,7 @@ var GLOSS = [
   { k: "shrine", c: "map", t: "Shrines", a: ["shrine", "shrines"], d: "Two shrines protect the [[patron|Patron]]. They can’t be damaged until a pair of [[base-guardian|Base Guardians]] is down." },
   { k: "patron", c: "map", t: "Patron", a: ["patron"], d: "The objective at the heart of each base, firing a powerful laser. Destroy the enemy Patron to win the match." },
   { k: "minimap-reveal", c: "map", t: "Minimap reveal", a: ["minimap", "revealed", "reveal", "minimap reveal", "revealed on the minimap"], d: "Some actions put you on the enemy team’s minimap. A reveal lingers for about 2 seconds after the action ends." },
-  { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss"], d: "A huge neutral boss in the middle of the map that grows tougher every minute. Killing it drops the [[rejuvenator|Rejuvenator]]." },
+  { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss"], d: "A huge neutral boss in the middle of the map that grows tougher every minute. Killing it drops the [[rejuvenator|Rejuvenator]]. It comes back 7 minutes after the first kill, 6 after the second, and 5 after each one after that." },
   { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv"], d: "When the [[mid-boss|Mid Boss]] dies, three crystals land around its pit. Breaking one with a heavy melee gives your team a revive and fully heals whoever broke it. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. The buff ends when the revives run out or the time is up." },
   { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups"], d: "Glowing pickups around the map, broken open with a melee hit. Each gives a few minutes of extra stats, and they get stronger as the match goes on." },
   { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues", "breakable", "breakables", "crate", "crates"], d: "Golden statues around the map that drop a small permanent stat boost when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
@@ -3810,7 +3810,7 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
     add(f(x.health), "Trooper health"); add(f(x.melee_health), "Melee trooper health"); add(f(x.medic_health), "Medic trooper health"); add(f(x.dps_vs_heroes), "Damage to heroes per second");
     if (T.length) return '<div class="stats">' + T.join("") + "</div>" + (x.medic_heal ? '<div class="gsft">Medic troopers heal for ' + f(x.medic_heal) + " plus " + x.medic_heal_pct + "% of missing health over " + x.medic_heal_sec + "s.</div>" : "");
   }
-  else if (g.k === "mid-boss") { add(f(x.health), "Starting health"); add(x.health_per_min != null ? "+" + f(x.health_per_min) : null, "Health per minute"); }
+  else if (g.k === "mid-boss") { add(f(x.health), "Starting health"); add(x.health_per_min != null ? "+" + f(x.health_per_min) : null, "Health per minute"); add("7 → 6 → 5 min", "Respawn after each kill"); } // deadlock.wiki, Minimap: 7 minutes after the first kill, 6 after the second, 5 after each one after
   else if (g.k === "backdoor") { var b = M.backdoor || {}; add(b.mitigation != null ? b.mitigation + "%" : null, "Less damage from heroes"); add(b.regen != null ? b.regen + "/s" : null, "Health regen"); }
   else if (g.k === "rejuvenator") {
     var r = M.rejuvenator || {};
