@@ -951,6 +951,7 @@ function load() {
     var d = r[0], w = r[1];
     if (w && w.heroes) state.wiki = w;
     if (Array.isArray(r[2])) { state.revs = r[2]; setTimeout(newsDot, 0); }
+    if (d && d.i && d.i.some(function (it) { return it && (/^~A\//.test(it.image || "") || /^~A\//.test(it.image_webp || "")); })) d = null; // saved by older code without expanding the short links: drop it and download again
     if (d && d.h && d.i && d.h.length) { state.heroes = d.h; state.items = d.i; state.fetchedAt = d.t || 0; state.dataAt = d.u || 0; state.sig = d.s || null; index(); return true; }
     return false;
   });
@@ -2716,6 +2717,16 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
     if (dx > window.innerWidth * .3 || fast) slideBack(goBack);
     else { m.style.transform = ""; m.style.opacity = ""; }
   });
+  document.addEventListener("touchcancel", function () { if (on && horiz) { m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = ""; } on = false; }); // iOS can take the gesture away mid-swipe
+})();
+(function () { // safety net: a swipe that never got its end (the system took the touch) must not leave the page shifted
+  var m = $("slide"), touching = 0;
+  function fix() { if (!touching && !SLIDING && m.style.transform) { m.style.transition = "transform .18s ease-out, opacity .18s ease-out"; m.style.transform = ""; m.style.opacity = ""; } }
+  document.addEventListener("touchstart", function (e) { touching = e.touches.length; }, { passive: true, capture: true });
+  document.addEventListener("touchend", function (e) { touching = e.touches.length; setTimeout(fix, 400); }, { passive: true, capture: true });
+  document.addEventListener("touchcancel", function (e) { touching = 0; setTimeout(fix, 400); }, { passive: true, capture: true });
+  window.addEventListener("scroll", function () { if (!touching) fix(); }, { passive: true });
+  document.addEventListener("visibilitychange", function () { touching = 0; fix(); });
 })();
 // swipe anywhere to change tab: left = next (Heroes → Weapon → Vitality → Spirit), right = previous (on a hero page, What's New or the Glossary, right goes back instead; those two have no tab to the left or right). It presses the tab for you, so each tab still remembers its hero and scroll spot.
 // Stays out of the way of: the left-edge back swipe (only where it is active: a hero page, search, glossary, What's New; everywhere else both edges change tabs too), the pop-up sheets, search, the glossary, typing, pinch-zoom, text selection and anything that scrolls sideways.
