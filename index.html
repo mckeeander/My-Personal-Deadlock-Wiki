@@ -326,7 +326,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .bg{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:8px}
 .bg div{background:var(--panel2);border-radius:6px;padding:6px 4px;text-align:center}
 .bg b{display:block;font-size:12px;color:var(--dim);font-weight:600}
-.bg span{font-size:16px;font-weight:700}
+.bg span{font-size:16px;font-weight:700}.bg em{display:block;font-style:normal;font-size:11px;color:var(--dim);margin-top:1px}.bg .spike em{color:var(--gold)}
 .bon p{margin:8px 0 0;font-size:12px;color:var(--dim)}
 .tag.role{background:#2c2440;color:var(--spirit)}
 .tag.cx{background:var(--panel2);color:var(--dim)}
@@ -2319,7 +2319,7 @@ function boonPool() { // every hero's "per boon" growth by stat
   state.heroes.forEach(function (h) { statRows(h).forEach(function (r) { var b = boonOf(r); if (b != null) (p[skey(r)] = p[skey(r)] || []).push({ h: h, n: b }); }); });
   boonPool.sig = state.sig; return (boonPool.p = p);
 }
-var DOTSCALE = { Abrams: 1 };
+var DOTSCALE = new Proxy({}, { get: function () { return 1; } }); // dots sized by how many heroes share a value, on every hero
 var CUTOFF = { // guns that do no damage past their max range (deadlock.wiki, "Damage falloff"); max in game units
   Apollo: { max: function (i) { return i.range; } }, Bebop: { max: function (i) { return i.range; } },
   Drifter: { max: function (i) { return i.bullet_lifetime * i.bullet_speed; } }, // his shots only live long enough to travel ~27m
@@ -3160,7 +3160,8 @@ function bonusCard(slot) {
   h.cost_bonuses[slot].forEach(function (r) {
     var sp = Number(r.gold_threshold) === 4800;
     if (sp && prev != null) spike = " The 4,800 “spike” jumps this bonus from +" + fmtNum(prev) + unit + " to +" + fmtNum(r.bonus) + unit + ".";
-    html += '<div' + (sp ? ' class="spike"' : "") + ">" + (sp ? "<u>SPIKE</u>" : "") + "<b>$" + Number(r.gold_threshold).toLocaleString() + "</b><span>+" + esc(fmtNum(r.bonus)) + unit + "</span></div>";
+    var step = prev == null ? r.bonus : r.bonus - prev; // what this threshold adds on its own
+    html += '<div' + (sp ? ' class="spike"' : "") + ">" + (sp ? "<u>SPIKE</u>" : "") + "<b>$" + Number(r.gold_threshold).toLocaleString() + "</b><span>+" + esc(fmtNum(r.bonus)) + unit + "</span><em>+" + esc(fmtNum(Math.round(step * 100) / 100)) + unit + " here</em></div>";
     prev = r.bonus;
   });
   return '<details class="bon s-' + slot + '"><summary>Category bonuses: <span class="bl">' + label + '</span></summary><div class="bg">' + html + "</div></details>";
