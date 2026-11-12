@@ -2127,11 +2127,23 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
   if (!bare) { // compact: the picture beside the name, tags and DPS, then slim falloff and clip rows; the numbers live in the cards below
     var cn = am && am.n ? Math.round(am.n) : (i.clip_size || 0), crl = rl ? rl.val : (i.reload_duration != null ? fmtNum(i.reload_duration) + "s" : "");
     var fo2 = "";
-    if (i.damage_falloff_start_range && i.damage_falloff_end_range) { // damage by distance: flat to where falloff starts, sloping down to its floor
-      var s0 = i.damage_falloff_start_range / 39.37, e0 = i.damage_falloff_end_range / 39.37, fl = i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0, mx = Math.ceil(e0 * 1.18 / 5) * 5;
-      var X = function (m) { return (m / mx * 300).toFixed(1); }, Y = function (v) { return (4 + (1 - v) * 44).toFixed(1); }, pth = "M0 " + Y(1) + " L" + X(s0) + " " + Y(1) + " L" + X(e0) + " " + Y(fl) + " L300 " + Y(fl);
-      fo2 = '<div class="wfch"><span class="wrl2">Damage by distance</span><svg viewBox="0 0 300 52" preserveAspectRatio="none" aria-hidden="true"><path d="' + pth + ' L300 52 L0 52Z" fill="color-mix(in srgb,var(--weapon) 16%,transparent)"/><path d="' + pth + '" fill="none" stroke="var(--weapon)" stroke-width="2.5" vector-effect="non-scaling-stroke"/><line x1="' + X(s0) + '" y1="0" x2="' + X(s0) + '" y2="52" stroke="#f6e3bf" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/></svg>' +
-        '<div class="wfax">' + (s0 / mx < 0.5 ? '<span style="left:' + (s0 / mx * 100).toFixed(1) + '%">full to ' + meters(i.damage_falloff_start_range) + "</span>" : "") + '<span class="fe">' + (s0 / mx < 0.5 ? "" : "full to " + meters(i.damage_falloff_start_range) + ", ") + fmtNum(Math.round(fl * 100)) + "% at " + meters(i.damage_falloff_end_range) + "</span></div></div>"; // the two labels share one when the drop starts late
+    if (i.damage_falloff_start_range && i.damage_falloff_end_range) { // damage by distance: flat to where falloff starts, sloping down to its floor; a few guns stop dead at their max range
+      var M = function (u) { return u / 39.37; }, s0 = M(i.damage_falloff_start_range), e0 = M(i.damage_falloff_end_range), fl = i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0;
+      var cut = CUTOFF[h.name], cm = cut && cut.max ? M(cut.max(i)) : null, flat = cut && cut.flat;
+      if (flat || (cm && e0 <= s0)) { e0 = s0; fl = 1; } // no falloff at all
+      var val = function (m) { return m <= s0 ? 1 : m >= e0 ? fl : 1 + (fl - 1) * (m - s0) / (e0 - s0); };
+      var mx = Math.ceil(Math.max(cm || e0, e0) * 1.25 / 5) * 5;
+      var X = function (m) { return (Math.min(m, mx) / mx * 300).toFixed(1); }, Y = function (v) { return (4 + (1 - v) * 44).toFixed(1); };
+      var pts = [[0, 1], [s0, 1]];
+      if (cm) { if (cm > s0 && cm < e0) pts.push([cm, val(cm)]); else if (cm >= e0) { pts.push([e0, fl], [cm, fl]); } pts.push([cm, 0], [mx, 0]); }
+      else pts.push([e0, fl], [mx, fl]);
+      if (flat) pts = [[0, 1], [mx, 1]];
+      var pth = pts.map(function (q, k) { return (k ? "L" : "M") + X(q[0]) + " " + Y(q[1]); }).join(" ");
+      var mark = flat || (cm && s0 >= cm) ? "" : '<line x1="' + X(s0) + '" y1="0" x2="' + X(s0) + '" y2="52" stroke="#f6e3bf" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>';
+      var endTxt = flat ? "no falloff · nothing past its max range" : cm ? (s0 >= cm || e0 <= s0 ? "full damage, nothing past " : (cm < e0 ? Math.round(val(cm) * 100) + "%, then nothing past " : fmtNum(Math.round(fl * 100)) + "%, nothing past ")) + Math.round(cm) + "m" : fmtNum(Math.round(fl * 100)) + "% at " + meters(i.damage_falloff_end_range);
+      var showStart = !flat && !(cm && s0 >= cm) && s0 / mx < 0.5;
+      fo2 = '<div class="wfch"><span class="wrl2">Damage by distance</span><svg viewBox="0 0 300 52" preserveAspectRatio="none" aria-hidden="true"><path d="' + pth + ' L300 52 L0 52Z" fill="color-mix(in srgb,var(--weapon) 16%,transparent)"/><path d="' + pth + '" fill="none" stroke="var(--weapon)" stroke-width="2.5" vector-effect="non-scaling-stroke"/>' + mark + "</svg>" +
+        '<div class="wfax">' + (showStart ? '<span style="left:' + (s0 / mx * 100).toFixed(1) + '%">full to ' + meters(i.damage_falloff_start_range) + "</span>" : "") + '<span class="fe">' + (!showStart && !flat && !(cm && s0 >= cm) ? "full to " + meters(i.damage_falloff_start_range) + ", " : "") + endTxt + "</span></div></div>";
     }
     var cl2 = cn ? '<div class="wrow"><span class="wrl2">Clip <b class="wcn">' + cn + '</b></span><span class="wclip wfill" style="grid-template-columns:repeat(' + Math.min(cn, 60) + ',1fr);gap:' + (cn > 40 ? 1 : cn > 20 ? 2 : 3) + 'px">' + new Array(Math.min(cn, 60) + 1).join("<i></i>") + "</span>" + (crl ? "<em><b>" + esc(crl) + "</b> reload</em>" : "") + "</div>" : ""; // the clip size with its label, the reload on its own
     return '<section class="wpn wpc"><div class="wph">' + '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div><div><h3>" + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
@@ -2307,6 +2319,11 @@ function boonPool() { // every hero's "per boon" growth by stat
   boonPool.sig = state.sig; return (boonPool.p = p);
 }
 var DOTSCALE = { Abrams: 1 };
+var CUTOFF = { // guns that do no damage past their max range (deadlock.wiki, "Damage falloff"); max in game units
+  Apollo: { max: function (i) { return i.range; } }, Bebop: { max: function (i) { return i.range; } },
+  Drifter: { max: function (i) { return i.bullet_lifetime * i.bullet_speed; } }, // his shots only live long enough to travel ~27m
+  Graves: { flat: true } // no falloff; the data has no max range for him, so it isn't drawn
+};
 function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot per hero, this hero's dot large
   var lo = Infinity, hi = -Infinity; xs.forEach(function (x) { if (x.n < lo) lo = x.n; if (x.n > hi) hi = x.n; });
   if (!(hi > lo)) return "";
