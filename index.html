@@ -695,7 +695,8 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .mcol > .scd{border:0;border-radius:0;background:none}.mcol > .scd + .scd{border-top:1px dashed #3a3150}.mcol > .scd + .scd .sch b{font-size:15px}
 .sch > svg.grow{width:15px;height:15px;opacity:.85}.scd.spg{--c:var(--spirit)}
 .scg[data-acc="glow"] .mcol{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .mcol > .scd{background:none} /* the only Spirit card: full width */
-.scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}.rlink{background:none;border:0;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+.scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.nhr{white-space:nowrap}.rli{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}.nhr img{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}
+.ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}.rlink{background:none;border:0;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 .scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
 .sctl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:2px} /* each tile as wide as its name or value */.sctb.odd{border-color:var(--c)!important;color:var(--c)} /* this hero is the one exception */
 .sctb{border:1px dashed #3d3450;border-radius:9px;padding:6px 10px;min-width:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -2440,7 +2441,8 @@ document.addEventListener("click", function (e) { var c = e.target.closest ? e.t
 document.addEventListener("click", function (e) { var t = e.target.closest ? e.target.closest(".sctb") : null; if (t) sameSheet(t); });
 function linkOdd(txt, t) { // the odd hero's name in the note opens their page with this same card up
   var so = t.getAttribute("data-so"), nm = t.getAttribute("data-son"); if (!so || !nm) return txt;
-  return txt.replace(esc(nm), '<button class="rlink" data-rhero="' + esc(so) + '">' + esc(nm) + "</button>");
+  var oh = state.heroes.filter(function (x) { return x.class_name === so; })[0];
+  return txt.replace(esc(nm), '<button class="rlink" data-rhero="' + esc(so) + '">' + (oh ? '<img class="rli" alt="" src="' + esc(heroHead(oh)) + '">' : "") + esc(nm) + "</button>");
 }
 function openSameOn(label) { var t = [].filter.call(document.querySelectorAll(".sctb"), function (x) { return x.getAttribute("data-sl") === label; })[0]; if (t) sameSheet(t); }
 function sameSheet(t) { // a stat every hero shares: the value and a line saying so, no comparison
@@ -3040,7 +3042,7 @@ document.addEventListener("toggle", function (e) {
 }, true);
 var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
 function tierTab(it) { // the game's corner tab: a slot-coloured triangle in the top right with the tier in Roman numerals, casting a little shadow on the art
-  var t = Number(it && it.item_tier) || 0, sl = slotOf(it); if (!t || !sl) return "";
+  var t = Number(it && it.item_tier) || 0, sl = slotOf(it); if (!t || t > 4 || !sl) return "";
   return '<span class="itab ' + sl + '" aria-label="Tier ' + t + '"><i>' + ["", "I", "II", "III", "IV"][t] + "</i></span>";
 }
 function partOf(a, b, seen) { // does item b build from item a, at any depth?
@@ -3658,7 +3660,14 @@ var GLIST = { // rule lists under a term (deadlock.wiki, "Minimap")
 function listHtml(g) {
   var L = GLIST[g.k]; if (!L) return "";
   var link = function (t) { return esc(t).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, x) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + x + "</span>" : x; }); };
-  return L.map(function (sec) { return '<div class="grh">' + esc(sec[0]) + '</div><ul class="gsnotes">' + sec[1].map(function (t) { return "<li>" + link(t) + "</li>"; }).join("") + "</ul>"; }).join("");
+  return L.map(function (sec) { return '<div class="grh">' + esc(sec[0]) + '</div><ul class="gsnotes">' + sec[1].map(function (t) { return "<li>" + heroTags(link(t)) + "</li>"; }).join("") + "</ul>"; }).join("");
+}
+function heroTags(html) { // a hero named in a note gets their small portrait before the name (text already escaped)
+  var hs = state.heroes.filter(function (h) { return h.name && !h.disabled; }).sort(function (a, b) { return b.name.length - a.name.length; });
+  if (!hs.length) return html;
+  var re = new RegExp("(^|[^\\w>])(" + hs.map(function (h) { return esc(h.name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")(?![\\w<])", "g");
+  var by = {}; hs.forEach(function (h) { by[esc(h.name)] = h; });
+  return html.split(/(<[^>]+>)/).map(function (part) { return part.charAt(0) === "<" ? part : part.replace(re, function (m, pre, nm) { var h = by[nm]; return pre + '<span class="nhr"><img alt="" src="' + esc(heroHead(h)) + '">' + nm + "</span>"; }); }).join("");
 }
 function glossBody(g) {
   return esc(glossFill(g.d)).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
@@ -3882,6 +3891,7 @@ function sourcesHtml(g) {
   var isBuff = function (x) { return !x.hero && !x.item && (x.crate || /Powerup$/.test(x.text || "")); };
   var power = list.filter(isBuff).sort(function (a, b) { return (a.crate ? 1 : 0) - (b.crate ? 1 : 0); }), other = list.filter(function (x) { return !x.hero && !x.item && !isBuff(x); });
   abil.sort(function (a, b) { return a.hero.localeCompare(b.hero); }); whole.sort(function (a, b) { return a.hero.localeCompare(b.hero); });
+  items = items.filter(function (x) { var it = state.byClass[x.ic]; return !(it && Number(it.cost) === 9999); }); // Street Brawl-only items stay out
   items.sort(function (a, b) { var ia = state.byClass[a.ic] || {}, ib = state.byClass[b.ic] || {}; return (ia.item_tier || 0) - (ib.item_tier || 0) || a.item.localeCompare(b.item); });
   function row(x) {
     var nt0 = String(x.note || "").replace(/\bTier (\d) Upgrade\s*-\s*/g, "Tier $1 · ").replace(/\bTier (\d) Upgrade\b/g, "Tier $1");
@@ -3924,7 +3934,7 @@ function sourcesHtml(g) {
     return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + (title === "Buffs" ? "" : ' <span>' + xs.length + "</span>") + "</div>" + foot + xs.map(function (x, i) { return i >= SRC_LIMIT ? row(x).replace('class="gsrc', 'class="gsrc gsm') : row(x); }).join("") +
       (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
   }
-  var nt = notes.length ? '<ul class="gsnotes">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
+  var nt = notes.length ? '<ul class="gsnotes">' + notes.map(function (n) { return "<li>" + heroTags(esc(n)) + "</li>"; }).join("") + "</ul>" : "";
   if (g.k === "charges") return '<div class="grh">Abilities</div>' + group("Starts with charges", abil.filter(function (x) { return x.base; })) + group("From an upgrade", abil.filter(function (x) { return !x.base; }));
   return nt + (list.length ? '<div class="grh">Sources</div>' + group("Buffs", power) + group("Heroes", whole) + group("Abilities", abil) + group("Items", items) + group("Other", other) : "");
 }
