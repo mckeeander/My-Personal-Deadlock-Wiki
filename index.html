@@ -696,6 +696,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .sch > svg.grow{width:15px;height:15px;opacity:.85}.scd.spg{--c:var(--spirit)}
 .scg[data-acc="glow"] .mcol{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--c) 22%,var(--panel)) 0,var(--panel) 55%)}.scg[data-acc="glow"] .mcol > .scd{background:none} /* the only Spirit card: full width */
 .scsub{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}.nhr{white-space:nowrap}.rli{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}.nhr img{width:17px;height:17px;border-radius:4px;object-fit:cover;vertical-align:-3px;margin-right:4px}
+.hlks{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:16px 0 0}.hlk{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 2px 8px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--dim);font:inherit;font-size:11.5px;cursor:pointer;-webkit-tap-highlight-color:transparent}.hlk svg{width:18px;height:18px;color:var(--gold)}.hlk:active{border-color:var(--gold)}
 .ssame{margin:0;color:var(--dim);font-size:14px;line-height:1.5}.rlink{background:none;border:0;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 .scsm span{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
 .sctl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:2px} /* each tile as wide as its name or value */.sctb.odd{border-color:var(--c)!important;color:var(--c)} /* this hero is the one exception */
@@ -2873,13 +2874,20 @@ function jtabHtml() { // a small tab rising from the top of the ability bar: Vit
 }
 function hnavGo(go) { // jump to a section of the hero page
   if (go.indexOf("ab:") === 0) { jumpTo(go.slice(3)); return; }
-  var el = { vit: "#main .scs.vit, #main .sblk.vit", wep: "#main .scs.wep, #main .sblk.wep", spi: "#main .scs.spi, #main .sblk.spi", pop: "#popwrap details.phd", hist: "#revwrap details.phd" }[go];
+  var el = { vit: "#main .scs.vit, #main .sblk.vit", wep: "#main .scs.wep, #main .sblk.wep", spi: "#main .scs.spi, #main .sblk.spi", pop: "#popwrap details.phd", hist: "#revwrap details.phd", stats: "#main details.bsd", abil: "#main details.abd" }[go];
   el = el && document.querySelector(el); if (!el) return;
   var bs = el.closest("details"); if (bs && !bs.open) bs.open = true; // Base stats folded shut: open it on the way
   if (el.tagName === "DETAILS" && !el.open) el.open = true; // a folded section opens as you arrive
+  JLOCK = true; JTO = ""; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar(); // no ability lit while it glides past them
   scrollToEl(el, true);
 }
-document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest(".jtb[data-sgo]") : null; if (b) hnavGo(b.getAttribute("data-sgo")); });
+document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest(".jtb[data-sgo], .hlk[data-sgo]") : null; if (b) hnavGo(b.getAttribute("data-sgo")); });
+function heroLinks() { // the big sections, one tap each, under the hero's name
+  var I = { stats: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>', abil: '<path d="M12 3l8 9-8 9-8-9z"/>', pop: '<path d="M5.5 8h13l-1 12.5h-11z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>', hist: '<path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3 2"/>' };
+  return '<nav class="hlks" aria-label="Sections">' + [["stats", "Stats"], ["abil", "Abilities"], ["pop", "Items"], ["hist", "Patches"]].map(function (x) {
+    return '<button class="hlk" data-sgo="' + x[0] + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + I[x[0]] + "</svg>" + x[1] + "</button>";
+  }).join("") + "</nav>";
+}
 function updateJbar() { // shown for the whole hero page; outlines the ability you are on (the last card whose top has passed the upper part of the screen)
   var bar = $("jbar"), show = state.tab === "heroes" && !!state.hero && !$("main").hidden && !!bar.firstChild, cur = "";
   if (show && JLOCK) cur = JTO; else if (show) Array.prototype.forEach.call(document.querySelectorAll("#main .ab"), function (c) { if (c.offsetParent !== null && c.getBoundingClientRect().top < window.innerHeight * .4) cur = c.getAttribute("data-ab"); });
@@ -3137,6 +3145,7 @@ function renderHero(cn) {
   html += '<div id="popwrap">' + popularHtml(h) + "</div>";
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
+  var hh = document.querySelector("#main .hero-h"); if (hh) hh.insertAdjacentHTML("afterend", heroLinks()); // Items and Patches fill in as their data arrives
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : "";
   if (JTAB[cn] && abs.length) $("jbar").insertAdjacentHTML("afterbegin", jtabHtml()); // trying out: a tab on the bar for the stat blocks
   updateJbar();
