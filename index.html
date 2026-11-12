@@ -2149,7 +2149,7 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
     }
     var cl2 = cn ? '<div class="wrow"><span class="wrl2">Clip <b class="wcn">' + cn + '</b></span><span class="wclip wfill" style="grid-template-columns:repeat(' + Math.min(cn, 60) + ',1fr);gap:' + (cn > 40 ? 1 : cn > 20 ? 2 : 3) + 'px">' + new Array(Math.min(cn, 60) + 1).join("<i></i>") + "</span>" + (crl ? "<em><b>" + esc(crl) + "</b> reload</em>" : "") + "</div>" : ""; // the clip size with its label, the reload on its own
     return '<section class="wpn wpc"><div class="wph">' + '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div><div><h3>" + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
-      (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" : "") + "</div></div>" + fo2 + cl2 + notesBlock(wa) + "</section>" + cmp;
+      (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> DPS</div>" : "") + "</div></div>" + fo2 + cl2 + notesBlock(wa) + "</section>" + cmp;
   }
   return '<section class="wpn"><h3>' + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
     (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" + dline : "") +
