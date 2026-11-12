@@ -326,7 +326,7 @@ details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bott
 .bg{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:8px}
 .bg div{background:var(--panel2);border-radius:6px;padding:6px 4px;text-align:center}
 .bg b{display:block;font-size:12px;color:var(--dim);font-weight:600}
-.bg span{font-size:16px;font-weight:700}.bg em{display:block;font-style:normal;font-size:11px;color:var(--dim);margin-top:1px}.bg .spike em{color:var(--gold)}
+.bg span{font-size:16px;font-weight:700}.bg .bgv{display:flex;align-items:baseline;justify-content:center;gap:6px;margin:0;color:var(--fg);font-size:inherit}.bg em{font-style:normal;font-size:11px;color:var(--dim)}.bg .spike em{color:var(--gold)}
 .bon p{margin:8px 0 0;font-size:12px;color:var(--dim)}
 .tag.role{background:#2c2440;color:var(--spirit)}
 .tag.cx{background:var(--panel2);color:var(--dim)}
@@ -3161,7 +3161,7 @@ function bonusCard(slot) {
     var sp = Number(r.gold_threshold) === 4800;
     if (sp && prev != null) spike = " The 4,800 “spike” jumps this bonus from +" + fmtNum(prev) + unit + " to +" + fmtNum(r.bonus) + unit + ".";
     var step = prev == null ? r.bonus : r.bonus - prev; // what this threshold adds on its own
-    html += '<div' + (sp ? ' class="spike"' : "") + ">" + (sp ? "<u>SPIKE</u>" : "") + "<b>$" + Number(r.gold_threshold).toLocaleString() + "</b><span>+" + esc(fmtNum(r.bonus)) + unit + "</span><em>+" + esc(fmtNum(Math.round(step * 100) / 100)) + unit + " here</em></div>";
+    html += '<div' + (sp ? ' class="spike"' : "") + ">" + (sp ? "<u>SPIKE</u>" : "") + "<b>$" + Number(r.gold_threshold).toLocaleString() + "</b><p class=\"bgv\"><em>+" + esc(fmtNum(Math.round(step * 100) / 100)) + unit + "</em><span>+" + esc(fmtNum(r.bonus)) + unit + "</span></p></div>";
     prev = r.bonus;
   });
   return '<details class="bon s-' + slot + '"><summary>Category bonuses: <span class="bl">' + label + '</span></summary><div class="bg">' + html + "</div></details>";
@@ -3566,6 +3566,7 @@ var GLOSS = [
   { k: "base-guardian", c: "map", t: "Base Guardians", a: ["base guardian", "base guardians"], d: "A pair guards the entrance to each base. Destroying a pair makes the [[shrine|Shrines]] vulnerable." },
   { k: "shrine", c: "map", t: "Shrines", a: ["shrine", "shrines"], d: "Two shrines protect the [[patron|Patron]]. They can’t be damaged until a pair of [[base-guardian|Base Guardians]] is down." },
   { k: "patron", c: "map", t: "Patron", a: ["patron"], d: "The objective at the heart of each base, firing a powerful laser. Destroy the enemy Patron to win the match." },
+  { k: "minimap-reveal", c: "map", t: "Minimap reveal", a: ["minimap", "revealed", "reveal", "minimap reveal", "revealed on the minimap"], d: "Some actions put you on the enemy team’s minimap. A reveal lingers for about 2 seconds after the action ends." },
   { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss"], d: "A huge neutral boss in the middle of the map that grows tougher every minute. Killing it drops the [[rejuvenator|Rejuvenator]]." },
   { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv"], d: "When the [[mid-boss|Mid Boss]] dies, three crystals land around its pit. Breaking one with a heavy melee gives your team a revive and fully heals whoever broke it. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. The buff ends when the revives run out or the time is up." },
   { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups"], d: "Glowing pickups around the map, broken open with a melee hit. Each gives a few minutes of extra stats, and they get stronger as the match goes on." },
@@ -3641,6 +3642,23 @@ function glossFill(d) { // numbers in a definition that come from the game data 
   var ab = U.filter(function (u) { return u.AbilityUnlocks; }).map(function (u) { return Number(u.RequiredSouls + (st || 0)).toLocaleString(); });
   var list = ab.length > 1 ? ab.slice(0, -1).join(", ") + " and " + ab[ab.length - 1] : ab[0];
   return String(d).replace("{start}", st != null ? Number(st).toLocaleString() : "600").replace("{abilities}", list ? " New abilities unlock at " + list + " souls." : "");
+}
+var GLIST = { // rule lists under a term (deadlock.wiki, "Minimap")
+  "minimap-reveal": [
+    ["Reveals you", ["Shooting enemy [[troopers|troopers]]", "Shooting enemy defensive structures ([[guardian|Guardians]], [[walker|Walkers]], [[shrine|Shrines]], the [[patron|Patron]]), even from an angle where they can’t see or shoot back", "Being targeted or shot by enemy troopers or structures", "Being in an enemy hero’s line of sight within about 50–60m (a straight line between the two heroes, free of anything that blocks vision)", "Being very close to an enemy hero, just under light melee range, even if they face away", "Mirage’s Djinn’s Mark"]],
+    ["Doesn’t reveal you", ["Standing near enemy troopers that aren’t shooting at you", "Using abilities or items on enemy troopers or heroes", "Being shot by an enemy hero from beyond about 50–60m, even with line of sight", "Enemy troopers riding a zipline near or above you", "Shooting summons or deployables, like Graves’ Ghouls and Deadheads or McGinnis’ Mini Turrets", "Being hit by summons or deployables (your portrait still shows in the summoner’s HUD)", "Leaning around a corner: only your torso shows, which doesn’t count as line of sight"]],
+    ["Heroes and items", ["Calico can’t be revealed while in Ava, even if troopers, Guardians or Walkers shoot her", "Mirage’s Djinn’s Mark reveals invisible enemies", "Stalker gives wall-hack vision of its target, but doesn’t put them on your team’s minimap"]]
+  ],
+  invisible: [
+    ["It also breaks when", ["An enemy hero with line of sight to you comes close (walls block this)"]],
+    ["It doesn’t break", ["Near buildings and objectives, which can’t reveal you", "For Haze in her Smoke Bomb, who can use items and abilities without breaking it or showing on the minimap"]],
+    ["Also", ["Graves’ Ghouls chase invisible players but won’t explode on them", "Mirage’s Djinn’s Mark reveals invisible enemies on the minimap"]]
+  ]
+};
+function listHtml(g) {
+  var L = GLIST[g.k]; if (!L) return "";
+  var link = function (t) { return esc(t).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, x) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + x + "</span>" : x; }); };
+  return L.map(function (sec) { return '<div class="grh">' + esc(sec[0]) + '</div><ul class="gsnotes">' + sec[1].map(function (t) { return "<li>" + link(t) + "</li>"; }).join("") + "</ul>"; }).join("");
 }
 function glossBody(g) {
   return esc(glossFill(g.d)).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
@@ -3925,7 +3943,7 @@ function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); if (!FWD) FSTACK = []; }
   var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
-  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p>" + gameText(g) + mechHtml(g) + sourcesHtml(g) + relatedHtml(g) + "</div>" +
+  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p>" + gameText(g) + listHtml(g) + mechHtml(g) + sourcesHtml(g) + relatedHtml(g) + "</div>" +
     // bottom row: back (when there is one), Close, then a small book button on the right that opens the full glossary
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button></div>';
   function bind() {
