@@ -2130,17 +2130,18 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
     if (i.damage_falloff_start_range && i.damage_falloff_end_range) { // damage by distance: flat to where falloff starts, sloping down to its floor; a few guns stop dead at their max range
       var M = function (u) { return u / 39.37; }, s0 = M(i.damage_falloff_start_range), e0 = M(i.damage_falloff_end_range), fl = i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0;
       var cut = CUTOFF[h.name], cm = cut && cut.max ? M(cut.max(i)) : null, flat = cut && cut.flat;
-      if (flat || (cm && e0 <= s0)) { e0 = s0; fl = 1; } // no falloff at all
+      if (flat) { s0 = e0 = cm || s0; fl = 1; } else if (cm && e0 <= s0) { e0 = s0; fl = 1; } // no falloff at all
+      if (cm && cm > e0 && cm - e0 < 1.5) cm = e0; // a cutoff a metre past the end of falloff is rounding in the data, not a real plateau
       var val = function (m) { return m <= s0 ? 1 : m >= e0 ? fl : 1 + (fl - 1) * (m - s0) / (e0 - s0); };
       var mx = Math.ceil(Math.max(cm || e0, e0) * 1.25 / 5) * 5;
       var X = function (m) { return (Math.min(m, mx) / mx * 300).toFixed(1); }, Y = function (v) { return (4 + (1 - v) * 44).toFixed(1); };
       var pts = [[0, 1], [s0, 1]];
       if (cm) { if (cm > s0 && cm < e0) pts.push([cm, val(cm)]); else if (cm >= e0) { pts.push([e0, fl], [cm, fl]); } pts.push([cm, 0], [mx, 0]); }
       else pts.push([e0, fl], [mx, fl]);
-      if (flat) pts = [[0, 1], [mx, 1]];
+      if (flat && !cm) pts = [[0, 1], [mx, 1]];
       var pth = pts.map(function (q, k) { return (k ? "L" : "M") + X(q[0]) + " " + Y(q[1]); }).join(" ");
       var mark = flat || (cm && s0 >= cm) ? "" : '<line x1="' + X(s0) + '" y1="0" x2="' + X(s0) + '" y2="52" stroke="#f6e3bf" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>';
-      var endTxt = flat ? "no falloff · nothing past its max range" : cm ? (s0 >= cm || e0 <= s0 ? "full damage, nothing past " : (cm < e0 ? Math.round(val(cm) * 100) + "%, then nothing past " : fmtNum(Math.round(fl * 100)) + "%, nothing past ")) + Math.round(cm) + "m" : fmtNum(Math.round(fl * 100)) + "% at " + meters(i.damage_falloff_end_range);
+      var endTxt = flat && !cm ? "no falloff · nothing past its max range" : cm ? (s0 >= cm || e0 <= s0 ? "full damage, nothing past " : (cm < e0 ? Math.round(val(cm) * 100) + "%, then nothing past " : fmtNum(Math.round(fl * 100)) + "%, nothing past ")) + Math.round(cm) + "m" : fmtNum(Math.round(fl * 100)) + "% at " + meters(i.damage_falloff_end_range);
       var showStart = !flat && !(cm && s0 >= cm) && s0 / mx < 0.5;
       fo2 = '<div class="wfch"><span class="wrl2">Damage by distance</span><svg viewBox="0 0 300 52" preserveAspectRatio="none" aria-hidden="true"><path d="' + pth + ' L300 52 L0 52Z" fill="color-mix(in srgb,var(--weapon) 16%,transparent)"/><path d="' + pth + '" fill="none" stroke="var(--weapon)" stroke-width="2.5" vector-effect="non-scaling-stroke"/>' + mark + "</svg>" +
         '<div class="wfax">' + (showStart ? '<span style="left:' + (s0 / mx * 100).toFixed(1) + '%">full to ' + meters(i.damage_falloff_start_range) + "</span>" : "") + '<span class="fe">' + (!showStart && !flat && !(cm && s0 >= cm) ? "full to " + meters(i.damage_falloff_start_range) + ", " : "") + endTxt + "</span></div></div>";
@@ -2322,7 +2323,7 @@ var DOTSCALE = { Abrams: 1 };
 var CUTOFF = { // guns that do no damage past their max range (deadlock.wiki, "Damage falloff"); max in game units
   Apollo: { max: function (i) { return i.range; } }, Bebop: { max: function (i) { return i.range; } },
   Drifter: { max: function (i) { return i.bullet_lifetime * i.bullet_speed; } }, // his shots only live long enough to travel ~27m
-  Graves: { flat: true } // no falloff; the data has no max range for him, so it isn't drawn
+  Graves: { flat: true, max: function () { return 17 * 39.37; } } // no falloff; her max range is 17m (not in the data)
 };
 function cardLine(h, xs, v, r, fmt) { // the lowest-to-highest line: a small dot per hero, this hero's dot large
   var lo = Infinity, hi = -Infinity; xs.forEach(function (x) { if (x.n < lo) lo = x.n; if (x.n > hi) hi = x.n; });
