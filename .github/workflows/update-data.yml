@@ -87,6 +87,14 @@ jobs:
         timeout-minutes: 15
         run: python3 tools/popular.py
 
+      - name: Hero card colours
+        # colours picked from each hero's portrait for the header card; a failure keeps yesterday's file
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          pip install -q pillow || pip install -q --break-system-packages pillow
+          python3 tools/herocolors.py
+
       - name: Check the data
         # the safety net: open the site in a headless browser on today's data and make sure every hero page, item,
         # shop tab, the glossary and search still work (tools/check.py). Uses the runner's own Chrome.

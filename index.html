@@ -142,7 +142,7 @@ input[type=search]{width:100%;padding:11px 12px;background:var(--panel);border:1
 .hero-h img{width:86px;aspect-ratio:3/4;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
 #main .hero-h{position:relative;overflow:hidden;align-items:stretch;padding:0 12px 0 0;border:1px solid var(--line);border-radius:16px;background:linear-gradient(120deg,rgba(255,255,255,.05),rgba(255,255,255,.015))}
 #main .hero-h::before{content:"";position:absolute;inset:0;background:var(--hbg) center/cover;filter:blur(26px) saturate(1.4);opacity:.35;transform:scale(1.3);z-index:0;pointer-events:none} /* the hero's own portrait, blurred, tints the card */
-#main .hero-h > *{position:relative;z-index:1}#main .hero-h > img{border:0;border-radius:0;height:auto;align-self:stretch;width:96px}#main .hero-h > div{padding:12px 0 12px 4px;align-self:center} /* a touch more room beside the portrait */
+#main .hero-h.hcol::before{display:none}#main .hero-h > *{position:relative;z-index:1}#main .hero-h > img{border:0;border-radius:0;height:auto;align-self:stretch;width:96px}#main .hero-h > div{padding:12px 0 12px 4px;align-self:center} /* a touch more room beside the portrait */
 h1{font-family:var(--disp);font-size:28px;margin:0;letter-spacing:.04em}
 .sub{color:var(--dim);font-size:14px;line-height:1.4;margin:8px 0 14px}
 .ab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px}
@@ -957,6 +957,7 @@ function load() {
   idbGet("mc").then(function (mc) { if (mc && mc.mechanics) state.mc = mc.mechanics; }, function () {});
   idbGet("ph").then(function (ph) { if (ph && ph.heroes) state.ph = ph; }, function () {});
   idbGet("pop").then(function (pp) { if (pp && pp.heroes) state.pop = pp; }, function () {});
+  idbGet("hc").then(function (hc) { if (hc && hc.heroes) { state.hcol = hc; heroCard(); } }, function () {});
   idbGet("st").then(function (st) { if (st) state.st = st; }, function () {});
   return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
     var d = r[0], w = r[1];
@@ -1259,6 +1260,7 @@ function extras(stamp, onlyMissing) { // the smaller files: all of them after ne
   if (true) {
     // community notes are optional: a failure here never blocks the main data
     if (need(state.pn)) getJson("patchnotes.json", v).then(function (pn) { if (pn && pn.patches) { state.pn = pn; idbSet("pn", pn); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); } }, function () {}); // official patch notes (deadlock-wiki/deadlock-data)
+    if (need(state.hcol)) getJson("hero_colors.json", v).then(function (hc) { if (hc && hc.heroes) { state.hcol = hc; idbSet("hc", hc); heroCard(); } }, function () {}); // each hero's card colours
     if (need(state.pop)) getJson("popular.json", v).then(function (pp) { if (pp && pp.heroes) { state.pop = pp; idbSet("pop", pp); var w4 = $("popwrap"), h4 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w4 && h4) w4.innerHTML = popularHtml(h4); } }, function () {}); // what top-ranked players buy on each hero
     if (need(state.ph)) getJson("patchhistory.json", v).then(function (ph) { if (ph && ph.heroes) { state.ph = ph; idbSet("ph", ph); var w3 = $("revwrap"), h3 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w3 && h3) w3.innerHTML = revisionsHtml(h3); } }, function () {}); // every official patch, per hero
     if (need(state.mc)) getJson("mechanics.json", v).then(function (mc) { if (mc && mc.mechanics) { state.mc = mc.mechanics; idbSet("mc", mc); } }, function () {}); // objectives and neutrals (deadlock-wiki/deadlock-data)
@@ -2954,6 +2956,13 @@ function sbkShow(on) { // the search bar makes room for the back button (and giv
 function pageWantsBack() { return (state.tab === "heroes" && !!state.hero) || state.tab === "item" || state.tab === "glossary" || state.tab === "news"; }
 function sbkWanted() { return !$("main").hidden && !searchOn() && !$("sq").matches(":focus") && pageWantsBack(); }
 new MutationObserver(function () { sbkShow(sbkWanted()); }).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // pages that have a way back
+function heroCard() { // the header card's background: soft blobs of the hero's own colours (data/hero_colors.json); the blurred portrait until they arrive
+  var el = document.querySelector("#main .hero-h"), c = state.hero && state.hcol && state.hcol.heroes && state.hcol.heroes[state.hero];
+  if (!el || !c || !c.colors || !c.colors.length) return;
+  var k = c.colors.concat(c.colors, c.colors).slice(0, 3), y = Math.round((c.y != null ? c.y : .45) * 100);
+  el.style.background = "radial-gradient(55% 95% at 26% " + y + "%, " + k[0] + "66, transparent 72%), radial-gradient(50% 85% at 90% 15%, " + k[1] + "52, transparent 72%), radial-gradient(60% 90% at 66% 115%, " + k[2] + "4a, transparent 72%), var(--panel)";
+  el.classList.add("hcol");
+}
 function heroLinks() { // the big sections, one tap each, under the hero's name
   var I = { stats: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>', abil: '<path d="M12 3l8 9-8 9-8-9z"/>', pop: '<path d="M5.5 8h13l-1 12.5h-11z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>', hist: '<path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3 2"/>' };
   return '<nav class="hlks" aria-label="Sections">' + [["pop", "Items"], ["hist", "Patches"]].map(function (x) {
@@ -3219,7 +3228,7 @@ function renderHero(cn) {
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
-  sbkShow(sbkWanted());
+  sbkShow(sbkWanted()); heroCard();
   var tg = document.querySelector("#main .hero-h .tags"); if (tg) requestAnimationFrame(function () { tg.classList.toggle("one", tg.offsetHeight < 34); }); // tags on one line get a little more room under the name
   var bk0 = $("back"); if (bk0 && !trialBack) { bk0.insertAdjacentHTML("afterend", heroLinks()); var row = document.createElement("div"); row.className = "hnavrow"; bk0.parentNode.insertBefore(row, bk0); row.appendChild(bk0); row.appendChild(document.querySelector("#main .hlks")); } // All heroes on the left, the section links on the right of the same line
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : "";
