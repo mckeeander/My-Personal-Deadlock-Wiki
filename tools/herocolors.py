@@ -16,6 +16,7 @@ DATA = os.path.join(ROOT, "data")
 # hand-picked colours, a line per hero (2 or 3 hex colours, strongest first)
 OVERRIDES = {
     "hero_baba": ["#a3203f", "#c77dab", "#6f2a52"],  # her scarf's burgundy and the lilac behind her on the wiki
+    "hero_nano": ["#8a5cc7", "#c0b67c", "#5d3d99"],  # Calico: the purple of her cat and coat, with the gold of her glasses
 }
 
 

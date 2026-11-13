@@ -2960,7 +2960,7 @@ function heroCard() { // the header card's background: soft blobs of the hero's 
   var el = document.querySelector("#main .hero-h"), c = state.hero && state.hcol && state.hcol.heroes && state.hcol.heroes[state.hero];
   if (!el || !c || !c.colors || !c.colors.length) return;
   var k = c.colors.concat(c.colors, c.colors).slice(0, 3), y = Math.round((c.y != null ? c.y : .45) * 100);
-  el.style.background = "radial-gradient(55% 95% at 26% " + y + "%, " + k[0] + "66, transparent 72%), radial-gradient(50% 85% at 90% 15%, " + k[1] + "52, transparent 72%), radial-gradient(60% 90% at 66% 115%, " + k[2] + "4a, transparent 72%), var(--panel)";
+  el.style.background = "radial-gradient(90% 150% at 22% " + y + "%, " + k[0] + "5c, " + k[0] + "1f 45%, transparent 80%), radial-gradient(85% 140% at 95% 5%, " + k[1] + "4d, " + k[1] + "14 45%, transparent 80%), radial-gradient(95% 150% at 62% 120%, " + k[2] + "47, " + k[2] + "12 45%, transparent 82%), var(--panel)"; // big, soft and overlapping, so they read as a glow rather than shapes
   el.classList.add("hcol");
 }
 function heroLinks() { // the big sections, one tap each, under the hero's name
