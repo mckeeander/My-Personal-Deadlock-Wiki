@@ -1133,7 +1133,7 @@ function durPairs(it, secs, GO, moved, extra) {
   });
   return out;
 }
-var ORDER_OV = { "Infernal Resilience": ["Damage Regenerated", "Max Health", "Debuff Resist", "Melee Lifesteal"], "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Slow"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Slow", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
+var ORDER_OV = { "Malice": ["Damage", "Health Cost", "Blood Shards", "Spread Angle"], "Infernal Resilience": ["Damage Regenerated", "Max Health", "Debuff Resist", "Melee Lifesteal"], "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Slow"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Slow", "Bonus Damage", "Debuff Duration", "Mini Turrets", "Turret Lifetime"],
   "Traveler": ["Move Speed", "Fire Rate", "Buff Duration", "Barrier"], "Crackshot": ["Damage", "Fading Slow", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"],
   "Stalker's Mark": ["Bleed Damage", "Bullet Resist", "Incoming Healing"],
@@ -1142,7 +1142,8 @@ var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageRe
 var SPIRIT_WP = { "Borrowed Decree|SummonMeleeDamage": 1 }; // melee damage (an orange card) that scales with spirit: the card is orange, its ★ tag stays purple
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"] }; // stats shown as a header chip beside the cooldown and range, not as a card
-var PROMOTE = { "Death Slam": { SlowPercent: 1 } }; // listed as small text by the game; shown as a card
+var PROMOTE = { "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 } }; // listed as small text by the game; shown as a card
+var DEMOTE = { "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 } }; // listed as cards by the game; shown as small text
 var PCT_ITEM = { "Scorn|DamageBonus": 1 }; // an unlabelled value that is a percentage on just this ability
 var PCT_KEYS = { AttackSpeedMult: 1, ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
 var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Turret|AttackSpeedMult": "Turret Fire Rate", "Spectral Wall|CreateTurrets": "Mini Turrets", "Spectral Wall|TurretLifeTime": "Turret Lifetime",
@@ -1184,6 +1185,7 @@ function propRec(it, key) {
   if (v != null && m && m.unit && /^[+-]?[\d.]+$/.test(v)) v += m.unit;
   if (v != null && /^[+-]?[\d.]+$/.test(v) && /Resist( Debuff)?$/.test(label)) { v += "%"; label = label.replace(/ Debuff$/, ""); }
   if (v != null && /^[+-]?[\d.]+m$/.test(v) && /Speed$/.test(label)) v = v.slice(0, -1) + " m/s";
+  if (v != null && /Degrees$/.test(key) && /^[+-]?[\d.]+$/.test(v)) { v += "°"; label = label.replace(/\s*Degrees$/i, ""); } // "6°  Spread Angle", not "6  Spread Angle Degrees"
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
   if (v != null && p0.css_class === "slow" && p0.prefix === "-" && /Move Speed/.test(label) && /^-/.test(v)) { v = v.slice(1); label = label.replace(/Move Speed/, "Slow"); } // an enemy slow reads "32% Slow"; the minus is implied
   if (key === "RatSwarmCols") return null; // shown together with the rows
@@ -1406,6 +1408,7 @@ var GROUP_OV = {
   "Love Bites": [{ l: "On Proc:", k: ["BonusDamage", "SlowPercent", "SlowDuration"] }, { l: "On Proc, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }, { l: "On Hit, You Gain:", k: ["StaminaToRestore"], f: { ResetsAirLimit: "Reset Air Jump/Dash Limit" } }],
   "Baba's Brew": [{ l: "", k: [], f: { BrewEffectiveness: "" } }],
+  "Soul Exchange": [{ l: "On Cast, You Gain:", k: ["BonusSpirit", "TechResist", "BonusFireRate"] }],
   "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
 };
 var TILE_RE = /<div class="stat(?:\s[^"]*)?">[\s\S]*?<\/div>/g; // one stat tile (the space keeps it from matching the "stats" block)
@@ -1514,7 +1517,10 @@ function tooltipHtml(it) {
   function extraHtml(list) { return (list || []).map(function (r) { if (durUsed[r.key]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, withDur(r.key, r)); }).join(""); }
   bi = 0;
   secs.forEach(function (sec, si) {
-    var secStart = parts.length;
+    var req = sec.property_upgrade_required;
+    if (si > 0 && req && (it.upgrades || []).some(function (u) { return ((u && u.property_upgrades) || []).some(function (pu) { return String(pu.name).toLowerCase() === req.toLowerCase(); }); })
+      && !parseFloat((effP(it, req) || {}).value)) { bi += (sec.properties_block || []).length; return; } // a section an upgrade unlocks (Essence Bomb's toxic mess) waits for that tier
+    var secStart = parts.length, dem = "";
     var isUU = si > 0 && /Ultimate Unlock\s*:/i.test(sec.loc_string || ""), locText = sec.loc_string;
     var boxT = (SEC_BOX[it.name] || {})[si];
     if (boxT) { isUU = true; parts.push('<div class="uu"><div class="uuh">' + esc(boxT) + "</div>"); }
@@ -1539,7 +1545,9 @@ function tooltipHtml(it) {
           return;
         }
         var key = pp.important_property || pp.property; if (!key) return;
-        var r = withDur(key, propRec(it, key)); if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = allSig[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
+        var r = withDur(key, propRec(it, key));
+        if (r && (DEMOTE[it.name] || {})[key]) { dem += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; return; }
+        if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = allSig[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
       });
       tiles += extraHtml(place[bi]);
       if ((tiles || (hadMoved && place[-1])) && !tilesDone) { tiles += extraHtml(place[-1]); tilesDone = true; } // other upgrade-added stats sit with the main tiles
@@ -1547,7 +1555,7 @@ function tooltipHtml(it) {
       if (tiles) { parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>"); if (firstStats < 0) firstStats = parts.length - 1; }
       bi++;
     });
-    var minor = "", promo = "";
+    var minor = dem, promo = "";
     (sec.basic_properties || []).forEach(function (k) {
       if (moved[k] || durUsed[k] || (k === "Radius" && blockOf.Radius == null)) return; // shown as a header chip
       var r = withDur(k, propRec(it, k)); if (!r) return;
@@ -3679,18 +3687,18 @@ var GLOSS = [
   { k: "movement-silence", c: "cc", t: "Movement Silence", a: ["movement silence", "movement silenced"], d: "A debuff that slows the target and blocks their movement abilities and movement items, like dashes and leaps. Some versions restrict movement further. They can still shoot and use other abilities." },
   { k: "damage-reduction", c: "cc", t: "Damage output reduction", a: ["damage output reduction", "reduced damage output"], d: "A debuff that lowers how much damage the target deals. Some cut every kind of damage, others only weapon or only spirit damage." },
   { k: "hidden-minimap", c: "buff", t: "Hidden on minimap", a: ["hidden on the minimap", "hidden on minimap"], d: "A buff that keeps you off the enemy minimap. You can still be seen normally." },
-  { k: "affliction", c: "hero", t: "Affliction", a: [], d: "Pocket’s long damage-over-time debuff. It can’t kill: it stops at 1 health, and it doesn’t trigger item procs." },
-  { k: "eternal-night", c: "hero", t: "Eternal Night", a: [], d: "Drifter’s debuff that badly limits how far affected heroes can see." },
-  { k: "fixation", c: "hero", t: "Fixation", a: [], d: "Haze’s stacking debuff: the target takes more damage from her." },
-  { k: "hotel-guest", c: "hero", t: "Hotel Guest", a: [], d: "The Doorman’s debuff that sends the target into the Baroness Hotel. They have to reach the elevator to get out." },
-  { k: "lethal-venom", c: "hero", t: "Lethal Venom", a: [], d: "Vyper’s debuff that deals [[spirit-damage|spirit damage]] after a short delay. The more health the target is missing, the more it can deal." },
-  { k: "malice", c: "hero", t: "Malice", a: [], d: "Lady Geist’s debuff: a fading [[slow|slow]], and the target takes more damage from her. Stacks up to 5 times and can be refreshed." },
-  { k: "marked-lifesteal", c: "hero", t: "Marked for Lifesteal", a: [], d: "Apollo’s Riposte marks the target: he gains 75% [[lifesteal|lifesteal]] against them." },
-  { k: "parry-prevention", c: "hero", t: "Parry Prevention", a: [], d: "Apollo’s Riposte also stops the target from [[parry|parrying]] for a while." },
-  { k: "petrified", c: "hero", t: "Petrified", a: [], d: "Vyper’s Petrifying Bola turns heroes to stone: [[interrupt|interrupted]], unable to move or act, but immune to damage except Vyper’s own Lethal Venom." },
-  { k: "rabbit-hex", c: "hero", t: "Rabbit Hex", a: [], d: "Sinclair turns the target into a rabbit with a rabbit’s hitbox. They move faster but take more damage, and can only walk and jump. Anything they’d already started still finishes." },
-  { k: "tether", c: "hero", t: "Tether", a: [], d: "Vindicta’s Stake binds nearby enemies to a point, keeping them within a short radius of it." },
-  { k: "wrecked", c: "hero", t: "Wrecked", a: [], d: "Billy’s melee hits mark enemies as Wrecked. When he activates Blasted, he deals extra bullet damage to Wrecked enemies." }
+  { k: "affliction", c: "hero", h: "Pocket", t: "Affliction", a: [], d: "Pocket’s long damage-over-time debuff. It can’t kill: it stops at 1 health, and it doesn’t trigger item procs." },
+  { k: "eternal-night", c: "hero", h: "Drifter", t: "Eternal Night", a: [], d: "Drifter’s debuff that badly limits how far affected heroes can see." },
+  { k: "fixation", c: "hero", h: "Haze", t: "Fixation", a: [], d: "Haze’s stacking debuff: the target takes more damage from her." },
+  { k: "hotel-guest", c: "hero", h: "The Doorman", t: "Hotel Guest", a: [], d: "The Doorman’s debuff that sends the target into the Baroness Hotel. They have to reach the elevator to get out." },
+  { k: "lethal-venom", c: "hero", h: "Vyper", t: "Lethal Venom", a: [], d: "Vyper’s debuff that deals [[spirit-damage|spirit damage]] after a short delay. The more health the target is missing, the more it can deal." },
+  { k: "malice", c: "hero", h: "Lady Geist", t: "Malice", a: [], d: "Lady Geist’s debuff: a fading [[slow|slow]], and the target takes more damage from her. Stacks up to 5 times and can be refreshed." },
+  { k: "marked-lifesteal", c: "hero", h: "Apollo", t: "Marked for Lifesteal", a: [], d: "Apollo’s Riposte marks the target: he gains 75% [[lifesteal|lifesteal]] against them." },
+  { k: "parry-prevention", c: "hero", h: "Apollo", t: "Parry Prevention", a: [], d: "Apollo’s Riposte also stops the target from [[parry|parrying]] for a while." },
+  { k: "petrified", c: "hero", h: "Vyper", t: "Petrified", a: [], d: "Vyper’s Petrifying Bola turns heroes to stone: [[interrupt|interrupted]], unable to move or act, but immune to damage except Vyper’s own Lethal Venom." },
+  { k: "rabbit-hex", c: "hero", h: "Sinclair", t: "Rabbit Hex", a: [], d: "Sinclair turns the target into a rabbit with a rabbit’s hitbox. They move faster but take more damage, and can only walk and jump. Anything they’d already started still finishes." },
+  { k: "tether", c: "hero", h: "Vindicta", t: "Tether", a: [], d: "Vindicta’s Stake binds nearby enemies to a point, keeping them within a short radius of it." },
+  { k: "wrecked", c: "hero", h: "Billy", t: "Wrecked", a: [], d: "Billy’s melee hits mark enemies as Wrecked. When he activates Blasted, he deals extra bullet damage to Wrecked enemies." }
 ];
 var HINT_RX = [/^Hit the trap with a Charged Shot/i], GBY = {}, GAL = {}, ICON_SPIRIT = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_magic_color.svg", ICON_WEAPON = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/icons/properties/damage_bullet_color.svg";
 GLOSS.forEach(function (g) { GBY[g.k] = g; g.a.forEach(function (x) { GAL[x] = g.k; }); GAL[g.t.toLowerCase()] = g.k; });
@@ -3706,7 +3714,7 @@ function autoGloss(html) {
     var terms = Object.keys(GAL).filter(function (t) { return !GSKIP[t] && /^[a-z][a-z \-]*[a-z]$/.test(t); }).sort(function (a, b) { return b.length - a.length; });
     GRX = new RegExp("(^|[^A-Za-z\\-])(" + terms.map(function (t) { return t.replace(/[-]/g, "\\-").replace(/ /g, "\\s+"); }).join("|") + ")(?![A-Za-z])", "gi");
   }
-  var skip = 0, stack = [];
+  var skip = 0, stack = [], here = state.hero && state.byClass && ((state.heroes || []).filter(function (h) { return h.class_name === state.hero; })[0] || {}).name;
   return String(html).split(/(<[^>]*>)/).map(function (p) {
     if (p.charAt(0) === "<") {
       var m = /^<\s*(\/?)\s*([a-zA-Z]+)/.exec(p); if (!m) return p;
@@ -3719,6 +3727,7 @@ function autoGloss(html) {
     return p.replace(GRX, function (all, pre, term, off, str) {
       var k = GAL[term.toLowerCase().replace(/\s+/g, " ")], after = str.slice(off + all.length);
       if (/^[A-Z]/.test(term) && (/^\s+[A-Z][a-z]/.test(after) || /[A-Z][a-z']+\s+$/.test(str.slice(0, off + pre.length)) && !/[.!?:]\s+$/.test(str.slice(0, off + pre.length)))) return all; // part of a name ("Slowing Hex")
+      if (k && GBY[k].h && GBY[k].h !== here) return all; // a hero's own word (Vindicta's tether) links only on that hero's page
       var dc = dmgCol(term);
       return k ? pre + '<span class="gl" data-g="' + k + '"' + (dc ? ' style="color:' + dc + '"' : "") + ">" + term + "</span>" : all; });
   }).join("");
