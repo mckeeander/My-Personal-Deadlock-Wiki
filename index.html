@@ -559,6 +559,26 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .phsum{font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-left:8px}
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
 .ipage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px} /* the item page: its card, set apart from the patch history below */.ipl .pnl{margin-top:4px}
+.aotabs{display:flex;gap:6px;margin:10px 0 10px}
+.aotab{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:3px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 4px;color:var(--dim);font:inherit;-webkit-tap-highlight-color:transparent}
+.aotab.on{border-color:var(--gold);background:rgba(196,160,78,.1);color:var(--fg)}
+.aotab b{font-size:12.5px;font-weight:600;margin-left:5px;font-variant-numeric:tabular-nums}
+.aomi{width:24px;height:24px;display:flex;align-items:center;justify-content:center}.aomi img{width:22px;height:22px;object-fit:contain}
+.aotab:not(.on) .aomi img{opacity:.6}.aogt{font-size:13px;opacity:.7}
+.aobx{--aop:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px;margin-top:10px}
+.aor{display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;margin-bottom:5px}
+.aoic{width:30px;height:30px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}.aoic img{width:22px;height:22px;object-fit:contain}
+.aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
+.aos{position:absolute;top:0;bottom:0}
+.aos.lv1{background:rgba(141,120,201,.16)}.aos.lv2{background:rgba(141,120,201,.3)}.aos.lv3{background:rgba(141,120,201,.46)}.aos.lv4{background:rgba(196,160,78,.34)}
+.aos.fd{opacity:.45}
+.aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+.aok.t1{background:#5b46a3}.aok.t2{background:#7357cc}.aok.t3{background:#c4a04e;color:#1c1608}
+.aou{position:absolute;top:9px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#d8cff5}
+.aok.fd,.aou.fd{opacity:.45}
+.aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}
+.aocap{font-size:12px;line-height:1.45;color:var(--dim);margin:8px 0 0}
 .ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
 .ppy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}.ppy span{font-weight:400;letter-spacing:.02em;text-transform:none;margin-left:4px}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -958,6 +978,7 @@ function load() {
   idbGet("mc").then(function (mc) { if (mc && mc.mechanics) state.mc = mc.mechanics; }, function () {});
   idbGet("ph").then(function (ph) { if (ph && ph.heroes) state.ph = ph; }, function () {});
   idbGet("pop").then(function (pp) { if (pp && pp.heroes) state.pop = pp; }, function () {});
+  idbGet("ao").then(function (ao) { if (ao && ao.heroes) { state.ao = ao; if (state.hero && !$("aowrap").innerHTML) aoRender(state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]); } }, function () {});
   idbGet("hc").then(function (hc) { if (hc && hc.heroes) { state.hcol = hc; heroCard(); } }, function () {});
   idbGet("st").then(function (st) { if (st) state.st = st; }, function () {});
   return Promise.all([idbGet(KEY), idbGet(WKEY), idbGet("revs")]).then(function (r) {
@@ -1264,6 +1285,7 @@ function extras(stamp, onlyMissing) { // the smaller files: all of them after ne
     // community notes are optional: a failure here never blocks the main data
     if (need(state.pn)) getJson("patchnotes.json", v).then(function (pn) { if (pn && pn.patches) { state.pn = pn; idbSet("pn", pn); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); } }, function () {}); // official patch notes (deadlock-wiki/deadlock-data)
     if (need(state.hcol)) getJson("hero_colors.json", v).then(function (hc) { if (hc && hc.heroes) { state.hcol = hc; idbSet("hc", hc); heroCard(); } }, function () {}); // each hero's card colours
+    if (need(state.ao)) getJson("ability_order.json", v).then(function (ao) { if (ao && ao.heroes) { state.ao = ao; idbSet("ao", ao); aoRender(state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]); } }, function () {}); // the orders top-ranked players spend ability points in
     if (need(state.pop)) getJson("popular.json", v).then(function (pp) { if (pp && pp.heroes) { state.pop = pp; idbSet("pop", pp); var w4 = $("popwrap"), h4 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w4 && h4) w4.innerHTML = popularHtml(h4); } }, function () {}); // what top-ranked players buy on each hero
     if (need(state.ph)) getJson("patchhistory.json", v).then(function (ph) { if (ph && ph.heroes) { state.ph = ph; idbSet("ph", ph); var w3 = $("revwrap"), h3 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w3 && h3) w3.innerHTML = revisionsHtml(h3); } }, function () {}); // every official patch, per hero
     if (need(state.mc)) getJson("mechanics.json", v).then(function (mc) { if (mc && mc.mechanics) { state.mc = mc.mechanics; idbSet("mc", mc); } }, function () {}); // objectives and neutrals (deadlock-wiki/deadlock-data)
@@ -3137,7 +3159,7 @@ var BS_SHUT = null, WP_OPEN = null, AB_SHUT = null; // the hero whose Base stats
 document.addEventListener("toggle", function (e) {
   var c = e.target.classList; if (!c || !c.contains("phd") || state.tab !== "heroes") return;
   var mine = e.target.open ? state.hero : null;
-  if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else if (c.contains("bsd")) BS_SHUT = e.target.open ? null : state.hero; else if (c.contains("wpd")) WP_OPEN = mine; else if (c.contains("abd")) AB_SHUT = e.target.open ? null : state.hero; else PH_OPEN = mine;
+  if (c.contains("aod")) AO_SHUT = e.target.open ? null : state.hero; else if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else if (c.contains("bsd")) BS_SHUT = e.target.open ? null : state.hero; else if (c.contains("wpd")) WP_OPEN = mine; else if (c.contains("abd")) AB_SHUT = e.target.open ? null : state.hero; else PH_OPEN = mine;
 }, true);
 var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
 function tierTab(it) { // the game's corner tab: a slot-coloured triangle in the top right with the tier in Roman numerals, casting a little shadow on the art
@@ -3164,6 +3186,47 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
   // folds like Patch history, but open unless you shut it on this hero
   return '<details class="phd ppd"' + (POP_SHUT === h.class_name ? "" : " open") + '><summary class="sec">Popular items' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body + "</details>";
 }
+
+// Ability order: the orders top-ranked players spend ability points in, one tab per play style (the first two abilities maxed).
+// Each ability is a row on a real time scale: it shades in from its unlock and deepens with each tier, gold once maxed;
+// the tier chips sit at the average time that point is spent. Points fewer than half of that style's players reach are faded.
+var AO_SHUT = null, AO_TAB = {}; // the hero whose Ability order you folded away; the style tab picked on each hero
+function aoSig(h) { return [1, 2, 3, 4].map(function (i) { return state.byClass[(h.items || {})["signature" + i]]; }); }
+function abilityOrderHtml(h) {
+  var A = state.ao && state.ao.heroes && state.ao.heroes[h.class_name]; if (!A || !A.builds || !A.builds.length) return "";
+  var sig = aoSig(h); if (sig.some(function (x) { return !x; })) return "";
+  var bi = Math.min(AO_TAB[h.class_name] || 0, A.builds.length - 1), B = A.builds[bi];
+  var ico = function (s, c) { return '<span class="' + (c || "aoic") + '"><img src="' + esc(itemImg(sig[s])) + '" alt=""></span>'; };
+  var tabs = A.builds.length < 2 ? "" : '<div class="aotabs">' + A.builds.map(function (b, i) {
+    return '<button class="aotab' + (i === bi ? " on" : "") + '" data-aot="' + i + '" aria-label="Max ' + esc(nameOf(sig[b.max[0]])) + ", then " + esc(nameOf(sig[b.max[1]])) + '">' + ico(b.max[0], "aomi") + '<span class="aogt">›</span>' + ico(b.max[1], "aomi") + "<b>" + Math.round(b.share * 100) + "%</b></button>";
+  }).join("") + "</div>";
+  var pts = B.pts, T = Math.max.apply(null, pts.map(function (p) { return p[2]; })), step = T > 2700 ? 10 : 5, ticks = [];
+  for (var m = 0; m * 60 <= T + 30; m += step) ticks.push(m);
+  var X = function (t) { return "calc(var(--aop) + (100% - 2 * var(--aop)) * " + (Math.min(t, T) / T).toFixed(4) + ")"; };
+  var L = ["", "1", "2", "5"], rows = [0, 1, 2, 3].map(function (s) {
+    var mine = pts.filter(function (p) { return p[0] === s; }).sort(function (a, b) { return a[1] - b[1]; }), seg = "", mk = "";
+    mine.forEach(function (p, k) {
+      var nx = mine[k + 1], fd = p[3] < .5 ? " fd" : "";
+      seg += '<span class="aos lv' + (p[1] + 1) + fd + '" style="left:' + X(p[2]) + ";right:" + (nx ? "calc(100% - " + X(nx[2]) + ")" : "0") + '"></span>';
+      mk += p[1] ? '<span class="aok t' + p[1] + fd + '" style="left:' + X(p[2]) + '">' + L[p[1]] + "</span>" : '<span class="aou' + fd + '" style="left:' + X(p[2]) + '"></span>';
+    });
+    return '<div class="aor">' + ico(s) + '<div class="aotr">' + ticks.map(function (m) { return '<span class="aogl" style="left:' + X(m * 60) + '"></span>'; }).join("") + seg + mk + "</div></div>";
+  }).join("");
+  var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
+  return '<details class="phd aod"' + (AO_SHUT === h.class_name ? "" : " open") + '><summary class="sec">Ability order' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>" +
+    '<p class="ppnote">How top-ranked players spend their ability points' + (A.builds.length > 1 ? ", by play style: the two abilities maxed first, and the share of players who do it" : "") + ".</p>" + tabs +
+    '<div class="aobx">' + rows + axis + '</div><p class="aocap">Spaced by the average time each point is spent. Rows deepen with each tier and turn gold once maxed; faded points are reached by fewer than half of these players.</p></details>';
+}
+function aoLayout(root) { // tier chips spent close together would overlap: nudge each one right of the one before it in its row
+  Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
+    var last = -1e9;
+    Array.prototype.forEach.call(tr.querySelectorAll(".aok"), function (k) { // the unlock mark never pushes a chip, so times stay true
+      k.style.transform = ""; var x = k.offsetLeft, w = 20;
+      if (x < last + w) { k.style.transform = "translateX(" + (last + w - x) + "px)"; last += w; } else last = x;
+    });
+  });
+}
+function aoRender(h) { var w = $("aowrap"); if (w && h) { w.innerHTML = abilityOrderHtml(h); aoLayout(w); } }
 function heroHead(h) { return pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h); }
 function isStats(g) { return !g.ac && g.label === "Stats"; }
 function revisionsHtml(h) { // Patch history: every official patch that touched this hero, newest first
@@ -3233,11 +3296,12 @@ function renderHero(cn) {
     html += alt ? '<div class="f0">' + abilityCard(a, h) + '</div><div class="f1">' + abilityCard(alt, h) + "</div>" : abilityCard(a, h);
   });
   html += "</div></details>";
+  html += '<div id="aowrap">' + abilityOrderHtml(h) + "</div>";
   html += '<div id="popwrap">' + popularHtml(h) + "</div>";
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
-  sbkShow(sbkWanted()); heroCard();
+  sbkShow(sbkWanted()); heroCard(); aoLayout($("aowrap"));
   var tg = document.querySelector("#main .hero-h .tags"); if (tg) requestAnimationFrame(function () { tg.classList.toggle("one", tg.offsetHeight < 34); }); // tags on one line get a little more room under the name
   var bk0 = $("back"); if (bk0 && !trialBack) { bk0.insertAdjacentHTML("afterend", heroLinks()); var row = document.createElement("div"); row.className = "hnavrow"; bk0.parentNode.insertBefore(row, bk0); row.appendChild(bk0); row.appendChild(document.querySelector("#main .hlks")); } // All heroes on the left, the section links on the right of the same line
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : "";
@@ -4776,6 +4840,8 @@ $("main").addEventListener("click", function (e) {
     });
     return;
   }
+  var aot = e.target.closest ? e.target.closest(".aotab[data-aot]") : null;
+  if (aot) { AO_TAB[state.hero] = +aot.getAttribute("data-aot"); aoRender(state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]); return; }
   var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem]") : null;
   if (pi) { itemSheet(pi.getAttribute("data-pitem")); return; }
   var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
