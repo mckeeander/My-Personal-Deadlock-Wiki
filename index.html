@@ -555,11 +555,14 @@ details.phd > summary.sec::before{content:"";position:absolute;left:0;bottom:-1p
 details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}details.phd > summary::-webkit-details-marker{display:none}details.phd > summary .ncv{margin-left:auto;width:15px;height:15px;opacity:.5;flex:none;color:var(--dim);transition:transform .2s ease}details.phd[open] > summary .ncv{transform:rotate(90deg)}details.phd.closing > summary .ncv{transform:none}
 .secn{font-size:13px;color:var(--dim);font-weight:500;letter-spacing:0;margin-left:6px}
 /* chapters are wide cards: a gold top edge with a faint warm fade under it, a little lighter than the page so the cards inside still stand out; the title sits on the left over a short gold mark */
-/* each chapter is a card inside the page, with room around it: a slightly lighter background with a warm fade from the top,
-   and a gold edge that wraps round the top corners and fades out down the sides */
-details.phd{position:relative;margin:44px 0 20px;padding:22px 12px 20px;background:linear-gradient(180deg,rgba(196,160,78,.09),transparent 160px),rgba(255,255,255,.028);border:1px solid #2e2840;border-radius:20px}
+/* each chapter is a card inside the page, with room around it. Like the stat cards, its edge is offset: bright blue round the
+   top-left corner, fading along the top and down the side, with a fainter echo round the bottom-right corner */
+details.phd{--cc:#5a9cf0;position:relative;margin:44px 0 20px;padding:22px 12px 20px;background:radial-gradient(90% 220px at 0 0,rgba(90,156,240,.09),transparent),rgba(255,255,255,.028);border:1px solid #2e2840;border-radius:20px}
 details.phd.bsd{margin-top:28px}
-details.phd::before{content:"";position:absolute;inset:-1px;border:2px solid #c4a04e;border-bottom:0;border-radius:20px;pointer-events:none;-webkit-mask:linear-gradient(to bottom,#000 18px,transparent 140px);mask:linear-gradient(to bottom,#000 18px,transparent 140px)}
+details.phd::before,details.phd::after{content:"";position:absolute;inset:-1px;border-radius:20px;pointer-events:none}
+details.phd::before{border-top:2px solid var(--cc);border-left:2px solid var(--cc);-webkit-mask:radial-gradient(circle at 0 0,#000 24px,transparent 220px);mask:radial-gradient(circle at 0 0,#000 24px,transparent 220px)}
+details.phd::after{border-bottom:2px solid var(--cc);border-right:2px solid var(--cc);opacity:.5;-webkit-mask:radial-gradient(circle at 100% 100%,#000 16px,transparent 120px);mask:radial-gradient(circle at 100% 100%,#000 16px,transparent 120px)}
+details.phd > summary.sec::before{background:var(--cc)} /* the mark under the title in the same blue */
 details.phd > summary.sec{font-size:32px;padding:8px 2px 22px}
 details.phd > summary + *{margin-top:26px}
 details.phd > summary.nofold{cursor:default} /* the core chapters are always open */
