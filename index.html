@@ -579,6 +579,7 @@ details.phd::before{content:"";position:absolute;z-index:-1;pointer-events:none;
 .aoth{position:absolute;top:3px;bottom:3px;left:3px;border-radius:8px;background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold)} /* the highlight behind the picked tab; it slides when you switch */
 .aorank{font-size:12.5px;line-height:1.45;color:var(--dim);margin:8px 0 0}.aorank b{color:var(--fg);font-weight:600}
 .aotw + .aobx{margin-top:16px}
+.aohd{font-size:13.5px;color:var(--dim);margin:2px 0 10px 2px}.aohd b{color:var(--fg);font-weight:600} /* the style, named at the top of the chart card */
 .aobx{--aop:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px}
 .aor{display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;margin-bottom:5px}
 .aoic{width:30px;height:30px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}.aoic img{width:22px;height:22px;object-fit:contain}
@@ -3224,7 +3225,7 @@ function abilityOrderHtml(h) {
   var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span data-k="a' + m + '" style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
   return '<details class="phd aod" open><summary class="sec nofold">Ability order</summary>' +
     tabs +
-    '<div class="aobx">' + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players in " + esc(aoRank()) + " max <b>" + esc(nameOf(sig[B.max[0]])) + "</b> first, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b>.</p></details>";
+    '<div class="aobx"><p class="aohd">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>" + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players in " + esc(aoRank()) + " max these two first.</p></details>";
 }
 function aoLayout(root) { // chips spent close together would overlap: each one is nudged just right of the one before it in its row
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotabs"), function (t) { var on = t.querySelector(".aotab.on"), th = t.querySelector(".aoth"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; } }); // the gold highlight sits behind the picked tab
@@ -3262,7 +3263,7 @@ function aoSwitch(h, i) {
     var g = o.node; g.removeAttribute("data-k"); g.style.left = (o.x - par.getBoundingClientRect().left) + "px"; g.style.marginLeft = "0"; g.style.transform = "none"; g.style.pointerEvents = "none";
     par.appendChild(g); g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: "ease-in", fill: "forwards" }).onfinish = function () { if (g.parentNode) g.parentNode.removeChild(g); };
   });
-  Array.prototype.forEach.call(w.querySelectorAll(".aorank"), function (p) { p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: "ease-out" }); });
+  Array.prototype.forEach.call(w.querySelectorAll(".aorank,.aohd"), function (p) { p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: "ease-out" }); });
 }
 function heroHead(h) { return pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h); }
 function isStats(g) { return !g.ac && g.label === "Stats"; }
