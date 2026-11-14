@@ -1413,7 +1413,7 @@ var GROUP_OV = {
 };
 var TILE_RE = /<div class="stat(?:\s[^"]*)?">[\s\S]*?<\/div>/g; // one stat tile (the space keeps it from matching the "stats" block)
 function isHitLbl(l) { // the ability's own hit, not a bonus, a buff or a per-bullet extra
-  return !/Bonus|Reduction|Amp|Resist|Threshold|Taken|Penalty|Stolen|Deferred|Cleared|Ally|Self|Permanent|Stack|Weapon Damage$/i.test(l) && /(Damage|DPS)$|Damage Per (Second|Bullet|Meter)|Damage \(|^Damage/i.test(l);
+  return !/Bonus|Reduction|Amp|Resist|Threshold|Cap$|Taken|Penalty|Stolen|Deferred|Cleared|Ally|Self|Permanent|Stack|Weapon Damage$/i.test(l) && /(Damage|DPS)$|Damage Per (Second|Bullet|Meter)|Damage \(|^Damage/i.test(l);
 }
 function descPlain(it) { // the description as it reads on the card
   var d = it.description;
@@ -4370,7 +4370,7 @@ $("sarea").addEventListener("click", function (e) {
 // A short burst on every stat that changed when a tier was tapped
 function tileId(el) { // what a tile is, so it stays the same tile when an upgrade renames it ("Melee Damage" becomes "Damage") or the damage cards swap places
   var i = el.querySelector("i"), l = (i || el).textContent.replace(/\s+/g, " ").trim();
-  return (el.classList.contains("wtile") ? "w" : el.classList.contains("big") ? "s" : "n") + ":" + l.replace(/^(Light |Heavy )?(Melee|Weapon)\s+/i, "");
+  return (el.classList.contains("wtile") ? "w" : el.classList.contains("big") ? "s" : "n") + ":" + l.replace(/^(Light |Heavy )?(Melee|Weapon)\s+/i, "").replace(/\d+(\.\d+)?/g, "#"); // numbers in a label ("Rats (3 wide × 3 deep)") don't make it a new tile
 }
 function statKey(el) {
   if (el.classList.contains("stat")) return "s:" + tileId(el);
@@ -4390,7 +4390,8 @@ function snapStats(card) {
   statEls(card).forEach(function (x) { m[x[1]] = x[0].textContent.replace(/\s+/g, " ").trim(); var dv = x[0].tagName === "DIV", bb = dv ? x[0].querySelector("b") : null;
     m[x[1] + "|b"] = (bb || x[0]).textContent; m[x[1] + "|w"] = x[0].offsetWidth;
     var sc = dv ? x[0].querySelector(".sc") : null; if (sc) { m[x[1] + "|sc"] = sc.textContent; m[x[1] + "|scw"] = sc.offsetWidth; }
-    var du = dv ? x[0].querySelector(".dur") : null; if (du) m[x[1] + "|dur"] = du.textContent; });
+    var du = dv ? x[0].querySelector(".dur") : null; if (du) m[x[1] + "|dur"] = du.textContent;
+    var li = dv ? x[0].querySelector("i") : null; if (li) m[x[1] + "|i"] = li.textContent; });
   return m;
 }
 var COUNT_TEST = true; // numbers count up/down to their new value when a tier is tapped
@@ -4490,7 +4491,16 @@ function countTo(el, bef, k) {
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var isStat = el.tagName === "DIV", go = [];
   go.push(mode(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
-  if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(mode(sc, bef[k + "|sc"])); var du = el.querySelector(".dur"); if (du) go.push(mode(du, bef[k + "|dur"])); } // the duration tag in the corner counts too (Threadsap T2)
+  if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(mode(sc, bef[k + "|sc"])); var du = el.querySelector(".dur"); if (du) go.push(mode(du, bef[k + "|dur"])); // the duration tag in the corner counts too (Threadsap T2)
+    var li = el.querySelector("i"), bl = bef[k + "|i"], NR = /-?\d+(?:\.\d+)?/g; // numbers in the label count too, each on its own (Rat Swarm: "Rats (3 wide × 3 deep)")
+    if (li && bl != null && li.textContent !== bl && !li.children.length) {
+      var nowN = li.textContent.match(NR), oldN = bl.match(NR);
+      if (nowN && oldN && nowN.length === oldN.length && li.textContent.replace(NR, "#") === bl.replace(NR, "#")) {
+        li.innerHTML = li.textContent.split(/(-?\d+(?:\.\d+)?)/).map(function (q, j) { return j % 2 ? "<span>" + q + "</span>" : esc(q); }).join("");
+        Array.prototype.forEach.call(li.children, function (sp, j) { go.push(mode(sp, oldN[j])); });
+      }
+    }
+  }
   go.forEach(function (g) { if (g) g(); });
 }
 // Tapping a tier can add or remove stat tiles. A new tile widens from nothing and its text fades in a beat later; a tile that goes fades out first,
@@ -4530,7 +4540,7 @@ function snapLayout(card) { // taken from the old card, just before it is swappe
     if (/^(u\d+:)?s:/.test(b.sig)) o.tiles = tileData(b.el, true);
     return o;
   });
-  out.chips = chipData(card, true);
+  out.chips = chipData(card, true); var cr0 = card.querySelector(".chips"); out.chipH = cr0 ? cr0.getBoundingClientRect().height : null;
   return out;
 }
 function chipData(card, clone) { // the header chips, keyed by name, with where each sits inside the chip row
@@ -4664,6 +4674,11 @@ function animateLayout(fresh, snap) {
   });
   // header chips: the ones that stay slide to their new place, a new one fades in once they've (nearly) settled, one that goes fades out where it was
   var oc = snap.chips || {}, row = fresh.querySelector(".chips");
+  if (row && snap.chipH != null) { // a chip that wraps onto a new line (Rat Swarm T1's charges) opens the row downward instead of jumping the card
+    var ch1 = row.getBoundingClientRect().height, ch0 = snap.chipH;
+    if (Math.abs(ch1 - ch0) > 1) { var ccl = "inset(-24px -24px 0px -24px)", cop = "inset(-24px -24px -24px -24px)";
+      run(row, ch1 > ch0 ? [{ height: ch0 + "px", clipPath: ccl }, { height: ch1 + "px", clipPath: ccl, offset: .999 }, { height: ch1 + "px", clipPath: cop }] : [{ height: ch0 + "px" }, { height: ch1 + "px" }], { delay: ch1 > ch0 ? 0 : 120 }); }
+  }
   if (row) {
     var nc = chipData(fresh, false), cr = row.getBoundingClientRect(), slid = false;
     Object.keys(nc).forEach(function (k) {
