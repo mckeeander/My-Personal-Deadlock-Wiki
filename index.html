@@ -559,6 +559,13 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
    top-left corner, fading along the top and down the side, with a fainter echo round the bottom-right corner */
 details.phd{--cc:#5a9cf0;position:relative;isolation:isolate;margin:32px 0 20px;padding:22px 12px 20px;background:linear-gradient(to bottom,rgba(90,156,240,.12),transparent clamp(240px,50%,640px)),rgba(255,255,255,.028);border:1px solid rgba(90,156,240,.24);border-radius:20px} /* a blue wash fading straight down from the top; a faint blue rim all the way round keeps long chapters reading as cards */
 details.phd.bsd{margin-top:28px}
+/* trial (Deadman Danny): Base stats and Abilities drop the card for a subtly tinted band running the full width of the screen,
+   each chapter its own shade, meeting edge to edge; the shorter chapters keep their cards */
+body.chband details.phd.bsd,body.chband details.phd.abd{border:0;border-radius:0;padding:26px 0 30px;margin-bottom:0;clip-path:inset(0 -100vmax)}
+body.chband details.phd.bsd{background:#1b1827;box-shadow:0 0 0 100vmax #1b1827}
+body.chband details.phd.abd{margin-top:0;background:#161a29;box-shadow:0 0 0 100vmax #161a29}
+body.chband details.phd.bsd::before,body.chband details.phd.bsd::after,body.chband details.phd.abd::before,body.chband details.phd.abd::after,body.chband details.phd.abd .cgl,body.chband details.phd.bsd .cgl{display:none}
+body.chband #aowrap > details.phd{margin-top:32px}
 .cgl{position:absolute;z-index:-1;pointer-events:none;width:2px;background:linear-gradient(to bottom,transparent,rgba(110,170,250,.95) 50%,transparent);filter:drop-shadow(0 0 5px rgba(90,156,240,.7))} /* a long glint along a side of a long chapter */
 /* the blue edge is offset like the stat cards: bright round the top-left corner, fading along the top and down the left side, with a fainter
    echo round the bottom-right corner. Both are sized to the card (a share of its height, within limits), so a long chapter keeps its edge further down */
@@ -3364,6 +3371,7 @@ function renderHero(cn) {
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
+  document.body.classList.toggle("chband", h.name === "Deadman Danny"); // trying it on one hero: Base stats and Abilities as tinted bands, not cards
   sbkShow(sbkWanted()); heroCard(); aoLayout($("aowrap")); requestAnimationFrame(function () { chapterGlints(); });
   var tg = document.querySelector("#main .hero-h .tags"); if (tg) requestAnimationFrame(function () { tg.classList.toggle("one", tg.offsetHeight < 34); }); // tags on one line get a little more room under the name
   var bk0 = $("back"); if (bk0 && !trialBack) { bk0.insertAdjacentHTML("afterend", heroLinks()); var row = document.createElement("div"); row.className = "hnavrow"; bk0.parentNode.insertBefore(row, bk0); row.appendChild(bk0); row.appendChild(document.querySelector("#main .hlks")); } // All heroes on the left, the section links on the right of the same line
