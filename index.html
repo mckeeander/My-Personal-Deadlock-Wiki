@@ -268,7 +268,7 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 .blk{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:16px 0 4px}
 .desc + .blk{margin-top:22px}
 .blk + .stats{margin-top:10px}
-.stats + .ups,.minor + .ups{margin-top:22px}
+.stats ~ .ups,.minor ~ .ups{margin-top:22px} /* ~, not +: a block a tier adds or removes sits between them while it grows or folds (at zero height), and the gap must not jump */
 #revs .rpt{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:0 12px}
 #revs summary{display:flex;align-items:center;gap:8px;padding:11px 0;cursor:pointer;list-style:none}#revs summary::-webkit-details-marker{display:none}
 #revs .rd{font-weight:600;color:#fff;display:flex;align-items:center}#revs .rcv{margin-left:auto;color:var(--dim);display:flex;transition:transform .2s}#revs .rpt:not([open]) .rcv{transform:rotate(-90deg)}
@@ -4506,6 +4506,7 @@ function blockList(card) { // the headings and stat blocks sitting directly in t
     if (c.contains("blk")) { head = el.textContent.trim(); sig = "b:" + head; }
     else if (c.contains("stats")) { sig = "s:" + head; head = ""; }
     else if (c.contains("minor")) { sig = "m"; head = ""; }
+    else if (c.contains("desc") && out.length) { sig = "d:" + el.textContent.replace(/[\d.,%+\-]+/g, "#").replace(/\s+/g, " ").trim().slice(0, 60); head = ""; } // text a tier adds (Essence Bomb's toxic mess) grows in like a stat block; numbers are ignored so a changed number doesn't count as new text
     else head = "";
     if (sig) out.push({ el: el, sig: pre + sig });
   }
@@ -4580,7 +4581,18 @@ function animateLayout(fresh, snap) {
   function run(el, frames, opt) { var a = el.animate(frames, Object.assign({ duration: LAY_MS, easing: LAY_EASE, fill: "both" }, opt || {})); anims.push(a); return a; }
   function setS(el, prop, val) { var old = el.style[prop]; el.style[prop] = val; undo.push(function () { el.style[prop] = old; }); }
   // the clip hides what spills below a collapsing block but leaves 24px around it, so corner badges and glows are never sliced off (overflow:hidden did)
-  function sized(b, h, zero) { var z = "0px"; return { height: (zero ? 0 : h) + "px", marginTop: zero ? z : b.mt, marginBottom: zero ? z : b.mb, paddingTop: zero ? z : b.pt, paddingBottom: zero ? z : b.pb, boxSizing: "border-box", clipPath: zero ? "inset(-24px -24px 0px -24px)" : "inset(-24px -24px -24px -24px)" }; }
+  // a grid or flex block at zero height doesn't let the margins around it collapse together (a plain block does), so the gap above the
+  // tier boxes would jump 8px when it starts growing or finishes folding; the first such block in a run is pulled up by the margin above it
+  var zset = [], zoff = [];
+  function zeroMt(el) {
+    var d = getComputedStyle(el).display; if (!/grid|flex/.test(d)) return 0;
+    for (var sib = el.previousElementSibling; sib; sib = sib.previousElementSibling) {
+      if (zset.indexOf(sib) < 0) return -(parseFloat(getComputedStyle(sib).marginBottom) || 0);
+      if (/grid|flex/.test(getComputedStyle(sib).display)) return 0;
+    }
+    return 0;
+  }
+  function sized(b, h, zero, el) { var z = (el && zoff[zset.indexOf(el)]) ? zoff[zset.indexOf(el)] + "px" : "0px"; return { height: (zero ? 0 : h) + "px", marginTop: zero ? z : b.mt, marginBottom: zero ? "0px" : b.mb, paddingTop: zero ? "0px" : b.pt, paddingBottom: zero ? "0px" : b.pb, boxSizing: "border-box", clipPath: zero ? "inset(-24px -24px 0px -24px)" : "inset(-24px -24px -24px -24px)" }; }
   // 1. measure everything in its final place before anything moves
   ops.forEach(function (op, n) {
     if (op.t === "r") { gone.push({ s: snap[op.i], after: prev, n: n }); return; }
@@ -4598,14 +4610,18 @@ function animateLayout(fresh, snap) {
       if (!ref) ref = Array.prototype.filter.call(fresh.children, function (c) { return c.classList.contains("ups"); })[0] || null;
     }
     node.setAttribute("data-ghost", "1"); node.style.pointerEvents = "none";
-    fresh.insertBefore(node, ref); tail = node; tailAfter = g.after;
-    run(node, [sized(g.s.box, g.s.box.h, false), sized(g.s.box, g.s.box.h, true)], { delay: 100 });
-    run(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in" });
+    fresh.insertBefore(node, ref); tail = node; tailAfter = g.after; g.node = node; zset.push(node);
     undo.push(function () { if (node.parentNode) node.parentNode.removeChild(node); });
+  });
+  plans.forEach(function (p) { if (p.add) zset.push(p.add); });
+  zset.forEach(function (el, i) { zoff[i] = zeroMt(el); });
+  gone.forEach(function (g) {
+    run(g.node, [sized(g.s.box, g.s.box.h, false, g.node), sized(g.s.box, g.s.box.h, true, g.node)], { delay: 100 });
+    run(g.node, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in" });
   });
   plans.forEach(function (p) {
     if (p.add) {
-      run(p.add, [sized(p.box, p.box.h, true), sized(p.box, p.box.h, false)]);
+      run(p.add, [sized(p.box, p.box.h, true, p.add), sized(p.box, p.box.h, false, p.add)]);
       run(p.add, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 200, easing: "ease-out" });
       return;
     }
