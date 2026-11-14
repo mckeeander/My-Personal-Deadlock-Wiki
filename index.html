@@ -570,7 +570,7 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1{background:#4a3683}.aok.t2{background:#6a4fc0}.aok.t3{background:#c4a04e;color:#1c1608}
+.aok.t1,.aok.t2{background:#6a4fc0}.aok.t3{background:#c4a04e;color:#1c1608}
 .aou{position:absolute;top:6px;width:3px;height:16px;margin-left:-1.5px;border-radius:2px;background:#d8cff5} /* the unlock: a short tick */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}
 .ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
@@ -3211,12 +3211,14 @@ function abilityOrderHtml(h) {
     '<p class="ppnote">The order high-ranked players spend ability points in: ' + esc(aoRank()) + ".</p>" + tabs +
     '<div class="aobx">' + rows + axis + "</div></details>";
 }
-function aoLayout(root) { // tier chips spent close together would overlap: nudge each one right of the one before it in its row
+function aoLayout(root) { // marks spent close together would overlap: each chip is nudged just right of the mark before it in its row, so the unlock tick always shows
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
-    var last = -1e9;
-    Array.prototype.forEach.call(tr.querySelectorAll(".aok"), function (k) { // the unlock mark never pushes a chip, so times stay true
-      k.style.transform = ""; var x = k.offsetLeft, w = 20;
-      if (x < last + w) { k.style.transform = "translateX(" + (last + w - x) + "px)"; last += w; } else last = x;
+    var edge = -1e9; // the right edge of the last mark placed
+    Array.prototype.forEach.call(tr.querySelectorAll(".aou,.aok"), function (k) {
+      k.style.transform = ""; var x = k.offsetLeft, w = k.offsetWidth;
+      if (k.classList.contains("aou")) { edge = x + w; return; } // the tick stays at its true time
+      var min = edge + 2; if (x < min) { k.style.transform = "translateX(" + (min - x) + "px)"; x = min; }
+      edge = x + w;
     });
   });
 }
