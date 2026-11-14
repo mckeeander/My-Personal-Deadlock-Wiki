@@ -559,15 +559,19 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
    top-left corner, fading along the top and down the side, with a fainter echo round the bottom-right corner */
 details.phd{--cc:#5a9cf0;position:relative;isolation:isolate;margin:32px 0 20px;padding:22px 12px 20px;background:rgba(255,255,255,.028);border:1px solid #2e2840;border-radius:20px}
 details.phd.bsd{margin-top:28px}
-/* both layers are sized to the card (a share of its height, within limits), so a long chapter keeps its colour further down */
-details.phd::before,details.phd::after{content:"";position:absolute;z-index:-1;pointer-events:none}
-details.phd::before{left:-1px;right:-1px;top:-1px;height:min(max(260px,55%),700px,calc(100% + 2px));border-top:2px solid var(--cc);border-left:2px solid var(--cc);border-radius:20px 20px 0 0;background:radial-gradient(100% 100% at 0 0,rgba(90,156,240,.14),transparent 80%);-webkit-mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent);mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent)}
-details.phd::after{right:-1px;bottom:-1px;width:65%;height:min(max(120px,30%),360px,calc(100% + 2px));border-bottom:2px solid var(--cc);border-right:2px solid var(--cc);border-radius:0 0 20px 0;opacity:.5;-webkit-mask:radial-gradient(100% 100% at 100% 100%,#000 6%,transparent);mask:radial-gradient(100% 100% at 100% 100%,#000 6%,transparent)}
-details.phd > summary.sec{margin:0 6px;padding-left:6px;border-bottom-color:#3a3350} /* a little in from the card's edge; the line just a touch brighter */
+/* the blue edge runs along the top, round both corners and fades down the sides, with a wash fading down beneath it; a fainter echo closes the bottom.
+   Both are sized to the card (a share of its height, within limits), so a long chapter keeps its colour further down */
+details.phd::before,details.phd::after{content:"";position:absolute;z-index:-1;pointer-events:none;left:-1px;right:-1px}
+details.phd::before{top:-1px;height:min(max(260px,55%),700px,calc(100% + 2px));border:2px solid var(--cc);border-bottom:0;border-radius:20px 20px 0 0;background:linear-gradient(to bottom,rgba(90,156,240,.12),transparent 85%);-webkit-mask:linear-gradient(to bottom,#000 4%,transparent);mask:linear-gradient(to bottom,#000 4%,transparent)}
+details.phd::after{bottom:-1px;height:min(max(100px,22%),260px,calc(100% + 2px));border:2px solid var(--cc);border-top:0;border-radius:0 0 20px 20px;opacity:.45;-webkit-mask:linear-gradient(to top,#000 3%,transparent);mask:linear-gradient(to top,#000 3%,transparent)}
+/* the title, centred, over a short blue mark on a faint full-width line */
+details.phd > summary.sec{font-size:29px;justify-content:center;margin:0 6px;padding-left:6px;padding-right:6px;border-bottom-color:#3a3350}
 details.phd > summary.sec::before{display:none}
 details.phd > summary.sec .sect{position:relative}
-details.phd > summary.sec .sect::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:3px;border-radius:2px;background:var(--cc)} /* the blue mark spans the title */
-details.phd > summary.sec{font-size:32px;padding:8px 2px 22px}
+details.phd > summary.sec .sect::after{content:"";position:absolute;left:50%;width:48px;margin-left:-24px;bottom:-23px;height:3px;border-radius:2px;background:var(--cc)}
+details.phd > summary.sec:has(.ncv){padding-left:28px;padding-right:28px} /* a chapter that folds keeps its arrow at the far right, with matching room on the left so the title stays centred */
+details.phd > summary.sec .ncv{position:absolute;right:2px;top:50%;margin:-14px 0 0}
+details.phd > summary.sec{padding-top:8px;padding-bottom:22px}
 details.phd > summary + *{margin-top:26px}
 details.phd > summary.nofold{cursor:default} /* the core chapters are always open */
 .phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
