@@ -559,13 +559,12 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .phsum{font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-left:8px}
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
 .ipage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px} /* the item page: its card, set apart from the patch history below */.ipl .pnl{margin-top:4px}
-.aotabs{display:flex;gap:6px;margin:10px 0 10px}
-.aotab{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:3px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 4px;color:var(--dim);font:inherit;-webkit-tap-highlight-color:transparent}
-.aotab.on{border-color:var(--gold);background:rgba(196,160,78,.1);color:var(--fg)}
-.aotab b{font-size:12.5px;font-weight:600;margin-left:5px;font-variant-numeric:tabular-nums}
-.aomi{width:24px;height:24px;display:flex;align-items:center;justify-content:center}.aomi img{width:22px;height:22px;object-fit:contain}
-.aotab:not(.on) .aomi img{opacity:.6}.aogt{font-size:13px;opacity:.7}
-.aobx{--aop:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px;margin-top:10px}
+.aotw{display:flex;justify-content:center;margin:14px 0 0}
+.aotabs{display:inline-flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+.aotab{border:0;background:transparent;border-radius:8px;padding:6px 16px;color:var(--dim);font:inherit;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
+.aotab.on{background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold);color:var(--fg)}
+.aonm{text-align:center;font-size:13px;color:var(--dim);margin:14px 0 16px}.aonm b{color:var(--fg);font-weight:600}
+.aobx{--aop:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px}
 .aor{display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;margin-bottom:5px}
 .aoic{width:30px;height:30px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}.aoic img{width:22px;height:22px;object-fit:contain}
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
@@ -3193,9 +3192,9 @@ function abilityOrderHtml(h) {
   var sig = aoSig(h); if (sig.some(function (x) { return !x; })) return "";
   var bi = Math.min(AO_TAB[h.class_name] || 0, A.builds.length - 1), B = A.builds[bi];
   var ico = function (s, c) { return '<span class="' + (c || "aoic") + '"><img src="' + esc(itemImg(sig[s])) + '" alt=""></span>'; };
-  var tabs = A.builds.length < 2 ? "" : '<div class="aotabs">' + A.builds.map(function (b, i) {
-    return '<button class="aotab' + (i === bi ? " on" : "") + '" data-aot="' + i + '" aria-label="Max ' + esc(nameOf(sig[b.max[0]])) + ", then " + esc(nameOf(sig[b.max[1]])) + '">' + ico(b.max[0], "aomi") + '<span class="aogt">›</span>' + ico(b.max[1], "aomi") + "<b>" + Math.round(b.share * 100) + "%</b></button>";
-  }).join("") + "</div>";
+  var tabs = (A.builds.length < 2 ? "" : '<div class="aotw"><div class="aotabs" role="tablist">' + A.builds.map(function (b, i) { // one tab per play style, labelled with the share of players; the line under names the style
+    return '<button class="aotab' + (i === bi ? " on" : "") + '" role="tab" aria-selected="' + (i === bi) + '" data-aot="' + i + '" aria-label="Max ' + esc(nameOf(sig[b.max[0]])) + ", then " + esc(nameOf(sig[b.max[1]])) + ", " + Math.round(b.share * 100) + '% of players">' + Math.round(b.share * 100) + "%</button>";
+  }).join("") + "</div></div>") + '<p class="aonm">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>";
   var pts = B.pts, T = Math.max.apply(null, pts.map(function (p) { return p[2]; })), step = T > 2700 ? 10 : 5, ticks = [];
   for (var m = 0; m * 60 <= T + 30; m += step) ticks.push(m);
   var X = function (t) { return "calc(var(--aop) + (100% - 2 * var(--aop)) * " + (Math.min(t, T) / T).toFixed(4) + ")"; };
