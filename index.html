@@ -565,8 +565,12 @@ body.chband details.phd.bsd,body.chband details.phd.abd{border:0;border-radius:0
 body.chband details.phd.bsd{background:none;box-shadow:none;margin-top:12px;padding-top:6px} /* Base stats sits on the page's own background, a little closer to the hero card */
 /* Abilities sits on a purple panel that runs past both screen edges, tilted slightly, with a soft shadow so the whole chapter looks lifted */
 body.chband details.phd.abd{margin-top:14px;background:none;box-shadow:none;clip-path:none;padding-top:34px;padding-bottom:40px}
-body.chband details.phd.abd::before{display:block;content:"";position:absolute;z-index:-1;left:calc(50% - 50vw - 24px);right:calc(50% - 50vw - 24px);top:0;bottom:0;height:auto;border:0;border-radius:0;-webkit-mask:none;mask:none;opacity:1;background:#211b33;transform:skewY(-1.8deg);box-shadow:0 12px 26px rgba(0,0,0,.55),0 -6px 18px rgba(0,0,0,.35)}
-body.chband #aowrap > details.phd{margin-top:44px}
+body.chband details.phd.abd::before{display:none}
+.chpanel{display:none}
+/* the panel is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilted edges: the top is higher on the left, the bottom lower on the left */
+body.chband .chpanel{display:block;position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:-22px;bottom:-22px;filter:drop-shadow(0 12px 14px rgba(0,0,0,.55)) drop-shadow(0 -5px 10px rgba(0,0,0,.3))}
+body.chband .chpanel i{position:absolute;inset:0;background:#211b33;clip-path:polygon(0 0,100% 30px,100% calc(100% - 30px),0 100%)}
+body.chband #aowrap > details.phd{margin-top:68px}
 /* the shorter chapters keep their cards, each in its own colour, with a softer edge that fades sooner and a calmer wash */
 body.chband #aowrap{--cc:#a283f0;--cr:162,131,240}body.chband #popwrap{--cc:#5fc87a;--cr:95,200,122}body.chband #revwrap{--cc:#5a9cf0;--cr:90,156,240}
 body.chband details.phd:not(.bsd):not(.abd){--cc:inherit;border-color:rgba(var(--cr),.24);background:linear-gradient(to bottom,rgba(var(--cr),.08),transparent clamp(120px,35%,260px)),rgba(255,255,255,.028)}
@@ -3366,7 +3370,7 @@ function renderHero(cn) {
   var wc = ""; // the weapon now lives inside Base stats
   if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec"><span class="sect">Weapon</span>' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
   // the abilities fold like the sections above, but start open
-  html += '<details class="phd abd" open><summary class="sec nofold"><span class="sect">Abilities</span>' + "</summary><div>" + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
+  html += '<details class="phd abd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Abilities</span>' + "</summary><div>" + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
   abs.forEach(function (a) {
     var alt = fp && fp.swap[a.class_name];
