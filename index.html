@@ -555,10 +555,14 @@ details.phd > summary.sec::before{content:"";position:absolute;left:0;bottom:-1p
 details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}details.phd > summary::-webkit-details-marker{display:none}details.phd > summary .ncv{margin-left:auto;width:15px;height:15px;opacity:.5;flex:none;color:var(--dim);transition:transform .2s ease}details.phd[open] > summary .ncv{transform:rotate(90deg)}details.phd.closing > summary .ncv{transform:none}
 .secn{font-size:13px;color:var(--dim);font-weight:500;letter-spacing:0;margin-left:6px}
 /* chapters are wide cards: a gold top edge with a faint warm fade under it, a little lighter than the page so the cards inside still stand out; the title sits on the left over a short gold mark */
-details.phd{position:relative;margin:28px -6px 16px;padding:20px 12px 14px;background:radial-gradient(65% 90px at 24% 52px,rgba(224,189,104,.12),transparent),rgba(255,255,255,.028);border:1px solid #2e2840;border-radius:18px} /* the warm glow sits behind the title */
-details.phd::before{content:"";position:absolute;inset:-1px;border:2px solid #c4a04e;border-bottom:0;border-radius:18px;pointer-events:none;-webkit-mask:linear-gradient(to bottom,#000 18px,transparent 130px);mask:linear-gradient(to bottom,#000 18px,transparent 130px)} /* the gold edge wraps round the top corners and fades out down the sides */
-details.phd > summary.sec{font-size:32px;padding:4px 2px 16px}
-details.phd > summary + *{margin-top:20px}
+/* each chapter reads as a card that runs off both sides of the screen, so no width is lost: its background, a gold top edge
+   that curves away at the screen edges and fades down the sides, a warm fade from the top, and a curved line closing it at the bottom */
+details.phd{position:relative;isolation:isolate;margin:28px 0 16px;padding:22px 0 22px}
+details.phd::before,details.phd::after{content:"";position:absolute;top:0;bottom:0;left:calc(50% - 50vw - 12px);right:calc(50% - 50vw - 12px);border-radius:28px;pointer-events:none}
+details.phd::after{z-index:-1;background:linear-gradient(180deg,rgba(196,160,78,.09),transparent 160px),rgba(255,255,255,.028);border:1px solid #2e2840}
+details.phd::before{border:2px solid #c4a04e;border-bottom:0;-webkit-mask:linear-gradient(to bottom,#000 14px,transparent 110px);mask:linear-gradient(to bottom,#000 14px,transparent 110px)}
+details.phd > summary.sec{font-size:32px;padding:8px 2px 22px}
+details.phd > summary + *{margin-top:26px}
 details.phd > summary.nofold{cursor:default} /* the core chapters are always open */
 .phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
 .phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.phb.on img{opacity:1}
