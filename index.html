@@ -563,7 +563,10 @@ details.phd.bsd{margin-top:28px}
 details.phd::before,details.phd::after{content:"";position:absolute;z-index:-1;pointer-events:none}
 details.phd::before{left:-1px;right:-1px;top:-1px;height:min(max(260px,55%),700px,calc(100% + 2px));border-top:2px solid var(--cc);border-left:2px solid var(--cc);border-radius:20px 20px 0 0;background:radial-gradient(100% 100% at 0 0,rgba(90,156,240,.14),transparent 80%);-webkit-mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent);mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent)}
 details.phd::after{right:-1px;bottom:-1px;width:65%;height:min(max(120px,30%),360px,calc(100% + 2px));border-bottom:2px solid var(--cc);border-right:2px solid var(--cc);border-radius:0 0 20px 0;opacity:.5;-webkit-mask:radial-gradient(100% 100% at 100% 100%,#000 6%,transparent);mask:radial-gradient(100% 100% at 100% 100%,#000 6%,transparent)}
-details.phd > summary.sec::before{background:var(--cc)} /* the mark under the title in the same blue */
+details.phd > summary.sec{margin:0 6px;padding-left:6px;border-bottom-color:#3a3350} /* a little in from the card's edge; the line just a touch brighter */
+details.phd > summary.sec::before{display:none}
+details.phd > summary.sec .sect{position:relative}
+details.phd > summary.sec .sect::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:3px;border-radius:2px;background:var(--cc)} /* the blue mark spans the title */
 details.phd > summary.sec{font-size:32px;padding:8px 2px 22px}
 details.phd > summary + *{margin-top:26px}
 details.phd > summary.nofold{cursor:default} /* the core chapters are always open */
@@ -3194,7 +3197,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
   }).join("");
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
-  return '<details class="phd ppd" open><summary class="sec nofold">Popular items</summary><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body + "</details>";
+  return '<details class="phd ppd" open><summary class="sec nofold"><span class="sect">Popular items</span></summary><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body + "</details>";
 }
 
 // Ability order: the orders top-ranked players spend ability points in, one tab per play style (the first two abilities maxed).
@@ -3223,7 +3226,7 @@ function abilityOrderHtml(h) {
     return '<div class="aor">' + ico(s) + '<div class="aotr">' + ticks.map(function (m) { return '<span class="aogl" data-k="g' + s + "-" + m + '" style="left:' + X(m * 60) + '"></span>'; }).join("") + mk + "</div></div>";
   }).join("");
   var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span data-k="a' + m + '" style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
-  return '<details class="phd aod" open><summary class="sec nofold">Ability order</summary>' +
+  return '<details class="phd aod" open><summary class="sec nofold"><span class="sect">Ability order</span></summary>' +
     tabs +
     '<div class="aobx"><p class="aohd">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>" + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players in " + esc(aoRank()) + " max these two first.</p></details>";
 }
@@ -3297,7 +3300,7 @@ function phListHtml(P, filt, bodyOf, absOf, open, all) { // all: every patch sho
   }).join("");
   var more = P.length > show ? '<button class="phmore">Show older patches (' + (P.length - show) + ")</button>" : "";
   // the whole section folds: the header is the toggle (shut on hero pages, open on an item page, where it is what you came for)
-  return '<details class="phd"' + (open ? " open" : "") + '><summary class="sec">Patch history' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>" + filt + '<div id="revs" class="phist">' + rows + more + "</div></details>";
+  return '<details class="phd"' + (open ? " open" : "") + '><summary class="sec"><span class="sect">Patch history</span>' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>" + filt + '<div id="revs" class="phist">' + rows + more + "</div></details>";
 }
 function revisionsHtml0(h) {
   var R = state.revs; if (!R || !R.length) return "";
@@ -3320,14 +3323,14 @@ function renderHero(cn) {
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h" style="--hbg:url(&quot;' + esc(heroImg(h)) + '&quot;)"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>"; // no complexity tag: it helps pick a first hero, not look one up
   // base stats starts open (it holds the comparison switch); the weapon folds shut like Patch history; each remembers your choice for this hero
-  html += '<details class="phd bsd" open><summary class="sec nofold">Base stats' + '</summary><div class="stats1">' + (CARD_HEROES[h.name] ? "" : smodeSwitch(h)) + '<div id="stats1">' + (CARD_HEROES[h.name] ? statCards(h) : statView(h)) + "</div></div></details>";
+  html += '<details class="phd bsd" open><summary class="sec nofold"><span class="sect">Base stats</span>' + '</summary><div class="stats1">' + (CARD_HEROES[h.name] ? "" : smodeSwitch(h)) + '<div id="stats1">' + (CARD_HEROES[h.name] ? statCards(h) : statView(h)) + "</div></div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
   if (state.altHero !== cn) { state.alt = false; state.altHero = cn; }
   var wc = ""; // the weapon now lives inside Base stats
-  if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec">Weapon' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
+  if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec"><span class="sect">Weapon</span>' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
   // the abilities fold like the sections above, but start open
-  html += '<details class="phd abd" open><summary class="sec nofold">Abilities' + "</summary><div>" + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
+  html += '<details class="phd abd" open><summary class="sec nofold"><span class="sect">Abilities</span>' + "</summary><div>" + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
   abs.forEach(function (a) {
     var alt = fp && fp.swap[a.class_name];
