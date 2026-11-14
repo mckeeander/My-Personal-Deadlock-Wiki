@@ -562,8 +562,12 @@ details.phd.bsd{margin-top:28px}
 /* trial (Deadman Danny): Base stats and Abilities drop the card for a subtly tinted band running the full width of the screen,
    each chapter its own shade, meeting edge to edge; the shorter chapters keep their cards */
 body.chband details.phd.bsd,body.chband details.phd.abd{border:0;border-radius:0;padding:26px 0 30px;margin-bottom:0;clip-path:inset(0 -100vmax)}
-body.chband details.phd.bsd{background:#1b1827;box-shadow:0 0 0 100vmax #1b1827}
-body.chband details.phd.abd{margin-top:0;background:#161a29;box-shadow:0 0 0 100vmax #161a29}
+body.chband details.phd.bsd{background:none;box-shadow:none} /* Base stats sits on the page's own background */
+body.chband details.phd.abd{margin-top:0;background:#1a2133;box-shadow:0 0 0 100vmax #1a2133} /* Abilities gets a clearly bluer band */
+/* the shorter chapters keep their cards, with a softer edge that fades sooner and a calmer wash */
+body.chband details.phd:not(.bsd):not(.abd){background:linear-gradient(to bottom,rgba(90,156,240,.07),transparent clamp(120px,35%,260px)),rgba(255,255,255,.028)}
+body.chband details.phd:not(.bsd):not(.abd)::before{opacity:.6;height:min(max(150px,35%),320px,calc(100% + 2px))}
+body.chband details.phd:not(.bsd):not(.abd)::after{opacity:.3;height:min(max(80px,20%),180px,calc(100% + 2px))}
 body.chband details.phd.bsd::before,body.chband details.phd.bsd::after,body.chband details.phd.abd::before,body.chband details.phd.abd::after,body.chband details.phd.abd .cgl,body.chband details.phd.bsd .cgl{display:none}
 body.chband #aowrap > details.phd{margin-top:32px}
 .cgl{position:absolute;z-index:-1;pointer-events:none;width:2px;background:linear-gradient(to bottom,transparent,rgba(110,170,250,.95) 50%,transparent);filter:drop-shadow(0 0 5px rgba(90,156,240,.7))} /* a long glint along a side of a long chapter */
