@@ -570,11 +570,8 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .aoic{width:30px;height:30px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}.aoic img{width:22px;height:22px;object-fit:contain}
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
-.aos{position:absolute;top:0;bottom:0}
-.aos.lv1{background:rgba(141,120,201,.16)}.aos.lv2{background:rgba(141,120,201,.3)}.aos.lv3{background:rgba(141,120,201,.46)}.aos.lv4{background:rgba(196,160,78,.34)}
-.aos.fd{opacity:.45}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1{background:#5b46a3}.aok.t2{background:#7357cc}.aok.t3{background:#c4a04e;color:#1c1608}
+.aok.t1{background:#4a3683}.aok.t2{background:#6a4fc0}.aok.t3{background:#9a7cff;color:#1a1426}
 .aou{position:absolute;top:9px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#d8cff5}
 .aok.fd,.aou.fd{opacity:.45}
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}
@@ -3188,8 +3185,8 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
 }
 
 // Ability order: the orders top-ranked players spend ability points in, one tab per play style (the first two abilities maxed).
-// Each ability is a row on a real time scale: it shades in from its unlock and deepens with each tier, gold once maxed;
-// the tier chips sit at the average time that point is spent. Points fewer than half of that style's players reach are faded.
+// Each ability is a row on a real time scale: a mark at its unlock and a chip for each tier, coloured by tier,
+// at the average time that point is spent. Points fewer than half of that style's players reach are faded.
 var AO_SHUT = null, AO_TAB = {}; // the hero whose Ability order you folded away; the style tab picked on each hero
 function aoSig(h) { return [1, 2, 3, 4].map(function (i) { return state.byClass[(h.items || {})["signature" + i]]; }); }
 function abilityOrderHtml(h) {
@@ -3204,18 +3201,17 @@ function abilityOrderHtml(h) {
   for (var m = 0; m * 60 <= T + 30; m += step) ticks.push(m);
   var X = function (t) { return "calc(var(--aop) + (100% - 2 * var(--aop)) * " + (Math.min(t, T) / T).toFixed(4) + ")"; };
   var L = ["", "1", "2", "5"], rows = [0, 1, 2, 3].map(function (s) {
-    var mine = pts.filter(function (p) { return p[0] === s; }).sort(function (a, b) { return a[1] - b[1]; }), seg = "", mk = "";
+    var mine = pts.filter(function (p) { return p[0] === s; }).sort(function (a, b) { return a[1] - b[1]; }), mk = "";
     mine.forEach(function (p, k) {
-      var nx = mine[k + 1], fd = p[3] < .5 ? " fd" : "";
-      seg += '<span class="aos lv' + (p[1] + 1) + fd + '" style="left:' + X(p[2]) + ";right:" + (nx ? "calc(100% - " + X(nx[2]) + ")" : "0") + '"></span>';
+      var fd = p[3] < .5 ? " fd" : "";
       mk += p[1] ? '<span class="aok t' + p[1] + fd + '" style="left:' + X(p[2]) + '">' + L[p[1]] + "</span>" : '<span class="aou' + fd + '" style="left:' + X(p[2]) + '"></span>';
     });
-    return '<div class="aor">' + ico(s) + '<div class="aotr">' + ticks.map(function (m) { return '<span class="aogl" style="left:' + X(m * 60) + '"></span>'; }).join("") + seg + mk + "</div></div>";
+    return '<div class="aor">' + ico(s) + '<div class="aotr">' + ticks.map(function (m) { return '<span class="aogl" style="left:' + X(m * 60) + '"></span>'; }).join("") + mk + "</div></div>";
   }).join("");
   var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
   return '<details class="phd aod"' + (AO_SHUT === h.class_name ? "" : " open") + '><summary class="sec">Ability order' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>" +
     '<p class="ppnote">How top-ranked players spend their ability points' + (A.builds.length > 1 ? ", by play style: the two abilities maxed first, and the share of players who do it" : "") + ".</p>" + tabs +
-    '<div class="aobx">' + rows + axis + '</div><p class="aocap">Spaced by the average time each point is spent. Rows deepen with each tier and turn gold once maxed; faded points are reached by fewer than half of these players.</p></details>';
+    '<div class="aobx">' + rows + axis + '</div><p class="aocap">Spaced by the average time each point is spent. Dot: unlock; 1 / 2 / 5: the tier bought. Faded points are reached by fewer than half of these players.</p></details>';
 }
 function aoLayout(root) { // tier chips spent close together would overlap: nudge each one right of the one before it in its row
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
