@@ -570,9 +570,9 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1,.aok.t2{background:#6a4fc0}.aok.t3{background:#c4a04e;color:#1c1608}
-.aou{position:absolute;top:6px;width:3px;height:16px;margin-left:-1.5px;border-radius:2px;background:#d8cff5} /* the unlock: a short tick */
-.aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}
+.aok.t1,.aok.t2{background:#4f3a96}.aok.t3{background:#a3823a;color:#1c1608}
+.aou{position:absolute;top:13px;right:0;height:0;border-top:2px dotted rgba(216,207,245,.5)} /* the unlock: a dotted line from then to the end of the row, behind the chips */
+.aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
 .ppy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}.ppy span{font-weight:400;letter-spacing:.02em;text-transform:none;margin-left:4px}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -3197,7 +3197,7 @@ function abilityOrderHtml(h) {
   }).join("") + "</div></div>") + '<p class="aonm">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>";
   var pts = B.pts, T = Math.max.apply(null, pts.map(function (p) { return p[2]; })), step = T > 2700 ? 10 : 5, ticks = [];
   for (var m = 0; m * 60 <= T + 30; m += step) ticks.push(m);
-  var X = function (t) { return "calc(var(--aop) + (100% - 2 * var(--aop)) * " + (Math.min(t, T) / T).toFixed(4) + ")"; };
+  var X = function (t) { return "calc((100% - var(--aop)) * " + (Math.min(t, T) / T).toFixed(4) + ")"; }; // 0m at the row's left edge; room on the right for the last chip
   var L = ["", "1", "2", "5"], rows = [0, 1, 2, 3].map(function (s) {
     var mine = pts.filter(function (p) { return p[0] === s; }).sort(function (a, b) { return a[1] - b[1]; }), mk = "";
     mine.forEach(function (p, k) {
@@ -3211,13 +3211,12 @@ function abilityOrderHtml(h) {
     '<p class="ppnote">The order high-ranked players spend ability points in: ' + esc(aoRank()) + ".</p>" + tabs +
     '<div class="aobx">' + rows + axis + "</div></details>";
 }
-function aoLayout(root) { // marks spent close together would overlap: each chip is nudged just right of the mark before it in its row, so the unlock tick always shows
+function aoLayout(root) { // chips spent close together would overlap: each one is nudged just right of the one before it in its row
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
-    var edge = -1e9; // the right edge of the last mark placed
-    Array.prototype.forEach.call(tr.querySelectorAll(".aou,.aok"), function (k) {
+    var edge = 0; // the right edge of the last chip placed (a chip at 0:00 starts at the row's edge)
+    Array.prototype.forEach.call(tr.querySelectorAll(".aok"), function (k) { // the unlock line sits behind the chips, so it never pushes one
       k.style.transform = ""; var x = k.offsetLeft, w = k.offsetWidth;
-      if (k.classList.contains("aou")) { edge = x + w; return; } // the tick stays at its true time
-      var min = edge + 2; if (x < min) { k.style.transform = "translateX(" + (min - x) + "px)"; x = min; }
+      var min = edge ? edge + 2 : 0; if (x < min) { k.style.transform = "translateX(" + (min - x) + "px)"; x = min; }
       edge = x + w;
     });
   });

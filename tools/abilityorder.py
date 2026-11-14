@@ -18,7 +18,7 @@ from popular import get, load, DATA  # same API helper and data loader
 MIN_SHARE = 0.08         # a style needs at least this share of the hero's orders
 SAME_FIRST_SHARE = 0.10  # ...and this much if it maxes the same ability first as one already kept
 MIN_POINTS = 12          # orders shorter than this (very short matches) say little about a style
-MIN_REACH = 0.25         # points fewer than this share of a style's players reach are left out
+MIN_REACH = 0.05         # points fewer than this share of a style's players reach are left out (the last points come late, when many matches are over)
 
 
 def badge_cutoff():
