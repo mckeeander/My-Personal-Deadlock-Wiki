@@ -562,14 +562,17 @@ details.phd.bsd{margin-top:28px}
 /* trial (Deadman Danny): Base stats and Abilities drop the card for a subtly tinted band running the full width of the screen,
    each chapter its own shade, meeting edge to edge; the shorter chapters keep their cards */
 body.chband details.phd.bsd,body.chband details.phd.abd{border:0;border-radius:0;padding:26px 0 30px;margin-bottom:0;clip-path:inset(0 -100vmax)}
-body.chband details.phd.bsd{background:none;box-shadow:none} /* Base stats sits on the page's own background */
-body.chband details.phd.abd{margin-top:0;background:#1a2133;box-shadow:0 0 0 100vmax #1a2133} /* Abilities gets a clearly bluer band */
-/* the shorter chapters keep their cards, with a softer edge that fades sooner and a calmer wash */
-body.chband details.phd:not(.bsd):not(.abd){background:linear-gradient(to bottom,rgba(90,156,240,.07),transparent clamp(120px,35%,260px)),rgba(255,255,255,.028)}
+body.chband details.phd.bsd{background:none;box-shadow:none;margin-top:12px;padding-top:6px} /* Base stats sits on the page's own background, a little closer to the hero card */
+/* Abilities sits on a purple panel that runs past both screen edges, tilted slightly, with a soft shadow so the whole chapter looks lifted */
+body.chband details.phd.abd{margin-top:14px;background:none;box-shadow:none;clip-path:none;padding-top:34px;padding-bottom:40px}
+body.chband details.phd.abd::before{display:block;content:"";position:absolute;z-index:-1;left:calc(50% - 50vw - 24px);right:calc(50% - 50vw - 24px);top:0;bottom:0;height:auto;border:0;border-radius:0;-webkit-mask:none;mask:none;opacity:1;background:#211b33;transform:skewY(-1.8deg);box-shadow:0 12px 26px rgba(0,0,0,.55),0 -6px 18px rgba(0,0,0,.35)}
+body.chband #aowrap > details.phd{margin-top:44px}
+/* the shorter chapters keep their cards, each in its own colour, with a softer edge that fades sooner and a calmer wash */
+body.chband #aowrap{--cc:#a283f0;--cr:162,131,240}body.chband #popwrap{--cc:#5fc87a;--cr:95,200,122}body.chband #revwrap{--cc:#5a9cf0;--cr:90,156,240}
+body.chband details.phd:not(.bsd):not(.abd){--cc:inherit;border-color:rgba(var(--cr),.24);background:linear-gradient(to bottom,rgba(var(--cr),.08),transparent clamp(120px,35%,260px)),rgba(255,255,255,.028)}
 body.chband details.phd:not(.bsd):not(.abd)::before{opacity:.6;height:min(max(150px,35%),320px,calc(100% + 2px))}
 body.chband details.phd:not(.bsd):not(.abd)::after{opacity:.3;height:min(max(80px,20%),180px,calc(100% + 2px))}
-body.chband details.phd.bsd::before,body.chband details.phd.bsd::after,body.chband details.phd.abd::before,body.chband details.phd.abd::after,body.chband details.phd.abd .cgl,body.chband details.phd.bsd .cgl{display:none}
-body.chband #aowrap > details.phd{margin-top:32px}
+body.chband details.phd.bsd::before,body.chband details.phd.bsd::after,body.chband details.phd.abd::after,body.chband details.phd.abd .cgl,body.chband details.phd.bsd .cgl{display:none}
 .cgl{position:absolute;z-index:-1;pointer-events:none;width:2px;background:linear-gradient(to bottom,transparent,rgba(110,170,250,.95) 50%,transparent);filter:drop-shadow(0 0 5px rgba(90,156,240,.7))} /* a long glint along a side of a long chapter */
 /* the blue edge is offset like the stat cards: bright round the top-left corner, fading along the top and down the left side, with a fainter
    echo round the bottom-right corner. Both are sized to the card (a share of its height, within limits), so a long chapter keeps its edge further down */
