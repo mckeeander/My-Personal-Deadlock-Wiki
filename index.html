@@ -568,10 +568,11 @@ details.phd > summary.nofold{cursor:default} /* the core sections are always ope
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
 .ipage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px} /* the item page: its card, set apart from the patch history below */.ipl .pnl{margin-top:4px}
 .aotw{display:flex;justify-content:center;margin:14px 0 0}
-.aotabs{display:inline-flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
-.aotab{border:0;background:transparent;border-radius:8px;padding:6px 16px;color:var(--dim);font:inherit;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
-.aotab.on{background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold);color:var(--fg)}
-.aorank{font-size:12.5px;color:var(--dim);margin:8px 0 0}
+.aotabs{position:relative;display:inline-flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+.aotab{position:relative;z-index:1;border:0;background:transparent;border-radius:8px;padding:6px 16px;color:var(--dim);font:inherit;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent;transition:color .3s ease}
+.aotab.on{color:var(--fg)}
+.aoth{position:absolute;top:3px;bottom:3px;left:3px;border-radius:8px;background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold)} /* the highlight behind the picked tab; it slides when you switch */
+.aorank{font-size:12.5px;line-height:1.45;color:var(--dim);margin:8px 0 0}.aorank b{color:var(--fg);font-weight:600}
 .aonm{text-align:center;font-size:13px;color:var(--dim);margin:14px 0 16px}.aonm b{color:var(--fg);font-weight:600}
 .aobx{--aop:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px}
 .aor{display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;margin-bottom:5px}
@@ -3194,7 +3195,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
 // Each ability is a row on a real time scale: a mark at its unlock and a chip for each tier, coloured by tier,
 // at the average time that point is spent.
 var AO_SHUT = null, AO_TAB = {}; // the hero whose Ability order you folded away; the style tab picked on each hero
-function aoRank() { var b = (state.ao && state.ao.badge) || (state.pop && state.pop.badge), r = b && RANKS[Math.floor(b / 10)]; return r ? r + " " + (b % 10) + " and up" : "Top-ranked matches"; }
+function aoRank() { var b = (state.ao && state.ao.badge) || (state.pop && state.pop.badge), r = b && RANKS[Math.floor(b / 10)]; return r ? r + " " + (b % 10) + " and up" : "the top ranks"; }
 function aoSig(h) { return [1, 2, 3, 4].map(function (i) { return state.byClass[(h.items || {})["signature" + i]]; }); }
 function abilityOrderHtml(h) {
   var A = state.ao && state.ao.heroes && state.ao.heroes[h.class_name]; if (!A || !A.builds || !A.builds.length) return "";
@@ -3203,7 +3204,7 @@ function abilityOrderHtml(h) {
   var ico = function (s, c) { return '<span class="' + (c || "aoic") + '"><img src="' + esc(itemImg(sig[s])) + '" alt=""></span>'; };
   var tabs = (A.builds.length < 2 ? "" : '<div class="aotw"><div class="aotabs" role="tablist">' + A.builds.map(function (b, i) { // one tab per play style, labelled with the share of players; the line under names the style
     return '<button class="aotab' + (i === bi ? " on" : "") + '" role="tab" aria-selected="' + (i === bi) + '" data-aot="' + i + '" aria-label="Max ' + esc(nameOf(sig[b.max[0]])) + ", then " + esc(nameOf(sig[b.max[1]])) + ", " + Math.round(b.share * 100) + '% of players">' + Math.round(b.share * 100) + "%</button>";
-  }).join("") + "</div></div>") + '<p class="aonm">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>";
+  }).join("") + '<span class="aoth" aria-hidden="true"></span></div></div>') + '<p class="aonm">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>";
   var pts = B.pts, T = Math.max.apply(null, pts.map(function (p) { return p[2]; })), step = T > 2700 ? 10 : 5, ticks = [];
   for (var m = 0; m * 60 <= T + 30; m += step) ticks.push(m);
   var X = function (t) { return "calc((100% - var(--aop)) * " + (Math.min(t, T) / T).toFixed(4) + ")"; }; // 0m at the row's left edge; room on the right for the last chip
@@ -3211,16 +3212,17 @@ function abilityOrderHtml(h) {
     var mine = pts.filter(function (p) { return p[0] === s; }).sort(function (a, b) { return a[1] - b[1]; }), mk = "";
     mine.forEach(function (p, k) {
       var fd = "";
-      mk += p[1] ? '<span class="aok t' + p[1] + fd + '" style="left:' + X(p[2]) + '">' + L[p[1]] + "</span>" : '<span class="aou' + fd + '" style="left:' + X(p[2]) + '"></span>';
+      mk += p[1] ? '<span class="aok t' + p[1] + fd + '" data-k="k' + s + "-" + p[1] + '" style="left:' + X(p[2]) + '">' + L[p[1]] + "</span>" : '<span class="aou' + fd + '" data-k="u' + s + '" style="left:' + X(p[2]) + '"></span>';
     });
-    return '<div class="aor">' + ico(s) + '<div class="aotr">' + ticks.map(function (m) { return '<span class="aogl" style="left:' + X(m * 60) + '"></span>'; }).join("") + mk + "</div></div>";
+    return '<div class="aor">' + ico(s) + '<div class="aotr">' + ticks.map(function (m) { return '<span class="aogl" data-k="g' + s + "-" + m + '" style="left:' + X(m * 60) + '"></span>'; }).join("") + mk + "</div></div>";
   }).join("");
-  var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
+  var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span data-k="a' + m + '" style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
   return '<details class="phd aod" open><summary class="sec nofold">Ability order</summary>' +
     tabs +
-    '<div class="aobx">' + rows + axis + '</div><p class="aorank">' + esc(aoRank()) + "</p></details>";
+    '<div class="aobx">' + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players at " + esc(aoRank()) + " max these two first.</p></details>";
 }
 function aoLayout(root) { // chips spent close together would overlap: each one is nudged just right of the one before it in its row
+  Array.prototype.forEach.call((root || document).querySelectorAll(".aotabs"), function (t) { var on = t.querySelector(".aotab.on"), th = t.querySelector(".aoth"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; } }); // the gold highlight sits behind the picked tab
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
     var edge = 0; // the right edge of the last chip placed (a chip at 0:00 starts at the row's edge)
     Array.prototype.forEach.call(tr.querySelectorAll(".aok"), function (k) { // the unlock line sits behind the chips, so it never pushes one
@@ -3231,6 +3233,31 @@ function aoLayout(root) { // chips spent close together would overlap: each one 
   });
 }
 function aoRender(h) { var w = $("aowrap"); if (w && h) { w.innerHTML = abilityOrderHtml(h); aoLayout(w); } }
+// Switching style: the gold highlight slides to the new tab; every point, unlock line and gridline that's in both charts slides
+// to its new place, ones that go fade out where they were, new ones fade in, and the two lines of text cross-fade.
+function aoSwitch(h, i) {
+  var w = $("aowrap"); if (!w || !h) return;
+  var calm = !w.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var oth = w.querySelector(".aoth"), t0 = oth ? { l: oth.offsetLeft, w: oth.offsetWidth } : null, old = {}, pars = w.querySelectorAll(".aotr,.aoax");
+  if (!calm) Array.prototype.forEach.call(w.querySelectorAll("[data-k]"), function (el) {
+    var pi = Array.prototype.indexOf.call(pars, el.parentNode); old[el.getAttribute("data-k")] = { x: el.getBoundingClientRect().left, pi: pi, node: el.cloneNode(true) };
+  });
+  AO_TAB[h.class_name] = i; aoRender(h);
+  if (calm) return;
+  var D = 420, E = "cubic-bezier(.4,0,.2,1)", np = w.querySelectorAll(".aotr,.aoax"), seen = {};
+  var th = w.querySelector(".aoth"); if (th && t0) th.animate([{ left: t0.l + "px", width: t0.w + "px" }, { left: th.style.left, width: th.style.width }], { duration: 320, easing: E });
+  Array.prototype.forEach.call(w.querySelectorAll("[data-k]"), function (el) {
+    var k = el.getAttribute("data-k"), o = old[k]; seen[k] = 1;
+    if (!o) { el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: 180, easing: "ease-out", fill: "backwards" }); return; }
+    var dx = o.x - el.getBoundingClientRect().left; if (Math.abs(dx) > .5) el.animate([{ translate: dx + "px 0" }, { translate: "0 0" }], { duration: D, easing: E });
+  });
+  Object.keys(old).forEach(function (k) { // gone from the new chart: fade out where it was
+    if (seen[k]) return; var o = old[k], par = np[o.pi]; if (!par) return;
+    var g = o.node; g.removeAttribute("data-k"); g.style.left = (o.x - par.getBoundingClientRect().left) + "px"; g.style.marginLeft = "0"; g.style.transform = "none"; g.style.pointerEvents = "none";
+    par.appendChild(g); g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: "ease-in", fill: "forwards" }).onfinish = function () { if (g.parentNode) g.parentNode.removeChild(g); };
+  });
+  Array.prototype.forEach.call(w.querySelectorAll(".aonm,.aorank"), function (p) { p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: "ease-out" }); });
+}
 function heroHead(h) { return pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h); }
 function isStats(g) { return !g.ac && g.label === "Stats"; }
 function revisionsHtml(h) { // Patch history: every official patch that touched this hero, newest first
@@ -4845,7 +4872,7 @@ $("main").addEventListener("click", function (e) {
     return;
   }
   var aot = e.target.closest ? e.target.closest(".aotab[data-aot]") : null;
-  if (aot) { AO_TAB[state.hero] = +aot.getAttribute("data-aot"); aoRender(state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]); return; }
+  if (aot) { if (!aot.classList.contains("on")) aoSwitch(state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], +aot.getAttribute("data-aot")); return; }
   var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem]") : null;
   if (pi) { itemSheet(pi.getAttribute("data-pitem")); return; }
   var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
