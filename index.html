@@ -119,6 +119,7 @@ body{padding-top:calc(env(safe-area-inset-top,0) + 32px)}
 main{padding:12px 12px 8px;max-width:600px;margin:0 auto}
 .credits{max-width:600px;margin:0 auto;padding:20px 12px calc(env(safe-area-inset-bottom,0) + 90px);font-size:11px;line-height:1.5;color:var(--dim);opacity:.8}
 .credits p{margin:0 0 12px}.credits a{color:inherit}
+.credits::before{content:"";display:block;height:1px;background:var(--line);margin:0 0 20px} /* a rule between the page and its footer */
 html{-webkit-text-size-adjust:100%}
 body{overflow-x:hidden}
 html,body{overflow-x:clip}
