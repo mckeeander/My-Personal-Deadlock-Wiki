@@ -559,14 +559,14 @@ details.phd > summary.sec{justify-content:center;gap:14px;border-bottom:0;paddin
 details.phd > summary.sec::before,details.phd > summary.sec::after{content:"";position:static;flex:1;min-width:16px;width:auto;height:1px;border-radius:0;background:linear-gradient(90deg,rgba(196,160,78,.15),rgba(196,160,78,.9))}
 details.phd > summary.sec::after{background:linear-gradient(270deg,rgba(196,160,78,.15),rgba(196,160,78,.9))}
 details.phd > summary.sec .secn{margin-left:-5px}
-details.phd > summary.sec:has(.ncv){padding-right:26px} /* sections that still fold keep their arrow at the far right */
+details.phd > summary.sec:has(.ncv){padding-left:26px;padding-right:26px} /* sections that still fold keep their arrow at the far right; matching room on the left keeps the title centred */
 details.phd > summary.sec .ncv{position:absolute;right:0;top:50%;margin:-9px 0 0}
 details.phd > summary.nofold{cursor:default} /* the core sections are always open */
-/* bigger titles, brighter rules, and a gold edge above each chapter with a spotlight falling from it into the section */
+/* bigger titles, brighter rules, and a gold spotlight behind each chapter title falling into the section */
 details.phd > summary.sec{font-size:32px;padding-top:8px}
 details.phd > summary.sec::before{background:linear-gradient(90deg,rgba(196,160,78,.1),#e0bd68)}details.phd > summary.sec::after{background:linear-gradient(270deg,rgba(196,160,78,.1),#e0bd68)}
 details.phd{position:relative;isolation:isolate}
-details.phd::before{content:"";position:absolute;z-index:-1;pointer-events:none;left:-12px;right:-12px;top:-28px;height:calc(100% + 28px);max-height:340px;background:linear-gradient(90deg,transparent,#e0bd68 30%,#e0bd68 70%,transparent) top/100% 2px no-repeat,radial-gradient(70% 100% at 50% 0%,rgba(224,189,104,.22),rgba(224,189,104,.06) 50%,transparent 80%)}
+details.phd::before{content:"";position:absolute;z-index:-1;pointer-events:none;left:-12px;right:-12px;top:-56px;height:calc(100% + 56px);max-height:380px;background:radial-gradient(70% 85% at 50% 56px,rgba(224,189,104,.22),rgba(224,189,104,.06) 50%,transparent 80%);-webkit-mask:linear-gradient(to bottom,transparent,#000 56px);mask:linear-gradient(to bottom,transparent,#000 56px)} /* the spotlight is brightest at the title and fades out quickly above it */
 .phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
 .phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.phb.on img{opacity:1}
 .phsum{font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-left:8px}
@@ -578,7 +578,7 @@ details.phd::before{content:"";position:absolute;z-index:-1;pointer-events:none;
 .aotab.on{color:var(--fg)}
 .aoth{position:absolute;top:3px;bottom:3px;left:3px;border-radius:8px;background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold)} /* the highlight behind the picked tab; it slides when you switch */
 .aorank{font-size:12.5px;line-height:1.45;color:var(--dim);margin:8px 0 0}.aorank b{color:var(--fg);font-weight:600}
-.aonm{text-align:center;font-size:13px;color:var(--dim);margin:14px 0 16px}.aonm b{color:var(--fg);font-weight:600}
+.aotw + .aobx{margin-top:16px}
 .aobx{--aop:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px}
 .aor{display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;margin-bottom:5px}
 .aoic{width:30px;height:30px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}.aoic img{width:22px;height:22px;object-fit:contain}
@@ -3193,7 +3193,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
   }).join("");
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
-  return '<details class="phd ppd"' + (POP_SHUT === h.class_name ? "" : " open") + '><summary class="sec">Popular items' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + '</summary><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body + "</details>";
+  return '<details class="phd ppd" open><summary class="sec nofold">Popular items</summary><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body + "</details>";
 }
 
 // Ability order: the orders top-ranked players spend ability points in, one tab per play style (the first two abilities maxed).
@@ -3209,7 +3209,7 @@ function abilityOrderHtml(h) {
   var ico = function (s, c) { return '<span class="' + (c || "aoic") + '"><img src="' + esc(itemImg(sig[s])) + '" alt=""></span>'; };
   var tabs = (A.builds.length < 2 ? "" : '<div class="aotw"><div class="aotabs" role="tablist">' + A.builds.map(function (b, i) { // one tab per play style, labelled with the share of players; the line under names the style
     return '<button class="aotab' + (i === bi ? " on" : "") + '" role="tab" aria-selected="' + (i === bi) + '" data-aot="' + i + '" aria-label="Max ' + esc(nameOf(sig[b.max[0]])) + ", then " + esc(nameOf(sig[b.max[1]])) + ", " + Math.round(b.share * 100) + '% of players">' + Math.round(b.share * 100) + "%</button>";
-  }).join("") + '<span class="aoth" aria-hidden="true"></span></div></div>') + '<p class="aonm">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>";
+  }).join("") + '<span class="aoth" aria-hidden="true"></span></div></div>');
   var pts = B.pts, T = Math.max.apply(null, pts.map(function (p) { return p[2]; })), step = T > 2700 ? 10 : 5, ticks = [];
   for (var m = 0; m * 60 <= T + 30; m += step) ticks.push(m);
   var X = function (t) { return "calc((100% - var(--aop)) * " + (Math.min(t, T) / T).toFixed(4) + ")"; }; // 0m at the row's left edge; room on the right for the last chip
@@ -3224,7 +3224,7 @@ function abilityOrderHtml(h) {
   var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span data-k="a' + m + '" style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
   return '<details class="phd aod" open><summary class="sec nofold">Ability order</summary>' +
     tabs +
-    '<div class="aobx">' + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players at " + esc(aoRank()) + " max these two first.</p></details>";
+    '<div class="aobx">' + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players in " + esc(aoRank()) + " max <b>" + esc(nameOf(sig[B.max[0]])) + "</b> first, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b>.</p></details>";
 }
 function aoLayout(root) { // chips spent close together would overlap: each one is nudged just right of the one before it in its row
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotabs"), function (t) { var on = t.querySelector(".aotab.on"), th = t.querySelector(".aoth"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; } }); // the gold highlight sits behind the picked tab
@@ -3262,7 +3262,7 @@ function aoSwitch(h, i) {
     var g = o.node; g.removeAttribute("data-k"); g.style.left = (o.x - par.getBoundingClientRect().left) + "px"; g.style.marginLeft = "0"; g.style.transform = "none"; g.style.pointerEvents = "none";
     par.appendChild(g); g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: "ease-in", fill: "forwards" }).onfinish = function () { if (g.parentNode) g.parentNode.removeChild(g); };
   });
-  Array.prototype.forEach.call(w.querySelectorAll(".aonm,.aorank"), function (p) { p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: "ease-out" }); });
+  Array.prototype.forEach.call(w.querySelectorAll(".aorank"), function (p) { p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: "ease-out" }); });
 }
 function heroHead(h) { return pick(h.images, ["icon_image_small", "icon_image_small_webp"]) || heroImg(h); }
 function isStats(g) { return !g.ac && g.label === "Stats"; }
@@ -3296,7 +3296,7 @@ function phListHtml(P, filt, bodyOf, absOf, open, all) { // all: every patch sho
   }).join("");
   var more = P.length > show ? '<button class="phmore">Show older patches (' + (P.length - show) + ")</button>" : "";
   // the whole section folds: the header is the toggle (shut on hero pages, open on an item page, where it is what you came for)
-  return '<details class="phd"' + (open ? " open" : "") + '><summary class="sec">Patch history <span class="secn">' + P.length + "</span>" + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>" + filt + '<div id="revs" class="phist">' + rows + more + "</div></details>";
+  return '<details class="phd"' + (open ? " open" : "") + '><summary class="sec">Patch history' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>" + filt + '<div id="revs" class="phist">' + rows + more + "</div></details>";
 }
 function revisionsHtml0(h) {
   var R = state.revs; if (!R || !R.length) return "";
