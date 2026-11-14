@@ -563,6 +563,7 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .aotabs{display:inline-flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
 .aotab{border:0;background:transparent;border-radius:8px;padding:6px 16px;color:var(--dim);font:inherit;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
 .aotab.on{background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold);color:var(--fg)}
+.aorank{font-size:12.5px;color:var(--dim);margin:8px 0 0}
 .aonm{text-align:center;font-size:13px;color:var(--dim);margin:14px 0 16px}.aonm b{color:var(--fg);font-weight:600}
 .aobx{--aop:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px}
 .aor{display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;margin-bottom:5px}
@@ -570,8 +571,8 @@ details.phd > summary{list-style:none;display:flex;align-items:center;gap:8px;cu
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1,.aok.t2{background:#4f3a96}.aok.t3{background:#a3823a;color:#1c1608}
-.aou{position:absolute;top:13px;right:0;height:0;border-top:2px dotted rgba(216,207,245,.5)} /* the unlock: a dotted line from then to the end of the row, behind the chips */
+.aok.t1,.aok.t2{background:#4f3a96}.aok.t3{background:#c4a04e;color:#1c1608}
+.aou{position:absolute;top:0;bottom:0;width:0;border-left:2px dotted rgba(216,207,245,.7);margin-left:-1px} /* the unlock: a vertical dotted line, behind the chips */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
 .ppy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}.ppy span{font-weight:400;letter-spacing:.02em;text-transform:none;margin-left:4px}
@@ -3185,7 +3186,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
 // Each ability is a row on a real time scale: a mark at its unlock and a chip for each tier, coloured by tier,
 // at the average time that point is spent.
 var AO_SHUT = null, AO_TAB = {}; // the hero whose Ability order you folded away; the style tab picked on each hero
-function aoRank() { var b = (state.ao && state.ao.badge) || (state.pop && state.pop.badge), r = b && RANKS[Math.floor(b / 10)]; return r ? r + " " + (b % 10) + " and up, about the top 5% of matches" : "about the top 5% of matches"; }
+function aoRank() { var b = (state.ao && state.ao.badge) || (state.pop && state.pop.badge), r = b && RANKS[Math.floor(b / 10)]; return r ? r + " " + (b % 10) + " and up" : "Top-ranked matches"; }
 function aoSig(h) { return [1, 2, 3, 4].map(function (i) { return state.byClass[(h.items || {})["signature" + i]]; }); }
 function abilityOrderHtml(h) {
   var A = state.ao && state.ao.heroes && state.ao.heroes[h.class_name]; if (!A || !A.builds || !A.builds.length) return "";
@@ -3208,8 +3209,8 @@ function abilityOrderHtml(h) {
   }).join("");
   var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
   return '<details class="phd aod"' + (AO_SHUT === h.class_name ? "" : " open") + '><summary class="sec">Ability order' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary>" +
-    '<p class="ppnote">The order high-ranked players spend ability points in: ' + esc(aoRank()) + ".</p>" + tabs +
-    '<div class="aobx">' + rows + axis + "</div></details>";
+    tabs +
+    '<div class="aobx">' + rows + axis + '</div><p class="aorank">' + esc(aoRank()) + "</p></details>";
 }
 function aoLayout(root) { // chips spent close together would overlap: each one is nudged just right of the one before it in its row
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
