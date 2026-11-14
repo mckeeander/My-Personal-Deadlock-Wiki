@@ -569,13 +569,23 @@ body.chband details.phd.abd::before{display:none}
 .chpanel{display:none}
 /* the panel is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilted edges: the top is higher on the left, the bottom lower on the left */
 body.chband .chpanel{display:block;position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:-22px;bottom:-22px;filter:drop-shadow(0 12px 14px rgba(0,0,0,.55)) drop-shadow(0 -5px 10px rgba(0,0,0,.3))}
-body.chband .chpanel i{position:absolute;inset:0;background:#211b33;clip-path:polygon(0 0,100% 30px,100% calc(100% - 30px),0 100%)}
+body.chband .chpanel i{position:absolute;inset:0;background:#211b33;clip-path:polygon(0 0,100% 20px,100% calc(100% - 20px),0 100%)}
+/* Popular items: the same raised panel, mirrored (higher on the right), in a dark green-grey so the bright green stays an accent */
+body.chband details.phd.ppd{--cc:inherit;border:0;border-radius:0;padding:34px 0 40px;margin:68px 0 0;background:none;box-shadow:none}
+body.chband details.phd.ppd::before,body.chband details.phd.ppd::after,body.chband details.phd.ppd .cgl{display:none}
+body.chband details.phd.ppd .chpanel i{background:#18231f;clip-path:polygon(0 20px,100% 0,100% 100%,0 calc(100% - 20px))}
+body.chband #revwrap > details.phd{margin-top:64px}
+/* each ability card, and each popular item, casts a soft shadow onto its panel */
+body.chband details.abd .ab{box-shadow:0 8px 18px rgba(0,0,0,.45)}
+body.chband details.ppd .ppc{box-shadow:0 5px 12px rgba(0,0,0,.35)}
+/* Base stats: a key to what's inside, three slanted bars in the Vitality, Weapon and Spirit colours */
+body.chband details.phd.bsd > summary.sec .sect::after{width:66px;margin-left:-33px;height:4px;bottom:-24px;border-radius:1px;transform:skewX(-28deg);background:linear-gradient(90deg,var(--vital) 0 30%,transparent 30% 35%,#d9a441 35% 65%,transparent 65% 70%,var(--spirit) 70% 100%)}
 body.chband #aowrap > details.phd{margin-top:68px}
 /* the shorter chapters keep their cards, each in its own colour, with a softer edge that fades sooner and a calmer wash */
 body.chband #aowrap{--cc:#a283f0;--cr:162,131,240}body.chband #popwrap{--cc:#5fc87a;--cr:95,200,122}body.chband #revwrap{--cc:#5a9cf0;--cr:90,156,240}
-body.chband details.phd:not(.bsd):not(.abd){--cc:inherit;border-color:rgba(var(--cr),.24);background:linear-gradient(to bottom,rgba(var(--cr),.08),transparent clamp(120px,35%,260px)),rgba(255,255,255,.028)}
-body.chband details.phd:not(.bsd):not(.abd)::before{opacity:.6;height:min(max(150px,35%),320px,calc(100% + 2px))}
-body.chband details.phd:not(.bsd):not(.abd)::after{opacity:.3;height:min(max(80px,20%),180px,calc(100% + 2px))}
+body.chband details.phd:not(.bsd):not(.abd):not(.ppd){--cc:inherit;border-color:rgba(var(--cr),.24);background:linear-gradient(to bottom,rgba(var(--cr),.08),transparent clamp(120px,35%,260px)),rgba(255,255,255,.028)}
+body.chband details.phd:not(.bsd):not(.abd):not(.ppd)::before{opacity:.6;height:min(max(150px,35%),320px,calc(100% + 2px))}
+body.chband details.phd:not(.bsd):not(.abd):not(.ppd)::after{opacity:.3;height:min(max(80px,20%),180px,calc(100% + 2px))}
 body.chband details.phd.bsd::before,body.chband details.phd.bsd::after,body.chband details.phd.abd::after,body.chband details.phd.abd .cgl,body.chband details.phd.bsd .cgl{display:none}
 .cgl{position:absolute;z-index:-1;pointer-events:none;width:2px;background:linear-gradient(to bottom,transparent,rgba(110,170,250,.95) 50%,transparent);filter:drop-shadow(0 0 5px rgba(90,156,240,.7))} /* a long glint along a side of a long chapter */
 /* the blue edge is offset like the stat cards: bright round the top-left corner, fading along the top and down the left side, with a fainter
@@ -3220,7 +3230,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
   }).join("");
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
-  return '<details class="phd ppd" open><summary class="sec nofold"><span class="sect">Popular items</span></summary><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body + "</details>";
+  return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Popular items</span></summary><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body + "</details>";
 }
 
 // Ability order: the orders top-ranked players spend ability points in, one tab per play style (the first two abilities maxed).
