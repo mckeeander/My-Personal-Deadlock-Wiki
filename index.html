@@ -579,7 +579,7 @@ body.chband #revwrap > details.phd{margin-top:64px}
 /* each ability card, and each popular item, casts a soft shadow onto its panel */
 body.chband details.phd.abd{--cc:#a283f0}
 body.chband details.abd .ab{box-shadow:0 8px 18px rgba(0,0,0,.45)}
-body.chband details.ppd .ppc,body.chband details.ppd .ppr{box-shadow:0 4px 10px rgba(0,0,0,.25)}
+body.chband details.ppd .ppc,body.chband details.ppd .ppr,body.chband details.ppd .ppk,body.chband details.ppd .ppch{box-shadow:0 4px 10px rgba(0,0,0,.25)}
 /* Base stats: a key to what's inside, three slanted bars in the Vitality, Weapon and Spirit colours */
 body.chband details.phd.bsd > summary.sec .sect::after{background:var(--fg)} /* the same cream as the title */
 body.chband #aowrap > details.phd{margin-top:68px}
@@ -632,6 +632,18 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
 .ppy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}.ppy span{font-weight:400;letter-spacing:.02em;text-transform:none;margin-left:4px}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* the core build: big icons in buying order, each with its share of matches */
+.ppcore{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ppk{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 6px 9px;color:var(--fg);font:inherit;-webkit-tap-highlight-color:transparent}
+.ppk .ric{width:56px;height:56px}.ppk b{font-size:14px;font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums}
+/* situational: a chart of share of matches against buy time */
+.ppch{display:grid;grid-template-columns:34px 1fr;grid-template-rows:260px 18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 14px 6px 6px}
+.ppyax{position:relative;font-size:10px;color:var(--dim)}.ppyax span{position:absolute;right:6px;transform:translateY(-50%)}
+.ppplot{position:relative;border-left:1px solid #3a3350;border-bottom:1px solid #3a3350}
+.pphl{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.05)}
+.pplk{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.pplk line{stroke:rgba(162,131,240,.45);stroke-width:1.5;stroke-dasharray:3 3}
+.ppdot{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;padding:0;border:0;background:none;border-radius:7px;box-shadow:0 2px 6px rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent}.ppdot .ric{width:30px;height:30px}
+.ppxax{grid-column:2;position:relative;font-size:10px;color:var(--dim)}.ppxax span{position:absolute;top:4px;transform:translateX(-50%)}.ppxax span:first-child{transform:none}
 /* the core build: a timeline of items in the order they're bought */
 .pptl{position:relative;display:flex;flex-direction:column;gap:6px}
 .pptl::before{content:"";position:absolute;left:20px;top:14px;bottom:14px;width:2px;border-radius:1px;background:linear-gradient(to bottom,rgba(162,131,240,.55),rgba(196,160,78,.55))}
@@ -1344,7 +1356,7 @@ function extras(stamp, onlyMissing) { // the smaller files: all of them after ne
     if (need(state.pn)) getJson("patchnotes.json", v).then(function (pn) { if (pn && pn.patches) { state.pn = pn; idbSet("pn", pn); newsDot(); if (state.tab === "news" && !searchOn()) renderNews(); } }, function () {}); // official patch notes (deadlock-wiki/deadlock-data)
     if (need(state.hcol)) getJson("hero_colors.json", v).then(function (hc) { if (hc && hc.heroes) { state.hcol = hc; idbSet("hc", hc); heroCard(); } }, function () {}); // each hero's card colours
     if (need(state.ao)) getJson("ability_order.json", v).then(function (ao) { if (ao && ao.heroes) { state.ao = ao; idbSet("ao", ao); aoRender(state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]); } }, function () {}); // the orders top-ranked players spend ability points in
-    if (need(state.pop)) getJson("popular.json", v).then(function (pp) { if (pp && pp.heroes) { state.pop = pp; idbSet("pop", pp); var w4 = $("popwrap"), h4 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w4 && h4) { w4.innerHTML = popularHtml(h4); chapterGlints(); } } }, function () {}); // what top-ranked players buy on each hero
+    if (need(state.pop)) getJson("popular.json", v).then(function (pp) { if (pp && pp.heroes) { state.pop = pp; idbSet("pop", pp); var w4 = $("popwrap"), h4 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w4 && h4) { w4.innerHTML = popularHtml(h4); popLayout(w4); chapterGlints(); } } }, function () {}); // what top-ranked players buy on each hero
     if (need(state.ph)) getJson("patchhistory.json", v).then(function (ph) { if (ph && ph.heroes) { state.ph = ph; idbSet("ph", ph); var w3 = $("revwrap"), h3 = state.hero && state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (w3 && h3) w3.innerHTML = revisionsHtml(h3); } }, function () {}); // every official patch, per hero
     if (need(state.mc)) getJson("mechanics.json", v).then(function (mc) { if (mc && mc.mechanics) { state.mc = mc.mechanics; idbSet("mc", mc); } }, function () {}); // objectives and neutrals (deadlock-wiki/deadlock-data)
     if (need(state.pw)) getJson("powerups.json", v).then(function (pw) { if (pw && pw.powerups) { state.pw = pw; idbSet("pw", pw); } }, function () {});
@@ -3240,22 +3252,21 @@ function popularHtml(h) { // what top-ranked players buy on this hero: the core 
     return up ? '<span class="ppf">→ ' + esc(nameOf(state.byClass[up.c])) + " at " + mm(up.t) + "</span>" : '<span class="ppf">Usually sold ~' + mm(r.st) + "</span>";
   }
   var core = all.filter(function (r) { return r.p >= .6; }).sort(function (a, b) { return a.t - b.t; });
-  var coreHtml = core.length ? '<div class="ppy">Core build <span>bought in most matches, in order</span></div><div class="pptl">' + core.map(function (r) {
-    return '<button class="ppr" data-pitem="' + esc(r.c) + '"><span class="ppt">' + mm(r.t) + "</span>" + ico(r) + '<span class="ppn">' + esc(nameOf(state.byClass[r.c])) + fate(r) + "</span><b>" + Math.round(r.p * 100) + "%</b></button>";
+  // core: big icons in the order they're usually bought, each with its share of matches
+  var coreHtml = core.length ? '<div class="ppy">Core build <span>in the order they’re bought</span></div><div class="ppcore">' + core.map(function (r) {
+    return '<button class="ppk" data-pitem="' + esc(r.c) + '" aria-label="' + esc(nameOf(state.byClass[r.c])) + ", " + Math.round(r.p * 100) + '% of matches">' + ico(r) + "<b>" + Math.round(r.p * 100) + "%</b></button>";
   }).join("") + "</div>" : "";
-  // situational: grouped into the small builds they're bought together in, the rest on their own
-  var sit = all.filter(function (r) { return r.p < .6 && r.p >= .12 && !core.some(function (c) { return partOf(r.c, c.c, {}); }); }).slice(0, 14), inSit = {}, from = {};
-  sit = sit.filter(function (r) { var up = sit.filter(function (o) { return o !== r && partOf(r.c, o.c, {}); })[0]; if (up) { from[up.c] = r; return false; } return true; }); // a part that's upgraded into another pick here folds into it ("from Compress Cooldown")
-  sit.forEach(function (r) { inSit[r.c] = r; });
-  var par = {}; function root(c) { while (par[c] && par[c] !== c) c = par[c]; return c; }
-  sit.forEach(function (r) { par[r.c] = par[r.c] || r.c; (r.w || []).forEach(function (o) { if (inSit[o]) { par[o] = par[o] || o; par[root(o)] = root(r.c); } }); });
-  var groups = {}; sit.forEach(function (r) { (groups[root(r.c)] = groups[root(r.c)] || []).push(r); });
-  var tile = function (r) { var f = from[r.c]; return '<button class="ppc" data-pitem="' + esc(r.c) + '">' + ico(r) + '<span class="ppn">' + esc(nameOf(state.byClass[r.c])) + (f ? '<span class="ppf">from ' + esc(nameOf(state.byClass[f.c])) + "</span>" : fate(r)) + "</span><b>" + Math.round(r.p * 100) + "%</b></button>"; };
-  var sets = Object.keys(groups).map(function (k) { return groups[k]; }).filter(function (g) { return g.length > 1; }).sort(function (a, b) { return b[0].p - a[0].p; });
-  var solo = Object.keys(groups).map(function (k) { return groups[k]; }).filter(function (g) { return g.length === 1; }).map(function (g) { return g[0]; });
-  var sitHtml = (sets.length || solo.length) ? '<div class="ppy">Situational <span>bought in some matches</span></div>' +
-    sets.map(function (g) { return '<div class="ppset"><div class="ppsh">Often bought together</div><div class="ppg">' + g.sort(function (a, b) { return a.t - b.t; }).map(tile).join("") + "</div></div>"; }).join("") +
-    (solo.length ? '<div class="ppg">' + solo.map(tile).join("") + "</div>" : "") : "";
+  // situational: a chart, share of matches up the side (12% to 60%), usual buy time along the bottom; items usually bought together are joined by a faint line
+  var sit = all.filter(function (r) { return r.p < .6 && r.p >= .12 && !core.some(function (c) { return partOf(r.c, c.c, {}); }); }).slice(0, 16), inSit = {};
+  sit.forEach(function (r) { inSit[r.c] = 1; });
+  var T = Math.max(1200, Math.max.apply(null, sit.map(function (r) { return r.t; }).concat([0])) + 60), ticks = [];
+  for (var m = 0; m * 60 <= T; m += T > 2100 ? 10 : 5) ticks.push(m);
+  var X = function (t) { return (t / T * 100).toFixed(2) + "%"; }, Y = function (p) { return ((.6 - p) / .48 * 100).toFixed(2) + "%"; };
+  var links = []; sit.forEach(function (r) { (r.w || []).forEach(function (o) { if (inSit[o] && r.c < o) links.push(r.c + "|" + o); else if (inSit[o] && (byC[o].w || []).indexOf(r.c) < 0) links.push(r.c + "|" + o); }); });
+  var sitHtml = sit.length ? '<div class="ppy">Situational <span>bought in some matches</span></div><div class="ppch" data-links="' + esc(links.join(",")) + '"><div class="ppyax">' + [60, 48, 36, 24, 12].map(function (v) { return '<span style="top:' + Y(v / 100) + '">' + v + "%</span>"; }).join("") + '</div><div class="ppplot">' +
+    [60, 48, 36, 24, 12].map(function (v) { return '<i class="pphl" style="top:' + Y(v / 100) + '"></i>'; }).join("") + '<svg class="pplk" aria-hidden="true"></svg>' +
+    sit.map(function (r) { return '<button class="ppdot" data-pitem="' + esc(r.c) + '" data-c="' + esc(r.c) + '" style="left:' + X(r.t) + ";top:" + Y(r.p) + '" aria-label="' + esc(nameOf(state.byClass[r.c])) + ", " + Math.round(r.p * 100) + "% of matches, around " + mm(r.t) + '">' + ico(r) + "</button>"; }).join("") +
+    '</div><div class="ppxax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div></div>" : "";
   var body = coreHtml + sitHtml;
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
@@ -3302,6 +3313,24 @@ function aoLayout(root) { // chips spent close together would overlap: each one 
       var min = edge ? edge + 2 : 0; if (x < min) { k.style.transform = "translateX(" + (min - x) + "px)"; x = min; }
       edge = x + w;
     });
+  });
+}
+function popLayout(root) { // chart icons that land on top of each other are nudged up or down until they're clear, then items bought together are joined
+  Array.prototype.forEach.call((root || document).querySelectorAll(".ppch"), function (ch) {
+    var plot = ch.querySelector(".ppplot"), ds = Array.prototype.slice.call(plot.querySelectorAll(".ppdot")), placed = [], W = plot.clientWidth, H = plot.clientHeight, S = 30;
+    ds.forEach(function (d) { d.style.transform = ""; });
+    ds.map(function (d) { return { d: d, x: d.offsetLeft + S / 2, y: d.offsetTop + S / 2 }; }).forEach(function (q) {
+      var x = Math.min(Math.max(q.x, S / 2), W - S / 2), best = Math.min(Math.max(q.y, S / 2), H - S / 2);
+      for (var k = 0; k < 14; k++) {
+        var dy = (k % 2 ? 1 : -1) * Math.ceil(k / 2) * 17, y = Math.min(Math.max(q.y + dy, S / 2), H - S / 2);
+        if (!placed.some(function (o) { return Math.abs(o.x - x) < S && Math.abs(o.y - y) < S; })) { best = y; break; }
+      }
+      placed.push({ x: x, y: best, c: q.d.getAttribute("data-c") });
+      q.d.style.transform = "translate(" + (x - q.x) + "px," + (best - q.y) + "px)";
+    });
+    var at = {}; placed.forEach(function (o) { at[o.c] = o; });
+    var svg = plot.querySelector(".pplk"); svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.innerHTML = (ch.getAttribute("data-links") || "").split(",").filter(Boolean).map(function (l) { var ab = l.split("|"), a = at[ab[0]], b = at[ab[1]]; return a && b ? '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '"/>' : ""; }).join("");
   });
 }
 function aoRender(h) { var w = $("aowrap"); if (w && h) { w.innerHTML = abilityOrderHtml(h); aoLayout(w); } }
@@ -3423,7 +3452,7 @@ function renderHero(cn) {
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
   document.body.classList.add("chband"); // every hero page: Base stats flat, Abilities and Popular items on raised panels, the shorter chapters in cards
   document.body.classList.toggle("chadj", !$("aowrap").innerHTML); // no Ability order card between the two raised panels: the second matches the first's tilt
-  sbkShow(sbkWanted()); heroCard(); aoLayout($("aowrap")); requestAnimationFrame(function () { chapterGlints(); });
+  sbkShow(sbkWanted()); heroCard(); aoLayout($("aowrap")); popLayout($("popwrap")); requestAnimationFrame(function () { chapterGlints(); });
   var tg = document.querySelector("#main .hero-h .tags"); if (tg) requestAnimationFrame(function () { tg.classList.toggle("one", tg.offsetHeight < 34); }); // tags on one line get a little more room under the name
   var bk0 = $("back"); if (bk0 && !trialBack) { bk0.insertAdjacentHTML("afterend", heroLinks()); var row = document.createElement("div"); row.className = "hnavrow"; bk0.parentNode.insertBefore(row, bk0); row.appendChild(bk0); row.appendChild(document.querySelector("#main .hlks")); } // All heroes on the left, the section links on the right of the same line
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : "";
@@ -4964,7 +4993,7 @@ $("main").addEventListener("click", function (e) {
   }
   var aot = e.target.closest ? e.target.closest(".aotab[data-aot]") : null;
   if (aot) { if (!aot.classList.contains("on")) aoSwitch(state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], +aot.getAttribute("data-aot")); return; }
-  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem], .ppr[data-pitem]") : null;
+  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem], .ppr[data-pitem], .ppk[data-pitem], .ppdot[data-pitem]") : null;
   if (pi) { itemSheet(pi.getAttribute("data-pitem")); return; }
   var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
   var card = u.closest(".ab"), key = card && card.getAttribute("data-ab"), it = key && state.byClass[key]; if (!it) return;
@@ -4982,7 +5011,7 @@ $("main").addEventListener("click", function (e) {
 });
 // Revisions / What's New dates and the Notes / Interactions rows: the section grows open and folds shut (its height animates while the content fades and slides), instead of snapping.
 // Opening a native <details> just flips it, so the tap is taken over: the height is measured open and shut, animated, and the open attribute is set at the end of a close.
-window.addEventListener("resize", function () { clearTimeout(window._cgT); window._cgT = setTimeout(function () { chapterGlints(); }, 200); }); // the glints follow a chapter's new height
+window.addEventListener("resize", function () { clearTimeout(window._cgT); window._cgT = setTimeout(function () { chapterGlints(); popLayout(); }, 200); }); // the glints follow a chapter's new height
 document.addEventListener("click", function (e) {
   var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary, details.phd > summary") : null; if (!sm) return;
   if (sm.classList.contains("nofold")) { e.preventDefault(); return; } // Base stats, Abilities and Ability order don't fold
