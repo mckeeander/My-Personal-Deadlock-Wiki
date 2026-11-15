@@ -630,9 +630,9 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote b{color:var(--fg);font-weight:600}
-#main .hero-h:has(+ .chj){margin-bottom:0}.chj{display:flex;width:max-content;margin:-1px 16px 22px auto;position:relative;z-index:1;gap:2px;background:#1e1a2b;border:1px solid #2c2639;border-top:0;border-radius:0 0 12px 12px;padding:2px 4px 4px} /* jump to the later chapters: a small tab hanging from the hero card's bottom-right */
+#main .hero-h:has(+ .chj){margin-bottom:0}.chj{display:flex;width:max-content;margin:-1px 16px 22px auto;position:relative;z-index:1;gap:2px;background:var(--panel);border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;padding:2px 4px 4px} /* jump to the later chapters: a small tab hanging from the hero card's bottom-right */
 .chjb{display:flex;align-items:center;justify-content:center;width:40px;height:34px;border:0;background:none;border-radius:9px;color:var(--dim);-webkit-tap-highlight-color:transparent}
-.chjb svg{width:17px;height:17px;opacity:.85}.chjb:active{background:rgba(255,255,255,.05);color:var(--fg)}
+.chjb svg{width:17px;height:17px;color:#efe6d4;opacity:.9}.chjb:active{background:rgba(255,255,255,.05);color:var(--fg)}
 .ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
 .ppy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}.ppy span{font-weight:400;letter-spacing:.02em;text-transform:none;margin-left:4px}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -3078,7 +3078,15 @@ function heroCard() { // the header card's background: soft blobs of the hero's 
   if (!el || !c || !c.colors || !c.colors.length) return;
   var k = c.colors.concat(c.colors, c.colors).slice(0, 3), y = Math.round((c.y != null ? c.y : .45) * 100);
   el.style.background = "radial-gradient(90% 150% at 22% " + y + "%, " + k[0] + "5c, " + k[0] + "1f 45%, transparent 80%), radial-gradient(85% 140% at 95% 5%, " + k[1] + "4d, " + k[1] + "14 45%, transparent 80%), radial-gradient(95% 150% at 62% 120%, " + k[2] + "47, " + k[2] + "12 45%, transparent 82%), var(--panel)"; // big, soft and overlapping, so they read as a glow rather than shapes
-  el.classList.add("hcol");
+  el.classList.add("hcol"); chjFill();
+}
+function chjFill() { // the jump tab under the card shows the card's own background, carried on from the card's bottom edge, so the two read as one piece
+  var el = document.querySelector("#main .hero-h"), n = el && el.nextElementSibling; if (!n || !n.classList.contains("chj")) return;
+  var bg = getComputedStyle(el).backgroundImage, base = getComputedStyle(el).backgroundColor, er = el.getBoundingClientRect(), nr = n.getBoundingClientRect();
+  if (!er.width || !nr.width) return;
+  n.style.backgroundImage = bg; n.style.backgroundColor = base === "rgba(0, 0, 0, 0)" ? "var(--panel)" : base; n.style.backgroundRepeat = "no-repeat";
+  n.style.backgroundSize = er.width + "px " + er.height + "px";
+  n.style.backgroundPosition = Math.round(er.left - nr.left) + "px " + Math.round(-(er.height - nr.height)) + "px"; // the card's bottom strip, lined up with where the tab sits
 }
 function heroLinks() { // the big sections, one tap each, under the hero's name
   var I = { stats: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>', abil: '<path d="M12 3l8 9-8 9-8-9z"/>', pop: '<path d="M5.5 8h13l-1 12.5h-11z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>', hist: '<path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3 2"/>' };
@@ -3496,7 +3504,7 @@ function renderHero(cn) {
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
   document.body.classList.add("chband"); // every hero page: Base stats flat, Abilities and Popular items on raised panels, the shorter chapters in cards
   document.body.classList.toggle("chadj", !$("aowrap").innerHTML); // no Ability order card between the two raised panels: the second matches the first's tilt
-  sbkShow(sbkWanted()); heroCard(); aoLayout($("aowrap")); popLayout($("popwrap")); requestAnimationFrame(function () { chapterGlints(); });
+  sbkShow(sbkWanted()); heroCard(); chjFill(); aoLayout($("aowrap")); popLayout($("popwrap")); requestAnimationFrame(function () { chapterGlints(); });
   var tg = document.querySelector("#main .hero-h .tags"); if (tg) requestAnimationFrame(function () { tg.classList.toggle("one", tg.offsetHeight < 34); }); // tags on one line get a little more room under the name
   var bk0 = $("back"); if (bk0 && !trialBack) { bk0.insertAdjacentHTML("afterend", heroLinks()); var row = document.createElement("div"); row.className = "hnavrow"; bk0.parentNode.insertBefore(row, bk0); row.appendChild(bk0); row.appendChild(document.querySelector("#main .hlks")); } // All heroes on the left, the section links on the right of the same line
   $("jbar").innerHTML = abs.length ? jumpItems(abs, fp) : "";
@@ -5059,7 +5067,7 @@ $("main").addEventListener("click", function (e) {
 });
 // Revisions / What's New dates and the Notes / Interactions rows: the section grows open and folds shut (its height animates while the content fades and slides), instead of snapping.
 // Opening a native <details> just flips it, so the tap is taken over: the height is measured open and shut, animated, and the open attribute is set at the end of a close.
-window.addEventListener("resize", function () { clearTimeout(window._cgT); window._cgT = setTimeout(function () { chapterGlints(); popLayout(); }, 200); }); // the glints follow a chapter's new height
+window.addEventListener("resize", function () { clearTimeout(window._cgT); window._cgT = setTimeout(function () { chapterGlints(); popLayout(); chjFill(); }, 200); }); // the glints follow a chapter's new height
 document.addEventListener("click", function (e) {
   var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary, details.phd > summary") : null; if (!sm) return;
   if (sm.classList.contains("nofold")) { e.preventDefault(); return; } // Base stats, Abilities and Ability order don't fold
