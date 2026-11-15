@@ -626,7 +626,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
 .aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}
-.aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #1d1830,-1px 2px 3px rgba(0,0,0,.22)}.aok.t3{box-shadow:0 1.5px 0 #6e5524,-1px 2px 3px rgba(0,0,0,.22)} /* a darker edge underneath, so each chip looks raised a pixel */
+.aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #141020}.aok.t3{box-shadow:0 1.5px 0 #5a4419} /* a darker edge underneath, so each chip looks raised a pixel */
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote b{color:var(--fg);font-weight:600}
@@ -3329,7 +3329,7 @@ function aoLayout(root) { // chips spent close together would overlap: each one 
     var edge = 0; // the right edge of the last chip placed (a chip at 0:00 starts at the row's edge)
     Array.prototype.forEach.call(tr.querySelectorAll(".aok"), function (k) { // the unlock line sits behind the chips, so it never pushes one
       k.style.transform = ""; var x = k.offsetLeft, w = k.offsetWidth;
-      var min = edge ? edge + 2 : 0; if (x < min) { k.style.transform = "translateX(" + (min - x) + "px)"; x = min; }
+      var min = edge ? edge + 5 : 0; /* about 4px between chips (offsetLeft rounds, so a pixel of slack) */ if (x < min) { k.style.transform = "translateX(" + (min - x) + "px)"; x = min; }
       edge = x + w;
     });
   });
@@ -3481,7 +3481,7 @@ function renderHero(cn) {
   for (var di = 0; di < 3; di++) dots += di < cxn ? "●" : "○";
   var tagsA = (cxn ? '<span class="tag cx">Complexity ' + dots + "</span>" : "");
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h" style="--hbg:url(&quot;' + esc(heroImg(h)) + '&quot;)"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
-    (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>" + chJumpHtml(); // no complexity tag: it helps pick a first hero, not look one up
+    (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>"; // no complexity tag: it helps pick a first hero, not look one up
   // base stats starts open (it holds the comparison switch); the weapon folds shut like Patch history; each remembers your choice for this hero
   html += '<details class="phd bsd" open><summary class="sec nofold"><span class="sect">Base stats</span>' + '</summary><div class="stats1">' + (CARD_HEROES[h.name] ? "" : smodeSwitch(h)) + '<div id="stats1">' + (CARD_HEROES[h.name] ? statCards(h) : statView(h)) + "</div></div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
