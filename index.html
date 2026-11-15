@@ -626,7 +626,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
 .aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}
-.aok.t1::after,.aok.t2::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;border:1.5px solid #5a9cf0;border-top:0;border-radius:0 0 5px 5px;pointer-events:none} /* a shallow blue bucket under the number */ /* quiet grey for tiers 1 and 2, so the gold maxes stand out */.aok.t3{background:#c4a04e;color:#1c1608}
+.aok.t1::after,.aok.t2::after{content:"";position:absolute;inset:0;border:1.5px solid #5a9cf0;border-top:0;border-radius:inherit;pointer-events:none;-webkit-mask:linear-gradient(to top,#000 3px,transparent 8px);mask:linear-gradient(to top,#000 3px,transparent 8px)} /* blue along the bottom, wrapping just round the corners and fading up the sides, like the stat cards' edge */ /* quiet grey for tiers 1 and 2, so the gold maxes stand out */.aok.t3{background:#c4a04e;color:#1c1608}
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote b{color:var(--fg);font-weight:600}
@@ -646,14 +646,14 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .ppdot{transition:box-shadow .3s ease}.ppdot::after{content:"";position:absolute;z-index:5;inset:-1px;border-radius:8px;background-color:rgba(26,22,38,0);transition:background-color .3s ease;pointer-events:none}
 .ppplot .ppdot .ric.pnit{width:30px;height:30px;margin:0;border-radius:7px} /* the icon fills its spot exactly, so the veil covers its coloured frame too */
 .ppplot.sel .ppdot:not(.on):not(.mate)::after{background-color:rgba(26,22,38,.78)} /* the rest dim by fading a veil over them: an opacity fade lifts each icon onto its own layer on iPhone, which nudged them */
-.ppdot.on{box-shadow:0 0 0 2px #e9e2d2,0 2px 8px rgba(0,0,0,.6);z-index:3}.ppdot.mate{box-shadow:0 0 0 2px #a283f0,0 0 12px rgba(162,131,240,.6);z-index:2}
-.ppinfo{min-height:62px;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.ppdot.on,.ppdot.mate{z-index:3}.ppdot.on .ric.pnit,.ppdot.mate .ric.pnit{--slc:#efe6d4}.ppdot.on{box-shadow:0 0 14px rgba(239,230,212,.45),0 2px 8px rgba(0,0,0,.6)} /* picked and related items swap their colour frame for cream */
+.ppinfo{position:relative;overflow:hidden;min-height:62px;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:8px}
 .ppih{font-size:12.5px;color:var(--dim);text-align:center}
-.ppir{display:flex;align-items:center;gap:10px}.ppit{flex:1;min-width:0}.ppit b{display:block;font-size:14.5px;font-weight:600}.ppit span{font-size:12px;color:var(--dim)}
-.ppio{flex:none;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--fg);font:inherit;font-size:12.5px;padding:6px 10px}
+.ppiin{display:flex;flex-direction:column;gap:8px}.ppgone{position:absolute;left:12px;right:12px;pointer-events:none}
+.ppir{display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent}.ppchev{width:16px;height:16px;flex:none;color:var(--dim)}.ppit{flex:1;min-width:0}.ppit b{display:block;font-size:14.5px;font-weight:600}.ppit span{font-size:12px;color:var(--dim)}
 .ppiw{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.ppiw span{font-size:11.5px;color:var(--dim);margin-right:2px}
-.ppself .ric{box-shadow:none!important}.ppim{display:flex;padding:0;border:0;background:none;line-height:0}.ppim .ric{width:30px;height:30px;box-shadow:0 0 0 1.5px #a283f0}
-.ppiw{border-top:1px solid var(--line);padding-top:9px}.ppir .ric{width:40px;height:40px;flex:none}
+.ppim{display:flex;padding:0;border:0;background:none;line-height:0}.ppim .ric.pnit{width:30px;height:30px;margin:0;border-radius:7px}
+.ppir + .ppiw{border-top:1px solid var(--line);padding-top:9px}.ppir .ric.pnit{width:40px;height:40px;margin:0;border-radius:9px;flex:none}
 .ppnb{margin:10px 0 0}
 .ppdot{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;padding:0;border:0;background:none;border-radius:7px;box-shadow:0 2px 6px rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent}.ppdot .ric{width:30px;height:30px}
 .ppxax{grid-column:2;position:relative;font-size:10px;color:var(--dim)}.ppxax span{position:absolute;top:4px;transform:translateX(-50%)}.ppxax span:first-child{transform:none}
@@ -3274,7 +3274,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero: the core 
     YT.map(function (v) { return '<i class="pphl" style="top:' + Y(v / 100) + '"></i>'; }).join("") + YM.map(function (v) { return '<i class="pphl mn" style="top:' + Y(v / 100) + '"></i>'; }).join("") +
     ticks.slice(1).map(function (m) { return '<i class="ppvl" style="left:' + X(m * 60) + '"></i>'; }).join("") + minor.map(function (m) { return '<i class="ppvl mn" style="left:' + X(m * 60) + '"></i>'; }).join("") +
     sit.map(function (r) { return '<button class="ppdot" data-c="' + esc(r.c) + '" style="left:' + X(r.t) + ";top:" + Y(r.p) + '" aria-label="' + esc(nameOf(state.byClass[r.c])) + ", " + Math.round(r.p * 100) + "% of matches, around " + mm(r.t) + '">' + ico(r) + "</button>"; }).join("") +
-    '</div><div class="ppxax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + '</div></div><div class="ppinfo"><span class="ppih">Tap an item to name it and see what it’s usually bought with.</span></div>' : "";
+    '</div><div class="ppxax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + '</div></div><div class="ppinfo"><div class="ppiin"><span class="ppih">Tap an item to name it and see its upgrades and what it’s usually bought with.</span></div></div>' : "";
   var body = coreHtml + sitHtml;
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
@@ -3323,20 +3323,35 @@ function aoLayout(root) { // chips spent close together would overlap: each one 
     });
   });
 }
-function popPick(dot) { // tap an item on the chart: name it underneath, light up what's usually bought with it, dim the rest; tap it again (or the chart) to clear
+function popPick(dot) { // tap an item on the chart: name it underneath, light up its upgrades and what's usually bought with it, dim the rest; tap it again (or the chart) to clear
   var plot = dot && dot.closest(".ppplot"), ch = plot && plot.closest("details"); if (!plot) return;
-  var info = ch.querySelector(".ppinfo"), was = dot.classList.contains("on");
+  var info = ch.querySelector(".ppinfo"), was = dot.classList.contains("on"), html;
   Array.prototype.forEach.call(plot.querySelectorAll(".ppdot"), function (d) { d.classList.remove("on", "mate"); });
-  if (was) { plot.classList.remove("sel"); info.innerHTML = '<span class="ppih">Tap an item to name it and see what it’s usually bought with.</span>'; return; }
-  var P = state.pop.heroes[state.hero], byC = {}; P.items.forEach(function (r) { byC[r.c] = r; });
-  var c = dot.getAttribute("data-c"), r = byC[c], it = state.byClass[c];
-  var mates = (r.w || []).filter(function (o) { return state.byClass[o] && !partOf(c, o, {}) && !partOf(o, c, {}); }); // an item and its own upgrade aren't "bought together"
-  dot.classList.add("on"); plot.classList.add("sel");
-  mates.forEach(function (o) { var d = plot.querySelector('.ppdot[data-c="' + o + '"]'); if (d) d.classList.add("mate"); });
-  var mi = function (o) { var x = state.byClass[o], sl = slotOf(x); return '<button class="ppim" data-pick="' + esc(o) + '" aria-label="' + esc(nameOf(x)) + '"><span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(x), itemImg(x)) + "</span></button>"; };
-  info.innerHTML = '<div class="ppir">' + mi(c).replace('class="ppim"', 'class="ppim ppself"').replace(/data-pick="[^"]*"/, "") + '<div class="ppit"><b>' + esc(nameOf(it)) + "</b><span>" + Math.round(r.p * 100) + "% of matches · around " + Math.max(1, Math.round(r.t / 60)) + "m</span></div>" +
-    '<button class="ppio" data-pitem="' + esc(c) + '">Details ›</button></div>' +
-    (mates.length ? '<div class="ppiw"><span>Often bought with</span>' + mates.map(mi).join("") + "</div>" : '<div class="ppiw"><span>Not usually bought with anything in particular</span></div>');
+  if (was) { plot.classList.remove("sel"); html = '<span class="ppih">Tap an item to name it and see its upgrades and what it’s usually bought with.</span>'; }
+  else {
+    var P = state.pop.heroes[state.hero], byC = {}; P.items.forEach(function (r) { byC[r.c] = r; });
+    var c = dot.getAttribute("data-c"), r = byC[c], it = state.byClass[c], onChart = function (o) { return !!plot.querySelector('.ppdot[data-c="' + o + '"]'); };
+    var ups = P.items.filter(function (o) { return o.c !== c && onChart(o.c) && partOf(c, o.c, {}); }).map(function (o) { return o.c; }); // what it builds into
+    var froms = P.items.filter(function (o) { return o.c !== c && onChart(o.c) && partOf(o.c, c, {}); }).map(function (o) { return o.c; }); // what it's built from
+    var mates = (r.w || []).filter(function (o) { return state.byClass[o] && !partOf(c, o, {}) && !partOf(o, c, {}); });
+    dot.classList.add("on"); plot.classList.add("sel");
+    ups.concat(froms, mates).forEach(function (o) { var d = plot.querySelector('.ppdot[data-c="' + o + '"]'); if (d) d.classList.add("mate"); });
+    var icon = function (o) { var x = state.byClass[o], sl = slotOf(x); return '<span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(x), itemImg(x)) + "</span>"; };
+    var mi = function (o) { return '<button class="ppim" data-pick="' + esc(o) + '" aria-label="' + esc(nameOf(state.byClass[o])) + '">' + icon(o) + "</button>"; };
+    var row = function (t, l) { return l.length ? '<div class="ppiw"><span>' + t + "</span>" + l.map(mi).join("") + "</div>" : ""; };
+    html = '<div class="ppir" role="button" tabindex="0" data-pitem="' + esc(c) + '">' + icon(c) + '<div class="ppit"><b>' + esc(nameOf(it)) + "</b><span>" + Math.round(r.p * 100) + "% of matches · around " + Math.max(1, Math.round(r.t / 60)) + "m</span></div>" + rowSvg('<path d="M9 6l6 6-6 6"/>', "ppchev") + "</div>" +
+      row("Upgrades from", froms) + row("Upgrades to", ups) + (row("Often bought with", mates) || (ups.length || froms.length ? "" : '<div class="ppiw"><span>Not usually bought with anything in particular</span></div>'));
+  }
+  // the strip changes smoothly: the old content fades out where it was, the new fades and rises in, and the strip eases to its new height
+  var old = info.querySelector(".ppiin:not(.ppgone)"), h0 = info.offsetHeight, calm = !info.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var inner = document.createElement("div"); inner.className = "ppiin"; inner.innerHTML = html;
+  if (old && !calm) { var g = old, top = old.offsetTop; g.classList.add("ppgone"); g.style.top = top + "px"; g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: "ease-in", fill: "forwards" }).onfinish = function () { if (g.parentNode) g.remove(); }; }
+  else if (old) old.remove();
+  info.appendChild(inner);
+  if (calm) return;
+  var h1 = info.offsetHeight; if (Math.abs(h1 - h0) > 1) info.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: 260, easing: "cubic-bezier(.4,0,.2,1)" });
+  inner.animate([{ opacity: 0, transform: "translateY(5px)" }, { opacity: 1, transform: "none" }], { duration: 260, delay: 90, easing: "ease-out", fill: "backwards" });
+  Array.prototype.forEach.call(inner.querySelectorAll(".ric"), function (ic, k) { ic.animate([{ transform: "scale(.8)" }, { transform: "none" }], { duration: 260, delay: 90 + k * 30, easing: "cubic-bezier(.3,1.4,.5,1)", fill: "backwards" }); });
 }
 function popLayout(root) { // chart icons that land on top of each other are nudged up or down until they're clear
   Array.prototype.forEach.call((root || document).querySelectorAll(".ppch"), function (ch) {
@@ -5016,7 +5031,7 @@ $("main").addEventListener("click", function (e) {
   var pp = e.target.closest ? e.target.closest(".ppplot.sel") : null; if (pp) { var on = pp.querySelector(".ppdot.on"); if (on) popPick(on); return; }
   var aot = e.target.closest ? e.target.closest(".aotab[data-aot]") : null;
   if (aot) { if (!aot.classList.contains("on")) aoSwitch(state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], +aot.getAttribute("data-aot")); return; }
-  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem], .ppr[data-pitem], .ppk[data-pitem], .ppio[data-pitem]") : null;
+  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem], .ppr[data-pitem], .ppk[data-pitem], .ppir[data-pitem]") : null;
   if (pi) { itemSheet(pi.getAttribute("data-pitem")); return; }
   var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
   var card = u.closest(".ab"), key = card && card.getAttribute("data-ab"), it = key && state.byClass[key]; if (!it) return;
