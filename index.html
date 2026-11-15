@@ -626,7 +626,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
 .aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}
-.aok.t1::after,.aok.t2::after{content:"";position:absolute;inset:0;border:1.5px solid #5a9cf0;border-top:0;border-radius:inherit;pointer-events:none;-webkit-mask:linear-gradient(to top,#000 2px,transparent 4.5px);mask:linear-gradient(to top,#000 2px,transparent 4.5px)} /* blue along the bottom, wrapping just round the corners and fading up the sides, like the stat cards' edge */ /* quiet grey for tiers 1 and 2, so the gold maxes stand out */.aok.t3{background:#c4a04e;color:#1c1608}
+.aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #1d1830}.aok.t3{box-shadow:0 1.5px 0 #6e5524} /* a darker edge underneath, so each chip looks raised a pixel */
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote b{color:var(--fg);font-weight:600}
@@ -646,7 +646,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .ppdot{transition:box-shadow .3s ease,translate .3s ease}.ppdot::after{content:"";position:absolute;z-index:5;inset:-1px;border-radius:8px;background-color:rgba(26,22,38,0);transition:background-color .3s ease;pointer-events:none}
 .ppplot .ppdot .ric.pnit{width:30px;height:30px;margin:0;border-radius:7px} /* the icon fills its spot exactly, so the veil covers its coloured frame too */
 .ppplot.sel .ppdot:not(.on):not(.mate)::after{background-color:rgba(26,22,38,.78)} /* the rest dim by fading a veil over them: an opacity fade lifts each icon onto its own layer on iPhone, which nudged them */
-.ppdot.on,.ppdot.mate{z-index:3}.ppdot.on .ric.pnit,.ppdot.mate .ric.pnit{--slc:#efe6d4}.ppdot.on{box-shadow:0 8px 16px rgba(0,0,0,.85),0 3px 5px rgba(0,0,0,.6);translate:0 -2px} /* the picked item lifts off the chart (translate, so it adds to the nudge that keeps icons apart) */ /* picked and related items swap their colour frame for cream */
+.ppdot.on,.ppdot.mate{z-index:3}.ppdot.on .ric.pnit{--slc:#efe6d4}.ppdot.mate .ric.pnit{--slc:#5a9cf0}.ppdot.on .ric.pnit::after,.ppdot.mate .ric.pnit::after{box-shadow:inset 0 0 0 2px var(--slc)} /* the picked item in cream, its upgrades and partners in blue, both a touch thicker */.ppdot.on{box-shadow:0 8px 16px rgba(0,0,0,.85),0 3px 5px rgba(0,0,0,.6);translate:0 -2px} /* the picked item lifts off the chart (translate, so it adds to the nudge that keeps icons apart) */ /* picked and related items swap their colour frame for cream */
 .ppinfo{position:relative;overflow:hidden;min-height:62px;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:8px}
 .ppih{font-size:12.5px;color:var(--dim);text-align:center}
 .ppiin{display:flex;flex-direction:column;gap:8px}.ppgone{position:absolute;left:12px;right:12px;pointer-events:none}
@@ -3278,7 +3278,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero: the core 
   var body = coreHtml + sitHtml;
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
-  return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Popular items</span></summary>' + body + '<p class="ppnote ppnb"><b>' + esc(rk) + " and up</b> · % of matches it was bought in</p></details>";
+  return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Items</span></summary>' + body + '<p class="ppnote ppnb"><b>' + esc(rk) + " and up</b> · % of matches it was bought in</p></details>";
 }
 
 // Ability order: the orders top-ranked players spend ability points in, one tab per play style (the first two abilities maxed).
