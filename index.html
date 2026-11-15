@@ -576,13 +576,14 @@ body.chband details.phd.ppd::before,body.chband details.phd.ppd::after,body.chba
 body.chband details.phd.ppd .chpanel i{background:#211b33;clip-path:polygon(0 20px,100% 0,100% calc(100% - 20px),0 100%)} /* the same purple as Abilities, tilted the other way: low on the left, high on the right */
 body.chband #revwrap > details.phd{margin-top:64px}
 /* each ability card, and each popular item, casts a soft shadow onto its panel */
+body.chband details.phd.abd{--cc:#a283f0}
 body.chband details.abd .ab{box-shadow:0 8px 18px rgba(0,0,0,.45)}
 body.chband details.ppd .ppc{box-shadow:0 4px 10px rgba(0,0,0,.25)}
 /* Base stats: a key to what's inside, three slanted bars in the Vitality, Weapon and Spirit colours */
-body.chband details.phd.bsd > summary.sec .sect::after{width:66px;margin-left:-33px;height:4px;bottom:-24px;border-radius:1px;transform:skewX(-28deg);background:linear-gradient(90deg,var(--vital) 0 33.4%,#d9a441 33.4% 66.7%,var(--spirit) 66.7% 100%)}
+body.chband details.phd.bsd > summary.sec .sect::after{width:66px;margin-left:-33px;height:4px;bottom:-24px;border-radius:1px;transform:skewX(-28deg);background:var(--fg)} /* the same cream as the title */
 body.chband #aowrap > details.phd{margin-top:68px}
 /* the shorter chapters keep their cards, each in its own colour, with a softer edge that fades sooner and a calmer wash */
-body.chband #aowrap{--cc:#a283f0;--cr:162,131,240}body.chband #popwrap{--cc:#5a9cf0;--cr:90,156,240}body.chband #revwrap{--cc:#5fc87a;--cr:95,200,122}
+body.chband #aowrap{--cc:#5a9cf0;--cr:90,156,240}body.chband #popwrap{--cc:#a283f0;--cr:162,131,240}body.chband #revwrap{--cc:#5fc87a;--cr:95,200,122}
 body.chband details.phd:not(.bsd):not(.abd):not(.ppd){--cc:inherit;border-color:rgba(var(--cr),.24);background:linear-gradient(to bottom,rgba(var(--cr),.08),transparent clamp(120px,35%,260px)),rgba(255,255,255,.028)}
 body.chband details.phd:not(.bsd):not(.abd):not(.ppd)::before{opacity:.6;height:min(max(150px,35%),320px,calc(100% + 2px))}
 body.chband details.phd:not(.bsd):not(.abd):not(.ppd)::after{opacity:.3;height:min(max(80px,20%),180px,calc(100% + 2px))}
