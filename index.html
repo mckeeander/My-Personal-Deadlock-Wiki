@@ -594,8 +594,8 @@ details.phd:not([open]) > .cgl{display:none}
 /* the blue edge is offset like the stat cards: bright round the top-left corner, fading along the top and down the left side, with a fainter
    echo round the bottom-right corner. Both are sized to the card (a share of its height, within limits), so a long chapter keeps its edge further down */
 details.phd::before,details.phd::after{content:"";position:absolute;z-index:-1;pointer-events:none}
-details.phd::before{left:-1px;right:-1px;top:-1px;height:min(max(260px,55%),700px,calc(100% + 2px));border-top:2px solid var(--cc);border-left:2px solid var(--cc);border-radius:20px 20px 0 0;-webkit-mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent);mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent)}
-details.phd::after{right:-1px;bottom:-1px;width:65%;height:min(max(120px,30%),360px,calc(100% + 2px));border-bottom:2px solid var(--cc);border-right:2px solid var(--cc);border-radius:0 0 20px 0;opacity:.5;-webkit-mask:radial-gradient(100% 100% at 100% 100%,#000 6%,transparent);mask:radial-gradient(100% 100% at 100% 100%,#000 6%,transparent)}
+details.phd::before{left:-1px;right:-1px;top:-1px;height:min(max(260px,55%),700px,calc(100% + 2px));border-top:2px solid var(--cc);border-left:2px solid var(--cc);border-radius:20px; /* rounded at the bottom too: on a short (closed) chapter the edge layer reaches the bottom corner and has to follow its curve */-webkit-mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent);mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent)}
+details.phd::after{right:-1px;bottom:-1px;width:65%;height:min(max(120px,30%),360px,calc(100% + 2px));border-bottom:2px solid var(--cc);border-right:2px solid var(--cc);border-radius:20px;opacity:.5;-webkit-mask:radial-gradient(100% 100% at 100% 100%,#000 6%,transparent);mask:radial-gradient(100% 100% at 100% 100%,#000 6%,transparent)}
 /* the title, centred, over a short blue mark on a faint full-width line */
 details.phd > summary.sec{font-size:29px;justify-content:center;margin:0 6px;padding-left:6px;padding-right:6px;border-bottom-color:#3a3350}
 details.phd > summary.sec::before{display:none}
@@ -606,8 +606,8 @@ details.phd > summary.sec .ncv{position:absolute;right:2px;top:50%;margin:-14px 
 details.phd > summary.sec{padding-top:8px;padding-bottom:22px}
 details.phd > summary + *{margin-top:26px}
 details.phd > summary.nofold{cursor:default} /* the core chapters are always open */
-.phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
-.phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}body.chband #revwrap .phb.on{border-color:#5fc87a;color:#7fd896;background:rgba(95,200,122,.1)}.phb.on img{opacity:1}
+.phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{transition:border-color .25s ease,background-color .25s ease,color .25s ease;height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
+.phb img{width:24px;height:24px;object-fit:contain;opacity:.6;transition:opacity .25s ease}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}body.chband #revwrap .phb.on{border-color:#5fc87a;color:#7fd896;background:rgba(95,200,122,.1)}.phb.on img{opacity:1}
 .phsum{font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-left:8px}
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
 .ipage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px} /* the item page: its card, set apart from the patch history below */.ipl .pnl{margin-top:4px}
@@ -5015,6 +5015,8 @@ $("main").addEventListener("click", function (e) {
     var c0 = phb.getAttribute("data-phf"), wrap = $("revs");
     Array.prototype.forEach.call(document.querySelectorAll(".phb"), function (b) { b.classList.toggle("on", b === phb); });
     wrap.classList.toggle("filt", !!c0); if (c0) wrap.classList.add("all");
+    requestAnimationFrame(function () { if (!wrap.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // the patches left showing fade and rise in
+      Array.prototype.forEach.call(wrap.querySelectorAll("details.rpt:not(.phx), .rgrp:not(.phx)"), function (el, k) { if (el.offsetParent) el.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 260, delay: Math.min(k, 6) * 25, easing: "ease-out", fill: "backwards" }); }); });
     var first = null;
     Array.prototype.forEach.call(wrap.querySelectorAll("details.rpt"), function (d) { var hit = !c0 || (" " + d.getAttribute("data-abs") + " ").indexOf(" " + c0 + " ") >= 0; d.classList.toggle("phx", !hit); if (hit && !first) first = d; d.open = false; });
     Array.prototype.forEach.call(wrap.querySelectorAll(".rgrp[data-pf]"), function (g) { g.classList.toggle("phx", !!c0 && g.getAttribute("data-pf") !== c0); });
