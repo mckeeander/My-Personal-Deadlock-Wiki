@@ -611,10 +611,11 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
 .ipage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px} /* the item page: its card, set apart from the patch history below */.ipl .pnl{margin-top:4px}
 .aotw{display:flex;justify-content:center;margin:14px 0 0}
-.aotabs{position:relative;display:inline-flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+.aotl{flex-basis:100%;text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:5px 0 4px} /* the label sits inside the switch's frame, above the tabs */
+.aotabs{position:relative;display:inline-flex;flex-wrap:wrap;justify-content:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
 .aotab{position:relative;z-index:1;border:0;background:transparent;border-radius:8px;padding:6px 16px;color:var(--dim);font:inherit;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent;transition:color .3s ease}
 .aotab.on{color:var(--fg)}
-.aoth{position:absolute;top:3px;bottom:3px;left:3px;border-radius:8px;background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold)} /* the highlight behind the picked tab; it slides when you switch */
+.aoth{position:absolute;top:3px;left:3px;border-radius:8px;background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold)} /* the highlight behind the picked tab; it slides when you switch */
 .aorank{font-size:12.5px;line-height:1.45;color:var(--dim);margin:8px 0 0}.aorank b{color:var(--fg);font-weight:600}
 .aotw + .aobx{margin-top:16px}
 .aohd{font-size:13.5px;color:var(--dim);margin:2px 0 10px 2px}.aohd b{color:var(--fg);font-weight:600} /* the style, named at the top of the chart card */
@@ -3247,7 +3248,7 @@ function abilityOrderHtml(h) {
   var sig = aoSig(h); if (sig.some(function (x) { return !x; })) return "";
   var bi = Math.min(AO_TAB[h.class_name] || 0, A.builds.length - 1), B = A.builds[bi];
   var ico = function (s, c) { return '<span class="' + (c || "aoic") + '"><img src="' + esc(itemImg(sig[s])) + '" alt=""></span>'; };
-  var tabs = (A.builds.length < 2 ? "" : '<div class="aotw"><div class="aotabs" role="tablist">' + A.builds.map(function (b, i) { // one tab per play style, labelled with the share of players; the line under names the style
+  var tabs = (A.builds.length < 2 ? "" : '<div class="aotw"><div class="aotabs" role="tablist" aria-label="Play styles by use rate"><span class="aotl" aria-hidden="true">Use rate</span>' + A.builds.map(function (b, i) { // one tab per play style, labelled with the share of players; the line under names the style
     return '<button class="aotab' + (i === bi ? " on" : "") + '" role="tab" aria-selected="' + (i === bi) + '" data-aot="' + i + '" aria-label="Max ' + esc(nameOf(sig[b.max[0]])) + ", then " + esc(nameOf(sig[b.max[1]])) + ", " + Math.round(b.share * 100) + '% of players">' + Math.round(b.share * 100) + "%</button>";
   }).join("") + '<span class="aoth" aria-hidden="true"></span></div></div>');
   var pts = B.pts, T = Math.max.apply(null, pts.map(function (p) { return p[2]; })), step = T > 2700 ? 10 : 5, ticks = [];
@@ -3267,7 +3268,7 @@ function abilityOrderHtml(h) {
     '<div class="aobx"><p class="aohd">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>" + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players in " + esc(aoRank()) + " max these two first.</p></details>";
 }
 function aoLayout(root) { // chips spent close together would overlap: each one is nudged just right of the one before it in its row
-  Array.prototype.forEach.call((root || document).querySelectorAll(".aotabs"), function (t) { var on = t.querySelector(".aotab.on"), th = t.querySelector(".aoth"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; } }); // the gold highlight sits behind the picked tab
+  Array.prototype.forEach.call((root || document).querySelectorAll(".aotabs"), function (t) { var on = t.querySelector(".aotab.on"), th = t.querySelector(".aoth"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; th.style.top = on.offsetTop + "px"; th.style.height = on.offsetHeight + "px"; } }); // the gold highlight sits behind the picked tab
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
     var u = tr.querySelector(".aou"); if (u) { u.style.marginLeft = ""; if (u.offsetLeft < 4) u.style.marginLeft = (4 - u.offsetLeft - 1) + "px"; } // an unlock in the first seconds sits just inside the row's rounded corner, which would otherwise clip all but its top pixel
     var edge = 0; // the right edge of the last chip placed (a chip at 0:00 starts at the row's edge)
