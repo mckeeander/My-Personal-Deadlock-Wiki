@@ -625,7 +625,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2} /* quiet grey for tiers 1 and 2, so the gold maxes stand out */.aok.t3{background:#c4a04e;color:#1c1608}
+.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2;box-shadow:inset 0 0 0 1px #5a9cf0} /* quiet grey for tiers 1 and 2, so the gold maxes stand out */.aok.t3{background:#c4a04e;color:#1c1608}
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote b{color:var(--fg);font-weight:600}
@@ -641,9 +641,16 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .ppyax{position:relative;font-size:10px;color:var(--dim)}.ppyax span{position:absolute;right:6px;transform:translateY(-50%)}
 .ppplot{position:relative;border-left:1px solid #3a3350;border-bottom:1px solid #3a3350}
 .pphl{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.05)}
-.pphl.ppcl{height:0;background:none;border-top:1px dashed rgba(196,160,78,.45)} /* where the core build starts */
-.ppcoretag{position:absolute;right:2px;transform:translateY(-120%);font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(214,178,98,.75);pointer-events:none}
-.pplk{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.pplk line{stroke:rgba(162,131,240,.45);stroke-width:1.5;stroke-dasharray:3 3}
+.pphl.mn,.ppvl.mn{opacity:.5}.ppvl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
+.ppdot{transition:opacity .2s ease,box-shadow .2s ease}.ppplot.sel .ppdot{opacity:.22}.ppplot.sel .ppdot.on,.ppplot.sel .ppdot.mate{opacity:1}
+.ppdot.on{box-shadow:0 0 0 2px #e9e2d2,0 2px 8px rgba(0,0,0,.6);z-index:3}.ppdot.mate{box-shadow:0 0 0 2px #a283f0,0 0 12px rgba(162,131,240,.6);z-index:2}
+.ppinfo{min-height:62px;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.ppih{font-size:12.5px;color:var(--dim);text-align:center}
+.ppir{display:flex;align-items:center;gap:10px}.ppit{flex:1;min-width:0}.ppit b{display:block;font-size:14.5px;font-weight:600}.ppit span{font-size:12px;color:var(--dim)}
+.ppio{flex:none;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--fg);font:inherit;font-size:12.5px;padding:6px 10px}
+.ppiw{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.ppiw span{font-size:11.5px;color:var(--dim);margin-right:2px}
+.ppim{padding:0;border:0;background:none;border-radius:6px;box-shadow:0 0 0 1.5px #a283f0}.ppim .ric{width:28px;height:28px}
+.ppnb{margin:10px 0 0}
 .ppdot{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;padding:0;border:0;background:none;border-radius:7px;box-shadow:0 2px 6px rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent}.ppdot .ric{width:30px;height:30px}
 .ppxax{grid-column:2;position:relative;font-size:10px;color:var(--dim)}.ppxax span{position:absolute;top:4px;transform:translateX(-50%)}.ppxax span:first-child{transform:none}
 /* the core build: a timeline of items in the order they're bought */
@@ -3254,21 +3261,20 @@ function popularHtml(h) { // what top-ranked players buy on this hero: the core 
     return up ? '<span class="ppf">→ ' + esc(nameOf(state.byClass[up.c])) + " at " + mm(up.t) + "</span>" : '<span class="ppf">Usually sold ~' + mm(r.st) + "</span>";
   }
   // one chart for every item bought in 12% of matches or more: share of matches up the side (12% to 100%), usual buy time along the bottom.
-  // A faint line at 60% marks where the core build starts; items usually bought together are joined by a dashed line
-  var sit = all.filter(function (r) { return r.p >= .12; }).slice(0, 28), inSit = {};
-  sit.forEach(function (r) { inSit[r.c] = 1; });
-  var T = Math.max(1200, Math.max.apply(null, sit.map(function (r) { return r.t; }).concat([0])) + 60), ticks = [];
-  for (var m = 0; m * 60 <= T; m += T > 2100 ? 10 : 5) ticks.push(m);
-  var X = function (t) { return (t / T * 100).toFixed(2) + "%"; }, Y = function (p) { return ((1 - p) / .88 * 100).toFixed(2) + "%"; }, YT = [100, 80, 60, 40, 20, 12];
-  var links = []; sit.forEach(function (r) { (r.w || []).forEach(function (o) { if (inSit[o] && (r.c < o || (byC[o].w || []).indexOf(r.c) < 0)) links.push(r.c + "|" + o); }); });
-  var coreHtml = "", sitHtml = sit.length ? '<div class="ppch" data-links="' + esc(links.join(",")) + '"><div class="ppyax">' + YT.map(function (v) { return '<span style="top:' + Y(v / 100) + '">' + v + "%</span>"; }).join("") + '</div><div class="ppplot">' +
-    YT.map(function (v) { return '<i class="pphl' + (v === 60 ? " ppcl" : "") + '" style="top:' + Y(v / 100) + '"></i>'; }).join("") + '<span class="ppcoretag" style="top:' + Y(.6) + '">Core</span><svg class="pplk" aria-hidden="true"></svg>' +
-    sit.map(function (r) { return '<button class="ppdot' + (r.p >= .6 ? " core" : "") + '" data-pitem="' + esc(r.c) + '" data-c="' + esc(r.c) + '" style="left:' + X(r.t) + ";top:" + Y(r.p) + '" aria-label="' + esc(nameOf(state.byClass[r.c])) + ", " + Math.round(r.p * 100) + "% of matches, around " + mm(r.t) + '">' + ico(r) + "</button>"; }).join("") +
-    '</div><div class="ppxax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div></div>" : "";
+  // Tapping an item names it underneath and lights up the items usually bought alongside it (an item and its own upgrade don't count)
+  var sit = all.filter(function (r) { return r.p >= .12; }).slice(0, 28);
+  var T = Math.max(1200, Math.max.apply(null, sit.map(function (r) { return r.t; }).concat([0])) + 60), ticks = [], minor = [];
+  var step = T > 2100 ? 10 : 5; for (var m = 0; m * 60 <= T; m += step) { ticks.push(m); if ((m + step / 2) * 60 < T) minor.push(m + step / 2); }
+  var X = function (t) { return (t / T * 100).toFixed(2) + "%"; }, Y = function (p) { return ((1 - p) / .88 * 100).toFixed(2) + "%"; }, YT = [100, 80, 60, 40, 20], YM = [90, 70, 50, 30];
+  var coreHtml = "", sitHtml = sit.length ? '<div class="ppch"><div class="ppyax">' + YT.concat([12]).map(function (v) { return '<span style="top:' + Y(v / 100) + '">' + v + "%</span>"; }).join("") + '</div><div class="ppplot">' +
+    YT.map(function (v) { return '<i class="pphl" style="top:' + Y(v / 100) + '"></i>'; }).join("") + YM.map(function (v) { return '<i class="pphl mn" style="top:' + Y(v / 100) + '"></i>'; }).join("") +
+    ticks.slice(1).map(function (m) { return '<i class="ppvl" style="left:' + X(m * 60) + '"></i>'; }).join("") + minor.map(function (m) { return '<i class="ppvl mn" style="left:' + X(m * 60) + '"></i>'; }).join("") +
+    sit.map(function (r) { return '<button class="ppdot" data-c="' + esc(r.c) + '" style="left:' + X(r.t) + ";top:" + Y(r.p) + '" aria-label="' + esc(nameOf(state.byClass[r.c])) + ", " + Math.round(r.p * 100) + "% of matches, around " + mm(r.t) + '">' + ico(r) + "</button>"; }).join("") +
+    '</div><div class="ppxax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + '</div></div><div class="ppinfo"><span class="ppih">Tap an item to name it and see what it’s usually bought with.</span></div>' : "";
   var body = coreHtml + sitHtml;
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
-  return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Popular items</span></summary><p class="ppnote"><b>' + esc(rk) + " and up</b> · % of matches it was bought in</p>" + body + "</details>";
+  return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Popular items</span></summary>' + body + '<p class="ppnote ppnb"><b>' + esc(rk) + " and up</b> · % of matches it was bought in</p></details>";
 }
 
 // Ability order: the orders top-ranked players spend ability points in, one tab per play style (the first two abilities maxed).
@@ -3313,7 +3319,22 @@ function aoLayout(root) { // chips spent close together would overlap: each one 
     });
   });
 }
-function popLayout(root) { // chart icons that land on top of each other are nudged up or down until they're clear, then items bought together are joined
+function popPick(dot) { // tap an item on the chart: name it underneath, light up what's usually bought with it, dim the rest; tap it again (or the chart) to clear
+  var plot = dot && dot.closest(".ppplot"), ch = plot && plot.closest("details"); if (!plot) return;
+  var info = ch.querySelector(".ppinfo"), was = dot.classList.contains("on");
+  Array.prototype.forEach.call(plot.querySelectorAll(".ppdot"), function (d) { d.classList.remove("on", "mate"); });
+  if (was) { plot.classList.remove("sel"); info.innerHTML = '<span class="ppih">Tap an item to name it and see what it’s usually bought with.</span>'; return; }
+  var P = state.pop.heroes[state.hero], byC = {}; P.items.forEach(function (r) { byC[r.c] = r; });
+  var c = dot.getAttribute("data-c"), r = byC[c], it = state.byClass[c];
+  var mates = (r.w || []).filter(function (o) { return state.byClass[o] && !partOf(c, o, {}) && !partOf(o, c, {}); }); // an item and its own upgrade aren't "bought together"
+  dot.classList.add("on"); plot.classList.add("sel");
+  mates.forEach(function (o) { var d = plot.querySelector('.ppdot[data-c="' + o + '"]'); if (d) d.classList.add("mate"); });
+  var mi = function (o) { var x = state.byClass[o], sl = slotOf(x); return '<button class="ppim" data-pick="' + esc(o) + '" aria-label="' + esc(nameOf(x)) + '"><span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(x), itemImg(x)) + "</span></button>"; };
+  info.innerHTML = '<div class="ppir"><div class="ppit"><b>' + esc(nameOf(it)) + "</b><span>" + Math.round(r.p * 100) + "% of matches · around " + Math.max(1, Math.round(r.t / 60)) + "m</span></div>" +
+    '<button class="ppio" data-pitem="' + esc(c) + '">Details ›</button></div>' +
+    (mates.length ? '<div class="ppiw"><span>Often bought with</span>' + mates.map(mi).join("") + "</div>" : '<div class="ppiw"><span>Not usually bought with anything in particular</span></div>');
+}
+function popLayout(root) { // chart icons that land on top of each other are nudged up or down until they're clear
   Array.prototype.forEach.call((root || document).querySelectorAll(".ppch"), function (ch) {
     var plot = ch.querySelector(".ppplot"), ds = Array.prototype.slice.call(plot.querySelectorAll(".ppdot")), placed = [], W = plot.clientWidth, H = plot.clientHeight, S = 30;
     ds.forEach(function (d) { d.style.transform = ""; });
@@ -3326,9 +3347,6 @@ function popLayout(root) { // chart icons that land on top of each other are nud
       placed.push({ x: x, y: best, c: q.d.getAttribute("data-c") });
       q.d.style.transform = "translate(" + (x - q.x) + "px," + (best - q.y) + "px)";
     });
-    var at = {}; placed.forEach(function (o) { at[o.c] = o; });
-    var svg = plot.querySelector(".pplk"); svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    svg.innerHTML = (ch.getAttribute("data-links") || "").split(",").filter(Boolean).map(function (l) { var ab = l.split("|"), a = at[ab[0]], b = at[ab[1]]; return a && b ? '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '"/>' : ""; }).join("");
   });
 }
 function aoRender(h) { var w = $("aowrap"); if (w && h) { w.innerHTML = abilityOrderHtml(h); aoLayout(w); } }
@@ -4989,9 +5007,12 @@ $("main").addEventListener("click", function (e) {
     });
     return;
   }
+  var pd = e.target.closest ? e.target.closest(".ppdot[data-c]") : null; if (pd) { popPick(pd); return; }
+  var pm = e.target.closest ? e.target.closest(".ppim[data-pick]") : null; if (pm) { var pt = pm.closest("details").querySelector('.ppdot[data-c="' + pm.getAttribute("data-pick") + '"]'); if (pt) popPick(pt); else itemSheet(pm.getAttribute("data-pick")); return; }
+  var pp = e.target.closest ? e.target.closest(".ppplot.sel") : null; if (pp) { var on = pp.querySelector(".ppdot.on"); if (on) popPick(on); return; }
   var aot = e.target.closest ? e.target.closest(".aotab[data-aot]") : null;
   if (aot) { if (!aot.classList.contains("on")) aoSwitch(state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], +aot.getAttribute("data-aot")); return; }
-  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem], .ppr[data-pitem], .ppk[data-pitem], .ppdot[data-pitem]") : null;
+  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem], .ppr[data-pitem], .ppk[data-pitem], .ppio[data-pitem]") : null;
   if (pi) { itemSheet(pi.getAttribute("data-pitem")); return; }
   var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
   var card = u.closest(".ab"), key = card && card.getAttribute("data-ab"), it = key && state.byClass[key]; if (!it) return;
