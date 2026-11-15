@@ -3903,7 +3903,7 @@ function openResult(b) {
 }
 /* ---------- glossary ---------- */
 // [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
-var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Buffs & counters"], ["move", "Movement"], ["map", "Map & objectives"], ["econ", "Economy"], ["hero", "Hero effects"]];
+var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Immunity & stealth"], ["move", "Movement"], ["map", "Map & objectives"], ["econ", "Economy"], ["hero", "Hero effects"]];
 // each category's colour and icon: on its jump card, its heading, the stripe down each card and the tile behind each term's icon
 var GCOL = { dmg: "#ef6b4d", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#f2c14e", hero: "#a3b4cc" };
 var GCI = {
@@ -3968,7 +3968,7 @@ var GLOSS = [
   { k: "interrupt", c: "cc", t: "Interrupt", a: ["interrupt", "interrupts", "interrupted"], d: "Cancels anything currently being cast or channeled. On its own it doesn’t stop the target from using abilities again right after." },
   { k: "displace", c: "cc", t: "Displace", a: ["displace", "knockup", "knock-up", "knockback", "pull", "pulls"], d: "Pulls, knock-ups and knockbacks: effects that move a target by force." },
   { k: "curse", c: "cc", t: "Curse", a: ["curse", "cursed"], d: "A combined debuff: [[interrupt|interrupt]], [[disarm|disarm]] and [[silence|silence]] for both abilities and items." },
-  { k: "bleed", c: "cc", t: "Bleed", a: ["bleed", "bleeding"], d: "A debuff that deals [[dot|damage over time]]. Like other debuffs, it can be removed by a [[purge|purge]]." },
+  { k: "bleed", c: "dmg", t: "Bleed", a: ["bleed", "bleeding"], d: "A debuff that deals [[dot|damage over time]]. Like other debuffs, it can be removed by a [[purge|purge]]." },
 
   { k: "unstoppable", c: "buff", t: "Unstoppable", a: ["unstoppable"], d: "Immune to all crowd control (stuns, silences, sleeps, slows, displacement and so on). You can still take damage." },
   { k: "purge", c: "buff", t: "Purge", a: ["purge", "purges", "purged", "dispel", "dispels", "dispelled", "cleanse"], d: "Removes debuffs currently on a target. Delayed effects are cancelled too, so a purged bomb never goes off. A few effects can’t be purged." },
@@ -3993,7 +3993,7 @@ var GLOSS = [
   { k: "minimap-reveal", c: "map", t: "Minimap reveal", a: ["minimap", "revealed", "reveal", "minimap reveal", "revealed on the minimap"], d: "Some actions put you on the enemy team’s minimap. A reveal lingers for about 2 seconds after the action ends." },
   { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss", "mid-boss", "temple guardian"], d: "A huge neutral boss in a pit under the middle of the map, there from the start of the match. It only attacks heroes inside its pit, beaming whoever is closest, and it can only be hurt from inside the pit too. A shield that refills constantly soaks up the first part of the damage it takes every second, so a lone hero barely scratches it. Its health and its shield both grow every minute, and it roars to both teams when it drops to 25% health. Killing it gives the team souls and 2 [[permanent-buffs|permanent buffs]] per player, and drops the [[rejuvenator|Rejuvenator]]. It comes back 7 minutes after the first kill, 6 after the second, and 5 after each one after that. The damage report calls it the Temple Guardian." },
   { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv", "rejuvenator credit", "rejuvenator crystal", "rejuvenator crystals"], d: "When the [[mid-boss|Mid Boss]] dies, three crystals float down over its pit. They can’t be touched until they land. Breaking one with a heavy [[melee|melee]] gives your team a revive and fully heals whoever broke it. Either team can break them, no matter who killed the Mid Boss, so revives can be stolen. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. Each player can only use one. The buff ends when the revives run out or the time is up." },
-  { k: "permanent-buffs", c: "scale", t: "Permanent buffs", a: ["permanent buff", "permanent buffs", "permanent stat buff", "permanent stat buffs", "permanent stat boost", "permanent stat boosts"], d: "A small stat boost that lasts for the rest of the match, picked at random from a set list. They stack. [[golden-statues|Golden Statues]] drop them, the [[mid-boss|Mid Boss]] gives 2 to each player on the team that kills it, and the Golden Goose Egg item grants them when it hatches. Not the same as [[map-buffs|map buffs]], which wear off after a few minutes." },
+  { k: "permanent-buffs", c: "map", t: "Permanent buffs", a: ["permanent buff", "permanent buffs", "permanent stat buff", "permanent stat buffs", "permanent stat boost", "permanent stat boosts"], d: "A small stat boost that lasts for the rest of the match, picked at random from a set list. They stack. [[golden-statues|Golden Statues]] drop them, the [[mid-boss|Mid Boss]] gives 2 to each player on the team that kills it, and the Golden Goose Egg item grants them when it hatches. Not the same as [[map-buffs|map buffs]], which wear off after a few minutes." },
   { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups"], d: "Glowing pickups around the map, broken open with a melee hit. Each gives a few minutes of extra stats, and they get stronger as the match goes on." },
   { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues", "breakable", "breakables", "crate", "crates"], d: "Golden statues around the map that drop a small [[permanent-buffs|permanent stat boost]] when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
   { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Monster camps around the map, in three sizes. They give souls, and their bounty grows a little every minute." },
@@ -4006,7 +4006,7 @@ var GLOSS = [
   { k: "move-speed", c: "move", t: "Move speed", a: ["move speed", "movement speed", "bonus move speed"], d: "How fast you walk. Buffs add to it, in m/s or as a percentage, and [[slow|slows]] take it away. [[sprint|Sprint]] adds more on top when you’re out of combat." },
   { k: "burn", c: "dmg", t: "Burn", a: ["burn", "burns", "burning"], d: "A debuff that deals [[spirit-damage|spirit damage]] over a few seconds after the hit, a kind of [[dot|damage over time]]." },
   { k: "movement-silence", c: "cc", t: "Movement Silence", a: ["movement silence", "movement silenced"], d: "A debuff that slows the target and blocks their movement abilities and movement items, like dashes and leaps. Some versions restrict movement further. They can still shoot and use other abilities." },
-  { k: "damage-reduction", c: "cc", t: "Damage output reduction", a: ["damage output reduction", "reduced damage output"], d: "A debuff that lowers how much damage the target deals. Some cut every kind of damage, others only weapon or only spirit damage." },
+  { k: "damage-reduction", c: "def", t: "Damage output reduction", a: ["damage output reduction", "reduced damage output"], d: "A debuff that lowers how much damage the target deals. Some cut every kind of damage, others only weapon or only spirit damage." },
   { k: "hidden-minimap", c: "buff", t: "Hidden on minimap", a: ["hidden on the minimap", "hidden on minimap"], d: "A buff that keeps you off the enemy minimap. You can still be seen normally." },
   { k: "affliction", c: "hero", h: "Pocket", t: "Affliction", a: [], d: "Pocket’s long damage-over-time debuff. It can’t kill: it stops at 1 health, and it doesn’t trigger item procs." },
   { k: "eternal-night", c: "hero", h: "Drifter", t: "Eternal Night", a: [], d: "Drifter’s debuff that badly limits how far affected heroes can see." },
@@ -4325,7 +4325,7 @@ function gameText(g) { // the game's own name for the effect and the message it 
   return '<div class="gig"><span>In game</span>' + (nm ? "<b>" + esc(nm) + "</b>" : "") + (nm && t.msg ? " · " : "") + (t.msg ? "“" + esc(t.msg) + "”" : "") + "</div>";
 }
 function mechHtml(g) { // the numbers behind a map term, from the game data
-  var M = state.mc; if (!M || (g.c !== "map" && g.c !== "econ" && g.k !== "permanent-buffs")) return "";
+  var M = state.mc; if (!M || (g.c !== "map" && g.c !== "econ")) return "";
   var E = M.economy || {};
   if (g.k === "souls") return unlocksHtml();
   if (g.k === "shop") { var SH = M.shop || {}; return econCard((SH.tier_prices || []).map(function (v, i) { return [Number(v).toLocaleString(), "Tier " + (i + 1)]; }).concat([[SH.sell_ratio != null ? Math.round(SH.sell_ratio * 100) + "%" : null, "Sell-back value"]])); }
@@ -5471,8 +5471,22 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) sinkSheet(); };
   window.addEventListener("resize", function () { if (cur) place(cur, false); });
   move(false);
 })();
+// Refresh now checks two things: new game data (once a day), and a newer version of the site itself. The page normally opens
+// from the copy saved on this device and picks up a new version only on the open after, so this fetches it now and reloads into it.
+function pageChanged() { // resolves true when the site on GitHub differs from the one on screen (its styles or script changed)
+  var reg = navigator.serviceWorker && navigator.serviceWorker.getRegistration ? navigator.serviceWorker.getRegistration().then(function (r) { if (r) return r.update(); }).catch(function () {}) : null; // and the offline helper itself
+  return fetch("index.html?fresh=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.text(); }).then(function (html) {
+    if (html.indexOf("<script") < 0) return false; // not the page (a sign-in or error page): leave things alone
+    return Array.prototype.some.call(document.querySelectorAll("style, script:not([src])"), function (el) { var t = el.textContent; return t.length > 200 && html.indexOf(t) < 0; });
+  }).catch(function () { return false; }).then(function (ch) { return reg ? reg.then(function () { return ch; }) : ch; });
+}
 function refreshNow() {
-  fetchAll().then(afterFetch).catch(function (e) {
+  var rb = $("rfr"); if (rb) { rb.textContent = "Checking…"; rb.disabled = true; }
+  Promise.all([pageChanged(), fetchAll()]).then(function (r) {
+    if (r[0]) { var b = $("rfr"); if (b) b.textContent = "Updating the site…"; setTimeout(function () { location.reload(); }, 150); return; }
+    var wasSame = state.same; afterFetch();
+    var b2 = $("rfr"); if (b2 && wasSame) { b2.textContent = "Up to date ✓"; b2.disabled = true; setTimeout(function () { var b3 = $("rfr"); if (b3) { b3.textContent = "Refresh now"; b3.disabled = false; } }, 2500); }
+  }).catch(function (e) {
     if (state.heroes.length) { state.note = "Couldn’t refresh (offline?). Showing saved data."; render(); } else showError(e);
   });
 };
