@@ -570,10 +570,10 @@ body.chband details.phd.abd::before{display:none}
 /* the panel is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilted edges: the top is higher on the left, the bottom lower on the left */
 body.chband .chpanel{display:block;position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:-22px;bottom:-22px;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.42))}
 body.chband .chpanel i{position:absolute;inset:0;background:#211b33;clip-path:polygon(0 0,100% 20px,100% calc(100% - 20px),0 100%)}
-/* Popular items: the same raised panel, mirrored (higher on the right), in a dark green-grey so the bright green stays an accent */
+/* Popular items: the same raised panel, mirrored (higher on the right), in a muted slate blue */
 body.chband details.phd.ppd{--cc:inherit;border:0;border-radius:0;padding:26px 0 40px;margin:68px 0 0;background:none;box-shadow:none}
 body.chband details.phd.ppd::before,body.chband details.phd.ppd::after,body.chband details.phd.ppd .cgl{display:none}
-body.chband details.phd.ppd .chpanel i{background:#1b201f;clip-path:polygon(0 20px,100% 0,100% 100%,0 calc(100% - 20px))}
+body.chband details.phd.ppd .chpanel i{background:#1c1f27;clip-path:polygon(0 20px,100% 0,100% 100%,0 calc(100% - 20px))}
 body.chband #revwrap > details.phd{margin-top:64px}
 /* each ability card, and each popular item, casts a soft shadow onto its panel */
 body.chband details.abd .ab{box-shadow:0 8px 18px rgba(0,0,0,.45)}
@@ -582,7 +582,7 @@ body.chband details.ppd .ppc{box-shadow:0 4px 10px rgba(0,0,0,.25)}
 body.chband details.phd.bsd > summary.sec .sect::after{width:66px;margin-left:-33px;height:4px;bottom:-24px;border-radius:1px;transform:skewX(-28deg);background:linear-gradient(90deg,var(--vital) 0 30%,transparent 30% 35%,#d9a441 35% 65%,transparent 65% 70%,var(--spirit) 70% 100%)}
 body.chband #aowrap > details.phd{margin-top:68px}
 /* the shorter chapters keep their cards, each in its own colour, with a softer edge that fades sooner and a calmer wash */
-body.chband #aowrap{--cc:#a283f0;--cr:162,131,240}body.chband #popwrap{--cc:#5fc87a;--cr:95,200,122}body.chband #revwrap{--cc:#5a9cf0;--cr:90,156,240}
+body.chband #aowrap{--cc:#a283f0;--cr:162,131,240}body.chband #popwrap{--cc:#5a9cf0;--cr:90,156,240}body.chband #revwrap{--cc:#d9a441;--cr:217,164,65}
 body.chband details.phd:not(.bsd):not(.abd):not(.ppd){--cc:inherit;border-color:rgba(var(--cr),.24);background:linear-gradient(to bottom,rgba(var(--cr),.08),transparent clamp(120px,35%,260px)),rgba(255,255,255,.028)}
 body.chband details.phd:not(.bsd):not(.abd):not(.ppd)::before{opacity:.6;height:min(max(150px,35%),320px,calc(100% + 2px))}
 body.chband details.phd:not(.bsd):not(.abd):not(.ppd)::after{opacity:.3;height:min(max(80px,20%),180px,calc(100% + 2px))}
