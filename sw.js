@@ -21,6 +21,14 @@ self.addEventListener("fetch", function (e) {
   var r = e.request;
   if (r.method !== "GET") return;
   var u = new URL(r.url);
+  if (u.origin === location.origin && u.searchParams.has("fresh")) {
+    // Refresh now: the page straight from the network, saved as the copy the next open shows
+    e.respondWith(fetch(new Request(u.pathname, { cache: "no-store" })).then(function (res) {
+      if (res && res.ok) { var copy = res.clone(); caches.open(SHELL).then(function (c) { return c.put("index.html", copy); }); }
+      return res;
+    }));
+    return;
+  }
   if (u.origin === location.origin && !/\/data\//.test(u.pathname)) {
     // page and app files: the saved copy at once, and a fresh one fetched in the background for next time
     var key = r.mode === "navigate" ? "index.html" : r;
