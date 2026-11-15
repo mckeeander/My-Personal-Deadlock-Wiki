@@ -589,6 +589,7 @@ body.chband details.phd:not(.bsd):not(.abd):not(.ppd){--cc:inherit;border-color:
 body.chband details.phd:not(.bsd):not(.abd):not(.ppd)::before{opacity:.6;height:min(max(150px,35%),320px,calc(100% + 2px))}
 body.chband details.phd:not(.bsd):not(.abd):not(.ppd)::after{opacity:.3;height:min(max(80px,20%),180px,calc(100% + 2px))}
 body.chband details.phd.bsd::before,body.chband details.phd.bsd::after,body.chband details.phd.abd::after,body.chband details.phd.abd .cgl,body.chband details.phd.bsd .cgl{display:none}
+details.phd:not([open]) > .cgl{display:none}
 .cgl{position:absolute;z-index:-1;pointer-events:none;width:2px;background:linear-gradient(to bottom,transparent,rgba(110,170,250,.95) 50%,transparent);filter:drop-shadow(0 0 5px rgba(90,156,240,.7))} /* a long glint along a side of a long chapter */
 /* the blue edge is offset like the stat cards: bright round the top-left corner, fading along the top and down the left side, with a fainter
    echo round the bottom-right corner. Both are sized to the card (a share of its height, within limits), so a long chapter keeps its edge further down */
@@ -606,22 +607,24 @@ details.phd > summary.sec{padding-top:8px;padding-bottom:22px}
 details.phd > summary + *{margin-top:26px}
 details.phd > summary.nofold{cursor:default} /* the core chapters are always open */
 .phf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.phb{height:40px;min-width:40px;padding:0 10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--dim);font:inherit;font-size:13px}
-.phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}.phb.on img{opacity:1}
+.phb img{width:24px;height:24px;object-fit:contain;opacity:.6}.phb.on{border-color:var(--gold);color:var(--gold);background:rgba(230,180,90,.08)}body.chband #revwrap .phb.on{border-color:#5fc87a;color:#7fd896;background:rgba(95,200,122,.1)}.phb.on img{opacity:1}
 .phsum{font-style:normal;font-weight:400;font-size:12.5px;color:var(--dim);margin-left:8px}
 .phist .pho{display:none}.phist.all .pho{display:block}.phist .phx,.phist .rgrp.phx{display:none!important}
 .ipage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:18px} /* the item page: its card, set apart from the patch history below */.ipl .pnl{margin-top:4px}
-.aotw{display:flex;justify-content:center;margin:14px 0 0}
-.aotl{grid-column:1/-1;text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:5px 0 4px} /* the label sits inside the switch's frame, above the tabs */
+.aotw{display:flex;flex-direction:column;align-items:center;margin:14px 0 0}
+.aotl{position:relative;z-index:1;margin-bottom:-1px;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--fg);padding:5px 12px 3px} /* a narrow tab on top of the switch, just wide enough for its words */ /* the label sits inside the switch's frame, above the tabs */
 .aotabs{position:relative;display:inline-grid;gap:0 2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
 .aotab{position:relative;z-index:1;border:0;background:transparent;border-radius:8px;padding:6px 16px;color:var(--dim);font:inherit;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent;transition:color .3s ease}
 .aotab.on{color:var(--fg)}
 .aoth{position:absolute;top:3px;left:3px;border-radius:8px;background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold)} /* the highlight behind the picked tab; it slides when you switch */
 .aorank{font-size:12.5px;line-height:1.45;color:var(--dim);margin:8px 0 0}.aorank b{color:var(--fg);font-weight:600}
 .aotw + .aobx{margin-top:16px}
+.aoic.tip::after{content:attr(data-tip);position:absolute;z-index:6;left:-2px;bottom:calc(100% + 7px);white-space:nowrap;background:#2b2540;border:1px solid #3e3658;color:var(--fg);font-size:12px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0,.5);pointer-events:none;animation:aotip .18s ease-out} /* tap an ability's icon to see its name */
+@keyframes aotip{from{opacity:0;transform:translateY(3px)}}
 .aohd{font-size:13.5px;color:var(--dim);margin:2px 0 10px 2px}.aohd b{color:var(--fg);font-weight:600} /* the style, named at the top of the chart card */
 .aobx{--aop:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px}
 .aor{display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;margin-bottom:5px}
-.aoic{width:30px;height:30px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}.aoic img{width:22px;height:22px;object-fit:contain}
+.aoic{position:relative;box-shadow:0 1.5px 0 #141020;cursor:pointer;-webkit-tap-highlight-color:transparent;width:30px;height:30px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}.aoic img{width:22px;height:22px;object-fit:contain}
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
@@ -3253,6 +3256,7 @@ var BS_SHUT = null, WP_OPEN = null, AB_SHUT = null; // the hero whose Base stats
 document.addEventListener("toggle", function (e) {
   var c = e.target.classList; if (!c || !c.contains("phd") || state.tab !== "heroes") return;
   var mine = e.target.open ? state.hero : null;
+  requestAnimationFrame(function () { chapterGlints(); });
   if (c.contains("aod")) AO_SHUT = e.target.open ? null : state.hero; else if (c.contains("ppd")) POP_SHUT = e.target.open ? null : state.hero; else if (c.contains("bsd")) BS_SHUT = e.target.open ? null : state.hero; else if (c.contains("wpd")) WP_OPEN = mine; else if (c.contains("abd")) AB_SHUT = e.target.open ? null : state.hero; else PH_OPEN = mine;
 }, true);
 var RANKS = ["Obscurus", "Initiate", "Seeker", "Acolyte", "Sentinel", "Mystic", "Ritualist", "Emissary", "Oracle", "Phantom", "Ascendant", "Eternus"];
@@ -3303,7 +3307,7 @@ function abilityOrderHtml(h) {
   var sig = aoSig(h); if (sig.some(function (x) { return !x; })) return "";
   var bi = Math.min(AO_TAB[h.class_name] || 0, A.builds.length - 1), B = A.builds[bi];
   var ico = function (s, c) { return '<span class="' + (c || "aoic") + '"><img src="' + esc(itemImg(sig[s])) + '" alt=""></span>'; };
-  var tabs = (A.builds.length < 2 ? "" : '<div class="aotw"><div class="aotabs" role="tablist" aria-label="Play styles by use rate" style="grid-template-columns:repeat(' + A.builds.length + ',auto)"><span class="aotl" aria-hidden="true">Use rate</span>' + A.builds.map(function (b, i) { // one tab per play style, labelled with the share of players; the line under names the style
+  var tabs = (A.builds.length < 2 ? "" : '<div class="aotw"><span class="aotl" aria-hidden="true">Use rate</span><div class="aotabs" role="tablist" aria-label="Play styles by use rate" style="grid-template-columns:repeat(' + A.builds.length + ',auto)">' + A.builds.map(function (b, i) { // one tab per play style, labelled with the share of players; the line under names the style
     return '<button class="aotab' + (i === bi ? " on" : "") + '" role="tab" aria-selected="' + (i === bi) + '" data-aot="' + i + '" aria-label="Max ' + esc(nameOf(sig[b.max[0]])) + ", then " + esc(nameOf(sig[b.max[1]])) + ", " + Math.round(b.share * 100) + '% of players">' + Math.round(b.share * 100) + "%</button>";
   }).join("") + '<span class="aoth" aria-hidden="true"></span></div></div>');
   var pts = B.pts, T = Math.max.apply(null, pts.map(function (p) { return p[2]; })), step = T > 2700 ? 10 : 5, ticks = [];
@@ -3315,7 +3319,7 @@ function abilityOrderHtml(h) {
       var fd = "";
       mk += p[1] ? '<span class="aok t' + p[1] + fd + '" data-k="k' + s + "-" + p[1] + '" style="left:' + X(p[2]) + '">' + L[p[1]] + "</span>" : '<span class="aou' + fd + '" data-k="u' + s + '" style="left:' + X(p[2]) + '"></span>';
     });
-    return '<div class="aor">' + ico(s) + '<div class="aotr">' + ticks.map(function (m) { return '<span class="aogl" data-k="g' + s + "-" + m + '" style="left:' + X(m * 60) + '"></span>'; }).join("") + mk + "</div></div>";
+    return '<div class="aor">' + ico(s).replace('class="aoic"', 'class="aoic" role="button" tabindex="0" aria-label="' + esc(nameOf(sig[s])) + '" data-tip="' + esc(nameOf(sig[s])) + '"') + '<div class="aotr">' + ticks.map(function (m) { return '<span class="aogl" data-k="g' + s + "-" + m + '" style="left:' + X(m * 60) + '"></span>'; }).join("") + mk + "</div></div>";
   }).join("");
   var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span data-k="a' + m + '" style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
   return '<details class="phd aod" open><summary class="sec nofold"><span class="sect">Ability order</span></summary>' +
@@ -5043,7 +5047,9 @@ $("main").addEventListener("click", function (e) {
     });
     return;
   }
-  var cj = e.target.closest ? e.target.closest(".chjb[data-chj]") : null; if (cj) { var tgt = document.querySelector(cj.getAttribute("data-chj") + " details"); if (tgt) { if (!tgt.open && cj.getAttribute("data-chj") === "#revwrap") tgt.open = true; scrollToEl(tgt, true); } return; } // Patch history opens as you arrive
+  var ai = e.target.closest ? e.target.closest(".aoic[data-tip]") : null;
+  Array.prototype.forEach.call(document.querySelectorAll(".aoic.tip"), function (x) { if (x !== ai) x.classList.remove("tip"); });
+  if (ai) { ai.classList.toggle("tip"); clearTimeout(window._aoT); window._aoT = setTimeout(function () { ai.classList.remove("tip"); }, 2400); return; }
   var pd = e.target.closest ? e.target.closest(".ppdot[data-c]") : null; if (pd) { popPick(pd); return; }
   var pm = e.target.closest ? e.target.closest(".ppim[data-pick]") : null; if (pm) { var pt = pm.closest("details").querySelector('.ppdot[data-c="' + pm.getAttribute("data-pick") + '"]'); if (pt) popPick(pt); else itemSheet(pm.getAttribute("data-pick")); return; }
   var pp = e.target.closest ? e.target.closest(".ppplot.sel") : null; if (pp) { var on = pp.querySelector(".ppdot.on"); if (on) popPick(on); return; }
