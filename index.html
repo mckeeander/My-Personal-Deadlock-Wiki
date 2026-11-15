@@ -637,10 +637,12 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .ppk{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 6px 9px;color:var(--fg);font:inherit;-webkit-tap-highlight-color:transparent}
 .ppk .ric{width:56px;height:56px}.ppk b{font-size:14px;font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums}
 /* situational: a chart of share of matches against buy time */
-.ppch{display:grid;grid-template-columns:34px 1fr;grid-template-rows:260px 18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 14px 6px 6px}
+.ppch{display:grid;grid-template-columns:34px 1fr;grid-template-rows:400px 18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 14px 6px 6px}
 .ppyax{position:relative;font-size:10px;color:var(--dim)}.ppyax span{position:absolute;right:6px;transform:translateY(-50%)}
 .ppplot{position:relative;border-left:1px solid #3a3350;border-bottom:1px solid #3a3350}
 .pphl{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.05)}
+.pphl.ppcl{height:0;background:none;border-top:1px dashed rgba(196,160,78,.45)} /* where the core build starts */
+.ppcoretag{position:absolute;right:2px;transform:translateY(-120%);font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(214,178,98,.75);pointer-events:none}
 .pplk{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.pplk line{stroke:rgba(162,131,240,.45);stroke-width:1.5;stroke-dasharray:3 3}
 .ppdot{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;padding:0;border:0;background:none;border-radius:7px;box-shadow:0 2px 6px rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent}.ppdot .ric{width:30px;height:30px}
 .ppxax{grid-column:2;position:relative;font-size:10px;color:var(--dim)}.ppxax span{position:absolute;top:4px;transform:translateX(-50%)}.ppxax span:first-child{transform:none}
@@ -3251,21 +3253,17 @@ function popularHtml(h) { // what top-ranked players buy on this hero: the core 
     var up = all.filter(function (o) { return o !== r && partOf(r.c, o.c, {}) && Math.abs(o.t - r.st) < 300; }).sort(function (a, b) { return b.p - a.p; })[0];
     return up ? '<span class="ppf">→ ' + esc(nameOf(state.byClass[up.c])) + " at " + mm(up.t) + "</span>" : '<span class="ppf">Usually sold ~' + mm(r.st) + "</span>";
   }
-  var core = all.filter(function (r) { return r.p >= .6; }).sort(function (a, b) { return a.t - b.t; });
-  // core: big icons in the order they're usually bought, each with its share of matches
-  var coreHtml = core.length ? '<div class="ppy">Core build <span>in the order they’re bought</span></div><div class="ppcore">' + core.map(function (r) {
-    return '<button class="ppk" data-pitem="' + esc(r.c) + '" aria-label="' + esc(nameOf(state.byClass[r.c])) + ", " + Math.round(r.p * 100) + '% of matches">' + ico(r) + "<b>" + Math.round(r.p * 100) + "%</b></button>";
-  }).join("") + "</div>" : "";
-  // situational: a chart, share of matches up the side (12% to 60%), usual buy time along the bottom; items usually bought together are joined by a faint line
-  var sit = all.filter(function (r) { return r.p < .6 && r.p >= .12 && !core.some(function (c) { return partOf(r.c, c.c, {}); }); }).slice(0, 16), inSit = {};
+  // one chart for every item bought in 12% of matches or more: share of matches up the side (12% to 100%), usual buy time along the bottom.
+  // A faint line at 60% marks where the core build starts; items usually bought together are joined by a dashed line
+  var sit = all.filter(function (r) { return r.p >= .12; }).slice(0, 28), inSit = {};
   sit.forEach(function (r) { inSit[r.c] = 1; });
   var T = Math.max(1200, Math.max.apply(null, sit.map(function (r) { return r.t; }).concat([0])) + 60), ticks = [];
   for (var m = 0; m * 60 <= T; m += T > 2100 ? 10 : 5) ticks.push(m);
-  var X = function (t) { return (t / T * 100).toFixed(2) + "%"; }, Y = function (p) { return ((.6 - p) / .48 * 100).toFixed(2) + "%"; };
-  var links = []; sit.forEach(function (r) { (r.w || []).forEach(function (o) { if (inSit[o] && r.c < o) links.push(r.c + "|" + o); else if (inSit[o] && (byC[o].w || []).indexOf(r.c) < 0) links.push(r.c + "|" + o); }); });
-  var sitHtml = sit.length ? '<div class="ppy">Situational <span>bought in some matches</span></div><div class="ppch" data-links="' + esc(links.join(",")) + '"><div class="ppyax">' + [60, 48, 36, 24, 12].map(function (v) { return '<span style="top:' + Y(v / 100) + '">' + v + "%</span>"; }).join("") + '</div><div class="ppplot">' +
-    [60, 48, 36, 24, 12].map(function (v) { return '<i class="pphl" style="top:' + Y(v / 100) + '"></i>'; }).join("") + '<svg class="pplk" aria-hidden="true"></svg>' +
-    sit.map(function (r) { return '<button class="ppdot" data-pitem="' + esc(r.c) + '" data-c="' + esc(r.c) + '" style="left:' + X(r.t) + ";top:" + Y(r.p) + '" aria-label="' + esc(nameOf(state.byClass[r.c])) + ", " + Math.round(r.p * 100) + "% of matches, around " + mm(r.t) + '">' + ico(r) + "</button>"; }).join("") +
+  var X = function (t) { return (t / T * 100).toFixed(2) + "%"; }, Y = function (p) { return ((1 - p) / .88 * 100).toFixed(2) + "%"; }, YT = [100, 80, 60, 40, 20, 12];
+  var links = []; sit.forEach(function (r) { (r.w || []).forEach(function (o) { if (inSit[o] && (r.c < o || (byC[o].w || []).indexOf(r.c) < 0)) links.push(r.c + "|" + o); }); });
+  var coreHtml = "", sitHtml = sit.length ? '<div class="ppch" data-links="' + esc(links.join(",")) + '"><div class="ppyax">' + YT.map(function (v) { return '<span style="top:' + Y(v / 100) + '">' + v + "%</span>"; }).join("") + '</div><div class="ppplot">' +
+    YT.map(function (v) { return '<i class="pphl' + (v === 60 ? " ppcl" : "") + '" style="top:' + Y(v / 100) + '"></i>'; }).join("") + '<span class="ppcoretag" style="top:' + Y(.6) + '">Core</span><svg class="pplk" aria-hidden="true"></svg>' +
+    sit.map(function (r) { return '<button class="ppdot' + (r.p >= .6 ? " core" : "") + '" data-pitem="' + esc(r.c) + '" data-c="' + esc(r.c) + '" style="left:' + X(r.t) + ";top:" + Y(r.p) + '" aria-label="' + esc(nameOf(state.byClass[r.c])) + ", " + Math.round(r.p * 100) + "% of matches, around " + mm(r.t) + '">' + ico(r) + "</button>"; }).join("") +
     '</div><div class="ppxax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div></div>" : "";
   var body = coreHtml + sitHtml;
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
