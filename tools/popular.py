@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """What top-ranked players buy on each hero, from the Deadlock API's match statistics, into data/popular.json.
 
-For every hero: each shop item's pick rate (share of that hero's matches it was bought in) and its average buy time,
-over the last 30 days, in matches whose average rank is in roughly the top 5% (worked out each run from the API's
-rank distribution). The app files them as early (bought before 10 min), mid (10-20) and late (20+).
+For every hero, over the last 30 days, in matches whose average rank is in roughly the top 5% (worked out each run from
+the API's rank distribution), each shop item bought in at least MIN_P of the hero's matches, with:
+  p   pick rate: the share of the hero's matches it was bought in
+  t   average buy time (s)
+  s   sell rate: the share of the matches it was bought in where it was later sold (only when SOLD_MIN or more)
+  st  average sell time (s), with s
+  w   bought together: up to 3 items bought much more often alongside this one than on the hero in general
+The app splits them into a core build (bought in most matches, in buy order) and situational picks.
 
-Run:  python3 tools/popular.py        (about 46 requests; the API allows 200 a minute)
+Run:  python3 tools/popular.py        (two requests per hero; the API allows 200 a minute)
 """
 import json, os, sys, time, urllib.request
 
@@ -13,7 +18,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 API = "https://api.deadlock-api.com/v1"
 TOP = 0.05  # the share of matches to keep, by average rank
-KEEP = 10   # items kept per hero for each phase (early, mid, late); the app shows six, after dropping parts of items already shown
+MIN_P = 0.08    # items bought in fewer of the hero's matches than this are left out
+MAX_ITEMS = 40  # most items kept per hero
+SOLD_MIN = 0.3  # an item counts as usually sold when at least this share of buyers sell it
+PAIR_MIN = 0.35 # a partner is listed when at least this share of the item's buyers also buy it...
+LIFT_MIN = 1.3  # ...and that's at least this many times its usual rate on the hero
 
 
 def get(path):
@@ -52,14 +61,30 @@ def main():
     for h in heroes:
         n = per.get(h["id"])
         if not n: continue
-        rows = []
+        rows, by_id = [], {}
         for x in get("/analytics/item-stats%s&hero_id=%d&min_matches=20" % (q, h["id"])):
             it = items.get(x["item_id"])
-            if not it or not x.get("matches"): continue
-            rows.append({"c": it["class_name"], "p": round(x["matches"] / n, 4), "t": round(x.get("avg_buy_time_s") or 0)})
-        rows.sort(key=lambda r: -r["p"])
-        ph = lambda r: 0 if r["t"] < 600 else 1 if r["t"] < 1200 else 2  # early, mid, late: the app's three sections
-        out[h["class_name"]] = {"matches": n, "items": [r for k in range(3) for r in [x for x in rows if ph(x) == k][:KEEP]]}
+            if not it or not x.get("matches") or x["matches"] / n < MIN_P: continue
+            r = {"c": it["class_name"], "p": round(x["matches"] / n, 4), "t": round(x.get("avg_buy_time_s") or 0)}
+            sr = (x.get("sold") or 0) / x["matches"]
+            if sr >= SOLD_MIN and x.get("avg_sell_time_s"): r["s"] = round(sr, 2); r["st"] = round(x["avg_sell_time_s"])
+            rows.append(r); by_id[x["item_id"]] = (r, x["matches"])
+        rows.sort(key=lambda r: -r["p"]); rows = rows[:MAX_ITEMS]
+        try:  # bought together: pairs of items bought in the same match
+            pairs = get("/analytics/item-permutation-stats%s&hero_id=%d&comb_size=2&min_matches=50" % (q, h["id"]))
+        except Exception as e:
+            pairs = []; print("  pairs failed for %s: %s" % (h.get("name"), e))
+        cand = {}
+        for pr in pairs:
+            ids = pr.get("item_ids") or []
+            if len(ids) != 2 or ids[0] not in by_id or ids[1] not in by_id: continue
+            for a, b in ((ids[0], ids[1]), (ids[1], ids[0])):
+                (ra, na), (rb, _) = by_id[a], by_id[b]
+                cond = pr["matches"] / na; lift = cond / rb["p"]
+                if cond >= PAIR_MIN and lift >= LIFT_MIN: cand.setdefault(a, []).append((lift, rb["c"]))
+        for a, lst in cand.items():
+            lst.sort(reverse=True); by_id[a][0]["w"] = [c for _, c in lst[:3]]
+        out[h["class_name"]] = {"matches": n, "items": rows}
         time.sleep(0.4)
     if not out:
         print("no data; keeping the old file"); return 1

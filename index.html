@@ -579,7 +579,7 @@ body.chband #revwrap > details.phd{margin-top:64px}
 /* each ability card, and each popular item, casts a soft shadow onto its panel */
 body.chband details.phd.abd{--cc:#a283f0}
 body.chband details.abd .ab{box-shadow:0 8px 18px rgba(0,0,0,.45)}
-body.chband details.ppd .ppc{box-shadow:0 4px 10px rgba(0,0,0,.25)}
+body.chband details.ppd .ppc,body.chband details.ppd .ppr{box-shadow:0 4px 10px rgba(0,0,0,.25)}
 /* Base stats: a key to what's inside, three slanted bars in the Vitality, Weapon and Spirit colours */
 body.chband details.phd.bsd > summary.sec .sect::after{background:var(--fg)} /* the same cream as the title */
 body.chband #aowrap > details.phd{margin-top:68px}
@@ -632,6 +632,14 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
 .ppy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}.ppy span{font-weight:400;letter-spacing:.02em;text-transform:none;margin-left:4px}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* the core build: a timeline of items in the order they're bought */
+.pptl{position:relative;display:flex;flex-direction:column;gap:6px}
+.pptl::before{content:"";position:absolute;left:20px;top:14px;bottom:14px;width:2px;border-radius:1px;background:linear-gradient(to bottom,rgba(162,131,240,.55),rgba(196,160,78,.55))}
+.ppr{position:relative;display:grid;grid-template-columns:40px 32px 1fr auto;align-items:center;gap:10px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 12px 7px 0;color:var(--fg);font:inherit;text-align:left;-webkit-tap-highlight-color:transparent}
+.ppr .ric{width:32px;height:32px}.ppr b{font-size:13px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums}
+.ppt{justify-self:center;font-size:11.5px;font-weight:700;color:var(--fg);background:#2b2540;border:1px solid #3e3658;border-radius:6px;padding:2px 5px;font-variant-numeric:tabular-nums;position:relative;z-index:1}
+.ppf{display:block;font-size:11.5px;color:var(--dim);margin-top:1px} /* what happens to the item later */
+.ppset{border:1px dashed #4a4166;border-radius:12px;padding:8px;margin:0 0 8px}.ppsh{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 2px 8px}
 .ppc{display:flex;align-items:center;gap:9px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px 8px 8px;color:var(--fg);font:inherit;text-align:left;-webkit-tap-highlight-color:transparent}
 .ppc .ric{width:32px;height:32px}.ppn{flex:1;min-width:0;font-size:13px;line-height:1.25}.ppc b{font-size:13px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums}
 .ric.pnit,.gsi{position:relative}.ric.pnit.weapon,.gsi.weapon{--slc:var(--weapon)}.ric.pnit.vitality,.gsi.vitality{--slc:var(--vital)}.ric.pnit.spirit,.gsi.spirit{--slc:var(--spirit)}
@@ -3220,18 +3228,35 @@ function partOf(a, b, seen) { // does item b build from item a, at any depth?
   if (seen[b]) return false; seen[b] = 1;
   return ((state.byClass[b] || {}).component_items || []).some(function (c) { return c === a || partOf(a, c, seen); });
 }
-function popularHtml(h) { // what top-ranked players buy on this hero, by when they buy it: half-width cards, the share of matches on the right
+function popularHtml(h) { // what top-ranked players buy on this hero: the core build in the order it's bought, then the situational picks, grouped where they're bought together
   var P = state.pop && state.pop.heroes && state.pop.heroes[h.class_name]; if (!P || !P.items.length) return "";
-  var phases = [["Early game", "under 10 min", function (t) { return t < 600; }], ["Mid game", "10\u201320 min", function (t) { return t >= 600 && t < 1200; }], ["Late game", "20 min +", function (t) { return t >= 1200; }]];
-  var body = phases.map(function (ph) {
-    var all = P.items.filter(function (r) { return ph[2](r.t) && state.byClass[r.c]; });
-    var rows = all.filter(function (r) { return !all.some(function (o) { return o !== r && partOf(r.c, o.c, {}); }); }).slice(0, 6); // an item that builds into one already in this section (Duration Extender under Superior Duration) gives way
-    if (!rows.length) return "";
-    return '<div class="ppy">' + ph[0] + " <span>" + ph[1] + '</span></div><div class="ppg">' + rows.map(function (r) {
-      var it = state.byClass[r.c], sl = slotOf(it);
-      return '<button class="ppc" data-pitem="' + esc(r.c) + '"><span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(it), itemImg(it)) + tierTab(it) + '</span><span class="ppn">' + esc(nameOf(it)) + '</span><b>' + Math.round(r.p * 100) + "%</b></button>";
-    }).join("") + "</div>";
-  }).join("");
+  var all = P.items.filter(function (r) { return state.byClass[r.c]; }), byC = {}; all.forEach(function (r) { byC[r.c] = r; });
+  var mm = function (t) { return Math.max(1, Math.round(t / 60)) + "m"; };
+  var ico = function (r) { var it = state.byClass[r.c], sl = slotOf(it); return '<span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(it), itemImg(it)) + tierTab(it) + "</span>"; };
+  // what happens to an item later: most "sales" are really upgrades (Compress Cooldown goes into Superior Cooldown when that's bought)
+  function fate(r) {
+    if (!r.s) return "";
+    var up = all.filter(function (o) { return o !== r && partOf(r.c, o.c, {}) && Math.abs(o.t - r.st) < 300; }).sort(function (a, b) { return b.p - a.p; })[0];
+    return up ? '<span class="ppf">→ ' + esc(nameOf(state.byClass[up.c])) + " at " + mm(up.t) + "</span>" : '<span class="ppf">Usually sold ~' + mm(r.st) + "</span>";
+  }
+  var core = all.filter(function (r) { return r.p >= .6; }).sort(function (a, b) { return a.t - b.t; });
+  var coreHtml = core.length ? '<div class="ppy">Core build <span>bought in most matches, in order</span></div><div class="pptl">' + core.map(function (r) {
+    return '<button class="ppr" data-pitem="' + esc(r.c) + '"><span class="ppt">' + mm(r.t) + "</span>" + ico(r) + '<span class="ppn">' + esc(nameOf(state.byClass[r.c])) + fate(r) + "</span><b>" + Math.round(r.p * 100) + "%</b></button>";
+  }).join("") + "</div>" : "";
+  // situational: grouped into the small builds they're bought together in, the rest on their own
+  var sit = all.filter(function (r) { return r.p < .6 && r.p >= .12 && !core.some(function (c) { return partOf(r.c, c.c, {}); }); }).slice(0, 14), inSit = {}, from = {};
+  sit = sit.filter(function (r) { var up = sit.filter(function (o) { return o !== r && partOf(r.c, o.c, {}); })[0]; if (up) { from[up.c] = r; return false; } return true; }); // a part that's upgraded into another pick here folds into it ("from Compress Cooldown")
+  sit.forEach(function (r) { inSit[r.c] = r; });
+  var par = {}; function root(c) { while (par[c] && par[c] !== c) c = par[c]; return c; }
+  sit.forEach(function (r) { par[r.c] = par[r.c] || r.c; (r.w || []).forEach(function (o) { if (inSit[o]) { par[o] = par[o] || o; par[root(o)] = root(r.c); } }); });
+  var groups = {}; sit.forEach(function (r) { (groups[root(r.c)] = groups[root(r.c)] || []).push(r); });
+  var tile = function (r) { var f = from[r.c]; return '<button class="ppc" data-pitem="' + esc(r.c) + '">' + ico(r) + '<span class="ppn">' + esc(nameOf(state.byClass[r.c])) + (f ? '<span class="ppf">from ' + esc(nameOf(state.byClass[f.c])) + "</span>" : fate(r)) + "</span><b>" + Math.round(r.p * 100) + "%</b></button>"; };
+  var sets = Object.keys(groups).map(function (k) { return groups[k]; }).filter(function (g) { return g.length > 1; }).sort(function (a, b) { return b[0].p - a[0].p; });
+  var solo = Object.keys(groups).map(function (k) { return groups[k]; }).filter(function (g) { return g.length === 1; }).map(function (g) { return g[0]; });
+  var sitHtml = (sets.length || solo.length) ? '<div class="ppy">Situational <span>bought in some matches</span></div>' +
+    sets.map(function (g) { return '<div class="ppset"><div class="ppsh">Often bought together</div><div class="ppg">' + g.sort(function (a, b) { return a.t - b.t; }).map(tile).join("") + "</div></div>"; }).join("") +
+    (solo.length ? '<div class="ppg">' + solo.map(tile).join("") + "</div>" : "") : "";
+  var body = coreHtml + sitHtml;
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
   return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Popular items</span></summary><p class="ppnote"><b>' + esc(rk) + " and up</b> · % of matches it was bought in</p>" + body + "</details>";
@@ -4939,7 +4964,7 @@ $("main").addEventListener("click", function (e) {
   }
   var aot = e.target.closest ? e.target.closest(".aotab[data-aot]") : null;
   if (aot) { if (!aot.classList.contains("on")) aoSwitch(state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], +aot.getAttribute("data-aot")); return; }
-  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem]") : null;
+  var pi = e.target.closest ? e.target.closest(".pitem[data-pitem], .ppc[data-pitem], .ppr[data-pitem]") : null;
   if (pi) { itemSheet(pi.getAttribute("data-pitem")); return; }
   var u = e.target.closest ? e.target.closest(".up[data-t]") : null; if (!u) return;
   var card = u.closest(".ab"), key = card && card.getAttribute("data-ab"), it = key && state.byClass[key]; if (!it) return;
