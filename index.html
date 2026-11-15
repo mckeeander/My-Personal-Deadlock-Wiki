@@ -569,11 +569,11 @@ body.chband details.phd.abd::before{display:none}
 .chpanel{display:none}
 /* the panel is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilted edges: the top is higher on the left, the bottom lower on the left */
 body.chband .chpanel{display:block;position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:-22px;bottom:-22px;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.42))}
-body.chband .chpanel i{position:absolute;inset:0;background:#211b33;clip-path:polygon(0 0,100% 20px,100% 100%,0 calc(100% - 20px))} /* top and bottom tilt the same way: high on the left, low on the right */
+body.chband .chpanel i{position:absolute;inset:0;background:linear-gradient(to bottom,#272040,#1d182e);clip-path:polygon(0 0,100% 20px,100% 100%,0 calc(100% - 20px))} /* top and bottom tilt the same way: high on the left, low on the right */
 /* Popular items: the same raised panel, mirrored (higher on the right), in a muted slate blue */
 body.chband details.phd.ppd{--cc:inherit;border:0;border-radius:0;padding:26px 0 40px;margin:68px 0 0;background:none;box-shadow:none}
 body.chband details.phd.ppd::before,body.chband details.phd.ppd::after,body.chband details.phd.ppd .cgl{display:none}
-body.chband details.phd.ppd .chpanel i{background:#211b33;clip-path:polygon(0 20px,100% 0,100% calc(100% - 20px),0 100%)} /* the same purple as Abilities, tilted the other way: low on the left, high on the right */
+body.chband details.phd.ppd .chpanel i{background:linear-gradient(to bottom,#272040,#1d182e);clip-path:polygon(0 20px,100% 0,100% calc(100% - 20px),0 100%)} /* the same purple as Abilities, tilted the other way: low on the left, high on the right */
 body.chband.chadj details.phd.ppd .chpanel i{clip-path:polygon(0 0,100% 20px,100% 100%,0 calc(100% - 20px))} /* straight after Abilities, it tilts the same way so the gap between them is even */
 body.chband #revwrap > details.phd{margin-top:64px}
 /* each ability card, and each popular item, casts a soft shadow onto its panel */
@@ -626,7 +626,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
 .aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}
-.aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #1d1830}.aok.t3{box-shadow:0 1.5px 0 #6e5524} /* a darker edge underneath, so each chip looks raised a pixel */
+.aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #1d1830,0 3px 4px rgba(0,0,0,.35)}.aok.t3{box-shadow:0 1.5px 0 #6e5524,0 3px 4px rgba(0,0,0,.35)} /* a darker edge underneath, so each chip looks raised a pixel */
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote b{color:var(--fg);font-weight:600}
@@ -640,13 +640,13 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 /* situational: a chart of share of matches against buy time */
 .ppch{display:grid;grid-template-columns:34px 1fr;grid-template-rows:400px 18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 14px 6px 6px}
 .ppyax{position:relative;font-size:10px;color:var(--dim)}.ppyax span{position:absolute;right:6px;transform:translateY(-50%)}
-.ppplot{position:relative;border-left:1px solid #3a3350;border-bottom:1px solid #3a3350}
+.ppplot{contain:layout paint;position:relative;border-left:1px solid #3a3350;border-bottom:1px solid #3a3350}
 .pphl{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.05)}
 .pphl.mn,.ppvl.mn{opacity:.5}.ppvl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
-.ppdot{transition:box-shadow .3s ease,translate .3s ease}.ppdot::after{content:"";position:absolute;z-index:5;inset:-1px;border-radius:8px;background-color:rgba(26,22,38,0);transition:background-color .3s ease;pointer-events:none}
+.ppdot::after{content:"";position:absolute;z-index:5;inset:-1px;border-radius:8px;background-color:rgba(26,22,38,0);transition:background-color .3s ease;pointer-events:none}
 .ppplot .ppdot .ric.pnit{width:30px;height:30px;margin:0;border-radius:7px} /* the icon fills its spot exactly, so the veil covers its coloured frame too */
 .ppplot.sel .ppdot:not(.on):not(.mate)::after{background-color:rgba(26,22,38,.78)} /* the rest dim by fading a veil over them: an opacity fade lifts each icon onto its own layer on iPhone, which nudged them */
-.ppdot.on,.ppdot.mate{z-index:3}.ppdot.on .ric.pnit{--slc:#efe6d4}.ppdot.mate .ric.pnit{--slc:#5a9cf0}.ppdot.on .ric.pnit::after,.ppdot.mate .ric.pnit::after{box-shadow:inset 0 0 0 2px var(--slc)} /* the picked item in cream, its upgrades and partners in blue, both a touch thicker */.ppdot.on{box-shadow:0 8px 16px rgba(0,0,0,.85),0 3px 5px rgba(0,0,0,.6);translate:0 -2px} /* the picked item lifts off the chart (translate, so it adds to the nudge that keeps icons apart) */ /* picked and related items swap their colour frame for cream */
+.ppdot.on,.ppdot.mate{z-index:3}.ppdot.on .ric.pnit{--slc:#efe6d4}.ppdot.mate .ric.pnit{--slc:#5a9cf0}.ppdot.on .ric.pnit::after{box-shadow:inset 0 0 0 2px var(--slc)}.ppdot.mate .ric.pnit::after{box-shadow:inset 0 0 0 1.5px var(--slc)} /* the picked item in cream, its upgrades and partners in blue, both a touch thicker */ /* picked and related items swap their colour frame for cream */
 .ppinfo{position:relative;overflow:hidden;min-height:62px;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:8px}
 .ppih{font-size:12.5px;color:var(--dim);text-align:center}
 .ppiin{display:flex;flex-direction:column;gap:8px}.ppgone{position:absolute;left:12px;right:12px;pointer-events:none}
@@ -3274,7 +3274,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero: the core 
     YT.map(function (v) { return '<i class="pphl" style="top:' + Y(v / 100) + '"></i>'; }).join("") + YM.map(function (v) { return '<i class="pphl mn" style="top:' + Y(v / 100) + '"></i>'; }).join("") +
     ticks.slice(1).map(function (m) { return '<i class="ppvl" style="left:' + X(m * 60) + '"></i>'; }).join("") + minor.map(function (m) { return '<i class="ppvl mn" style="left:' + X(m * 60) + '"></i>'; }).join("") +
     sit.map(function (r) { return '<button class="ppdot" data-c="' + esc(r.c) + '" style="left:' + X(r.t) + ";top:" + Y(r.p) + '" aria-label="' + esc(nameOf(state.byClass[r.c])) + ", " + Math.round(r.p * 100) + "% of matches, around " + mm(r.t) + '">' + ico(r) + "</button>"; }).join("") +
-    '</div><div class="ppxax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + '</div></div><div class="ppinfo"><div class="ppiin"><span class="ppih">Tap an item to name it and see its upgrades and what it’s usually bought with.</span></div></div>' : "";
+    '</div><div class="ppxax">' + ticks.map(function (m) { return '<span style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + '</div></div><div class="ppinfo"><div class="ppiin"><span class="ppih">Tap an item to see its upgrades and what it’s usually bought with.</span></div></div>' : "";
   var body = coreHtml + sitHtml;
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
@@ -3327,7 +3327,7 @@ function popPick(dot) { // tap an item on the chart: name it underneath, light u
   var plot = dot && dot.closest(".ppplot"), ch = plot && plot.closest("details"); if (!plot) return;
   var info = ch.querySelector(".ppinfo"), was = dot.classList.contains("on"), html;
   Array.prototype.forEach.call(plot.querySelectorAll(".ppdot"), function (d) { d.classList.remove("on", "mate"); });
-  if (was) { plot.classList.remove("sel"); html = '<span class="ppih">Tap an item to name it and see its upgrades and what it’s usually bought with.</span>'; }
+  if (was) { plot.classList.remove("sel"); html = '<span class="ppih">Tap an item to see its upgrades and what it’s usually bought with.</span>'; }
   else {
     var P = state.pop.heroes[state.hero], byC = {}; P.items.forEach(function (r) { byC[r.c] = r; });
     var c = dot.getAttribute("data-c"), r = byC[c], it = state.byClass[c], onChart = function (o) { return !!plot.querySelector('.ppdot[data-c="' + o + '"]'); };
@@ -3349,7 +3349,6 @@ function popPick(dot) { // tap an item on the chart: name it underneath, light u
   else if (old) old.remove();
   info.appendChild(inner);
   if (calm) return;
-  var h1 = info.offsetHeight; if (Math.abs(h1 - h0) > 1) info.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: 260, easing: "cubic-bezier(.4,0,.2,1)" });
   inner.animate([{ opacity: 0, transform: "translateY(5px)" }, { opacity: 1, transform: "none" }], { duration: 260, delay: 90, easing: "ease-out", fill: "backwards" });
   Array.prototype.forEach.call(inner.querySelectorAll(".ric"), function (ic, k) { ic.animate([{ transform: "scale(.8)" }, { transform: "none" }], { duration: 260, delay: 90 + k * 30, easing: "cubic-bezier(.3,1.4,.5,1)", fill: "backwards" }); });
 }
@@ -3364,7 +3363,7 @@ function popLayout(root) { // chart icons that land on top of each other are nud
         if (!placed.some(function (o) { return Math.abs(o.x - x) < S && Math.abs(o.y - y) < S; })) { best = y; break; }
       }
       placed.push({ x: x, y: best, c: q.d.getAttribute("data-c") });
-      q.d.style.transform = "translate(" + (x - q.x) + "px," + (best - q.y) + "px)";
+      q.d.style.transform = "translate(" + Math.round(x - q.x) + "px," + Math.round(best - q.y) + "px)";
     });
   });
 }
