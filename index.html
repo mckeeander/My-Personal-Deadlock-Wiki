@@ -5015,8 +5015,6 @@ $("main").addEventListener("click", function (e) {
     var c0 = phb.getAttribute("data-phf"), wrap = $("revs");
     Array.prototype.forEach.call(document.querySelectorAll(".phb"), function (b) { b.classList.toggle("on", b === phb); });
     wrap.classList.toggle("filt", !!c0); if (c0) wrap.classList.add("all");
-    requestAnimationFrame(function () { if (!wrap.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // the patches left showing fade and rise in
-      Array.prototype.forEach.call(wrap.querySelectorAll("details.rpt:not(.phx), .rgrp:not(.phx)"), function (el, k) { if (el.offsetParent) el.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 260, delay: Math.min(k, 6) * 25, easing: "ease-out", fill: "backwards" }); }); });
     var first = null;
     Array.prototype.forEach.call(wrap.querySelectorAll("details.rpt"), function (d) { var hit = !c0 || (" " + d.getAttribute("data-abs") + " ").indexOf(" " + c0 + " ") >= 0; d.classList.toggle("phx", !hit); if (hit && !first) first = d; d.open = false; });
     Array.prototype.forEach.call(wrap.querySelectorAll(".rgrp[data-pf]"), function (g) { g.classList.toggle("phx", !!c0 && g.getAttribute("data-pf") !== c0); });
