@@ -574,6 +574,7 @@ body.chband .chpanel i{position:absolute;inset:0;background:#211b33;clip-path:po
 body.chband details.phd.ppd{--cc:inherit;border:0;border-radius:0;padding:26px 0 40px;margin:68px 0 0;background:none;box-shadow:none}
 body.chband details.phd.ppd::before,body.chband details.phd.ppd::after,body.chband details.phd.ppd .cgl{display:none}
 body.chband details.phd.ppd .chpanel i{background:#211b33;clip-path:polygon(0 20px,100% 0,100% calc(100% - 20px),0 100%)} /* the same purple as Abilities, tilted the other way: low on the left, high on the right */
+body.chband.chadj details.phd.ppd .chpanel i{clip-path:polygon(0 0,100% 20px,100% 100%,0 calc(100% - 20px))} /* straight after Abilities, it tilts the same way so the gap between them is even */
 body.chband #revwrap > details.phd{margin-top:64px}
 /* each ability card, and each popular item, casts a soft shadow onto its panel */
 body.chband details.phd.abd{--cc:#a283f0}
@@ -626,6 +627,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aok.t1,.aok.t2{background:#4f3a96}.aok.t3{background:#c4a04e;color:#1c1608}
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
+.ppnote b{color:var(--fg);font-weight:600}
 .ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
 .ppy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}.ppy span{font-weight:400;letter-spacing:.02em;text-transform:none;margin-left:4px}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -3231,7 +3233,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
   }).join("");
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
-  return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Popular items</span></summary><p class="ppnote">Filtered to top-ranked matches: ' + esc(rk) + " and up, about the top " + Math.round((state.pop.share || .05) * 100) + "%. Last " + (state.pop.days || 30) + " days, " + Number(P.matches).toLocaleString() + " " + esc(h.name) + " matches. The % is how often it was bought.</p>" + body + "</details>";
+  return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Popular items</span></summary><p class="ppnote"><b>' + esc(rk) + " and up · last " + (state.pop.days || 30) + " days</b><br>% of matches it was bought in</p>" + body + "</details>";
 }
 
 // Ability order: the orders top-ranked players spend ability points in, one tab per play style (the first two abilities maxed).
@@ -3393,7 +3395,8 @@ function renderHero(cn) {
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
-  document.body.classList.toggle("chband", h.name === "Deadman Danny"); // trying it on one hero: Base stats and Abilities as tinted bands, not cards
+  document.body.classList.add("chband"); // every hero page: Base stats flat, Abilities and Popular items on raised panels, the shorter chapters in cards
+  document.body.classList.toggle("chadj", !$("aowrap").innerHTML); // no Ability order card between the two raised panels: the second matches the first's tilt
   sbkShow(sbkWanted()); heroCard(); aoLayout($("aowrap")); requestAnimationFrame(function () { chapterGlints(); });
   var tg = document.querySelector("#main .hero-h .tags"); if (tg) requestAnimationFrame(function () { tg.classList.toggle("one", tg.offsetHeight < 34); }); // tags on one line get a little more room under the name
   var bk0 = $("back"); if (bk0 && !trialBack) { bk0.insertAdjacentHTML("afterend", heroLinks()); var row = document.createElement("div"); row.className = "hnavrow"; bk0.parentNode.insertBefore(row, bk0); row.appendChild(bk0); row.appendChild(document.querySelector("#main .hlks")); } // All heroes on the left, the section links on the right of the same line
