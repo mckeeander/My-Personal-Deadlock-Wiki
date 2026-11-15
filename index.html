@@ -625,7 +625,8 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2;box-shadow:inset 0 0 0 1px #5a9cf0} /* quiet grey for tiers 1 and 2, so the gold maxes stand out */.aok.t3{background:#c4a04e;color:#1c1608}
+.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}
+.aok.t1::after,.aok.t2::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;border:1.5px solid #5a9cf0;border-top:0;border-radius:0 0 5px 5px;pointer-events:none} /* a shallow blue bucket under the number */ /* quiet grey for tiers 1 and 2, so the gold maxes stand out */.aok.t3{background:#c4a04e;color:#1c1608}
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote b{color:var(--fg);font-weight:600}
@@ -642,14 +643,17 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .ppplot{position:relative;border-left:1px solid #3a3350;border-bottom:1px solid #3a3350}
 .pphl{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.05)}
 .pphl.mn,.ppvl.mn{opacity:.5}.ppvl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
-.ppdot{transition:opacity .2s ease,box-shadow .2s ease}.ppplot.sel .ppdot{opacity:.22}.ppplot.sel .ppdot.on,.ppplot.sel .ppdot.mate{opacity:1}
+.ppdot{transition:box-shadow .3s ease}.ppdot::after{content:"";position:absolute;z-index:5;inset:-1px;border-radius:8px;background-color:rgba(26,22,38,0);transition:background-color .3s ease;pointer-events:none}
+.ppplot .ppdot .ric.pnit{width:30px;height:30px;margin:0;border-radius:7px} /* the icon fills its spot exactly, so the veil covers its coloured frame too */
+.ppplot.sel .ppdot:not(.on):not(.mate)::after{background-color:rgba(26,22,38,.78)} /* the rest dim by fading a veil over them: an opacity fade lifts each icon onto its own layer on iPhone, which nudged them */
 .ppdot.on{box-shadow:0 0 0 2px #e9e2d2,0 2px 8px rgba(0,0,0,.6);z-index:3}.ppdot.mate{box-shadow:0 0 0 2px #a283f0,0 0 12px rgba(162,131,240,.6);z-index:2}
 .ppinfo{min-height:62px;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:8px}
 .ppih{font-size:12.5px;color:var(--dim);text-align:center}
 .ppir{display:flex;align-items:center;gap:10px}.ppit{flex:1;min-width:0}.ppit b{display:block;font-size:14.5px;font-weight:600}.ppit span{font-size:12px;color:var(--dim)}
 .ppio{flex:none;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--fg);font:inherit;font-size:12.5px;padding:6px 10px}
 .ppiw{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.ppiw span{font-size:11.5px;color:var(--dim);margin-right:2px}
-.ppim{padding:0;border:0;background:none;border-radius:6px;box-shadow:0 0 0 1.5px #a283f0}.ppim .ric{width:28px;height:28px}
+.ppself .ric{box-shadow:none!important}.ppim{display:flex;padding:0;border:0;background:none;line-height:0}.ppim .ric{width:30px;height:30px;box-shadow:0 0 0 1.5px #a283f0}
+.ppiw{border-top:1px solid var(--line);padding-top:9px}.ppir .ric{width:40px;height:40px;flex:none}
 .ppnb{margin:10px 0 0}
 .ppdot{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;padding:0;border:0;background:none;border-radius:7px;box-shadow:0 2px 6px rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent}.ppdot .ric{width:30px;height:30px}
 .ppxax{grid-column:2;position:relative;font-size:10px;color:var(--dim)}.ppxax span{position:absolute;top:4px;transform:translateX(-50%)}.ppxax span:first-child{transform:none}
@@ -3330,7 +3334,7 @@ function popPick(dot) { // tap an item on the chart: name it underneath, light u
   dot.classList.add("on"); plot.classList.add("sel");
   mates.forEach(function (o) { var d = plot.querySelector('.ppdot[data-c="' + o + '"]'); if (d) d.classList.add("mate"); });
   var mi = function (o) { var x = state.byClass[o], sl = slotOf(x); return '<button class="ppim" data-pick="' + esc(o) + '" aria-label="' + esc(nameOf(x)) + '"><span class="ric pnit' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(x), itemImg(x)) + "</span></button>"; };
-  info.innerHTML = '<div class="ppir"><div class="ppit"><b>' + esc(nameOf(it)) + "</b><span>" + Math.round(r.p * 100) + "% of matches · around " + Math.max(1, Math.round(r.t / 60)) + "m</span></div>" +
+  info.innerHTML = '<div class="ppir">' + mi(c).replace('class="ppim"', 'class="ppim ppself"').replace(/data-pick="[^"]*"/, "") + '<div class="ppit"><b>' + esc(nameOf(it)) + "</b><span>" + Math.round(r.p * 100) + "% of matches · around " + Math.max(1, Math.round(r.t / 60)) + "m</span></div>" +
     '<button class="ppio" data-pitem="' + esc(c) + '">Details ›</button></div>' +
     (mates.length ? '<div class="ppiw"><span>Often bought with</span>' + mates.map(mi).join("") + "</div>" : '<div class="ppiw"><span>Not usually bought with anything in particular</span></div>');
 }
