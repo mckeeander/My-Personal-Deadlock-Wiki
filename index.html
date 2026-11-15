@@ -569,11 +569,11 @@ body.chband details.phd.abd::before{display:none}
 .chpanel{display:none}
 /* the panel is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilted edges: the top is higher on the left, the bottom lower on the left */
 body.chband .chpanel{display:block;position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:-22px;bottom:-22px;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.42))}
-body.chband .chpanel i{position:absolute;inset:0;background:linear-gradient(to bottom,#302851 0,#28213f 140px,#221c36 45%,#1c172b 100%);clip-path:polygon(0 0,100% 20px,100% 100%,0 calc(100% - 20px))} /* top and bottom tilt the same way: high on the left, low on the right */
+body.chband .chpanel i{position:absolute;inset:0;background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%);clip-path:polygon(0 0,100% 20px,100% 100%,0 calc(100% - 20px))} /* top and bottom tilt the same way: high on the left, low on the right */
 /* Popular items: the same raised panel, mirrored (higher on the right), in a muted slate blue */
 body.chband details.phd.ppd{--cc:inherit;border:0;border-radius:0;padding:26px 0 40px;margin:68px 0 0;background:none;box-shadow:none}
 body.chband details.phd.ppd::before,body.chband details.phd.ppd::after,body.chband details.phd.ppd .cgl{display:none}
-body.chband details.phd.ppd .chpanel i{background:linear-gradient(to bottom,#302851 0,#28213f 140px,#221c36 45%,#1c172b 100%);clip-path:polygon(0 20px,100% 0,100% calc(100% - 20px),0 100%)} /* the same purple as Abilities, tilted the other way: low on the left, high on the right */
+body.chband details.phd.ppd .chpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%);clip-path:polygon(0 20px,100% 0,100% calc(100% - 20px),0 100%)} /* the same purple as Abilities, tilted the other way: low on the left, high on the right */
 body.chband.chadj details.phd.ppd .chpanel i{clip-path:polygon(0 0,100% 20px,100% 100%,0 calc(100% - 20px))} /* straight after Abilities, it tilts the same way so the gap between them is even */
 body.chband #revwrap > details.phd{margin-top:64px}
 /* each ability card, and each popular item, casts a soft shadow onto its panel */
@@ -626,13 +626,13 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
 .aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}
-.aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #1d1830,-1px -1px 3px rgba(0,0,0,.22)}.aok.t3{box-shadow:0 1.5px 0 #6e5524,-1px -1px 3px rgba(0,0,0,.22)} /* a darker edge underneath, so each chip looks raised a pixel */
+.aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #1d1830,-1px 2px 3px rgba(0,0,0,.22)}.aok.t3{box-shadow:0 1.5px 0 #6e5524,-1px 2px 3px rgba(0,0,0,.22)} /* a darker edge underneath, so each chip looks raised a pixel */
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
 .ppnote b{color:var(--fg);font-weight:600}
-.chj{display:flex;gap:2px;margin:10px 0 0;background:rgba(255,255,255,.035);border:1px solid #2c2639;border-radius:12px;padding:3px} /* jump to the later chapters */
-.chjb{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:none;border-radius:9px;padding:8px 4px;color:var(--dim);font:inherit;font-size:12.5px;font-weight:600;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.chjb svg{width:15px;height:15px;flex:none;opacity:.8}.chjb:active{background:rgba(255,255,255,.05);color:var(--fg)}
+#main .hero-h:has(+ .chj){margin-bottom:0}.chj{display:flex;width:max-content;margin:-1px 16px 22px auto;position:relative;z-index:1;gap:2px;background:#1e1a2b;border:1px solid #2c2639;border-top:0;border-radius:0 0 12px 12px;padding:2px 4px 4px} /* jump to the later chapters: a small tab hanging from the hero card's bottom-right */
+.chjb{display:flex;align-items:center;justify-content:center;width:40px;height:34px;border:0;background:none;border-radius:9px;color:var(--dim);-webkit-tap-highlight-color:transparent}
+.chjb svg{width:17px;height:17px;opacity:.85}.chjb:active{background:rgba(255,255,255,.05);color:var(--fg)}
 .ppnote{font-size:12.5px;line-height:1.45;color:var(--dim);margin:-2px 0 4px}
 .ppy{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}.ppy span{font-weight:400;letter-spacing:.02em;text-transform:none;margin-left:4px}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -3374,7 +3374,7 @@ function popLayout(root) { // chart icons that land on top of each other are nud
 function chJumpHtml() {
   var I = { ao: '<path d="M4 6h10M4 12h16M4 18h7"/><circle cx="18" cy="6" r="2"/><circle cx="14" cy="18" r="2"/>', it: '<path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>', ph: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>' };
   return '<nav class="chj" aria-label="Jump to">' + [["ao", "Ability order", "#aowrap"], ["it", "Items", "#popwrap"], ["ph", "Patch history", "#revwrap"]].map(function (t) {
-    return '<button class="chjb" data-chj="' + t[2] + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + I[t[0]] + "</svg>" + t[1] + "</button>";
+    return '<button class="chjb" data-chj="' + t[2] + '" aria-label="' + t[1] + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + I[t[0]] + "</svg></button>";
   }).join("") + "</nav>";
 }
 function aoRender(h) { var w = $("aowrap"); if (w && h) { w.innerHTML = abilityOrderHtml(h); aoLayout(w); } }
@@ -5035,7 +5035,7 @@ $("main").addEventListener("click", function (e) {
     });
     return;
   }
-  var cj = e.target.closest ? e.target.closest(".chjb[data-chj]") : null; if (cj) { var tgt = document.querySelector(cj.getAttribute("data-chj") + " details"); if (tgt) scrollToEl(tgt, true); return; }
+  var cj = e.target.closest ? e.target.closest(".chjb[data-chj]") : null; if (cj) { var tgt = document.querySelector(cj.getAttribute("data-chj") + " details"); if (tgt) { if (!tgt.open && cj.getAttribute("data-chj") === "#revwrap") tgt.open = true; scrollToEl(tgt, true); } return; } // Patch history opens as you arrive
   var pd = e.target.closest ? e.target.closest(".ppdot[data-c]") : null; if (pd) { popPick(pd); return; }
   var pm = e.target.closest ? e.target.closest(".ppim[data-pick]") : null; if (pm) { var pt = pm.closest("details").querySelector('.ppdot[data-c="' + pm.getAttribute("data-pick") + '"]'); if (pt) popPick(pt); else itemSheet(pm.getAttribute("data-pick")); return; }
   var pp = e.target.closest ? e.target.closest(".ppplot.sel") : null; if (pp) { var on = pp.querySelector(".ppdot.on"); if (on) popPick(on); return; }
