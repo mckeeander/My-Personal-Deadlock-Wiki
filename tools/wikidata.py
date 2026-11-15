@@ -250,6 +250,9 @@ def mechanics(repo):
             o = o[k]
         return o if isinstance(o, (int, float)) and not isinstance(o, bool) else None
     bp = (n.get("npc_boss_tier1") or {}).get("BackdoorProtectionModifier") or {}
+    mb_mod = ((n.get("npc_super_neutral") or {}).get("IntrinsicModifiers") or [{}])[0] or {}  # the Mid Boss's regen and resists
+    try: misc = J("misc-data.json")
+    except Exception: misc = {}
     out = {
         "trooper": {"health": num(n, "trooper_normal", "MaxHealth"), "melee_health": num(n, "trooper_melee", "MaxHealth"), "dps_vs_heroes": num(n, "trooper_normal", "VSPlayer", "BaseDPS")},
         "guardian": {"health": num(n, "npc_boss_tier1", "MaxHealth"), "souls": op.get("Tier1GoldKill"), "dps_vs_heroes": num(n, "npc_boss_tier1", "PlayerDPS")},
@@ -259,9 +262,17 @@ def mechanics(repo):
         "patron": {"health": num(n, "npc_boss_tier3", "MaxHealth"), "phase2_health": num(n, "npc_boss_tier3", "Phase2Health"),
                    "growth1": num(n, "npc_boss_tier3", "ObjectiveHealthGrowthPhase1", "GrowthPerMinute"), "growth1_from_min": num(n, "npc_boss_tier3", "ObjectiveHealthGrowthPhase1", "GrowthStartTimeInMinutes"),
                    "growth2": num(n, "npc_boss_tier3", "ObjectiveHealthGrowthPhase2", "GrowthPerMinute")},
-        "mid_boss": {"health": num(n, "npc_super_neutral", "StartingHealth"), "health_per_min": num(n, "npc_super_neutral", "HealthGainPerMinute")},
+        "mid_boss": {"health": num(n, "npc_super_neutral", "StartingHealth"), "health_per_min": num(n, "npc_super_neutral", "HealthGainPerMinute"),
+                     # the shield soaks up this much damage every second, plus the second number for each minute of the match
+                     "shield_per_sec": num(n, "npc_super_neutral", "ShieldLogic", "BaseAbsorptionPerSecond"), "shield_per_min": num(n, "npc_super_neutral", "ShieldLogic", "ScalingAbsorptionPerMinute"),
+                     "regen": num(mb_mod, "HEALTH_REGEN_PER_SECOND"), "bullet_resist": num(mb_mod, "BULLET_ARMOR_DAMAGE_RESIST"), "spirit_resist": num(mb_mod, "ABILITY_DAMAGE_REDUCTION_PERCENT"),
+                     "debuff_resist": num(mb_mod, "STATUS_RESISTANCE"), "shred_resist": num(mb_mod, "RESIST_REDUCTION_RESISTANCE"),
+                     "dps": num(n, "npc_super_neutral", "Weapon", "DPS"), "range": num(n, "npc_super_neutral", "Weapon", "FalloffEndRange"),
+                     "respawn_sec": num(n, "npc_super_neutral", "SpawnInterval")},
         # the trooper-health and respawn multipliers in RejuvParams are left over from before the Jul/Aug 2025 rework (see patch notes); only the duration is current
-        "rejuvenator": {"duration": rj.get("RejuvinatorBuffDuration"), "crystals": rj.get("RejuvinatorDropCount")},
+        "rejuvenator": {"duration": rj.get("RejuvinatorBuffDuration"), "crystals": rj.get("RejuvinatorDropCount"), "drop_sec": rj.get("RejuvinatorDropDuration"),
+                        "revive_health_pct": num(misc, "citadel_item_pickup_rejuv", "RebirthModifier", "RespawnLifePct"),
+                        "revive_delay_sec": num(misc, "citadel_item_pickup_rejuv", "RebirthModifier", "RespawnDelay")},
         "mid_boss_first_sec": num(n, "npc_super_neutral", "InitialSpawnDelay"),
         "crate_first_sec": ((g.get("BreakableSpawnTimeDesc") or [{}])[0] or {}).get("InitialSpawnTime"),
         "rift_interval_sec": (lambda c: c.get("citadel_koth_respawn_interval") if isinstance(c.get("citadel_koth_respawn_interval"), (int, float)) else None)(J("convars.json")),
@@ -277,6 +288,7 @@ def mechanics(repo):
                       "killer_assist_ratio": c("citadel_player_gold_killer_to_assist_ratio"), "assist_window_sec": c("citadel_bounty_player_assist_window"),
                       "trooper_instant_ratio": c("citadel_trooper_instant_gold_ratio_laning"), "comeback_redirect": c("citadel_comeback_redirect_fraction"),
                       "tick_start_sec": c("citadel_tick_gold_start_time")}
+    out["mid_boss"].update({"souls": c("citadel_super_neutral_gold_reward"), "souls_per_min": c("citadel_super_neutral_gold_reward_bonus_per_minute")})
     # walker attacks and trooper types
     w = (n.get("npc_boss_tier2") or {}).get("BoundAbilities") or {}
     ap = lambda slot, k: num(w, slot, "AbilityProperties", k)

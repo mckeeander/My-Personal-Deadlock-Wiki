@@ -46,11 +46,26 @@
   },
   "mid_boss": {
    "health": 15600,
-   "health_per_min": 234
+   "health_per_min": 234,
+   "shield_per_sec": 35,
+   "shield_per_min": 5,
+   "regen": 15.0,
+   "bullet_resist": 15,
+   "spirit_resist": 0.0,
+   "debuff_resist": 35,
+   "shred_resist": 50,
+   "dps": 100.0,
+   "range": 38.1,
+   "respawn_sec": 420,
+   "souls": 1500,
+   "souls_per_min": 25
   },
   "rejuvenator": {
    "duration": 180,
-   "crystals": 3
+   "crystals": 3,
+   "drop_sec": 7.5,
+   "revive_health_pct": 100.0,
+   "revive_delay_sec": 3.0
   },
   "mid_boss_first_sec": 0,
   "crate_first_sec": 180,

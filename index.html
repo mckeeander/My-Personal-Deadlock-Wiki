@@ -482,17 +482,29 @@ body.jump #toppill{bottom:calc(env(safe-area-inset-bottom,0px) + 86.5px)} /* on 
 @keyframes pillin{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 .gl{text-decoration:underline dotted;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
 .gcats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
-.gcat{display:flex;align-items:center;gap:8px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 10px 10px 12px;color:var(--fg);min-height:56px}
-.gcat:active{background:var(--panel2);border-color:var(--gold)}
+/* glossary categories: each has a colour (--gc, with a tint --gct and border --gcb) and an icon */
+.gcat{display:flex;align-items:center;gap:10px;text-align:left;background:linear-gradient(135deg,var(--gct,transparent),var(--panel) 70%);border:1px solid var(--gcb,var(--line));border-radius:10px;padding:9px 10px 9px 9px;color:var(--fg);min-height:58px}
+.gcat:active{background:var(--panel2);border-color:var(--gc,var(--gold))}
 .gcat span{flex:1;min-width:0}
+.gcat .gci{flex:none;width:34px;height:34px;border-radius:9px;background:var(--gct);color:var(--gc);display:flex;align-items:center;justify-content:center}
+.gci svg{width:20px;height:20px}
 .gcat b{display:block;font-size:14px;line-height:1.25}
 .gcat small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
-.gcat i{font-style:normal;color:var(--gold);font-size:20px;line-height:1}
+.gcat i{font-style:normal;color:var(--gc,var(--gold));font-size:20px;line-height:1}
+.gtop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.gview{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.gview button{background:none;border:0;border-radius:7px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;color:var(--dim);min-height:32px}
+.gview button.on{background:var(--panel2);color:var(--fg);box-shadow:inset 0 0 0 1px var(--line)}
+.gaz{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin:12px 0 4px}
+.gazl{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-height:40px;font-family:var(--disp);font-size:17px;color:var(--fg)}
+.gazl:active{border-color:var(--gold);color:var(--gold)}
+.gh.gla{font-family:var(--disp);font-size:20px;letter-spacing:.04em;color:var(--fg)}
 .gsbtns{display:flex;gap:8px;margin-top:22px}.gsbtns #gall,.gsbtns #ibk,#iph{flex:0 0 52px;display:flex;align-items:center;justify-content:center}.gsbtns #close{flex:1}
 .gsbtns .ibtn{border-radius:14px;min-height:46px}
 .sheet .in{position:relative}
 .swc{position:relative}
-.gcat2{font-size:11px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--gold)}
+.gcat2{display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--gc,var(--gold))}
+.gcat2 .ghi svg{width:14px;height:14px;display:block}
 .grh{padding-left:3px;font-size:11px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--dim);margin:18px 0 8px;padding-top:14px;border-top:1px solid #3d344c}
 .grels{display:flex;flex-wrap:wrap;gap:6px}
 .grel{background:var(--panel2);border:1px solid #4a405a;border-radius:8px;padding:6px 10px;font-size:14px;color:var(--fg)}
@@ -701,9 +713,26 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gsticks{display:flex;justify-content:space-between;font-size:11px;color:#7d7290;padding:0 2px}.gslide .gsft{margin:8px 0 6px}
 .gsall{width:100%;margin-top:2px;background:none;border:1px dashed #4a405a;border-radius:8px;padding:9px;color:var(--fg);font:inherit;font-size:14px}
 .gtitle{font-family:var(--disp);font-size:24px;margin:4px 0 2px;letter-spacing:.03em}
-.gh{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gold);margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
-.gt{cursor:pointer;-webkit-tap-highlight-color:transparent;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;scroll-margin-top:24px}
-.gt h3{margin:0 0 4px;font-size:16px}
+.gh{display:flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;color:var(--gc,var(--gold));margin:26px 0 10px;border-bottom:2px solid var(--gcb,var(--line));padding-bottom:7px}
+.gh .ghi{display:flex;width:26px;height:26px;border-radius:7px;background:var(--gct);align-items:center;justify-content:center}.gh .ghi svg{width:16px;height:16px}
+.gt{cursor:pointer;-webkit-tap-highlight-color:transparent;background:linear-gradient(90deg,var(--gct,transparent),var(--panel) 38%);border:1px solid var(--line);border-left:3px solid var(--gc,var(--line));border-radius:8px;padding:10px 12px 11px 11px;margin-bottom:8px;scroll-margin-top:24px}
+.gt h3{margin:0;font-size:16px;line-height:1.25}
+.gth{display:flex;align-items:center;gap:10px;margin-bottom:7px}.gsh .gth{margin:8px 0 8px}.gsh .gth h3{margin:0}
+.gtn{flex:1;min-width:0}
+.gtcat{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gc);margin-top:2px}
+.gti{flex:none;width:38px;height:38px;border-radius:10px;background:var(--gct);border:1px solid var(--gcb);color:var(--gc);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.gti svg{width:21px;height:21px}.gti .gi{width:26px;height:26px}
+.gim{display:block;width:24px;height:24px;background:var(--gc);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center}
+.gti.gtip img{width:100%;height:100%;object-fit:cover}
+.gti.gtih{width:auto;height:auto;background:none;border:0;overflow:visible}
+.gsh .gti{width:44px;height:44px}.gsh .gti .gim{width:28px;height:28px}.gsh .gti.gtih{width:auto;height:auto}
+.gtu{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid var(--line);font-size:12.5px;color:var(--dim)}
+.gtup{display:flex;flex:none}
+.gua,.gui{width:24px;height:24px;border-radius:6px;overflow:hidden;background:var(--panel2);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--panel)}
+.gtup > span + span{margin-left:-4px}
+.gua img{width:20px;height:20px;object-fit:contain}.gui img{width:100%;height:100%;object-fit:cover}
+.gui.weapon{box-shadow:0 0 0 1.5px var(--weapon)}.gui.vitality{box-shadow:0 0 0 1.5px var(--vital)}.gui.spirit{box-shadow:0 0 0 1.5px var(--spirit)}
+.gtul{min-width:0}
 .gt h3,.gsh h3{display:flex;align-items:center;gap:8px}
 .gi{width:20px;height:20px;flex:none;object-fit:contain}
 .gt p,.gsh p{margin:0;line-height:1.5;font-size:15px}
@@ -3875,6 +3904,25 @@ function openResult(b) {
 /* ---------- glossary ---------- */
 // [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
 var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Buffs & counters"], ["move", "Movement"], ["map", "Map & objectives"], ["econ", "Economy"], ["hero", "Hero effects"]];
+// each category's colour and icon: on its jump card, its heading, the stripe down each card and the tile behind each term's icon
+var GCOL = { dmg: "#ef6b4d", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#f2c14e", hero: "#a3b4cc" };
+var GCI = {
+  dmg: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/>',
+  scale: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  def: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v8M8 12h8"/>',
+  cc: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  buff: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>',
+  move: '<path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h15a3 3 0 1 1-3 3"/><path d="M3 16h6"/>',
+  map: '<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
+  econ: '<ellipse cx="12" cy="6.5" rx="7" ry="3"/><path d="M5 6.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/><path d="M5 11.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>',
+  hero: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
+};
+function gcSvg(c) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (GCI[c] || GCI.map) + "</svg>"; }
+function gcStyle(c) { // --gc the colour, --gct a faint tint of it, --gcb a border-strength one
+  var h = GCOL[c] || "#a69cb5", r = parseInt(h.slice(1, 3), 16), g = parseInt(h.slice(3, 5), 16), b = parseInt(h.slice(5, 7), 16), rgb = r + "," + g + "," + b;
+  return ' style="--gc:' + h + ";--gct:rgba(" + rgb + ",.13);--gcb:rgba(" + rgb + ',.42)"';
+}
+function gcName(c) { var x = GCATS.filter(function (y) { return y[0] === c; })[0]; return x ? x[1] : "Glossary"; }
 var GLOSS = [
   { k: "weapon-damage", c: "dmg", t: "Weapon damage", a: ["weapon damage", "bullet damage"], d: "Damage from your gun, plus abilities that say they deal weapon damage. It’s reduced by [[bullet-resist|Bullet Resist]] and raised by weapon items, which boost your gun by a percentage. Melee also counts as weapon damage, but weapon-damage bonuses apply to it at half strength." },
   { k: "spirit-damage", c: "dmg", t: "Spirit damage", a: ["spirit damage"], d: "Damage from most abilities and many items. It’s reduced by [[spirit-resist|Spirit Resist]] and usually grows with [[spirit-power|Spirit Power]]." },
@@ -3943,10 +3991,11 @@ var GLOSS = [
   { k: "shrine", c: "map", t: "Shrines", a: ["shrine", "shrines"], d: "Two shrines protect the [[patron|Patron]]. They can’t be damaged until a pair of [[base-guardian|Base Guardians]] is down." },
   { k: "patron", c: "map", t: "Patron", a: ["patron"], d: "The objective at the heart of each base, firing a powerful laser. Destroy the enemy Patron to win the match." },
   { k: "minimap-reveal", c: "map", t: "Minimap reveal", a: ["minimap", "revealed", "reveal", "minimap reveal", "revealed on the minimap"], d: "Some actions put you on the enemy team’s minimap. A reveal lingers for about 2 seconds after the action ends." },
-  { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss"], d: "A huge neutral boss in the middle of the map that grows tougher every minute. Killing it drops the [[rejuvenator|Rejuvenator]]. It comes back 7 minutes after the first kill, 6 after the second, and 5 after each one after that." },
-  { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv"], d: "When the [[mid-boss|Mid Boss]] dies, three crystals land around its pit. Breaking one with a heavy melee gives your team a revive and fully heals whoever broke it. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. The buff ends when the revives run out or the time is up." },
+  { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss", "mid-boss", "temple guardian"], d: "A huge neutral boss in a pit under the middle of the map, there from the start of the match. It only attacks heroes inside its pit, beaming whoever is closest, and it can only be hurt from inside the pit too. A shield that refills constantly soaks up the first part of the damage it takes every second, so a lone hero barely scratches it. Its health and its shield both grow every minute, and it roars to both teams when it drops to 25% health. Killing it gives the team souls and 2 [[permanent-buffs|permanent buffs]] per player, and drops the [[rejuvenator|Rejuvenator]]. It comes back 7 minutes after the first kill, 6 after the second, and 5 after each one after that. The damage report calls it the Temple Guardian." },
+  { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv", "rejuvenator credit", "rejuvenator crystal", "rejuvenator crystals"], d: "When the [[mid-boss|Mid Boss]] dies, three crystals float down over its pit. They can’t be touched until they land. Breaking one with a heavy [[melee|melee]] gives your team a revive and fully heals whoever broke it. Either team can break them, no matter who killed the Mid Boss, so revives can be stolen. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. Each player can only use one. The buff ends when the revives run out or the time is up." },
+  { k: "permanent-buffs", c: "scale", t: "Permanent buffs", a: ["permanent buff", "permanent buffs", "permanent stat buff", "permanent stat buffs", "permanent stat boost", "permanent stat boosts"], d: "A small stat boost that lasts for the rest of the match, picked at random from a set list. They stack. [[golden-statues|Golden Statues]] drop them, the [[mid-boss|Mid Boss]] gives 2 to each player on the team that kills it, and the Golden Goose Egg item grants them when it hatches. Not the same as [[map-buffs|map buffs]], which wear off after a few minutes." },
   { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups"], d: "Glowing pickups around the map, broken open with a melee hit. Each gives a few minutes of extra stats, and they get stronger as the match goes on." },
-  { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues", "breakable", "breakables", "crate", "crates"], d: "Golden statues around the map that drop a small permanent stat boost when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
+  { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues", "breakable", "breakables", "crate", "crates"], d: "Golden statues around the map that drop a small [[permanent-buffs|permanent stat boost]] when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
   { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Monster camps around the map, in three sizes. They give souls, and their bounty grows a little every minute." },
   // economy (numbers from the game data)
   { k: "shop", c: "econ", t: "Shop", a: ["shop", "shops", "item tiers", "sell", "selling", "sell back"], d: "Items come in four price tiers. You can sell an item back for part of what you paid." },
@@ -4047,8 +4096,8 @@ function heroTags(html) { // a hero named in a note gets their small portrait be
 function glossBody(g) {
   return esc(glossFill(g.d)).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
 }
-function glossCard(g) {
-  return '<section class="gt" id="g-' + g.k + '"><h3>' + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p></section>";
+function glossCard(g, az) { // az: the A–Z view, where a small label says which category it's from
+  return '<section class="gt" id="g-' + g.k + '"' + gcStyle(g.c) + '><div class="gth">' + gTile(g) + '<div class="gtn"><h3>' + esc(g.t) + gChev(g.k) + "</h3>" + (az ? '<span class="gtcat">' + esc(gcName(g.c)) + "</span>" : "") + "</div></div><p>" + glossBody(g) + "</p>" + usedChip(g) + "</section>";
 }
 // the game's own property icons, for terms that have one
 var GA = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/", GP = GA + "icons/properties/";
@@ -4057,38 +4106,144 @@ var GICON = { "weapon-damage": GP + "damage_bullet_color.svg", "spirit-damage": 
   "cooldown": GP + "cooldown.svg", "charges": GP + "recharge.svg", "bullet-resist": GP + "armor_bullet_color.svg", "spirit-resist": GP + "armor_spirit_color.svg",
   "melee-resist": GP + "armor_melee_color.svg", "barrier": GP + "armor_alt.svg", "lifesteal": GP + "heal.svg", "health-regen": GP + "heal.svg",
   "slow-resist": GP + "move_speed.svg", "slow": GP + "condition_slow.svg", "time-slow": GP + "condition_slow.svg", "stamina": GP + "move_stamina_recharge.svg",
-  "sprint": GP + "move_speed.svg" };
+  "sprint": GP + "move_speed.svg", "stun": GP + "condition_stun.svg", "silence": GP + "condition_silence.svg", "sleep": GP + "condition_sleep.svg",
+  "immobilize": GP + "condition_immobilize.svg", "disarm": GP + "condition_disarm.svg", "bleed": GP + "condition_bleed.svg", "curse": GP + "condition_curse.svg",
+  "burn": GP + "condition_burn.svg", "displace": GP + "condition_knockdown.svg", "slide": GP + "move_slide.svg", "falloff": GP + "range.svg", "dot": GP + "duration.svg",
+  "move-speed": GP + "move_speed.svg", "healing-amp": GP + "heal.svg" };
+// map terms that have a picture of their own (img/)
+var GIMG = { troopers: "img/troopers.jpg", guardian: "img/guardian.jpg", walker: "img/walker.jpg", "base-guardian": "img/base-guardian.jpg", shrine: "img/shrine.jpg", patron: "img/patron.jpg", "golden-statues": "img/golden-statue.png" };
+// hand-drawn icons for terms the game has no icon or picture for, so each card is recognisable at a glance
+var GSVG = {
+  "bonus-damage": '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10"/>',
+  "spreadshot": '<path d="M3 12h4M7 12l13-7M7 12h14M7 12l13 7"/>',
+  "parry": '<path d="M4 4l10 10M13 17l4-4M20 4L10 14M7 13l4 4M5 19l2-2M19 19l-2-2"/>',
+  "scaling": '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  "boons": '<path d="M6 13l6-6 6 6M6 19l6-6 6 6"/>',
+  "ability-points": '<path d="M12 3l8 9-8 9-8-9z"/><path d="M12 8l4 4-4 4-4-4z"/>',
+  "investment": '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M12 17v-5M10 14l2-2 2 2"/>',
+  "imbue": '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+  "shred": '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12.5 6l-2.5 5 4 2-2.5 5"/>',
+  "healing-reduction": '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/><path d="M9 11.5h6"/>',
+  "debuff-resist": '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  "diminishing": '<path d="M5 20V5M10 20V9M15 20v-7M20 20v-4"/>',
+  "interrupt": '<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>',
+  "unstoppable": '<path d="M4 12h15M14 7l5 5-5 5"/><path d="M9 3v5M9 16v5"/>',
+  "purge": '<path d="M4 20l7-7"/><path d="M10 12l3-3 4 4-3 3z"/><path d="M18 3v4M16 5h4"/>',
+  "invulnerable": '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8l1.2 2.5 2.8.4-2 2 .5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-2 2.8-.4z"/>',
+  "untargetable": '<circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4 4l16 16"/>',
+  "invisible": '<path d="M3 3l18 18"/><path d="M10.6 6.1A9 9 0 0 1 12 6c5 0 9 6 9 6a17 17 0 0 1-3.2 3.7M6.6 6.6C4.3 8.2 3 12 3 12s4 6 9 6a9 9 0 0 0 4.4-1.2"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+  "dash": '<path d="M5 6l6 6-6 6M13 6l6 6-6 6"/>',
+  "match-timeline": '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  "lane-layout": '<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/>',
+  "backdoor": '<path d="M6 21V4h12v17"/><path d="M3 21h18"/><path d="M14.5 12v1"/>',
+  "minimap-reveal": '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  "mid-boss": '<path d="M12 3a8 8 0 0 0-8 8c0 3 1.5 4.8 3 5.8V20h10v-3.2c1.5-1 3-2.8 3-5.8a8 8 0 0 0-8-8z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/><path d="M10 20v-2M14 20v-2"/>',
+  "rejuvenator": '<path d="M12 2l5 6-5 14-5-14z"/><path d="M7 8h10M12 2l-2 6 2 14 2-14z"/>',
+  "permanent-buffs": '<path d="M12 21V9M7 14l5-5 5 5"/><path d="M5 4h14"/>',
+  "map-buffs": '<path d="M6 3h12M6 21h12"/><path d="M7 3c0 6 10 6 10 9s-10 3-10 9"/><path d="M17 3c0 6-10 6-10 9s10 3 10 9"/>',
+  "neutral-camps": '<path d="M3 20L12 4l9 16z"/><path d="M12 20l-3-6h6z"/>',
+  "shop": '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  "kill-bounty": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  "soul-orbs": '<circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>',
+  "comeback-souls": '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+  "movement-silence": '<path d="M5 6l6 6-6 6M13 6l6 6-6 6"/><path d="M3 21L21 3"/>',
+  "damage-reduction": '<path d="M12 3v12M8 11l4 4 4-4"/><path d="M5 20h14"/>',
+  "hidden-minimap": '<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/><path d="M2 2l20 20"/>'
+};
+function gTile(g) { // the square at the start of a term: its picture, the game's icon (tinted in its category colour unless it has colours of its own), or the category's icon
+  var hx = g.c === "hero" && heroEffect(g.k); if (hx) return '<span class="gti gtih">' + heroEffectIcons(hx) + "</span>";
+  if (GIMG[g.k]) return '<span class="gti gtip"><img alt="" loading="lazy" src="' + GIMG[g.k] + '" onerror="this.remove()"></span>';
+  var u = GICON[g.k];
+  if (u && /_color\.svg$|icon_soul/.test(u)) return '<span class="gti"><img class="gi" alt="" loading="lazy" src="' + u + '" onerror="this.remove()"></span>';
+  if (u) return '<span class="gti"><span class="gim" style="-webkit-mask-image:url(' + u + ");mask-image:url(" + u + ')"></span></span>';
+  return '<span class="gti">' + (GSVG[g.k] ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + GSVG[g.k] + "</svg>" : gcSvg(g.c)) + "</span>";
+}
 function gChev(k) { // hero effects: a gold chevron after the name opens the ability that applies it
   var hx = GBY[k] && GBY[k].c === "hero" && heroEffect(k); if (!hx) return "";
   var ab = state.byClass[hx.ac];
   return '<button class="gchev" data-sac="' + esc(hx.ac) + '" data-shc="' + esc(hx.hc) + '" aria-label="Go to ' + esc(ab ? nameOf(ab) : hx.ability) + '"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>';
 }
-function gIcon(k) {
-  var hx = GBY[k] && GBY[k].c === "hero" && heroEffect(k); if (hx) return heroEffectIcons(hx);
-  return GICON[k] ? '<img class="gi" alt="" loading="lazy" src="' + GICON[k] + '" onerror="this.remove()">' : "";
-}
 function glossList() {
   var q = (state.gq || "").toLowerCase().trim(), html = "", n = 0;
+  var hit = function (g) { return !q || (g.t + " " + g.a.join(" ") + " " + g.d).toLowerCase().indexOf(q) >= 0; };
+  if (state.gview === "az") { // one list, A to Z, under letter headings
+    var by = {};
+    GLOSS.filter(hit).slice().sort(function (a, b) { return a.t.localeCompare(b.t); }).forEach(function (g) { var L = g.t.charAt(0).toUpperCase(); (by[L] = by[L] || []).push(g); n++; });
+    html = Object.keys(by).sort().map(function (L) { return '<h2 class="gh gla" id="gl-' + L + '">' + L + "</h2>" + by[L].map(function (g) { return glossCard(g, true); }).join(""); }).join("");
+    return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
+  }
   GCATS.forEach(function (c) {
-    var list = GLOSS.filter(function (g) { return g.c === c[0] && (!q || (g.t + " " + g.a.join(" ") + " " + g.d).toLowerCase().indexOf(q) >= 0); });
+    var list = GLOSS.filter(function (g) { return g.c === c[0] && hit(g); });
     if (!list.length) return; n += list.length;
+    var head = '<h2 class="gh" id="gc-' + c[0] + '"' + gcStyle(c[0]) + '><span class="ghi">' + gcSvg(c[0]) + "</span>" + esc(c[1]) + "</h2>";
     if (c[0] === "hero") { // grouped by hero, A-Z
       var by = {}; list.forEach(function (g) { var x = heroEffect(g.k), h = x && x.hero || "Other"; (by[h] = by[h] || []).push(g); });
-      html += '<h2 class="gh" id="gc-' + c[0] + '">' + esc(c[1]) + "</h2>" + Object.keys(by).sort().map(function (h) { return '<div class="ghh">' + esc(h) + "</div>" + by[h].map(glossCard).join(""); }).join("");
+      html += head + Object.keys(by).sort().map(function (h) { return '<div class="ghh">' + esc(h) + "</div>" + by[h].map(function (g) { return glossCard(g); }).join(""); }).join("");
       return;
     }
-    html += '<h2 class="gh" id="gc-' + c[0] + '">' + esc(c[1]) + "</h2>" + list.map(glossCard).join("");
+    html += head + list.map(function (g) { return glossCard(g); }).join("");
   });
   return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
 }
+function glossView() { try { return localStorage.getItem("gview") === "az" ? "az" : "cat"; } catch (e) { return "cat"; } } // remembered on this device
 function renderGlossary() {
-  state.gq = "";
-  var jump = GCATS.map(function (c) {
+  state.gq = ""; if (!state.gview) state.gview = glossView();
+  var az = state.gview === "az", jump;
+  if (az) { // letter buttons, only for letters that have a term
+    var Ls = {}; GLOSS.forEach(function (g) { Ls[g.t.charAt(0).toUpperCase()] = 1; });
+    jump = '<div class="gaz">' + Object.keys(Ls).sort().map(function (L) { return '<button class="gazl" data-gl="' + L + '">' + L + "</button>"; }).join("") + "</div>";
+  } else jump = '<div class="gcats">' + GCATS.map(function (c) {
     var n = GLOSS.filter(function (g) { return g.c === c[0]; }).length;
-    return '<button class="gcat" data-gc="' + c[0] + '"><span><b>' + esc(c[1]) + "</b><small>" + n + " term" + (n === 1 ? "" : "s") + '</small></span><i aria-hidden="true">›</i></button>';
-  }).join("");
-  $("main").innerHTML = '<h1 class="gtitle">Glossary</h1>' +
-    '<div class="gcats">' + jump + '</div><div id="glist">' + glossList() + "</div>";
+    return '<button class="gcat" data-gc="' + c[0] + '"' + gcStyle(c[0]) + '><span class="gci">' + gcSvg(c[0]) + "</span><span><b>" + esc(c[1]) + "</b><small>" + n + " term" + (n === 1 ? "" : "s") + '</small></span><i aria-hidden="true">›</i></button>';
+  }).join("") + "</div>";
+  var seg = '<div class="gview" role="group" aria-label="Glossary view"><button data-gv="cat" aria-pressed="' + !az + '"' + (az ? "" : ' class="on"') + '>Categories</button><button data-gv="az" aria-pressed="' + az + '"' + (az ? ' class="on"' : "") + ">A–Z</button></div>";
+  $("main").innerHTML = '<div class="gtop"><h1 class="gtitle">Glossary</h1>' + seg + "</div>" + jump + '<div id="glist">' + glossList() + "</div>";
+}
+function setGlossView(v) {
+  if (state.gview === v) return; state.gview = v; try { localStorage.setItem("gview", v); } catch (e) {}
+  renderGlossary(); window.scrollTo(0, 0);
+}
+// Where a term is used: every hero ability and shop item whose text names it (its name or one of its other names, plurals and -ed/-ing included).
+// Built once from the search index; a hero's own effect only counts that hero's abilities.
+function usedIndex() {
+  if (state.uidx && state.uidx.of === state.items) return state.uidx.map;
+  var map = {}, idx = []; try { idx = buildSearch(); } catch (e) {}
+  var nameOfHero = {}; (state.heroes || []).forEach(function (h) { nameOfHero[h.class_name] = h.name; });
+  GLOSS.forEach(function (g) {
+    var words = [g.t.replace(/\s*\(.*\)$/, "")].concat(g.a).map(function (w) { return String(w).toLowerCase(); }).filter(function (w, i, a) { return w.length > 2 && a.indexOf(w) === i; });
+    var rx = new RegExp("(^|[^a-z])(" + words.map(function (w) { return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/ /g, "\\s+"); }).join("|") + ")(?:[a-z]?(?:s|es|ed|ing))?(?![a-z])", "i");
+    var ab = [], it = [], own = g.c === "hero" && heroEffect(g.k);
+    idx.forEach(function (e) {
+      if (own && e.cn === own.ac) return; // a hero's effect: its own ability is already the chevron by its name
+      if ((e.k !== "ability" && e.k !== "item") || !e.text || !rx.test(e.text)) return;
+      if (e.k === "ability") { if (g.h && nameOfHero[e.hero] !== g.h) return; ab.push({ hero: nameOfHero[e.hero] || "", hc: e.hero, ability: e.name, ac: e.cn }); }
+      else { var x = state.byClass[e.cn]; if (x && Number(x.cost) === 9999) return; it.push({ item: e.name, ic: e.cn }); }
+    });
+    ab.sort(function (a, b) { return a.hero.localeCompare(b.hero) || a.ability.localeCompare(b.ability); });
+    it.sort(function (a, b) { var ia = state.byClass[a.ic] || {}, ib = state.byClass[b.ic] || {}; return (ia.item_tier || 0) - (ib.item_tier || 0) || a.item.localeCompare(b.item); });
+    map[g.k] = { ab: ab, it: it };
+  });
+  state.uidx = { of: state.items, map: map };
+  return map;
+}
+function usedChip(g) { // the card's footer: a few of the abilities and items that mention it, and how many in all
+  var u = usedIndex()[g.k]; if (!u || !(u.ab.length + u.it.length)) return "";
+  var pics = u.ab.slice(0, 3).map(function (x) { var a = state.byClass[x.ac]; return a ? '<span class="gua">' + imgTag(itemImg(a)) + "</span>" : ""; })
+    .concat(u.it.slice(0, 5 - Math.min(3, u.ab.length)).map(function (x) { var it = state.byClass[x.ic], sl = it ? slotOf(it) : ""; return it ? '<span class="gui' + (sl ? " " + sl : "") + '">' + imgTag(itemArt(it), itemImg(it)) + "</span>" : ""; })).join("");
+  var parts = []; if (u.ab.length) parts.push(u.ab.length + " abilit" + (u.ab.length === 1 ? "y" : "ies")); if (u.it.length) parts.push(u.it.length + " item" + (u.it.length === 1 ? "" : "s"));
+  return '<div class="gtu"><span class="gtup">' + pics + '</span><span class="gtul">Mentioned in ' + parts.join(" · ") + "</span></div>";
+}
+function usedHtml(g) { // in the pop-up: every ability and item that mentions it, minus the ones already listed under Sources
+  var u = usedIndex()[g.k]; if (!u) return "";
+  var seen = SRC_IDS || {}, ab = u.ab.filter(function (x) { return !seen[x.ac]; }), it = u.it.filter(function (x) { return !seen[x.ic]; });
+  if (!ab.length && !it.length) return "";
+  var grp = function (title, xs) {
+    if (!xs.length) return "";
+    var more = xs.length > SRC_LIMIT + 2 ? xs.length - SRC_LIMIT : 0;
+    return '<div class="gsg' + (more ? " clip" : "") + '"><div class="gsgh">' + title + " <span>" + xs.length + "</span></div>" + xs.map(function (x, i) { var r = srcBtn(x, ""); return i >= SRC_LIMIT ? r.replace('class="gsrc', 'class="gsrc gsm') : r; }).join("") +
+      (more ? '<button class="gsall">Show all ' + xs.length + "</button>" : "") + "</div>";
+  };
+  return '<div class="grh">' + (Object.keys(seen).length ? "Also mentioned in" : "Mentioned in") + "</div>" + grp("Abilities", ab) + grp("Items", it);
 }
 // related terms: ones whose definitions link to this one, minus any already linked or named in this definition
 // What causes an effect: the wiki's list (data/status_effects.json, matched to the game data) plus, for slows and
@@ -4170,7 +4325,7 @@ function gameText(g) { // the game's own name for the effect and the message it 
   return '<div class="gig"><span>In game</span>' + (nm ? "<b>" + esc(nm) + "</b>" : "") + (nm && t.msg ? " · " : "") + (t.msg ? "“" + esc(t.msg) + "”" : "") + "</div>";
 }
 function mechHtml(g) { // the numbers behind a map term, from the game data
-  var M = state.mc; if (!M || (g.c !== "map" && g.c !== "econ")) return "";
+  var M = state.mc; if (!M || (g.c !== "map" && g.c !== "econ" && g.k !== "permanent-buffs")) return "";
   var E = M.economy || {};
   if (g.k === "souls") return unlocksHtml();
   if (g.k === "shop") { var SH = M.shop || {}; return econCard((SH.tier_prices || []).map(function (v, i) { return [Number(v).toLocaleString(), "Tier " + (i + 1)]; }).concat([[SH.sell_ratio != null ? Math.round(SH.sell_ratio * 100) + "%" : null, "Sell-back value"]])); }
@@ -4185,11 +4340,29 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
     add(f(x.health), "Trooper health"); add(f(x.melee_health), "Melee trooper health"); add(f(x.medic_health), "Medic trooper health"); add(f(x.dps_vs_heroes), "Damage to heroes per second");
     if (T.length) return '<div class="stats">' + T.join("") + "</div>" + (x.medic_heal ? '<div class="gsft">Medic troopers heal for ' + f(x.medic_heal) + " plus " + x.medic_heal_pct + "% of missing health over " + x.medic_heal_sec + "s.</div>" : "");
   }
-  else if (g.k === "mid-boss") { add(f(x.health), "Starting health"); add(x.health_per_min != null ? "+" + f(x.health_per_min) : null, "Health per minute"); add("7 → 6 → 5 min", "Respawn after each kill"); } // deadlock.wiki, Minimap: 7 minutes after the first kill, 6 after the second, 5 after each one after
+  else if (g.k === "mid-boss") { // three groups: how tough it is, how it hits, what it's worth
+    var pct = function (v) { return v == null ? null : f(v) + "%"; }, blocks = [], grp = function (name) { if (T.length) blocks.push('<div class="blk">' + name + '</div><div class="stats">' + T.join("") + "</div>"); T = []; };
+    add(f(x.health), "Starting health"); add(x.health_per_min != null ? "+" + f(x.health_per_min) : null, "Health per minute");
+    add(x.shield_per_sec != null ? f(x.shield_per_sec) + "/s" : null, "Shield soaks up"); add(x.shield_per_min != null ? "+" + f(x.shield_per_min) + "/s" : null, "Shield per minute");
+    add(x.regen != null ? f(x.regen) + "/s" : null, "Health regen"); add(pct(x.bullet_resist), "Bullet Resist"); add(pct(x.spirit_resist), "Spirit Resist"); add(pct(x.debuff_resist), "Debuff Resist");
+    grp("Toughness");
+    add(f(x.dps), "Damage per second"); add(x.range != null ? Math.round(x.range) + "m" : null, "Range");
+    grp("Attack");
+    add(x.souls != null ? f(x.souls) : null, "Souls for the team"); add(x.souls_per_min != null ? "+" + f(x.souls_per_min) : null, "Souls per minute"); add("2", "Permanent buffs each");
+    var first = x.respawn_sec ? Math.round(x.respawn_sec / 60) : 7; add(first + " → 6 → 5 min", "Respawn after each kill"); // deadlock.wiki, Midboss: 6 minutes after the second kill, 5 after each one after
+    grp("Reward");
+    var notes = [];
+    if (x.shield_per_sec != null) notes.push("The shield soaks up the first " + f(x.shield_per_sec) + " damage it takes every second" + (x.shield_per_min ? ", plus " + f(x.shield_per_min) + " more for each minute of the match" : "") + ". Only damage past that hurts its health.");
+    if (x.health_per_min != null) notes.push("Health grows from the moment it spawns.");
+    if (x.shred_resist) notes.push("Resist reduction works at " + (100 - x.shred_resist) + "% strength on it.");
+    return blocks.join("") + (notes.length ? '<div class="gsft">' + esc(notes.join(" ")) + "</div>" : "");
+  }
   else if (g.k === "backdoor") { var b = M.backdoor || {}; add(b.mitigation != null ? b.mitigation + "%" : null, "Less damage from heroes"); add(b.regen != null ? b.regen + "/s" : null, "Health regen"); }
   else if (g.k === "rejuvenator") {
     var r = M.rejuvenator || {};
-    add(r.duration != null ? Math.round(r.duration / 60) + " min" : null, "Lasts up to"); add(M.rejuvenator && M.rejuvenator.crystals != null ? String(M.rejuvenator.crystals) : "3", "Crystals (one revive each)");
+    add(r.crystals != null ? String(r.crystals) : "3", "Crystals (one revive each)"); add(r.drop_sec != null ? r.drop_sec + "s" : null, "Time to land");
+    add(r.revive_delay_sec != null ? r.revive_delay_sec + "s" : null, "Revive delay"); add(r.revive_health_pct != null ? Math.round(r.revive_health_pct) + "%" : null, "Revive health");
+    add(r.duration != null ? Math.round(r.duration / 60) + " min" : null, "Revives last up to");
   }
   else if (g.k === "neutral-camps") {
     var out = (M.camps || []).map(function (c) {
@@ -4221,13 +4394,23 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
       return '<div class="blk">' + esc(nm.replace(/ Powerup$/, " Buff")) + '</div><div class="stats">' + T.join("") + "</div>";
     }).join("") + '<div class="gsft">Each lasts ' + Math.round(P[pk0].duration || 160) + "s. Values grow from the first number at " + P[pk0].from_min + " minutes to the second at " + P[pk0].to_min + ".</div>";
   }
-  else if (g.k === "golden-statues" && state.pw && state.pw.crates) {
-    var CR = state.pw.crates, cp = CR.pickups, L = CR.levels_from_min;
-    var head = '<div class="mrow mrh"><span>Pickup</span><b>Start</b><b>' + L[1] + ' min</b><b>' + L[2] + " min</b></div>";
-    return '<div class="mrows">' + head + Object.keys(cp).map(function (nm) { var v = cp[nm].values; return '<div class="mrow"><span>' + esc(nm) + "</span>" + [0, 1, 2].map(function (i) { return "<b>" + (v[i] != null ? esc(v[i] + cp[nm].unit) : "–") + "</b>"; }).join("") + "</div>"; }).join("") + "</div>";
-  }
+  else if (g.k === "golden-statues" && state.pw && state.pw.crates) return statueTable();
+  else if (g.k === "permanent-buffs" && state.pw && state.pw.crates) return '<div class="blk">The list</div>' + statueTable() + '<div class="gsft">Sizes as Golden Statues drop them. They get bigger at ' + state.pw.crates.levels_from_min[1] + " and " + state.pw.crates.levels_from_min[2] + " minutes." + statueOdds() + "</div>";
   else { add(f(x.health), "Health"); add(f(x.souls), "Soul Bounty"); add(f(x.dps_vs_heroes), "Damage to heroes per second"); }
   return T.length ? '<div class="stats">' + T.join("") + "</div>" : "";
+}
+function statueOdds() { // which pickups the game rolls more (or less) often than the rest, from their weights
+  var cp = state.pw.crates.pickups, ks = Object.keys(cp).filter(function (k) { return cp[k].weight != null; }); if (!ks.length) return "";
+  var ws = ks.map(function (k) { return cp[k].weight; }).sort(function (a, b) { return a - b; }), mid = ws[Math.floor(ws.length / 2)];
+  var hi = ks.filter(function (k) { return cp[k].weight >= mid * 2; }), lo = ks.filter(function (k) { return cp[k].weight <= mid / 2; });
+  var and = function (a) { return a.length > 1 ? a.slice(0, -1).join(", ") + " and " + a[a.length - 1] : a[0]; };
+  var hiW = hi.length && cp[hi[0]].weight / mid, loW = lo.length && mid / cp[lo[0]].weight, x = function (r) { return r === 2 ? "about twice as often as most" : r === 3 ? "about three times as often as most" : "more often than most"; };
+  return (hi.length ? " " + and(hi) + (hi.length > 1 ? " come" : " comes") + " up " + x(hiW) + (lo.length ? ", and " + and(lo) + (loW === 2 ? " about half as often." : " less often.") : ".") : lo.length ? " " + and(lo) + " come up less often than the rest." : "");
+}
+function statueTable() { // the permanent pickups and their size at each level
+  var CR = state.pw.crates, cp = CR.pickups, L = CR.levels_from_min;
+  var head = '<div class="mrow mrh"><span>Pickup</span><b>Start</b><b>' + L[1] + ' min</b><b>' + L[2] + " min</b></div>";
+  return '<div class="mrows">' + head + Object.keys(cp).map(function (nm) { var v = cp[nm].values; return '<div class="mrow"><span>' + esc(nm) + "</span>" + [0, 1, 2].map(function (i) { return "<b>" + (v[i] != null ? esc(v[i] + cp[nm].unit) : "–") + "</b>"; }).join("") + "</div>"; }).join("") + "</div>";
 }
 function chargeList() { // abilities that start with charges (and how many), and those a tier upgrade gives charges to
   var out = [];
@@ -4244,7 +4427,21 @@ function chargeList() { // abilities that start with charges (and how many), and
   });
   return out;
 }
+// one ability (hero portrait + ability icon) or shop item as a button in a pop-up list; tapping it opens it
+function srcBtn(x, note, tier) {
+  if (x.hero) {
+    var h = state.heroes.filter(function (y) { return y.class_name === x.hc; })[0], ab = state.byClass[x.ac];
+    var pic = h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "";
+    var abi = ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "";
+    var go = x.ac ? ' data-sac="' + esc(x.ac) + '" data-shc="' + esc(x.hc || "") + '"' + (tier ? ' data-stier="' + tier + '"' : "") : (x.hc ? ' data-shc="' + esc(x.hc) + '"' : "");
+    return '<button class="gsrc"' + go + ">" + pic + abi + '<span class="gst"><b>' + esc(ab ? nameOf(ab) : (x.ability || x.hero)) + "</b></span>" + note + "</button>"; // the game's own name (the wiki sometimes writes "powder keg"); the portrait says whose it is
+  }
+  var it = state.byClass[x.ic], sl = it ? slotOf(it) : "";
+  return '<button class="gsrc"' + (x.ic ? ' data-item="' + esc(x.ic) + '"' : "") + '><span class="gsi' + (sl ? " " + sl : "") + '">' + (it ? imgTag(itemArt(it), itemImg(it)) + tierTab(it) : "") + '</span><span class="gst"><b>' + esc(it ? nameOf(it) : x.item) + "</b></span>" + note + "</button>"; // the shop art, as on the item's own card
+}
+var SRC_IDS = {}; // the abilities and items the last Sources list showed, so "Mentioned in" doesn't repeat them
 function sourcesHtml(g) {
+  SRC_IDS = {};
   var hx = g.c === "hero" && heroEffect(g.k);
   if (hx) return ""; // the chevron by its name links to the ability
   var se = state.se && state.se.effects || [], list = (SRC_EXTRA[g.k] || []).slice(), notes = [], seen = {};
@@ -4259,6 +4456,7 @@ function sourcesHtml(g) {
     list = live.concat(list.filter(function (x) { return !(x.ac || x.ic) || !have[x.ac || x.ic]; }));
   }
   list = list.filter(function (x) { var id = x.ac || x.ic || x.text || x.hero; if (seen[id + "|" + (x.note || "")]) return false; seen[id + "|" + (x.note || "")] = 1; return true; });
+  list.forEach(function (x) { if (x.ac) SRC_IDS[x.ac] = 1; if (x.ic) SRC_IDS[x.ic] = 1; });
   if (!list.length && !notes.length) return "";
   var resIc = { bullet: '<img class="gric" alt="Bullet Resist" src="' + GP + 'armor_bullet_color.svg">', spirit: '<img class="gric" alt="Spirit Resist" src="' + GP + 'armor_spirit_color.svg">' };
   var resPage = g.k === "bullet-resist" || g.k === "spirit-resist";
@@ -4277,17 +4475,7 @@ function sourcesHtml(g) {
       .replace(/\u0001/g, resIc.bullet).replace(/\u0002/g, resIc.spirit).replace(/ · (?=<img)/g, " "); // the resist type as its icon
     var note = nt0 ? '<em class="gsn">' + nh + "</em>" : "";
     var tier = (/\bTier (\d)\b/.exec(nt0) || [])[1];
-    if (x.hero) {
-      var h = state.heroes.filter(function (y) { return y.class_name === x.hc; })[0], ab = state.byClass[x.ac];
-      var pic = h ? '<span class="gsp">' + imgTag(pick(h.images, ["icon_image_small", "icon_hero_card"]) || heroImg(h)) + "</span>" : "";
-      var abi = ab ? '<span class="gsa">' + imgTag(itemImg(ab)) + "</span>" : "";
-      var go = x.ac ? ' data-sac="' + esc(x.ac) + '" data-shc="' + esc(x.hc || "") + '"' + (tier ? ' data-stier="' + tier + '"' : "") : (x.hc ? ' data-shc="' + esc(x.hc) + '"' : "");
-      return '<button class="gsrc"' + go + ">" + pic + abi + '<span class="gst"><b>' + esc(ab ? nameOf(ab) : (x.ability || x.hero)) + "</b></span>" + note + "</button>"; // the game's own name (the wiki sometimes writes "powder keg"); the portrait says whose it is
-    }
-    if (x.item) {
-      var it = state.byClass[x.ic], sl = it ? slotOf(it) : "";
-      return '<button class="gsrc"' + (x.ic ? ' data-item="' + esc(x.ic) + '"' : "") + '><span class="gsi' + (sl ? " " + sl : "") + '">' + (it ? imgTag(itemArt(it), itemImg(it)) + tierTab(it) : "") + '</span><span class="gst"><b>' + esc(it ? nameOf(it) : x.item) + "</b></span>" + note + "</button>"; // the shop art, as on the item's own card
-    }
+    if (x.hero || x.item) return srcBtn(x, note, tier);
     if (x.crate) { // permanent pickups: one value per level, each level dropping from a later minute
       var cv = state.pw.crates.pickups[x.crate], vs = cv.values.filter(function (v) { return v != null; });
       return '<div class="gsrc gsx gspw"><span class="gsi pw crate"><img alt="" src="img/golden-statue.png"></span><span class="gst"><b>Golden Statues</b></span><em class="gsn">' + vs.map(function (v) { return esc(v) + esc(cv.unit); }).join(" / ") + "</em></div>";
@@ -4327,8 +4515,7 @@ function relatedHtml(g) {
 function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); if (!FWD) FSTACK = []; }
-  var cat = GCATS.filter(function (c) { return c[0] === g.c; })[0];
-  var html = '<div class="gsh"><div class="gcat2">' + esc(cat ? cat[1] : "Glossary") + "</div><h3>" + gIcon(g.k) + esc(g.t) + gChev(g.k) + "</h3><p>" + glossBody(g) + "</p>" + gameText(g) + listHtml(g) + mechHtml(g) + sourcesHtml(g) + relatedHtml(g) + "</div>" +
+  var html = '<div class="gsh"' + gcStyle(g.c) + '><div class="gcat2"><span class="ghi">' + gcSvg(g.c) + "</span>" + esc(gcName(g.c)) + '</div><div class="gth">' + gTile(g) + "<h3>" + esc(g.t) + gChev(g.k) + "</h3></div><p>" + glossBody(g) + "</p>" + gameText(g) + listHtml(g) + mechHtml(g) + sourcesHtml(g) + usedHtml(g) + relatedHtml(g) + "</div>" +
     // bottom row: back (when there is one), Close, then a small book button on the right that opens the full glossary
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button></div>';
   function bind() {
@@ -4565,7 +4752,7 @@ function glossBack() { // back to the page the glossary was opened from (Abrams,
   if (f.back) { if (f.back.search != null) showBackSearch(f.back.search); else showBack(f.back.hero, f.back.y); }
 }
 function topPill() { // glossary: a round ↑ on the right once you've scrolled past the category cards, and "‹ Back to Abrams" when you came from somewhere
-  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gcats"), inG = state.tab === "glossary" && !searchOn();
+  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gcats, #main .gaz"), inG = state.tab === "glossary" && !searchOn();
   var inN = state.tab === "news" && !searchOn(), nt = inN && document.querySelector("#main .gtitle");
   var inH = state.tab === "heroes" && !!state.hero && !searchOn(), hh = inH && document.querySelector("#main .hero-h"); // hero pages: once the header is a screen behind you
   var show = (inH && $("backpill").hidden && !!hh && hh.getBoundingClientRect().bottom < -400) || (inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0) || (inN && $("backpill").hidden && !!nt && nt.getBoundingClientRect().bottom < -300); // What's New: once you've scrolled a screen or so down
@@ -5033,6 +5220,10 @@ $("main").addEventListener("click", function (e) {
   if (gt && !(e.target.closest && e.target.closest("a,button"))) { glossSheet(gt.id.slice(2)); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
   if (gc) { var h0 = $("gc-" + gc.getAttribute("data-gc")); if (h0) scrollToEl(h0, true); return; }
+  var gv = e.target.closest ? e.target.closest("[data-gv]") : null;
+  if (gv) { setGlossView(gv.getAttribute("data-gv")); return; }
+  var gL = e.target.closest ? e.target.closest("[data-gl]") : null;
+  if (gL) { var h1 = $("gl-" + gL.getAttribute("data-gl")); if (h1) scrollToEl(h1, true); return; }
   if (tapTip(e)) return;
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
   if (sr) { var sk = sr.getAttribute("data-kind"); if (sk === "item" || sk === "term") openResult(sr); else slideForward(function () { openResult(sr); }); return; } // items and terms open as a sheet; heroes and abilities are a new page
