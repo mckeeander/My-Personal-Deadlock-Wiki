@@ -581,7 +581,7 @@ body.chband details.phd.abd{--cc:#a283f0}
 body.chband details.abd .ab{box-shadow:0 8px 18px rgba(0,0,0,.45)}
 body.chband details.ppd .ppc{box-shadow:0 4px 10px rgba(0,0,0,.25)}
 /* Base stats: a key to what's inside, three slanted bars in the Vitality, Weapon and Spirit colours */
-body.chband details.phd.bsd > summary.sec .sect::after{width:66px;margin-left:-33px;height:4px;bottom:-24px;border-radius:1px;transform:skewX(-28deg);background:var(--fg)} /* the same cream as the title */
+body.chband details.phd.bsd > summary.sec .sect::after{background:var(--fg)} /* the same cream as the title */
 body.chband #aowrap > details.phd{margin-top:68px}
 /* the shorter chapters keep their cards, each in its own colour, with a softer edge that fades sooner and a calmer wash */
 body.chband #aowrap{--cc:#5a9cf0;--cr:90,156,240}body.chband #popwrap{--cc:#a283f0;--cr:162,131,240}body.chband #revwrap{--cc:#5fc87a;--cr:95,200,122}
@@ -599,7 +599,7 @@ details.phd::after{right:-1px;bottom:-1px;width:65%;height:min(max(120px,30%),36
 details.phd > summary.sec{font-size:29px;justify-content:center;margin:0 6px;padding-left:6px;padding-right:6px;border-bottom-color:#3a3350}
 details.phd > summary.sec::before{display:none}
 details.phd > summary.sec .sect{position:relative}
-details.phd > summary.sec .sect::after{content:"";position:absolute;left:50%;width:48px;margin-left:-24px;bottom:-23px;height:3px;border-radius:2px;background:var(--cc)}
+details.phd > summary.sec .sect::after{content:"";position:absolute;left:50%;width:66px;margin-left:-33px;bottom:-24px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--cc)} /* a short slanted bar */
 details.phd > summary.sec:has(.ncv){padding-left:28px;padding-right:28px} /* a chapter that folds keeps its arrow at the far right, with matching room on the left so the title stays centred */
 details.phd > summary.sec .ncv{position:absolute;right:2px;top:50%;margin:-14px 0 0}
 details.phd > summary.sec{padding-top:8px;padding-bottom:22px}
@@ -3233,7 +3233,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero, by when t
   }).join("");
   var b = state.pop.badge, rk = RANKS[Math.floor(b / 10)] ? RANKS[Math.floor(b / 10)] + " " + (b % 10) : "top ranks";
   // folds like Patch history, but open unless you shut it on this hero
-  return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Popular items</span></summary><p class="ppnote"><b>' + esc(rk) + " and up · last " + (state.pop.days || 30) + " days</b><br>% of matches it was bought in</p>" + body + "</details>";
+  return '<details class="phd ppd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Popular items</span></summary><p class="ppnote"><b>' + esc(rk) + " and up</b> · % of matches it was bought in</p>" + body + "</details>";
 }
 
 // Ability order: the orders top-ranked players spend ability points in, one tab per play style (the first two abilities maxed).
@@ -5021,7 +5021,7 @@ function foldDetails(d) {
   var dist = Math.abs(y1 - y0), dur = opening ? Math.min(560, 300 + dist * 0.25) : 240, id = {}, t0 = 0;
   d._busy = true;
   parts.forEach(function (q) {
-    q.el._fold = id; q.el.style.overflow = "hidden"; q.el.style.height = q.h0 + "px";
+    q.el._fold = id; if (q.el.classList.contains("phd")) q.el.style.clipPath = "inset(-4px -4px 0 -4px)"; else q.el.style.overflow = "hidden"; q.el.style.height = q.h0 + "px"; // a chapter card clips only its bottom, so its edge (drawn just outside it) is never shaved off mid-animation
     q.el.classList.toggle("closing", !q.on); // the chevron turns at once
     q.kids.forEach(function (k) {
       k.animate(q.on ? [{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1 }, { opacity: 0 }],
@@ -5036,7 +5036,7 @@ function foldDetails(d) {
     parts.forEach(function (q) {
       if (q.el._fold !== id) return;
       q.el._fold = null; q.el._stop = null; q.el._busy = false;
-      q.el.open = q.on; q.el.style.height = ""; q.el.style.overflow = ""; q.el.classList.remove("closing");
+      q.el.open = q.on; q.el.style.height = ""; q.el.style.overflow = ""; q.el.style.clipPath = ""; q.el.classList.remove("closing");
       q.kids.forEach(function (k) { k.getAnimations().forEach(function (x) { x.cancel(); }); });
     });
   }
