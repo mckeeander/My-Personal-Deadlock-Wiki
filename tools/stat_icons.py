@@ -15,6 +15,11 @@ MAP = {
     "dmg": "damage_bullet_color", "ammo": "ammo_clip_size", "bps": "fire_rate",
     "reload": "ammo_reload", "vel": "bullet_velocity", "fist": "melee", "star": "spirit",
     "bshield": "armor_bullet_color", "sshield": "armor_spirit_color",
+    # the glossary's term icons (keys only it uses, so stat rows elsewhere keep their own)
+    "cooldown": "cooldown", "recharge": "recharge", "barrier": "armor_alt", "heal": "heal", "slow": "condition_slow",
+    "gcrit": "damage_crit", "stun": "condition_stun", "silence": "condition_silence", "sleep": "condition_sleep",
+    "root": "condition_immobilize", "disarm": "condition_disarm", "bleed": "condition_bleed", "curse": "condition_curse",
+    "burn": "condition_burn", "knock": "condition_knockdown", "slide": "move_slide", "range": "range", "duration": "duration",
 }
 # Two-colour icons: only this fill is tinted, everything else keeps the game's colour
 PARTIAL = {"bshield": "#00FF99", "sshield": "#00FF99"}
