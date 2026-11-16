@@ -731,16 +731,18 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gmb{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;font-weight:600;color:var(--gc,var(--gold))}
 /* the top of the glossary sits on a raised purple band like a hero page's Abilities: it runs past both screen edges, its bottom edge tilts
    down to the right, and a shadow lifts it off the page. The band is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilt */
-.ghead{position:relative;isolation:isolate;margin:0 0 30px;padding:10px 0 86px}
-.gpanel{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:-260px;bottom:0;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.3))}
-.gpanel i{position:absolute;inset:0;background:linear-gradient(to bottom,#221c36 0,#2e274d 300px,#27203e 420px,#1f1931 100%);clip-path:polygon(0 0,100% 0,100% 100%,0 calc(100% - 44px))}
-.ghead .gcat{box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.ghead{position:relative;margin:4px 0 34px;padding:6px 0 0}
+.gpanel{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:0;bottom:0;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.42))}
+.gpanel i{position:absolute;inset:0;clip-path:polygon(0 0,100% 24px,100% 100%,0 calc(100% - 24px))}
+.gjump{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
+.gjb{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 10px;font:inherit;font-size:12.5px;font-weight:600;color:var(--dim);min-height:34px}
+.gjb:active{color:var(--fg);border-color:var(--gold)}
 /* the chooser for the six mechanics categories: two rows of three, the chosen one lit in its colour */
 .gsw{scroll-margin-top:16px}
-.gswt{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 4px}
-.gsc{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px 8px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--dim);font:inherit;cursor:pointer;transition:background-color .2s ease,border-color .2s ease,color .2s ease}
-.gsc .gsci{display:flex;width:28px;height:28px;border-radius:8px;align-items:center;justify-content:center;color:var(--dim)}.gsc .gsci svg{width:17px;height:17px}
-.gsc b{font-size:12.5px;font-weight:600;line-height:1.2;text-align:center}.gsc small{font-size:11px;opacity:.75}
+.gswt{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 4px}
+.gsc{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 7px;border-radius:11px;background:rgba(20,17,26,.55);border:1px solid rgba(255,255,255,.08);color:var(--dim);font:inherit;text-align:left;cursor:pointer;min-height:44px;transition:background-color .2s ease,border-color .2s ease,color .2s ease}.gsc:last-child:nth-child(odd){grid-column:1/-1}
+.gsc .gsci{flex:none;display:flex;width:28px;height:28px;border-radius:8px;align-items:center;justify-content:center;color:var(--dim)}.gsc .gsci svg{width:17px;height:17px}
+.gsc b{flex:1;min-width:0;font-size:13.5px;font-weight:600;line-height:1.2}
 .gsc.on{color:var(--fg);background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.06));border-color:var(--gc);box-shadow:0 0 0 1px rgba(var(--gcr),.35) inset}
 .gsc.on .gsci{background:var(--gct);color:var(--gc)}
 .gsw .gh.gch{margin-top:26px}
@@ -810,14 +812,24 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gte .gtc{color:#d2a679}
 .gsft.gtkf{margin:12px 0 0 2px}
 /* Map & objectives: its own raised band, a dusky bronze, tilted the other way (high on the right), with each card lifted off it */
-.gband{position:relative;isolation:isolate;margin:56px 0 44px;padding:30px 0 34px}
-.gband .gpanel{top:0;bottom:0}
-.gband .gpanel i{background:linear-gradient(to bottom,#3a2f24 0,#2e261e 140px,#262019 45%,#1f1a15 100%);clip-path:polygon(0 26px,100% 0,100% calc(100% - 26px),0 100%)}
+/* raised bands, like a hero page's Abilities and Popular items: they run past both screen edges, tilt, and cast a shadow. Purple for the terms,
+   bronze for the lane (tilted the other way), slate for Hero effects */
+.gband{position:relative;isolation:isolate;margin:40px 0 44px;padding:36px 0 40px}
+.gband.gpur{margin-top:10px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
+.gband.gpur .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.11),transparent 80%),#1d1828;box-shadow:0 8px 18px rgba(0,0,0,.45)}
+.gband.gsl .gpanel i{background:linear-gradient(to bottom,#2a2d35 0,#24262d 140px,#1f2026 45%,#1a1a1f 100%)}
+.gband.gsl .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent 80%),#1c1d22;box-shadow:0 8px 18px rgba(0,0,0,.45)}
+.gtsec{position:relative;isolation:isolate;margin:8px 0 40px;padding:6px 14px 18px;border-radius:20px;border:1px solid rgba(var(--gcr),.24);background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent clamp(160px,40%,320px)),rgba(255,255,255,.028);scroll-margin-top:16px}
+.gtsec::before{content:"";position:absolute;z-index:-1;pointer-events:none;left:-1px;right:-1px;top:-1px;height:min(max(200px,45%),520px);border-top:2px solid var(--gc);border-left:2px solid var(--gc);border-radius:20px;-webkit-mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent);mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent)}
+.gtsec .gviz.gtk{background:none;border:0;padding:4px 0 0;margin:0}
+.gtsec .gh.gch{margin-top:22px}
+.gband.gbr .gpanel i{clip-path:polygon(0 24px,100% 0,100% calc(100% - 24px),0 100%)}
+.gband.gbr .gpanel i{background:linear-gradient(to bottom,#3a2f24 0,#2e261e 140px,#262019 45%,#1f1a15 100%)}
 .gband .gh{margin-top:10px}
-.gband .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.12),transparent 80%),#231d18;box-shadow:0 8px 18px rgba(0,0,0,.45)}
+.gband.gbr{scroll-margin-top:0}
 .ghead .gtitle{margin:0;font-size:28px}
 .gsub{font-size:12.5px;color:var(--dim);margin-top:4px}
-.ghead .gcats,.ghead .gaz{margin:16px 0 0}
+.ghead .gaz{margin:16px 0 0}
 .gti.gtip img{width:100%;height:100%;object-fit:cover}
 .gti.gtih{width:auto;height:auto;background:none;border:0;overflow:visible}
 .gsh .gti{width:38px;height:38px}.gsh .gti svg{width:20px;height:20px}.gsh .gti .gi{width:24px;height:24px}.gsh .gti.gtig .si{width:23px;height:23px}.gsh .gti.gtih{width:auto;height:auto}
@@ -4019,7 +4031,7 @@ function openResult(b) {
 // [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
 var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Immunity & stealth"], ["move", "Movement"], ["map", "Map & objectives"], ["econ", "Economy"], ["hero", "Hero effects"]];
 // each category's colour and icon: on its jump card, its heading, the stripe down each card and the tile behind each term's icon
-var GCOL = { dmg: "#ec5b4e", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#f2c14e", hero: "#a3b4cc" };
+var GCOL = { dmg: "#ec5b4e", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#f2c14e", hero: "#a9afba" };
 var GCI = {
   dmg: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/>',
   scale: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
@@ -4294,17 +4306,23 @@ function glossList() {
     return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
   }
   // the six mechanics categories share one section that shows a single category at a time; Map & objectives, Economy and Hero effects follow in full
-  var tabs = GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; }), rest = GCATS.filter(function (c) { return GTABS.indexOf(c[0]) < 0; });
-  html = gswHtml(tabs) + rest.map(function (c) { return catHtml(c, hit, q); }).join("");
+  // Terms (the chooser) on a raised purple band, the lane on a bronze one, the timeline in its own card, Economy as it is, Hero effects raised
+  var C = function (k) { return GCATS.filter(function (c) { return c[0] === k; })[0]; };
+  var band = function (cls, id, inner) { return '<section class="gband ' + cls + '"' + (id ? ' id="' + id + '"' : "") + '><div class="gpanel" aria-hidden="true"><i></i></div>' + inner + "</section>"; };
+  var chap = function (k, name, sub, id) { return '<h2 class="gh gch"' + (id ? ' id="' + id + '"' : "") + gcStyle(k) + '><span class="ghi">' + gcSvg(k) + "</span><b>" + esc(name) + "</b>" + (sub ? "<small>" + esc(sub) + "</small>" : "") + '<span class="gln2"></span></h2>'; };
+  html = band("gpur", "", gswHtml()) +
+    band("gbr", "gs-lane", chap("map", "Lane layout", "From your wave to the enemy Patron. Tap a step for the details") + laneMap()) +
+    '<section class="gtsec" id="g-match-timeline"' + gcStyle("map") + ">" + chap("map", "Match timeline", "From the first second to 40 minutes. Tap an event for the details") + timelineHtml() + "</section>" +
+    catHtml(C("econ"), hit, q) + band("gsl", "", catHtml(C("hero"), hit, q));
   return html;
 }
-var GTABS = ["dmg", "scale", "def", "cc", "buff", "move"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement" };
+var GTABS = ["dmg", "scale", "def", "cc", "buff", "move", "map"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement", map: "Map & objectives" };
 function glossTab() { if (GTABS.indexOf(state.gtab) >= 0) return state.gtab; var t = null; try { t = localStorage.getItem("gtab"); } catch (e) {} return (state.gtab = GTABS.indexOf(t) >= 0 ? t : "dmg"); }
 function gswHtml(tabs) { // the chooser (six buttons, two rows) over the chosen category's title and cards
   tabs = tabs || GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; });
   var cur = glossTab(), c = tabs.filter(function (x) { return x[0] === cur; })[0] || tabs[0];
   var chips = tabs.map(function (x) { var on = x[0] === c[0], n = GLOSS.filter(function (g) { return g.c === x[0]; }).length;
-    return '<button class="gsc' + (on ? " on" : "") + '" data-gt="' + x[0] + '" aria-pressed="' + on + '"' + gcStyle(x[0]) + '><span class="gsci">' + gcSvg(x[0]) + "</span><b>" + esc(GTAB_SHORT[x[0]] || x[1]) + "</b><small>" + n + "</small></button>"; }).join("");
+    return '<button class="gsc' + (on ? " on" : "") + '" data-gt="' + x[0] + '" aria-pressed="' + on + '"' + gcStyle(x[0]) + '><span class="gsci">' + gcSvg(x[0]) + "</span><b>" + esc(GTAB_SHORT[x[0]] || x[1]) + "</b></button>"; }).join("");
   return '<section class="gsw" id="gsw"><div class="gswt" role="group" aria-label="Choose a category">' + chips + "</div>" + catHtml(c, null, "") + "</section>";
 }
 function setGlossTab(k) { // show another of the six, keeping the chooser where it is on screen
@@ -4316,7 +4334,8 @@ function setGlossTab(k) { // show another of the six, keeping the chooser where 
   var y1 = $("gsw").getBoundingClientRect().top; if (y1 !== y0) window.scrollBy(0, y1 - y0);
 }
 function glossReveal(k) { // a link to a term in one of the six that isn't showing: switch to its category first
-  var g = GBY[k]; if (g && state.gview !== "az" && GTABS.indexOf(g.c) >= 0 && glossTab() !== g.c) setGlossTab(g.c);
+  var g = GBY[k]; if (!g || LANE_KEYS[k] || k === "match-timeline") return; // those have sections of their own
+  if (state.gview !== "az" && GTABS.indexOf(g.c) >= 0 && glossTab() !== g.c) setGlossTab(g.c);
 }
 function catHtml(c, hit, q) { // one category's chapter title and its cards
   var list = GLOSS.filter(function (g) { return g.c === c[0] && (!hit || hit(g)); });
@@ -4327,10 +4346,8 @@ function catHtml(c, hit, q) { // one category's chapter title and its cards
     var by = {}; list.forEach(function (g) { var x = heroEffect(g.k), h = x && x.hero || "Other"; (by[h] = by[h] || []).push(g); });
     return head + Object.keys(by).sort().map(function (h) { return '<div class="ghh">' + esc(h) + "</div>" + by[h].map(function (g) { return glossCard(g); }).join(""); }).join("");
   }
-  var lane = c[0] === "map" && !q ? laneMap() : "";
-  var cards = list.filter(function (g) { return !lane || !LANE_KEYS[g.k]; }).map(function (g) { return glossCard(g); }).join("");
-  if (lane) cards = lane + cards;
-  return c[0] === "map" ? '<section class="gband"><div class="gpanel gpm" aria-hidden="true"><i></i></div>' + head + cards + "</section>" : head + cards; // Map & objectives sits on its own raised band
+  if (c[0] === "map") { list = list.filter(function (g) { return !LANE_KEYS[g.k] && g.k !== "match-timeline"; }); head = head.replace(/<small>[^<]*<\/small>/, "<small>" + list.length + " terms</small>"); }
+  return head + list.map(function (g) { return glossCard(g); }).join("");
 }
 // ---- glossary diagrams: the Mid Boss growth charts and the minimap reveal map. Each sits on its card in Map & objectives and in its pop-up ----
 // Mid Boss: three small charts, one per number (they're in different units, so never one chart with two scales), sharing one minute.
@@ -4393,7 +4410,7 @@ function revealMap() {
     [4, true, "Very close, just under light melee range, even facing away"], [5, true, "Enemy troopers or structures targeting or shooting you"]];
   return '<div class="gviz rv">' + svg + '<ol class="rvl">' + L.map(function (r) { return '<li class="' + (r[1] ? "on" : "") + '"><span class="rvn">' + r[0] + "</span><span><b>" + (r[1] ? "Reveals you" : "Doesn’t") + "</b>" + esc(r[2]) + "</span></li>"; }).join("") + "</ol></div>";
 }
-var GVIS = { "mid-boss": mbChart, "minimap-reveal": revealMap, "match-timeline": timelineHtml };
+var GVIS = { "mid-boss": mbChart, "minimap-reveal": revealMap };
 // Map & objectives opens with a diagram of a lane: the steps you fight through, from your wave to the enemy Patron. Each step is its term
 // (tap for the pop-up, and links elsewhere on the page land on it), so these terms don't get cards of their own in the category view
 var LANE_KEYS = { "lane-layout": 1, troopers: 1, guardian: 1, walker: 1, "base-guardian": 1, shrine: 1, patron: 1, backdoor: 1 };
@@ -4409,7 +4426,7 @@ function laneMap() {
   };
   var G = M.guardian || {}, W = M.walker || {}, B = M.base_guardian || {}, S = M.shrine || {}, P = M.patron || {}, T = M.trooper || {};
   var waves = T.wave_sec ? (T.squad ? "Squads of " + T.squad + " every " : "A wave every ") + T.wave_sec + "s" + (T.wave_late_sec ? ", " + T.wave_late_sec + "s from " + T.wave_late_min + " min" : "") + (T.wave_very_late_sec ? ", " + T.wave_very_late_sec + "s from " + T.wave_very_late_min : "") : "";
-  return '<div class="glmap"><p class="glin">Down each lane to the enemy Patron. Tap any step for the details.</p>' +
+  return '<div class="glmap">' +
     step("troopers", "Troopers", waves, chip(f(T.health), "health"), { wave: true }) +
     '<div class="gls">In each lane</div>' +
     step("guardian", "Guardian", G.dps_vs_heroes ? "Hits heroes for " + f(G.dps_vs_heroes) + " damage a second" : "", chip(f(G.health), "health") + chip(f(G.souls), "souls"), { bd: true }) +
@@ -4428,12 +4445,9 @@ function renderGlossary() {
   if (az) { // letter buttons, only for letters that have a term
     var Ls = {}; GLOSS.forEach(function (g) { Ls[g.t.charAt(0).toUpperCase()] = 1; });
     jump = '<div class="gaz">' + Object.keys(Ls).sort().map(function (L) { return '<button class="gazl" data-gl="' + L + '">' + L + "</button>"; }).join("") + "</div>";
-  } else jump = '<div class="gcats">' + GCATS.map(function (c) {
-    var n = GLOSS.filter(function (g) { return g.c === c[0]; }).length;
-    return '<button class="gcat" data-gc="' + c[0] + '"' + gcStyle(c[0]) + '><span class="gci">' + gcSvg(c[0]) + "</span><span><b>" + esc(c[1]) + "</b><small>" + n + " term" + (n === 1 ? "" : "s") + '</small></span><i aria-hidden="true">›</i></button>';
-  }).join("") + "</div>";
+  } else jump = '<div class="gjump">' + [["gs-lane", "Lane"], ["g-match-timeline", "Timeline"], ["gc-econ", "Economy"], ["gc-hero", "Hero effects"]].map(function (j) { return '<button class="gjb" data-gj="' + j[0] + '">' + j[1] + "</button>"; }).join("") + "</div>"; // jump to each section
   var seg = '<div class="gview" role="group" aria-label="Glossary view"><button data-gv="cat" aria-pressed="' + !az + '"' + (az ? "" : ' class="on"') + '>Categories</button><button data-gv="az" aria-pressed="' + az + '"' + (az ? ' class="on"' : "") + ">A–Z</button></div>";
-  $("main").innerHTML = '<div class="ghead"><div class="gpanel" aria-hidden="true"><i></i></div><div class="gtop"><div><h1 class="gtitle">Glossary</h1><div class="gsub">' + GLOSS.length + " terms · tap one for the details</div></div>" + seg + "</div>" + jump + '</div><div id="glist">' + glossList() + "</div>";
+  $("main").innerHTML = '<div class="ghead"><div class="gtop"><div><h1 class="gtitle">Glossary</h1><div class="gsub">' + GLOSS.length + " terms · tap one for the details</div></div>" + seg + "</div>" + jump + '</div><div id="glist">' + glossList() + "</div>";
 }
 function setGlossView(v) {
   if (state.gview === v) return; state.gview = v; try { localStorage.setItem("gview", v); } catch (e) {}
@@ -5031,7 +5045,7 @@ function glossBack() { // back to the page the glossary was opened from (Abrams,
   if (f.back) { if (f.back.search != null) showBackSearch(f.back.search); else showBack(f.back.hero, f.back.y); }
 }
 function topPill() { // glossary: a round ↑ on the right once you've scrolled past the category cards, and "‹ Back to Abrams" when you came from somewhere
-  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gcats, #main .gaz"), inG = state.tab === "glossary" && !searchOn();
+  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gjump, #main .gaz"), inG = state.tab === "glossary" && !searchOn();
   var inN = state.tab === "news" && !searchOn(), nt = inN && document.querySelector("#main .gtitle");
   var inH = state.tab === "heroes" && !!state.hero && !searchOn(), hh = inH && document.querySelector("#main .hero-h"); // hero pages: once the header is a screen behind you
   var show = (inH && $("backpill").hidden && !!hh && hh.getBoundingClientRect().bottom < -400) || (inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0) || (inN && $("backpill").hidden && !!nt && nt.getBoundingClientRect().bottom < -300); // What's New: once you've scrolled a screen or so down
@@ -5503,6 +5517,8 @@ $("main").addEventListener("click", function (e) {
   if (gt && !(e.target.closest && e.target.closest("a,button,.gviz"))) { glossSheet(gt.id.slice(2)); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
   if (gc) { var gck = gc.getAttribute("data-gc"); if (GTABS.indexOf(gck) >= 0 && state.gview !== "az") { setGlossTab(gck); var sw = $("gsw"); if (sw) scrollToEl(sw, true); return; } var h0 = $("gc-" + gck); if (h0) scrollToEl(h0, true); return; }
+  var gjb = e.target.closest ? e.target.closest("[data-gj]") : null;
+  if (gjb) { var gjt = $(gjb.getAttribute("data-gj")); if (gjt) scrollToEl(gjt, true); return; }
   var gtb = e.target.closest ? e.target.closest("[data-gt]") : null;
   if (gtb) { setGlossTab(gtb.getAttribute("data-gt")); return; }
   var gv = e.target.closest ? e.target.closest("[data-gv]") : null;
