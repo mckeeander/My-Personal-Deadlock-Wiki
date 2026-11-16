@@ -735,11 +735,38 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gpanel{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:-260px;bottom:0;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.3))}
 .gpanel i{position:absolute;inset:0;background:linear-gradient(to bottom,#221c36 0,#2e274d 300px,#27203e 420px,#1f1931 100%);clip-path:polygon(0 0,100% 0,100% 100%,0 calc(100% - 44px))}
 .ghead .gcat{box-shadow:0 6px 14px rgba(0,0,0,.35)}
+/* category titles: chapter style, like a hero page's: the icon, a big serif name, the count, and a short slanted bar on a faint line */
+.gh.gch{display:block;text-align:center;border:0;margin:44px 0 24px;padding:0;color:var(--fg);letter-spacing:.03em;text-transform:none}
+.gch .ghi{margin:0 auto 10px;width:36px;height:36px;border-radius:10px}.gch .ghi svg{width:20px;height:20px;color:var(--gc)}
+.gch b{display:block;font-family:var(--disp);font-size:27px;font-weight:700;line-height:1.15;text-wrap:balance}
+.gch small{display:block;font-family:var(--body);font-size:12px;letter-spacing:.04em;color:var(--dim);font-weight:500;margin-top:8px}
+.gch .gln2{display:block;position:relative;height:1px;background:#3a3350;margin:14px 6px 0}.gch .gln2::after{content:"";position:absolute;left:50%;width:66px;margin-left:-33px;top:-2px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gc)}
+.gch + .ghh{margin-top:0}
+/* the lane diagram: a dashed road down the left joins each step's picture, from your wave at the top to the enemy Patron */
+.glmap{position:relative;margin:0 0 30px}
+.glmap::before{content:"";position:absolute;left:33px;top:70px;bottom:110px;width:3px;margin-left:-1.5px;background:repeating-linear-gradient(to bottom,#c49a6c 0 8px,transparent 8px 14px);opacity:.7}
+.glin{margin:-6px 0 18px;text-align:center;font-size:13px;color:#bfa78c}
+.gls{position:relative;margin:4px 0 12px 82px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#d2a679}
+.gls.gate{margin-top:10px;padding-top:12px;border-top:1px dashed rgba(210,166,121,.4)}
+.gld{position:relative;display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;padding:0;margin:0 0 14px;color:var(--fg);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;scroll-margin-top:24px}
+.gpic{position:relative;z-index:1;flex:none;width:66px;height:66px;border-radius:14px;border:2px solid #9c7a55;background:#2a231c;box-shadow:0 6px 14px rgba(0,0,0,.55)}
+.gpic img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.gld.wave .gpic{border-color:#d2a679}
+.gbd{position:absolute;top:-7px;left:-7px;width:24px;height:24px;border-radius:50%;background:#2b231b;border:1.5px solid #e6b45a;color:#e6b45a;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.5)}.gbd svg{width:13px;height:13px}
+.gnx{position:absolute;right:-7px;bottom:-7px;min-width:24px;height:22px;padding:0 5px;border-radius:11px;background:#f1e9d8;color:#231b14;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.gbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;background:linear-gradient(to bottom,rgba(210,166,121,.12),transparent 85%),#231d18;border:1px solid rgba(210,166,121,.26);box-shadow:0 8px 18px rgba(0,0,0,.4)}
+.gbn{display:flex;align-items:center;gap:8px}.gbn b{flex:1;font-size:16px}.gbn .gtc{color:#d2a679}
+.gbt{font-size:13px;color:#bfa78c}
+.glcs{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.glc{font-size:12px;color:#cdbba5;background:rgba(0,0,0,.25);border:1px solid rgba(210,166,121,.2);border-radius:6px;padding:2px 7px}.glc b{color:var(--fg);font-variant-numeric:tabular-nums}
+.glbd{display:flex;align-items:center;gap:12px;width:100%;margin-top:22px;padding:12px;border-radius:12px;background:rgba(230,180,90,.07);border:1px dashed rgba(230,180,90,.45);color:#d9c7b1;font:inherit;font-size:13px;text-align:left;cursor:pointer;scroll-margin-top:24px}
+.glbd .gbd{position:static;flex:none}.glbd b{display:block;color:var(--fg);font-size:14px;margin-bottom:2px}.glbd .gtc{color:#d2a679}
+.gld.pop .gbody,.glbd.pop{animation:boxup 1.5s ease-in-out both}
 /* Map & objectives: its own raised band, a dusky bronze, tilted the other way (high on the right), with each card lifted off it */
 .gband{position:relative;isolation:isolate;margin:56px 0 44px;padding:30px 0 34px}
 .gband .gpanel{top:0;bottom:0}
 .gband .gpanel i{background:linear-gradient(to bottom,#3a2f24 0,#2e261e 140px,#262019 45%,#1f1a15 100%);clip-path:polygon(0 26px,100% 0,100% calc(100% - 26px),0 100%)}
-.gband .gh{margin-top:6px;border-bottom-color:rgba(210,166,121,.35)}
+.gband .gh{margin-top:10px}
 .gband .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.12),transparent 80%),#231d18;box-shadow:0 8px 18px rgba(0,0,0,.45)}
 .ghead .gtitle{margin:0;font-size:28px}
 .gsub{font-size:12.5px;color:var(--dim);margin-top:4px}
@@ -4221,16 +4248,45 @@ function glossList() {
   GCATS.forEach(function (c) {
     var list = GLOSS.filter(function (g) { return g.c === c[0] && hit(g); });
     if (!list.length) return; n += list.length;
-    var head = '<h2 class="gh" id="gc-' + c[0] + '"' + gcStyle(c[0]) + '><span class="ghi">' + gcSvg(c[0]) + "</span>" + esc(c[1]) + "</h2>";
+    var total = GLOSS.filter(function (g) { return g.c === c[0]; }).length;
+    var head = '<h2 class="gh gch" id="gc-' + c[0] + '"' + gcStyle(c[0]) + '><span class="ghi">' + gcSvg(c[0]) + "</span><b>" + esc(c[1]) + "</b><small>" + (q ? list.length + " of " : "") + total + " terms</small><span class=\"gln2\"></span></h2>"; // a chapter title, like a hero page's
     if (c[0] === "hero") { // grouped by hero, A-Z
       var by = {}; list.forEach(function (g) { var x = heroEffect(g.k), h = x && x.hero || "Other"; (by[h] = by[h] || []).push(g); });
       html += head + Object.keys(by).sort().map(function (h) { return '<div class="ghh">' + esc(h) + "</div>" + by[h].map(function (g) { return glossCard(g); }).join(""); }).join("");
       return;
     }
-    var cards = list.map(function (g) { return glossCard(g); }).join("");
+    var lane = c[0] === "map" && !q ? laneMap() : "";
+    var cards = list.filter(function (g) { return !lane || !LANE_KEYS[g.k]; }).map(function (g) { return glossCard(g); }).join("");
+    if (lane) cards = lane + cards;
     html += c[0] === "map" ? '<section class="gband"><div class="gpanel gpm" aria-hidden="true"><i></i></div>' + head + cards + "</section>" : head + cards; // Map & objectives sits on its own raised band
   });
   return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
+}
+// Map & objectives opens with a diagram of a lane: the steps you fight through, from your wave to the enemy Patron. Each step is its term
+// (tap for the pop-up, and links elsewhere on the page land on it), so these terms don't get cards of their own in the category view
+var LANE_KEYS = { "lane-layout": 1, troopers: 1, guardian: 1, walker: 1, "base-guardian": 1, shrine: 1, patron: 1, backdoor: 1 };
+function laneMap() {
+  var M = state.mc || {}, f = function (n) { return n == null ? null : Number(n).toLocaleString(); };
+  var shield = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>';
+  var chip = function (v, l) { return v ? '<span class="glc"><b>' + esc(v) + "</b> " + esc(l) + "</span>" : ""; };
+  var step = function (k, name, note, chips, opt) {
+    opt = opt || {};
+    return '<button class="gld' + (opt.wave ? " wave" : "") + '" id="g-' + k + '" data-g="' + k + '"><span class="gpic"><img alt="" src="img/' + k + '.jpg" onerror="this.remove()">' +
+      (opt.bd ? '<span class="gbd" title="Backdoor protection">' + shield + "</span>" : "") + (opt.n ? '<span class="gnx">×' + opt.n + "</span>" : "") + "</span>" +
+      '<span class="gbody"><span class="gbn"><b>' + esc(name) + '</b><span class="gtc">›</span></span>' + (note ? '<span class="gbt">' + esc(note) + "</span>" : "") + (chips ? '<span class="glcs">' + chips + "</span>" : "") + "</span></button>";
+  };
+  var G = M.guardian || {}, W = M.walker || {}, B = M.base_guardian || {}, S = M.shrine || {}, P = M.patron || {}, T = M.trooper || {};
+  return '<div class="glmap"><p class="glin">Down each lane to the enemy Patron. Tap any step for the details.</p>' +
+    step("troopers", "Troopers", "Your wave leads the push", chip(f(T.health), "health"), { wave: true }) +
+    '<div class="gls">In each lane</div>' +
+    step("guardian", "Guardian", "The first defence", chip(f(G.health), "health") + chip(f(G.souls), "souls"), { bd: true }) +
+    step("walker", "Walker", "Rockets, a laser and a stomp", chip(f(W.health), "health") + chip(f(W.souls), "souls"), { bd: true }) +
+    '<div class="gls gate">The enemy base</div>' +
+    step("base-guardian", "Base Guardians", "Guard the base entrance", chip(f(B.health), "health each") + chip(f(B.souls), "souls"), { bd: true, n: 2 }) +
+    step("shrine", "Shrines", "Open once Base Guardians fall", chip(f(S.souls), "souls"), { n: 2 }) +
+    step("patron", "Patron", "Destroy it to win", P.health ? chip(f(P.health) + (P.phase2_health ? " + " + f(P.phase2_health) : ""), "health, two phases") : "", { bd: true }) +
+    '<button class="glbd" id="g-backdoor" data-g="backdoor"><span class="gbd">' + shield + '</span><span><b>Backdoor protection</b>Marked objectives take much less damage from heroes and heal quickly unless your troopers are nearby.</span><span class="gtc">›</span></button>' +
+    "</div>";
 }
 function glossView() { try { return localStorage.getItem("gview") === "az" ? "az" : "cat"; } catch (e) { return "cat"; } } // remembered on this device
 function renderGlossary() {
@@ -5279,6 +5335,8 @@ $("main").addEventListener("click", function (e) {
   if (fsb) { userForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
   if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { var fromCard = gl.closest(".gt"), fromY = window.pageYOffset || 0; EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); if (fromCard && fromCard !== t0) showBackGloss(fromCard.id.slice(2), fromY); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
+  var gld = state.tab === "glossary" && e.target.closest ? e.target.closest(".gld[data-g], .glbd[data-g]") : null;
+  if (gld) { glossSheet(gld.getAttribute("data-g")); return; }
   var gmb = e.target.closest ? e.target.closest(".gmb") : null;
   if (gmb) { var gtc = gmb.closest(".gt"), op = !gtc.classList.contains("open"); gtc.classList.toggle("open", op); gmb.textContent = op ? "Show less" : "Show more"; gmb.setAttribute("aria-expanded", op); return; }
   var gt = state.tab === "glossary" && e.target.closest ? e.target.closest(".gt[id^='g-']") : null;
