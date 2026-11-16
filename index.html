@@ -731,10 +731,19 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gmb{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;font-weight:600;color:var(--gc,var(--gold))}
 /* the top of the glossary sits on a raised purple band like a hero page's Abilities: it runs past both screen edges, its bottom edge tilts
    down to the right, and a shadow lifts it off the page. The band is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilt */
-.ghead{position:relative;isolation:isolate;margin:0 0 30px;padding:10px 0 52px}
+.ghead{position:relative;isolation:isolate;margin:0 0 30px;padding:10px 0 86px}
 .gpanel{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:-260px;bottom:0;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.3))}
 .gpanel i{position:absolute;inset:0;background:linear-gradient(to bottom,#221c36 0,#2e274d 300px,#27203e 420px,#1f1931 100%);clip-path:polygon(0 0,100% 0,100% 100%,0 calc(100% - 44px))}
 .ghead .gcat{box-shadow:0 6px 14px rgba(0,0,0,.35)}
+/* the chooser for the six mechanics categories: two rows of three, the chosen one lit in its colour */
+.gsw{scroll-margin-top:16px}
+.gswt{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 4px}
+.gsc{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px 8px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--dim);font:inherit;cursor:pointer;transition:background-color .2s ease,border-color .2s ease,color .2s ease}
+.gsc .gsci{display:flex;width:28px;height:28px;border-radius:8px;align-items:center;justify-content:center;color:var(--dim)}.gsc .gsci svg{width:17px;height:17px}
+.gsc b{font-size:12.5px;font-weight:600;line-height:1.2;text-align:center}.gsc small{font-size:11px;opacity:.75}
+.gsc.on{color:var(--fg);background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.06));border-color:var(--gc);box-shadow:0 0 0 1px rgba(var(--gcr),.35) inset}
+.gsc.on .gsci{background:var(--gct);color:var(--gc)}
+.gsw .gh.gch{margin-top:26px}
 /* category titles: chapter style, like a hero page's: the icon, a big serif name, the count, and a short slanted bar on a faint line */
 .gh.gch{display:block;text-align:center;border:0;margin:44px 0 24px;padding:0;color:var(--fg);letter-spacing:.03em;text-transform:none}
 .gch .ghi{margin:0 auto 10px;width:36px;height:36px;border-radius:10px}.gch .ghi svg{width:20px;height:20px;color:var(--gc)}
@@ -4093,8 +4102,8 @@ var GLOSS = [
   { k: "guardian", c: "map", t: "Guardian", a: ["guardian", "guardians", "tier 1"], d: "The first defence in each lane. It fires at heroes and troopers who get close, and uses [[backdoor|Backdoor protection]]." },
   { k: "walker", c: "map", t: "Walker", a: ["walker", "walkers", "tier 2"], d: "The giant second defence in each lane, attacking with a rocket barrage, a laser and a stomp. It uses [[backdoor|Backdoor protection]] too." },
   { k: "base-guardian", c: "map", t: "Base Guardians", a: ["base guardian", "base guardians"], d: "A pair guards the entrance to each base. Destroying a pair makes the [[shrine|Shrines]] vulnerable." },
-  { k: "shrine", c: "map", t: "Shrines", a: ["shrine", "shrines"], d: "Two shrines protect the [[patron|Patron]]. They can’t be damaged until a pair of [[base-guardian|Base Guardians]] is down." },
-  { k: "patron", c: "map", t: "Patron", a: ["patron"], d: "The objective at the heart of each base, firing a powerful laser. Destroy the enemy Patron to win the match." },
+  { k: "shrine", c: "map", t: "Shrines", a: ["shrine", "shrines"], d: "Two shrines protect the [[patron|Patron]], which can’t be damaged until both are down. The Shrines themselves can’t be damaged until any one pair of [[base-guardian|Base Guardians]] is down, in any lane, and only from their own platform." },
+  { k: "patron", c: "map", t: "Patron", a: ["patron"], d: "The objective at the heart of each base, firing a powerful laser. It can’t be damaged until both [[shrine|Shrines]] are down. It has two health bars: when the first runs out it drops into a pit, then comes back weaker for the second. Destroy the enemy Patron to win the match." },
   { k: "minimap-reveal", c: "map", t: "Minimap reveal", a: ["minimap", "revealed", "reveal", "minimap reveal", "revealed on the minimap"], d: "Some actions put you on the enemy team’s minimap. A reveal lingers for about 2 seconds after the action ends." },
   { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss", "mid-boss", "temple guardian"], d: "A huge neutral boss in a pit under the middle of the map, there from the start of the match. It only attacks heroes inside its pit, beaming whoever is closest, and it can only be hurt from inside the pit too. A shield that refills constantly soaks up the first part of the damage it takes every second, so a lone hero barely scratches it. Its health and its shield both grow every minute, and it roars to both teams when it drops to 25% health. Killing it gives the team souls and 2 [[permanent-buffs|permanent buffs]] per player, and drops the [[rejuvenator|Rejuvenator]]. It comes back 7 minutes after the first kill, 6 after the second, and 5 after each one after that. The damage report calls it the Temple Guardian." },
   { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv", "rejuvenator credit", "rejuvenator crystal", "rejuvenator crystals"], d: "When the [[mid-boss|Mid Boss]] dies, three crystals float down over its pit. They can’t be touched until they land. Breaking one with a heavy [[melee|melee]] gives your team a revive and fully heals whoever broke it. Either team can break them, no matter who killed the Mid Boss, so revives can be stolen. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. Each player can only use one. The buff ends when the revives run out or the time is up." },
@@ -4284,22 +4293,44 @@ function glossList() {
     html = Object.keys(by).sort().map(function (L) { return '<h2 class="gh gla" id="gl-' + L + '">' + L + "</h2>" + by[L].map(function (g) { return glossCard(g, true); }).join(""); }).join("");
     return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
   }
-  GCATS.forEach(function (c) {
-    var list = GLOSS.filter(function (g) { return g.c === c[0] && hit(g); });
-    if (!list.length) return; n += list.length;
-    var total = GLOSS.filter(function (g) { return g.c === c[0]; }).length;
-    var head = '<h2 class="gh gch" id="gc-' + c[0] + '"' + gcStyle(c[0]) + '><span class="ghi">' + gcSvg(c[0]) + "</span><b>" + esc(c[1]) + "</b><small>" + (q ? list.length + " of " : "") + total + " terms</small><span class=\"gln2\"></span></h2>"; // a chapter title, like a hero page's
-    if (c[0] === "hero") { // grouped by hero, A-Z
-      var by = {}; list.forEach(function (g) { var x = heroEffect(g.k), h = x && x.hero || "Other"; (by[h] = by[h] || []).push(g); });
-      html += head + Object.keys(by).sort().map(function (h) { return '<div class="ghh">' + esc(h) + "</div>" + by[h].map(function (g) { return glossCard(g); }).join(""); }).join("");
-      return;
-    }
-    var lane = c[0] === "map" && !q ? laneMap() : "";
-    var cards = list.filter(function (g) { return !lane || !LANE_KEYS[g.k]; }).map(function (g) { return glossCard(g); }).join("");
-    if (lane) cards = lane + cards;
-    html += c[0] === "map" ? '<section class="gband"><div class="gpanel gpm" aria-hidden="true"><i></i></div>' + head + cards + "</section>" : head + cards; // Map & objectives sits on its own raised band
-  });
-  return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
+  // the six mechanics categories share one section that shows a single category at a time; Map & objectives, Economy and Hero effects follow in full
+  var tabs = GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; }), rest = GCATS.filter(function (c) { return GTABS.indexOf(c[0]) < 0; });
+  html = gswHtml(tabs) + rest.map(function (c) { return catHtml(c, hit, q); }).join("");
+  return html;
+}
+var GTABS = ["dmg", "scale", "def", "cc", "buff", "move"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement" };
+function glossTab() { if (GTABS.indexOf(state.gtab) >= 0) return state.gtab; var t = null; try { t = localStorage.getItem("gtab"); } catch (e) {} return (state.gtab = GTABS.indexOf(t) >= 0 ? t : "dmg"); }
+function gswHtml(tabs) { // the chooser (six buttons, two rows) over the chosen category's title and cards
+  tabs = tabs || GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; });
+  var cur = glossTab(), c = tabs.filter(function (x) { return x[0] === cur; })[0] || tabs[0];
+  var chips = tabs.map(function (x) { var on = x[0] === c[0], n = GLOSS.filter(function (g) { return g.c === x[0]; }).length;
+    return '<button class="gsc' + (on ? " on" : "") + '" data-gt="' + x[0] + '" aria-pressed="' + on + '"' + gcStyle(x[0]) + '><span class="gsci">' + gcSvg(x[0]) + "</span><b>" + esc(GTAB_SHORT[x[0]] || x[1]) + "</b><small>" + n + "</small></button>"; }).join("");
+  return '<section class="gsw" id="gsw"><div class="gswt" role="group" aria-label="Choose a category">' + chips + "</div>" + catHtml(c, null, "") + "</section>";
+}
+function setGlossTab(k) { // show another of the six, keeping the chooser where it is on screen
+  if (GTABS.indexOf(k) < 0) return;
+  state.gtab = k; try { localStorage.setItem("gtab", k); } catch (e) {}
+  var sec = $("gsw"); if (!sec) return;
+  var y0 = sec.getBoundingClientRect().top;
+  sec.outerHTML = gswHtml();
+  var y1 = $("gsw").getBoundingClientRect().top; if (y1 !== y0) window.scrollBy(0, y1 - y0);
+}
+function glossReveal(k) { // a link to a term in one of the six that isn't showing: switch to its category first
+  var g = GBY[k]; if (g && state.gview !== "az" && GTABS.indexOf(g.c) >= 0 && glossTab() !== g.c) setGlossTab(g.c);
+}
+function catHtml(c, hit, q) { // one category's chapter title and its cards
+  var list = GLOSS.filter(function (g) { return g.c === c[0] && (!hit || hit(g)); });
+  if (!list.length) return "";
+  var total = GLOSS.filter(function (g) { return g.c === c[0]; }).length;
+  var head = '<h2 class="gh gch" id="gc-' + c[0] + '"' + gcStyle(c[0]) + '><span class="ghi">' + gcSvg(c[0]) + "</span><b>" + esc(c[1]) + "</b><small>" + (q ? list.length + " of " : "") + total + " terms</small><span class=\"gln2\"></span></h2>"; // a chapter title, like a hero page's
+  if (c[0] === "hero") { // grouped by hero, A-Z
+    var by = {}; list.forEach(function (g) { var x = heroEffect(g.k), h = x && x.hero || "Other"; (by[h] = by[h] || []).push(g); });
+    return head + Object.keys(by).sort().map(function (h) { return '<div class="ghh">' + esc(h) + "</div>" + by[h].map(function (g) { return glossCard(g); }).join(""); }).join("");
+  }
+  var lane = c[0] === "map" && !q ? laneMap() : "";
+  var cards = list.filter(function (g) { return !lane || !LANE_KEYS[g.k]; }).map(function (g) { return glossCard(g); }).join("");
+  if (lane) cards = lane + cards;
+  return c[0] === "map" ? '<section class="gband"><div class="gpanel gpm" aria-hidden="true"><i></i></div>' + head + cards + "</section>" : head + cards; // Map & objectives sits on its own raised band
 }
 // ---- glossary diagrams: the Mid Boss growth charts and the minimap reveal map. Each sits on its card in Map & objectives and in its pop-up ----
 // Mid Boss: three small charts, one per number (they're in different units, so never one chart with two scales), sharing one minute.
@@ -4377,15 +4408,16 @@ function laneMap() {
       '<span class="gbody"><span class="gbn"><b>' + esc(name) + '</b><span class="gtc">›</span></span>' + (note ? '<span class="gbt">' + esc(note) + "</span>" : "") + (chips ? '<span class="glcs">' + chips + "</span>" : "") + "</span></button>";
   };
   var G = M.guardian || {}, W = M.walker || {}, B = M.base_guardian || {}, S = M.shrine || {}, P = M.patron || {}, T = M.trooper || {};
+  var waves = T.wave_sec ? (T.squad ? "Squads of " + T.squad + " every " : "A wave every ") + T.wave_sec + "s" + (T.wave_late_sec ? ", " + T.wave_late_sec + "s from " + T.wave_late_min + " min" : "") + (T.wave_very_late_sec ? ", " + T.wave_very_late_sec + "s from " + T.wave_very_late_min : "") : "";
   return '<div class="glmap"><p class="glin">Down each lane to the enemy Patron. Tap any step for the details.</p>' +
-    step("troopers", "Troopers", "Your wave leads the push", chip(f(T.health), "health"), { wave: true }) +
+    step("troopers", "Troopers", waves, chip(f(T.health), "health"), { wave: true }) +
     '<div class="gls">In each lane</div>' +
-    step("guardian", "Guardian", "The first defence", chip(f(G.health), "health") + chip(f(G.souls), "souls"), { bd: true }) +
+    step("guardian", "Guardian", G.dps_vs_heroes ? "Hits heroes for " + f(G.dps_vs_heroes) + " damage a second" : "", chip(f(G.health), "health") + chip(f(G.souls), "souls"), { bd: true }) +
     step("walker", "Walker", "Rockets, a laser and a stomp", chip(f(W.health), "health") + chip(f(W.souls), "souls"), { bd: true }) +
     '<div class="gls gate">The enemy base</div>' +
-    step("base-guardian", "Base Guardians", "Guard the base entrance", chip(f(B.health), "health each") + chip(f(B.souls), "souls"), { bd: true, n: 2 }) +
-    step("shrine", "Shrines", "Open once Base Guardians fall", chip(f(S.souls), "souls"), { n: 2 }) +
-    step("patron", "Patron", "Destroy it to win", P.health ? chip(f(P.health) + (P.phase2_health ? " + " + f(P.phase2_health) : ""), "health, two phases") : "", { bd: true }) +
+    step("base-guardian", "Base Guardians", "Destroy one pair to open the Shrines", chip(f(B.health), "health each") + chip(f(B.souls), "souls"), { bd: true, n: 2 }) +
+    step("shrine", "Shrines", "Open once any pair of Base Guardians falls; hit them from their platform", chip(f(S.souls), "souls"), { n: 2 }) +
+    step("patron", "Patron", "Can’t be hurt until both Shrines fall. Destroy it to win", P.health ? chip(f(P.health) + (P.phase2_health ? " + " + f(P.phase2_health) : ""), "health, two phases") : "", { bd: true }) +
     '<button class="glbd" id="g-backdoor" data-g="backdoor"><span class="gbd">' + shield + '</span><span><b>Backdoor protection</b>Marked objectives take much less damage from heroes and heal quickly unless your troopers are nearby.</span><span class="gtc">›</span></button>' +
     "</div>";
 }
@@ -4887,6 +4919,7 @@ function openGlossary(k) {
     if (state.glossFrom.back) hideBack();
   }
   endSearch(); state.tab = "glossary"; state.hero = null; state.from = null; state.gq = ""; setTabsUI("glossary"); renderGlossary();
+  if (k) glossReveal(k);
   var el = k && $("g-" + k);
   if (el) { scrollToEl(el); el.classList.add("pop"); setTimeout(function () { el.classList.remove("pop"); }, 1700); } else window.scrollTo(0, 0);
 }
@@ -5461,7 +5494,7 @@ $("main").addEventListener("click", function (e) {
   var fsb = e.target.closest ? e.target.closest("[data-fs]") : null;
   if (fsb) { userForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
-  if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { var fromCard = gl.closest(".gt"), fromY = window.pageYOffset || 0; EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); if (fromCard && fromCard !== t0) showBackGloss(fromCard.id.slice(2), fromY); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
+  if (gl) { if (state.tab === "glossary") { glossReveal(gl.getAttribute("data-g")); var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { var fromCard = gl.closest(".gt"), fromY = window.pageYOffset || 0; EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); if (fromCard && fromCard !== t0) showBackGloss(fromCard.id.slice(2), fromY); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
   var gld = state.tab === "glossary" && e.target.closest ? e.target.closest(".gld[data-g], .glbd[data-g], .gte[data-g]") : null;
   if (gld) { glossSheet(gld.getAttribute("data-g")); return; }
   var gmb = e.target.closest ? e.target.closest(".gmb") : null;
@@ -5469,7 +5502,9 @@ $("main").addEventListener("click", function (e) {
   var gt = state.tab === "glossary" && e.target.closest ? e.target.closest(".gt[id^='g-']") : null;
   if (gt && !(e.target.closest && e.target.closest("a,button,.gviz"))) { glossSheet(gt.id.slice(2)); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
-  if (gc) { var h0 = $("gc-" + gc.getAttribute("data-gc")); if (h0) scrollToEl(h0, true); return; }
+  if (gc) { var gck = gc.getAttribute("data-gc"); if (GTABS.indexOf(gck) >= 0 && state.gview !== "az") { setGlossTab(gck); var sw = $("gsw"); if (sw) scrollToEl(sw, true); return; } var h0 = $("gc-" + gck); if (h0) scrollToEl(h0, true); return; }
+  var gtb = e.target.closest ? e.target.closest("[data-gt]") : null;
+  if (gtb) { setGlossTab(gtb.getAttribute("data-gt")); return; }
   var gv = e.target.closest ? e.target.closest("[data-gv]") : null;
   if (gv) { setGlossView(gv.getAttribute("data-gv")); return; }
   var gL = e.target.closest ? e.target.closest("[data-gl]") : null;

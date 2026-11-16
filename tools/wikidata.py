@@ -289,6 +289,11 @@ def mechanics(repo):
                       "trooper_instant_ratio": c("citadel_trooper_instant_gold_ratio_laning"), "comeback_redirect": c("citadel_comeback_redirect_fraction"),
                       "tick_start_sec": c("citadel_tick_gold_start_time")}
     out["mid_boss"].update({"souls": c("citadel_super_neutral_gold_reward"), "souls_per_min": c("citadel_super_neutral_gold_reward_bonus_per_minute")})
+    # trooper waves: the first one, then the gap between waves as the match goes on, and how many troopers come in a squad
+    out["trooper"].update({"wave_first_sec": c("citadel_trooper_spawn_initial"), "wave_sec": c("citadel_trooper_spawn_interval_early"),
+                           "wave_late_sec": c("citadel_trooper_spawn_interval_late"), "wave_late_min": c("citadel_trooper_spawn_interval_late_time"),
+                           "wave_very_late_sec": c("citadel_trooper_spawn_interval_very_late"), "wave_very_late_min": c("citadel_trooper_spawn_interval_very_late_time"),
+                           "squad": c("citadel_trooper_squad_size")})
     # walker attacks and trooper types
     w = (n.get("npc_boss_tier2") or {}).get("BoundAbilities") or {}
     ap = lambda slot, k: num(w, slot, "AbilityProperties", k)
