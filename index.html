@@ -737,7 +737,9 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gbook{flex:none;width:96px;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,rgba(90,70,150,.85),rgba(39,31,64,.85));color:#efdcae;border-right:1px solid rgba(162,131,240,.25)}.gbook svg{width:44px;height:44px}
 .gcm{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px 14px 22px 16px}
 .gcm .gtitle{font-size:32px}
-.gseg{display:flex;justify-content:center;margin-top:14px}
+/* the home page: a soft purple glow from the top and a faint warm one from the bottom right, fixed behind the hero grid */
+body.home{background:transparent}
+body.home::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 55% at 50% -5%,rgba(140,105,230,.17),transparent 70%),radial-gradient(90% 50% at 105% 105%,rgba(230,170,90,.08),transparent 70%),radial-gradient(70% 45% at -10% 70%,rgba(70,160,190,.06),transparent 70%)}
 .gpanel{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:0;bottom:0;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.42))}
 .gpanel i{position:absolute;inset:0;clip-path:polygon(0 0,100% 24px,100% 100%,0 calc(100% - 24px))}
 .gjump{display:flex;flex-wrap:wrap;gap:8px 9px;margin-top:2px;padding:2px 0 4px}
@@ -832,7 +834,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gband.gpur .gt{background:#1d1828;border-color:rgba(255,255,255,.09);box-shadow:0 4px 10px rgba(0,0,0,.28)}
 .gband.gpur .gt::before,.gband.gpur .gt::after{display:none}
 .gsw{position:relative}
-.gwash{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw);right:calc(50% - 50vw);top:-36px;clip-path:polygon(0 0,100% 24px,100% 100%,0 100%);height:min(900px,100%);background:radial-gradient(90% 55% at 50% 0,rgba(var(--gcr),.2),transparent 70%),linear-gradient(to bottom,rgba(var(--gcr),.09),transparent 80%)}
+.gwash{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw);right:calc(50% - 50vw);top:-64px;clip-path:polygon(0 0,100% 24px,100% 100%,0 100%);height:min(900px,100%);background:radial-gradient(90% 55% at 50% 0,rgba(var(--gcr),.2),transparent 70%),linear-gradient(to bottom,rgba(var(--gcr),.09),transparent 80%)}
 .gband.gsl{margin-top:56px;margin-bottom:22px;padding-bottom:62px}
 .gband.gsl .gpanel i{background:linear-gradient(to bottom,#2a2d35 0,#24262d 140px,#1f2026 45%,#1a1a1f 100%)}
 .gband.gsl .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent 80%),#1c1d22;box-shadow:0 8px 18px rgba(0,0,0,.45)}
@@ -4316,20 +4318,13 @@ function gChev(k) { // hero effects: a gold chevron after the name opens the abi
 function glossList() {
   var q = (state.gq || "").toLowerCase().trim(), html = "", n = 0;
   var hit = function (g) { return !q || (g.t + " " + g.a.join(" ") + " " + g.d).toLowerCase().indexOf(q) >= 0; };
-  if (state.gview === "az") { // one list, A to Z, under letter headings
-    var by = {};
-    GLOSS.filter(hit).slice().sort(function (a, b) { return a.t.localeCompare(b.t); }).forEach(function (g) { var L = g.t.charAt(0).toUpperCase(); (by[L] = by[L] || []).push(g); n++; });
-    html = Object.keys(by).sort().map(function (L) { return '<h2 class="gh gla" id="gl-' + L + '">' + L + "</h2>" + by[L].map(function (g) { return glossCard(g, true); }).join(""); }).join("");
-    return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
-  }
-  // the six mechanics categories share one section that shows a single category at a time; Map & objectives, Economy and Hero effects follow in full
   // Terms (the chooser) on a raised purple band, the lane on a bronze one, the timeline in its own card, Economy as it is, Hero effects raised
   var C = function (k) { return GCATS.filter(function (c) { return c[0] === k; })[0]; };
   var band = function (cls, id, inner) { return '<section class="gband ' + cls + '"' + (id ? ' id="' + id + '"' : "") + '><div class="gpanel" aria-hidden="true"><i></i></div>' + inner + "</section>"; };
   var chap = function (k, name, sub, id) { return '<h2 class="gh gch"' + (id ? ' id="' + id + '"' : "") + gcStyle(k) + '><span class="ghi">' + gcSvg(k) + "</span><b>" + esc(name) + "</b>" + (sub ? "<small>" + esc(sub) + "</small>" : "") + '<span class="gln2"></span></h2>'; };
   html = band("gpur", "", gswHtml()) +
     band("gbr", "gs-lane", chap("map", "Lane layout", "") + laneMap()) +
-    '<section class="gtsec" id="g-match-timeline"' + gcStyle("map") + ">" + chap("map", "Match timeline", "From the first second to 40 minutes. Tap an event for the details") + timelineHtml() + "</section>" +
+    '<section class="gtsec" id="g-match-timeline"' + gcStyle("map") + ">" + chap("map", "Match timeline", "") + timelineHtml() + "</section>" +
     band("gsl", "", catHtml(C("hero"), hit, q));
   return html;
 }
@@ -4456,21 +4451,10 @@ function laneMap() {
     '<button class="glbd" id="g-backdoor" data-g="backdoor"><span class="gbd">' + shield + '</span><span><b>Backdoor protection</b>Marked objectives take much less damage from heroes and heal quickly unless your troopers are nearby.</span><span class="gtc">›</span></button>' +
     "</div>";
 }
-function glossView() { try { return localStorage.getItem("gview") === "az" ? "az" : "cat"; } catch (e) { return "cat"; } } // remembered on this device
 function renderGlossary() {
-  state.gq = ""; if (!state.gview) state.gview = glossView();
-  var az = state.gview === "az", jump;
-  if (az) { // letter buttons, only for letters that have a term
-    var Ls = {}; GLOSS.forEach(function (g) { Ls[g.t.charAt(0).toUpperCase()] = 1; });
-    jump = '<div class="gaz">' + Object.keys(Ls).sort().map(function (L) { return '<button class="gazl" data-gl="' + L + '">' + L + "</button>"; }).join("") + "</div>";
-  } else jump = '<div class="gjump">' + [["gs-lane", "Lane"], ["g-match-timeline", "Timeline"], ["gc-hero", "Hero effects"]].map(function (j) { return '<button class="gjb g' + j[0].replace(/^g[sc]?-/, "") + '" data-gj="' + j[0] + '">' + j[1] + "</button>"; }).join("") + "</div>"; // jump to each section
-  var seg = '<div class="gview" role="group" aria-label="Glossary view"><button data-gv="cat" aria-pressed="' + !az + '"' + (az ? "" : ' class="on"') + '>Categories</button><button data-gv="az" aria-pressed="' + az + '"' + (az ? ' class="on"' : "") + ">A–Z</button></div>";
+  state.gq = ""; state.gview = "cat";
   var book = '<span class="gbook" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></span>';
-  $("main").innerHTML = '<div class="ghead"><div class="gcard">' + book + '<div class="gcm"><h1 class="gtitle">Glossary</h1>' + (az ? "" : jump) + "</div></div>" + '<div class="gseg">' + seg + "</div>" + (az ? jump : "") + '</div><div id="glist">' + glossList() + "</div>";
-}
-function setGlossView(v) {
-  if (state.gview === v) return; state.gview = v; try { localStorage.setItem("gview", v); } catch (e) {}
-  renderGlossary(); window.scrollTo(0, 0);
+  $("main").innerHTML = '<div class="ghead"><div class="gcard">' + book + '<div class="gcm"><h1 class="gtitle">Glossary</h1></div></div></div><div id="glist">' + glossList() + "</div>";
 }
 // Where a term is used: every hero ability and shop item whose text names it (its name or one of its other names, plurals and -ed/-ing included).
 // Built once from the search index; a hero's own effect only counts that hero's abilities.
@@ -4610,7 +4594,7 @@ function timelineHtml() {
   at(M.mid_boss_first_sec, "mid-boss", "Mid Boss is up");
   ["Small", "Medium", "Large"].forEach(function (nm, i) { var c = camp(i); if (c) at(c.from_sec, "neutral-camps", nm + " neutral camps", c.souls ? f(c.souls) + " souls to start, growing every minute" : ""); });
   at(M.crate_first_sec, "golden-statues", "Golden Statues appear");
-  var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "golden-statues", "Statues drop bigger buffs", "Level 2 pickups"); if (lv[2]) at(lv[2] * 60, "golden-statues", "Statues drop their biggest buffs", "Level 3 pickups");
+  var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "golden-statues", "Statues level 2 pickups"); if (lv[2]) at(lv[2] * 60, "golden-statues", "Statues level 3 pickups");
   var pk = state.pw && state.pw.powerups && Object.keys(state.pw.powerups)[0], pd = pk && state.pw.powerups[pk];
   if (pd) { at(pd.from_min * 60, "map-buffs", "Map buffs start growing"); at(pd.to_min * 60, "map-buffs", "Map buffs at full strength", ""); }
   if (M.patron && M.patron.growth1_from_min) at(M.patron.growth1_from_min * 60, "patron", "Patron starts gaining health");
@@ -5065,7 +5049,7 @@ function glossBack() { // back to the page the glossary was opened from (Abrams,
   if (f.back) { if (f.back.search != null) showBackSearch(f.back.search); else showBack(f.back.hero, f.back.y); }
 }
 function topPill() { // glossary: a round ↑ on the right once you've scrolled past the category cards, and "‹ Back to Abrams" when you came from somewhere
-  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gjump, #main .gaz"), inG = state.tab === "glossary" && !searchOn();
+  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gcard"), inG = state.tab === "glossary" && !searchOn();
   var inN = state.tab === "news" && !searchOn(), nt = inN && document.querySelector("#main .gtitle");
   var inH = state.tab === "heroes" && !!state.hero && !searchOn(), hh = inH && document.querySelector("#main .hero-h"); // hero pages: once the header is a screen behind you
   var show = (inH && $("backpill").hidden && !!hh && hh.getBoundingClientRect().bottom < -400) || (inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0) || (inN && $("backpill").hidden && !!nt && nt.getBoundingClientRect().bottom < -300); // What's New: once you've scrolled a screen or so down
@@ -5076,7 +5060,7 @@ function topPill() { // glossary: a round ↑ on the right once you've scrolled 
   if (gshow) gb.textContent = "‹ Back to " + nm;
   if (gshow !== !gb.hidden) { gb.hidden = !gshow; if (gshow) { gb.classList.remove("in"); void gb.offsetWidth; gb.classList.add("in"); } }
 }
-new MutationObserver(function () { topPill(); }).observe($("main"), { childList: true });
+new MutationObserver(function () { topPill(); document.body.classList.toggle("home", state.tab === "heroes" && !state.hero); }).observe($("main"), { childList: true }); // home: the hero grid gets a soft glow behind it
 $("glbpill").onclick = function () { $("glbpill").hidden = true; slideBack(glossBack); };
 window.addEventListener("scroll", topPill, { passive: true });
 $("toppill").onclick = function () { if (state.tab === "heroes" && state.hero) { JLOCK = true; JTO = ""; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar(); } easeScroll(0); }; // no ability lit while it glides up past them
@@ -5537,14 +5521,9 @@ $("main").addEventListener("click", function (e) {
   if (gt && !(e.target.closest && e.target.closest("a,button,.gviz"))) { glossSheet(gt.id.slice(2)); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
   if (gc) { var gck = gc.getAttribute("data-gc"); if (GTABS.indexOf(gck) >= 0 && state.gview !== "az") { setGlossTab(gck); var sw = $("gsw"); if (sw) scrollToEl(sw, true); return; } var h0 = $("gc-" + gck); if (h0) scrollToEl(h0, true); return; }
-  var gjb = e.target.closest ? e.target.closest("[data-gj]") : null;
-  if (gjb) { var gjt = $(gjb.getAttribute("data-gj")); if (gjt) scrollToEl(gjt, true); return; }
   var gtb = e.target.closest ? e.target.closest("[data-gt]") : null;
   if (gtb) { setGlossTab(gtb.getAttribute("data-gt")); return; }
-  var gv = e.target.closest ? e.target.closest("[data-gv]") : null;
-  if (gv) { setGlossView(gv.getAttribute("data-gv")); return; }
-  var gL = e.target.closest ? e.target.closest("[data-gl]") : null;
-  if (gL) { var h1 = $("gl-" + gL.getAttribute("data-gl")); if (h1) scrollToEl(h1, true); return; }
+
   if (tapTip(e)) return;
   var sr = e.target.closest ? e.target.closest(".sr[data-kind]") : null;
   if (sr) { var sk = sr.getAttribute("data-kind"); if (sk === "item" || sk === "term") openResult(sr); else slideForward(function () { openResult(sr); }); return; } // items and terms open as a sheet; heroes and abilities are a new page
