@@ -787,6 +787,19 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .rvl li{display:flex;gap:9px;align-items:flex-start}.rvl li > span:last-child{flex:1;min-width:0}.rvl b{display:block;color:#bdb3c6;font-size:12px;letter-spacing:.04em}.rvl li.on b{color:#f08a80}
 .rvn{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid #8f8496;color:#cfc6d8;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
 .rvl li.on .rvn{border-color:#ec5b4e;background:#4a1f1c;color:#fff}
+/* the match timeline track: minutes down the left, a line through a dot at each stop, the events beside it */
+.gtkw{position:relative;padding:4px 0}
+.gtkw::before{content:"";position:absolute;left:51px;top:18px;bottom:18px;width:2px;margin-left:-1px;background:linear-gradient(to bottom,#d2a679,rgba(210,166,121,.35))}
+.gtks{position:relative;display:grid;grid-template-columns:44px 14px 1fr;column-gap:0;align-items:start}
+.gtkt{padding-top:12px;font-size:13px;font-weight:700;color:#e6c79f;font-variant-numeric:tabular-nums;text-align:right;padding-right:6px}
+.gtkd{position:relative;z-index:1;width:12px;height:12px;margin:15px 0 0 1px;border-radius:50%;background:#231d18;box-shadow:0 0 0 2px #d2a679}
+.gtke{display:flex;flex-direction:column;gap:6px;padding-left:10px;min-width:0}
+.gte{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 6px 6px;border-radius:10px;background:rgba(210,166,121,.08);border:1px solid rgba(210,166,121,.2);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.gtkp{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(210,166,121,.14);color:#d2a679;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.gtkp svg{width:17px;height:17px}.gtkp.ph img{width:100%;height:100%;object-fit:cover}
+.gtkx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;white-space:normal}.gtkx b{font-size:14px;font-weight:600}.gtkx i{font-style:normal;font-size:12px;color:#bfa78c}
+.gte .gtc{color:#d2a679}
+.gsft.gtkf{margin:12px 0 0 2px}
 /* Map & objectives: its own raised band, a dusky bronze, tilted the other way (high on the right), with each card lifted off it */
 .gband{position:relative;isolation:isolate;margin:56px 0 44px;padding:30px 0 34px}
 .gband .gpanel{top:0;bottom:0}
@@ -4073,7 +4086,7 @@ var GLOSS = [
   { k: "sprint", c: "move", t: "Sprint", a: ["sprint", "sprint speed"], d: "Extra move speed that kicks in after about 5 seconds out of combat. It ends when you enter combat or aim down sights." },
   { k: "slide", c: "move", t: "Slide", a: ["slide", "slides", "sliding"], d: "Crouching while moving fast, or on a slope, turns into a slide." },
   // map & objectives (numbers from the game data, shown in the pop-up)
-  { k: "match-timeline", c: "map", t: "Match timeline", a: ["timeline", "match timeline"], d: "When things happen in a match. Tap an event to read about it." },
+  { k: "match-timeline", c: "map", t: "Match timeline", a: ["timeline", "match timeline"], d: "When things happen in a match, from the first second to 40 minutes. Tap an event to read about it." },
   { k: "lane-layout", c: "map", t: "Lane layout", a: ["lane", "lanes", "lane layout"], d: "What stands in each lane, in the order you fight through it. Tap a step to read about it." },
   { k: "troopers", c: "map", t: "Troopers", a: ["trooper", "troopers", "minions", "creeps"], d: "Waves of soldiers that march down each lane for your team. Killing enemy troopers earns souls. Your own troopers matter for pushing: a Guardian or Walker with no enemy troopers near it is protected (see [[backdoor|Backdoor protection]])." },
   { k: "backdoor", c: "map", t: "Backdoor protection", a: ["backdoor", "backdoor protection", "backdooring"], d: "Lane objectives defend themselves when no enemy troopers are nearby: they take much less damage from heroes and heal quickly. Push with a trooper wave to take them down." },
@@ -4349,7 +4362,7 @@ function revealMap() {
     [4, true, "Very close, just under light melee range, even facing away"], [5, true, "Enemy troopers or structures targeting or shooting you"]];
   return '<div class="gviz rv">' + svg + '<ol class="rvl">' + L.map(function (r) { return '<li class="' + (r[1] ? "on" : "") + '"><span class="rvn">' + r[0] + "</span><span><b>" + (r[1] ? "Reveals you" : "Doesn’t") + "</b>" + esc(r[2]) + "</span></li>"; }).join("") + "</ol></div>";
 }
-var GVIS = { "mid-boss": mbChart, "minimap-reveal": revealMap };
+var GVIS = { "mid-boss": mbChart, "minimap-reveal": revealMap, "match-timeline": timelineHtml };
 // Map & objectives opens with a diagram of a lane: the steps you fight through, from your wave to the enemy Patron. Each step is its term
 // (tap for the pop-up, and links elsewhere on the page land on it), so these terms don't get cards of their own in the category view
 var LANE_KEYS = { "lane-layout": 1, troopers: 1, guardian: 1, walker: 1, "base-guardian": 1, shrine: 1, patron: 1, backdoor: 1 };
@@ -4522,21 +4535,34 @@ function laneHtml() { // the order you fight through a lane, top to bottom
     step("patron", "Patron", M.patron && M.patron.health ? "Two phases · " + f(M.patron.health) + " health each" : "") + "</div>" +
     '<div class="gsft glf">With no enemy troopers nearby, the Guardian, Walker, Base Guardians and Patron are shielded by <span class="gl" data-g="backdoor">Backdoor protection</span>.</div>';
 }
-function timelineHtml() { // every event from the game data; each opens its term
-  var M = state.mc || {}, C = (state.pw && state.pw.crates) || {}, ev = [];
-  var at = function (sec, label, k, note) { if (sec != null) ev.push({ s: sec, l: label, k: k, n: note || "" }); };
-  at(M.mid_boss_first_sec, "Mid Boss is up", "mid-boss");
-  (M.camps || []).forEach(function (c) { at(c.from_sec, ["Small", "Medium", "Large"][c.tier - 1] + " neutral camps", "neutral-camps"); });
-  at(M.crate_first_sec, "Golden Statues appear", "golden-statues");
-  var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "Statues drop level 2 pickups", "golden-statues"); if (lv[2]) at(lv[2] * 60, "Statues drop level 3 pickups", "golden-statues");
+// Match timeline: a vertical track from 0:00 down to 40:00. Each event sits beside its minute with its picture or icon and a line about it;
+// events at the same minute share a stop, and the gap between stops grows with the time between them, so the busy opening reads as busy.
+function timelineHtml() {
+  var M = state.mc || {}, C = (state.pw && state.pw.crates) || {}, ev = [], f = function (n) { return Number(n).toLocaleString(); };
+  var at = function (sec, k, label, note) { if (sec != null) ev.push({ s: sec, k: k, l: label, n: note || "" }); };
+  var camp = function (i) { return (M.camps || [])[i] || null; };
+  at(M.mid_boss_first_sec, "mid-boss", "Mid Boss is up", "Only fights heroes inside its pit");
+  ["Small", "Medium", "Large"].forEach(function (nm, i) { var c = camp(i); if (c) at(c.from_sec, "neutral-camps", nm + " neutral camps", c.souls ? f(c.souls) + " souls to start, growing every minute" : ""); });
+  at(M.crate_first_sec, "golden-statues", "Golden Statues appear", "Break them for permanent buffs");
+  var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "golden-statues", "Statues drop bigger buffs", "Level 2 pickups"); if (lv[2]) at(lv[2] * 60, "golden-statues", "Statues drop their biggest buffs", "Level 3 pickups");
   var pk = state.pw && state.pw.powerups && Object.keys(state.pw.powerups)[0], pd = pk && state.pw.powerups[pk];
-  if (pd) { at(pd.from_min * 60, "Map buffs start getting stronger", "map-buffs"); at(pd.to_min * 60, "Map buffs at full strength", "map-buffs"); }
-  if (M.patron && M.patron.growth1_from_min) at(M.patron.growth1_from_min * 60, "Patron starts gaining health", "patron");
+  if (pd) { at(pd.from_min * 60, "map-buffs", "Map buffs start growing", "Each one a little stronger than the last"); at(pd.to_min * 60, "map-buffs", "Map buffs at full strength", ""); }
+  if (M.patron && M.patron.growth1_from_min) at(M.patron.growth1_from_min * 60, "patron", "Patron starts gaining health", M.patron.growth1 ? "+" + f(M.patron.growth1) + " health a minute" : "");
+  if (!ev.length) return "";
   ev.sort(function (a, b) { return a.s - b.s; });
+  var stops = []; ev.forEach(function (e) { var last = stops[stops.length - 1]; if (last && last.s === e.s) last.ev.push(e); else stops.push({ s: e.s, ev: [e] }); });
   var mm = function (s) { return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); };
-  var rows = ev.map(function (e) { return '<button class="gtl"' + (GBY[e.k] ? ' data-g="' + e.k + '"' : "") + '><span class="gtt">' + mm(e.s) + '</span><span class="gtx">' + esc(e.l) + "</span>" + (GBY[e.k] ? '<span class="gtc">›</span>' : "") + "</button>"; }).join("");
-  var rift = M.rift_interval_sec ? '<div class="gsft">The Unstable Rift also opens about every ' + Math.round(M.rift_interval_sec / 60) + " minutes.</div>" : "";
-  return rows ? '<div class="gtlw">' + rows + "</div>" + rift : "";
+  var pic = function (k) {
+    if (GIMG[k]) return '<span class="gtkp ph"><img alt="" src="' + GIMG[k] + '" onerror="this.remove()"></span>';
+    return '<span class="gtkp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (GSVG[k] || GCI.map) + "</svg></span>";
+  };
+  var html = stops.map(function (st, i) {
+    var gap = i ? Math.round(10 + 13 * Math.sqrt((st.s - stops[i - 1].s) / 60)) : 0; // more time, a longer stretch of track
+    return '<div class="gtks" style="margin-top:' + gap + 'px"><span class="gtkt">' + mm(st.s) + '</span><span class="gtkd"></span><div class="gtke">' +
+      st.ev.map(function (e) { return '<button class="gte" data-g="' + e.k + '">' + pic(e.k) + '<span class="gtkx"><b>' + esc(e.l) + "</b>" + (e.n ? "<i>" + esc(e.n) + "</i>" : "") + '</span><span class="gtc">›</span></button>'; }).join("") + "</div></div>";
+  }).join("");
+  var rift = M.rift_interval_sec ? '<div class="gsft gtkf">The Unstable Rift also opens about every ' + Math.round(M.rift_interval_sec / 60) + " minutes.</div>" : "";
+  return '<div class="gviz gtk"><div class="gtkw">' + html + "</div>" + rift + "</div>";
 }
 function gameText(g) { // the game's own name for the effect and the message it shows when the effect stops you
   var t = state.mc && state.mc.status_text && state.mc.status_text[g.k]; if (!t) return "";
@@ -5436,7 +5462,7 @@ $("main").addEventListener("click", function (e) {
   if (fsb) { userForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
   if (gl) { if (state.tab === "glossary") { var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { var fromCard = gl.closest(".gt"), fromY = window.pageYOffset || 0; EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); if (fromCard && fromCard !== t0) showBackGloss(fromCard.id.slice(2), fromY); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
-  var gld = state.tab === "glossary" && e.target.closest ? e.target.closest(".gld[data-g], .glbd[data-g]") : null;
+  var gld = state.tab === "glossary" && e.target.closest ? e.target.closest(".gld[data-g], .glbd[data-g], .gte[data-g]") : null;
   if (gld) { glossSheet(gld.getAttribute("data-g")); return; }
   var gmb = e.target.closest ? e.target.closest(".gmb") : null;
   if (gmb) { var gtc = gmb.closest(".gt"), op = !gtc.classList.contains("open"); gtc.classList.toggle("open", op); gmb.textContent = op ? "Show less" : "Show more"; gmb.setAttribute("aria-expanded", op); return; }
@@ -5608,7 +5634,7 @@ $("sheetin").addEventListener("click", function (e) {
   if (sa) { sa.parentNode.classList.remove("clip"); sa.remove(); return; }
   var gs = e.target.closest ? e.target.closest("[data-shc]") : null;
   if (gs) { openSource(gs); return; }
-  var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g], .gtl[data-g], .gln[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
+  var gl = e.target.closest ? e.target.closest(".gl[data-g], .grel[data-g], .gtl[data-g], .gln[data-g], .gte[data-g]") : null; if (gl) { glossSheet(gl.getAttribute("data-g")); return; }
   var b = e.target.closest ? e.target.closest("[data-item]") : null; if (b) itemSheet(b.getAttribute("data-item"));
 });
 $("sheet").onclick = function (e) { if (e.target === $("sheet")) sinkSheet(); };
