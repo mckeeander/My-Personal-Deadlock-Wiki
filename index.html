@@ -474,14 +474,25 @@ html.lock,html.lock body{overflow:hidden}
 .backpill[hidden]{display:none}
 #toppill{left:auto;right:max(22px,calc((100% - 600px)/2 + 22px));transform:none;width:41px;height:41px;padding:0;justify-content:center;border-radius:50%}
 #toppill.in{animation:topin .22s ease-out}
-/* the glossary's Sections button, bottom left, and the menu it opens above itself */
+/* the glossary's Sections button, bottom left, and the menu that grows out of it: each section has its own icon and colour */
 .secnav{position:fixed;z-index:8;left:max(22px,calc((100% - 600px)/2 + 22px));bottom:calc(env(safe-area-inset-bottom,0) + 82px)}.secnav[hidden]{display:none}
 .secpill{position:static;transform:none;display:flex;align-items:center;gap:7px;padding:10px 15px 10px 13px;font-size:14px;font-weight:600}
 .secpill.in{animation:topin .22s ease-out}
-.secmenu{position:absolute;left:0;bottom:calc(100% + 8px);min-width:190px;padding:6px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);box-shadow:0 10px 28px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:2px}.secmenu[hidden]{display:none}
-.secmenu button{background:none;border:0;border-radius:9px;padding:10px 12px;font:inherit;font-size:14.5px;color:var(--fg);text-align:left}
-.secmenu button.on{background:rgba(230,180,90,.12);color:var(--gold)}
+.secpill svg path{transition:transform .22s ease,opacity .18s ease;transform-origin:12px 12px}
+.secnav.open .secpill svg .l1{transform:translateY(5px) rotate(45deg)}.secnav.open .secpill svg .l2{opacity:0}.secnav.open .secpill svg .l3{transform:translate(1px,-5px) rotate(-45deg) scaleX(1.6)}
+.secnav.compact .spl{display:none}.secnav.compact .secpill{padding:11px;border-radius:50%}
+.secmenu{position:absolute;left:0;bottom:calc(100% + 10px);min-width:200px;padding:6px;border-radius:16px;background:var(--panel2);border:1px solid var(--line);box-shadow:0 12px 30px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:2px;
+  transform-origin:18px 100%;opacity:0;visibility:hidden;transform:translateY(10px) scale(.92);transition:opacity .16s ease,transform .22s cubic-bezier(.2,.8,.2,1),visibility 0s linear .22s}
+.secnav.open .secmenu{opacity:1;visibility:visible;transform:none;transition:opacity .16s ease,transform .24s cubic-bezier(.2,.9,.25,1.15),visibility 0s}
+.secmenu button{display:flex;align-items:center;gap:10px;background:none;border:0;border-radius:11px;padding:8px 12px 8px 8px;font:inherit;font-size:14.5px;color:var(--fg);text-align:left;
+  opacity:0;transform:translateY(6px);transition:opacity .15s ease,transform .2s ease,background-color .15s ease}
+.secnav.open .secmenu button{opacity:1;transform:none}
+.secnav.open .secmenu button:nth-child(1){transition-delay:.02s}.secnav.open .secmenu button:nth-child(2){transition-delay:.05s}.secnav.open .secmenu button:nth-child(3){transition-delay:.08s}.secnav.open .secmenu button:nth-child(4){transition-delay:.11s}
+.smi{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--sc);background:color-mix(in srgb,var(--sc) 16%,transparent)}.smi svg{width:17px;height:17px}
+.secmenu button.on{background:color-mix(in srgb,var(--sc) 14%,transparent);color:var(--sc)}
 .secmenu button:active{background:rgba(255,255,255,.06)}
+@media (prefers-reduced-motion:reduce){.secmenu,.secmenu button,.secpill svg path{transition:none!important}}
+/* the glossary's Sections button, bottom left, and the menu it opens above itself */
 body.jump #toppill{bottom:calc(env(safe-area-inset-bottom,0px) + 86.5px)} /* on hero pages: level with the ability bar */
 @keyframes topin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 #glbpill{padding:10px 18px}
@@ -739,12 +750,23 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gmb{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;font-weight:600;color:var(--gc,var(--gold))}
 /* the top of the glossary sits on a raised purple band like a hero page's Abilities: it runs past both screen edges, its bottom edge tilts
    down to the right, and a shadow lifts it off the page. The band is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilt */
-.ghead{position:relative;margin:4px 0 58px;padding:6px 0 0}
+.ghead{position:relative;margin:4px 0 40px;padding:6px 0 0}
 /* the title card, like a hero page's: a book where the portrait would be, the title and view switch, then the jump links */
 .gcard{position:relative;overflow:hidden;display:flex;align-items:stretch;border:1px solid rgba(162,131,240,.28);border-radius:16px;background:radial-gradient(90% 150% at 22% 40%,#a283f05c,#a283f01f 45%,transparent 80%),radial-gradient(85% 140% at 95% 5%,#e6b45a40,#e6b45a12 45%,transparent 80%),radial-gradient(95% 150% at 62% 120%,#3fc9b040,#3fc9b010 45%,transparent 82%),var(--panel);box-shadow:0 10px 24px rgba(0,0,0,.3)}
 .gbook{flex:none;width:96px;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,rgba(90,70,150,.85),rgba(39,31,64,.85));color:#efdcae;border-right:1px solid rgba(162,131,240,.25)}.gbook svg{width:44px;height:44px}
 .gcm{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px 14px 22px 16px}
 .gcm .gtitle{font-size:32px}
+/* the glossary's title: a banner with soft colour blobs, the name centred over a short gold bar on a faint line that shows past it on both sides */
+.gban{position:relative;overflow:hidden;text-align:center;padding:28px 16px 26px;border-radius:18px;border:1px solid rgba(162,131,240,.28);background:radial-gradient(90% 150% at 22% 40%,#a283f05c,#a283f01f 45%,transparent 80%),radial-gradient(85% 140% at 95% 5%,#e6b45a40,#e6b45a12 45%,transparent 80%),radial-gradient(95% 150% at 62% 120%,#3fc9b040,#3fc9b010 45%,transparent 82%),var(--panel);box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.gban .gtitle{margin:0;font-family:var(--disp);font-size:36px;letter-spacing:.03em}
+.gbar{display:block;position:relative;width:150px;height:1px;margin:14px auto 0;background:rgba(241,233,216,.28)}.gbar::after{content:"";position:absolute;left:50%;width:66px;margin-left:-33px;top:-2px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
+/* Terms of the day: stuck-on labels in each term's category colour, tilted like a hero card's tags */
+.gtod{margin-top:18px;text-align:center}
+.gtodl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.gtodt{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 10px;margin-top:12px}
+.gtodb{display:inline-block;font:inherit;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:11.5px;padding:5px 10px;border:0;border-radius:2px;box-shadow:2px 3px 0 rgba(0,0,0,.55);cursor:pointer;
+  background:linear-gradient(rgba(var(--gcr),.3),rgba(var(--gcr),.3)),#1a1622;color:color-mix(in srgb,var(--gc) 55%,#fff)}
+.gtodb:nth-child(3n+1){transform:rotate(-2deg)}.gtodb:nth-child(3n+2){transform:rotate(1.5deg)}.gtodb:nth-child(3n){transform:rotate(-1deg)}
 /* every page: a soft purple glow from the top and faint warm and teal ones, fixed behind everything */
 body{background:transparent}
 body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 55% at 50% -5%,rgba(140,105,230,.17),transparent 70%),radial-gradient(90% 50% at 105% 105%,rgba(230,170,90,.08),transparent 70%),radial-gradient(70% 45% at -10% 70%,rgba(70,160,190,.06),transparent 70%)}
@@ -838,11 +860,11 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 /* raised bands, like a hero page's Abilities and Popular items: they run past both screen edges, tilt, and cast a shadow. Purple for the terms,
    bronze for the lane (tilted the other way), slate for Hero effects */
 .gband{position:relative;isolation:isolate;margin:40px 0 44px;padding:36px 0 40px}
-.gband.gpur{margin-top:10px;padding-top:64px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
+.gband.gpur{margin-top:10px;padding-top:50px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
 .gband.gpur .gt{background:#1d1828;border-color:rgba(255,255,255,.09);box-shadow:0 4px 10px rgba(0,0,0,.28)}
 .gband.gpur .gt::before,.gband.gpur .gt::after{display:none}
 .gsw{position:relative}
-.gwash{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw);right:calc(50% - 50vw);top:-64px;clip-path:polygon(0 0,100% 24px,100% 100%,0 100%);height:min(900px,100%);background:radial-gradient(90% 55% at 50% 0,rgba(var(--gcr),.2),transparent 70%),linear-gradient(to bottom,rgba(var(--gcr),.09),transparent 80%)}
+.gwash{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw);right:calc(50% - 50vw);top:-50px;clip-path:polygon(0 0,100% 24px,100% 100%,0 100%);height:min(900px,100%);background:radial-gradient(90% 55% at 50% 0,rgba(var(--gcr),.2),transparent 70%),linear-gradient(to bottom,rgba(var(--gcr),.09),transparent 80%)}
 .gband.gsl{margin-top:56px;margin-bottom:22px;padding-bottom:62px}
 .gband.gsl .gpanel i{background:linear-gradient(to bottom,#2a2d35 0,#24262d 140px,#1f2026 45%,#1a1a1f 100%)}
 .gband.gsl .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent 80%),#1c1d22;box-shadow:0 8px 18px rgba(0,0,0,.45)}
@@ -1052,7 +1074,7 @@ body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
 <button class="backpill" id="backpill" hidden></button>
 <button class="backpill" id="srchpill" hidden></button>
 <button class="backpill" id="glbpill" hidden></button>
-<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" hidden role="menu"><button role="menuitem" data-sec="gsw">Terms</button><button role="menuitem" data-sec="gs-lane">Lane layout</button><button role="menuitem" data-sec="g-match-timeline">Match timeline</button><button role="menuitem" data-sec="gc-hero">Hero effects</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Sections</button></div>
+<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#e9c46a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button><button role="menuitem" data-sec="gc-hero" class="sm-hero" style="--sc:#a9afba"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Hero effects</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path class="l1" d="M4 7h16"/><path class="l2" d="M4 12h16"/><path class="l3" d="M4 17h10"/></svg><span class="spl">Sections</span></button></div>
 <button class="backpill" id="toppill" hidden aria-label="Back to top"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
@@ -4462,8 +4484,17 @@ function laneMap() {
 }
 function renderGlossary() {
   state.gq = ""; state.gview = "cat";
-  var book = '<span class="gbook" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></span>';
-  $("main").innerHTML = '<div class="ghead"><div class="gcard">' + book + '<div class="gcm"><h1 class="gtitle">Glossary</h1></div></div></div><div id="glist">' + glossList() + "</div>";
+  var tod = todTerms(5).map(function (g) { return '<button class="gtodb" data-g="' + g.k + '"' + gcStyle(g.c) + ">" + esc(g.t) + "</button>"; }).join("");
+  $("main").innerHTML = '<div class="ghead"><div class="gban"><h1 class="gtitle">Glossary</h1><span class="gbar" aria-hidden="true"></span></div>' +
+    '<div class="gtod"><div class="gtodl">Terms of the day</div><div class="gtodt">' + tod + "</div></div></div>" + '<div id="glist">' + glossList() + "</div>";
+}
+// Terms of the day: five terms picked from the date, the same all day and different tomorrow, so there's a small set to look over (or edit) each day
+function todTerms(n) {
+  var d = new Date(), seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  var rnd = function () { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+  var pool = GLOSS.filter(function (g) { return g.k !== "lane-layout" && g.k !== "match-timeline"; }).slice();
+  for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)), t = pool[i]; pool[i] = pool[j]; pool[j] = t; }
+  return pool.slice(0, n);
 }
 // Where a term is used: every hero ability and shop item whose text names it (its name or one of its other names, plurals and -ed/-ing included).
 // Built once from the search index; a hero's own effect only counts that hero's abilities.
@@ -5058,14 +5089,16 @@ function glossBack() { // back to the page the glossary was opened from (Abrams,
   if (f.back) { if (f.back.search != null) showBackSearch(f.back.search); else showBack(f.back.hero, f.back.y); }
 }
 function topPill() { // glossary: a round ↑ on the right once you've scrolled past the category cards, and "‹ Back to Abrams" when you came from somewhere
-  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gcard"), inG = state.tab === "glossary" && !searchOn();
+  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gban"), inG = state.tab === "glossary" && !searchOn();
   var inN = state.tab === "news" && !searchOn(), nt = inN && document.querySelector("#main .gtitle");
   var inH = state.tab === "heroes" && !!state.hero && !searchOn(), hh = inH && document.querySelector("#main .hero-h"); // hero pages: once the header is a screen behind you
   var show = (inH && $("backpill").hidden && !!hh && hh.getBoundingClientRect().bottom < -400) || (inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0) || (inN && $("backpill").hidden && !!nt && nt.getBoundingClientRect().bottom < -300); // What's New: once you've scrolled a screen or so down
   if (show !== !tp.hidden) { tp.hidden = !show; if (show) { tp.classList.remove("in"); void tp.offsetWidth; tp.classList.add("in"); } }
   // glossary: a Sections button on the left once the tabs are behind you, opening a menu of the page's sections
-  var sn = $("secnav"), w = inG && document.querySelector("#main .gswt"), sshow = !!w && w.getBoundingClientRect().bottom < 0 && $("backpill").hidden;
+  // glossary: the Sections button sits bottom left the whole time; with a "Back to" pill showing it shrinks to its icon so the two don't collide
+  var sn = $("secnav"), sshow = inG && $("backpill").hidden;
   if (sshow !== !sn.hidden) { sn.hidden = !sshow; if (!sshow) secMenu(false); else { var spl = $("secpill"); spl.classList.remove("in"); void spl.offsetWidth; spl.classList.add("in"); } }
+  sn.classList.toggle("compact", sshow && !gb.hidden);
   var f = inG && state.glossFrom, nm = "";
   if (f) { var h = f.tab === "heroes" && f.hero && state.heroes.filter(function (x) { return x.class_name === f.hero; })[0]; nm = h ? h.name : { heroes: "Heroes", weapon: "Weapon", vitality: "Vitality", spirit: "Spirit" }[f.tab] || "page"; }
   var gshow = !!f && !f.quiet && $("backpill").hidden;
@@ -5075,18 +5108,19 @@ function topPill() { // glossary: a round ↑ on the right once you've scrolled 
 new MutationObserver(function () { topPill(); }).observe($("main"), { childList: true });
 function secMenu(open) {
   var m = $("secmenu"), b = $("secpill"); if (!m) return;
-  if (open) { // mark the section you're in
+  if (open) { // Terms takes the chosen tab's colour; mark the section you're in
+    var tc = $("secmenu").querySelector(".sm-terms"); if (tc) tc.style.setProperty("--sc", GCOL[glossTab()] || "#e6b45a");
     var cur = null; Array.prototype.forEach.call(m.querySelectorAll("[data-sec]"), function (x) { var t = $(x.getAttribute("data-sec")); if (t && t.getBoundingClientRect().top < window.innerHeight * .4) cur = x; });
     Array.prototype.forEach.call(m.querySelectorAll("[data-sec]"), function (x) { x.classList.toggle("on", x === cur); });
   }
-  m.hidden = !open; b.setAttribute("aria-expanded", open ? "true" : "false");
+  $("secnav").classList.toggle("open", !!open); b.setAttribute("aria-expanded", open ? "true" : "false");
 }
-$("secpill").onclick = function (e) { e.stopPropagation(); secMenu($("secmenu").hidden); };
+$("secpill").onclick = function (e) { e.stopPropagation(); secMenu(!$("secnav").classList.contains("open")); };
 $("secmenu").onclick = function (e) {
   var x = e.target.closest("[data-sec]"); if (!x) return; e.stopPropagation(); secMenu(false);
   var t = $(x.getAttribute("data-sec")); if (t) scrollToEl(t, true);
 };
-document.addEventListener("click", function (e) { if (!$("secmenu").hidden && !e.target.closest("#secnav")) secMenu(false); });
+document.addEventListener("click", function (e) { if ($("secnav").classList.contains("open") && !e.target.closest("#secnav")) secMenu(false); });
 $("glbpill").onclick = function () { $("glbpill").hidden = true; slideBack(glossBack); };
 window.addEventListener("scroll", topPill, { passive: true });
 $("toppill").onclick = function () { if (state.tab === "heroes" && state.hero) { JLOCK = true; JTO = ""; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar(); } easeScroll(0); }; // no ability lit while it glides up past them
@@ -5539,7 +5573,7 @@ $("main").addEventListener("click", function (e) {
   if (fsb) { userForm(fsb.getAttribute("data-fs") === "1", fsb.parentNode); return; }
   var gl = e.target.closest ? e.target.closest(".gl[data-g]") : null;
   if (gl) { if (state.tab === "glossary") { glossReveal(gl.getAttribute("data-g")); var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { var fromCard = gl.closest(".gt"), fromY = window.pageYOffset || 0; EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); if (fromCard && fromCard !== t0) showBackGloss(fromCard.id.slice(2), fromY); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
-  var gld = state.tab === "glossary" && e.target.closest ? e.target.closest(".gld[data-g], .glbd[data-g], .gte[data-g]") : null;
+  var gld = state.tab === "glossary" && e.target.closest ? e.target.closest(".gld[data-g], .glbd[data-g], .gte[data-g], .gtodb[data-g]") : null;
   if (gld) { glossSheet(gld.getAttribute("data-g")); return; }
   var gmb = e.target.closest ? e.target.closest(".gmb") : null;
   if (gmb) { var gtc = gmb.closest(".gt"), op = !gtc.classList.contains("open"); gtc.classList.toggle("open", op); gmb.textContent = op ? "Show less" : "Show more"; gmb.setAttribute("aria-expanded", op); return; }
