@@ -732,6 +732,12 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 /* the top of the glossary sits on a raised purple band like a hero page's Abilities: it runs past both screen edges, its bottom edge tilts
    down to the right, and a shadow lifts it off the page. The band is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilt */
 .ghead{position:relative;margin:4px 0 34px;padding:6px 0 0}
+/* the title card, like a hero page's: a book where the portrait would be, the title and view switch, then the jump links */
+.gcard{position:relative;overflow:hidden;display:flex;align-items:stretch;border:1px solid var(--line);border-radius:16px;background:linear-gradient(120deg,rgba(255,255,255,.055),rgba(255,255,255,.015))}
+.gbook{flex:none;width:78px;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#3a2f5c,#231c38);color:#e6d4a8;border-right:1px solid var(--line)}.gbook svg{width:38px;height:38px}
+.gcm{flex:1;min-width:0;display:flex;align-items:center;padding:22px 12px 22px 14px}.gcm .gtop{flex:1}
+.gcm .gtop{align-items:center}
+.ghead > .gjump{margin-top:12px}
 .gpanel{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:0;bottom:0;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.42))}
 .gpanel i{position:absolute;inset:0;clip-path:polygon(0 0,100% 24px,100% 100%,0 calc(100% - 24px))}
 .gjump{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
@@ -740,7 +746,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 /* the chooser for the six mechanics categories: two rows of three, the chosen one lit in its colour */
 .gsw{scroll-margin-top:16px}
 .gswt{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 4px}
-.gsc{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 7px;border-radius:11px;background:rgba(20,17,26,.55);border:1px solid rgba(255,255,255,.08);color:var(--dim);font:inherit;text-align:left;cursor:pointer;min-height:44px;transition:background-color .2s ease,border-color .2s ease,color .2s ease}.gsc:last-child:nth-child(odd){grid-column:1/-1}
+.gsc{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 7px;border-radius:11px;background:rgba(20,17,26,.55);border:1px solid rgba(255,255,255,.08);color:var(--dim);font:inherit;text-align:left;cursor:pointer;min-height:44px;transition:background-color .2s ease,border-color .2s ease,color .2s ease}.gsc:last-child:nth-child(odd){grid-column:1/-1;width:calc(50% - 3px);justify-self:center}
 .gsc .gsci{flex:none;display:flex;width:28px;height:28px;border-radius:8px;align-items:center;justify-content:center;color:var(--dim)}.gsc .gsci svg{width:17px;height:17px}
 .gsc b{flex:1;min-width:0;font-size:13.5px;font-weight:600;line-height:1.2}
 .gsc.on{color:var(--fg);background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.06));border-color:var(--gc);box-shadow:0 0 0 1px rgba(var(--gcr),.35) inset}
@@ -769,7 +775,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gbn{display:flex;align-items:center;gap:8px}.gbn b{flex:1;font-size:16px}.gbn .gtc{color:#d2a679}
 .gbt{font-size:13px;color:#bfa78c}
 .glcs{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
-.glc{font-size:12px;color:#cdbba5;background:rgba(0,0,0,.25);border:1px solid rgba(210,166,121,.2);border-radius:6px;padding:2px 7px}.glc b{color:var(--fg);font-variant-numeric:tabular-nums}
+.glc{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#cdbba5;background:rgba(0,0,0,.25);border:1px solid rgba(210,166,121,.2);border-radius:6px;padding:2px 7px}.glsi{width:7px;height:13px;object-fit:contain}.glc b{color:var(--fg);font-variant-numeric:tabular-nums}
 .glbd{display:flex;align-items:center;gap:12px;width:100%;margin-top:22px;padding:12px;border-radius:12px;background:rgba(230,180,90,.07);border:1px dashed rgba(230,180,90,.45);color:#d9c7b1;font:inherit;font-size:13px;text-align:left;cursor:pointer;scroll-margin-top:24px}
 .glbd .gbd{position:static;flex:none}.glbd b{display:block;color:var(--fg);font-size:14px;margin-bottom:2px}.glbd .gtc{color:#d2a679}
 .gld.pop .gbody,.glbd.pop{animation:boxup 1.5s ease-in-out both}
@@ -816,7 +822,8 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
    bronze for the lane (tilted the other way), slate for Hero effects */
 .gband{position:relative;isolation:isolate;margin:40px 0 44px;padding:36px 0 40px}
 .gband.gpur{margin-top:10px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
-.gband.gpur .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.11),transparent 80%),#1d1828;box-shadow:0 8px 18px rgba(0,0,0,.45)}
+.gband.gpur .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.11),transparent 80%),#1d1828;box-shadow:0 5px 12px rgba(0,0,0,.3)}
+.gband.gsl{margin-top:56px;margin-bottom:22px;padding-bottom:62px}
 .gband.gsl .gpanel i{background:linear-gradient(to bottom,#2a2d35 0,#24262d 140px,#1f2026 45%,#1a1a1f 100%)}
 .gband.gsl .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent 80%),#1c1d22;box-shadow:0 8px 18px rgba(0,0,0,.45)}
 .gtsec{position:relative;isolation:isolate;margin:8px 0 40px;padding:6px 14px 18px;border-radius:20px;border:1px solid rgba(var(--gcr),.24);background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent clamp(160px,40%,320px)),rgba(255,255,255,.028);scroll-margin-top:16px}
@@ -827,7 +834,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gband.gbr .gpanel i{background:linear-gradient(to bottom,#3a2f24 0,#2e261e 140px,#262019 45%,#1f1a15 100%)}
 .gband .gh{margin-top:10px}
 .gband.gbr{scroll-margin-top:0}
-.ghead .gtitle{margin:0;font-size:28px}
+.ghead .gtitle{margin:0;font-size:28px;flex:1;min-width:0}
 .gsub{font-size:12.5px;color:var(--dim);margin-top:4px}
 .ghead .gaz{margin:16px 0 0}
 .gti.gtip img{width:100%;height:100%;object-fit:cover}
@@ -4031,7 +4038,7 @@ function openResult(b) {
 // [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
 var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Immunity & stealth"], ["move", "Movement"], ["map", "Map & objectives"], ["econ", "Economy"], ["hero", "Hero effects"]];
 // each category's colour and icon: on its jump card, its heading, the stripe down each card and the tile behind each term's icon
-var GCOL = { dmg: "#ec5b4e", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#f2c14e", hero: "#a9afba" };
+var GCOL = { dmg: "#ec5b4e", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#c99257", hero: "#a9afba" };
 var GCI = {
   dmg: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/>',
   scale: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
@@ -4311,7 +4318,7 @@ function glossList() {
   var band = function (cls, id, inner) { return '<section class="gband ' + cls + '"' + (id ? ' id="' + id + '"' : "") + '><div class="gpanel" aria-hidden="true"><i></i></div>' + inner + "</section>"; };
   var chap = function (k, name, sub, id) { return '<h2 class="gh gch"' + (id ? ' id="' + id + '"' : "") + gcStyle(k) + '><span class="ghi">' + gcSvg(k) + "</span><b>" + esc(name) + "</b>" + (sub ? "<small>" + esc(sub) + "</small>" : "") + '<span class="gln2"></span></h2>'; };
   html = band("gpur", "", gswHtml()) +
-    band("gbr", "gs-lane", chap("map", "Lane layout", "From your wave to the enemy Patron. Tap a step for the details") + laneMap()) +
+    band("gbr", "gs-lane", chap("map", "Lane layout", "Tap a step for the details") + laneMap()) +
     '<section class="gtsec" id="g-match-timeline"' + gcStyle("map") + ">" + chap("map", "Match timeline", "From the first second to 40 minutes. Tap an event for the details") + timelineHtml() + "</section>" +
     catHtml(C("econ"), hit, q) + band("gsl", "", catHtml(C("hero"), hit, q));
   return html;
@@ -4341,12 +4348,12 @@ function catHtml(c, hit, q) { // one category's chapter title and its cards
   var list = GLOSS.filter(function (g) { return g.c === c[0] && (!hit || hit(g)); });
   if (!list.length) return "";
   var total = GLOSS.filter(function (g) { return g.c === c[0]; }).length;
-  var head = '<h2 class="gh gch" id="gc-' + c[0] + '"' + gcStyle(c[0]) + '><span class="ghi">' + gcSvg(c[0]) + "</span><b>" + esc(c[1]) + "</b><small>" + (q ? list.length + " of " : "") + total + " terms</small><span class=\"gln2\"></span></h2>"; // a chapter title, like a hero page's
+  var head = '<h2 class="gh gch" id="gc-' + c[0] + '"' + gcStyle(c[0]) + '><span class="ghi">' + gcSvg(c[0]) + "</span><b>" + esc(c[1]) + "</b><span class=\"gln2\"></span></h2>"; // a chapter title, like a hero page's
   if (c[0] === "hero") { // grouped by hero, A-Z
     var by = {}; list.forEach(function (g) { var x = heroEffect(g.k), h = x && x.hero || "Other"; (by[h] = by[h] || []).push(g); });
     return head + Object.keys(by).sort().map(function (h) { return '<div class="ghh">' + esc(h) + "</div>" + by[h].map(function (g) { return glossCard(g); }).join(""); }).join("");
   }
-  if (c[0] === "map") { list = list.filter(function (g) { return !LANE_KEYS[g.k] && g.k !== "match-timeline"; }); head = head.replace(/<small>[^<]*<\/small>/, "<small>" + list.length + " terms</small>"); }
+  if (c[0] === "map") list = list.filter(function (g) { return !LANE_KEYS[g.k] && g.k !== "match-timeline"; });
   return head + list.map(function (g) { return glossCard(g); }).join("");
 }
 // ---- glossary diagrams: the Mid Boss growth charts and the minimap reveal map. Each sits on its card in Map & objectives and in its pop-up ----
@@ -4413,11 +4420,12 @@ function revealMap() {
 var GVIS = { "mid-boss": mbChart, "minimap-reveal": revealMap };
 // Map & objectives opens with a diagram of a lane: the steps you fight through, from your wave to the enemy Patron. Each step is its term
 // (tap for the pop-up, and links elsewhere on the page land on it), so these terms don't get cards of their own in the category view
+var SHRINE_HP = 5000; // deadlock.wiki, Shrines: the game data the site reads has no Shrine health, so this one doesn't update daily
 var LANE_KEYS = { "lane-layout": 1, troopers: 1, guardian: 1, walker: 1, "base-guardian": 1, shrine: 1, patron: 1, backdoor: 1 };
 function laneMap() {
   var M = state.mc || {}, f = function (n) { return n == null ? null : Number(n).toLocaleString(); };
   var shield = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>';
-  var chip = function (v, l) { return v ? '<span class="glc"><b>' + esc(v) + "</b> " + esc(l) + "</span>" : ""; };
+  var chip = function (v, l) { if (!v) return ""; if (l === "souls") return '<span class="glc"><img class="glsi" alt="souls" src="' + GA + 'hud/icons/icon_soul.svg"><b>' + esc(v) + "</b></span>"; return '<span class="glc"><b>' + esc(v) + "</b> " + esc(l) + "</span>"; };
   var step = function (k, name, note, chips, opt) {
     opt = opt || {};
     return '<button class="gld' + (opt.wave ? " wave" : "") + '" id="g-' + k + '" data-g="' + k + '"><span class="gpic"><img alt="" src="img/' + k + '.jpg" onerror="this.remove()">' +
@@ -4433,7 +4441,7 @@ function laneMap() {
     step("walker", "Walker", "Rockets, a laser and a stomp", chip(f(W.health), "health") + chip(f(W.souls), "souls"), { bd: true }) +
     '<div class="gls gate">The enemy base</div>' +
     step("base-guardian", "Base Guardians", "Destroy one pair to open the Shrines", chip(f(B.health), "health each") + chip(f(B.souls), "souls"), { bd: true, n: 2 }) +
-    step("shrine", "Shrines", "Open once any pair of Base Guardians falls; hit them from their platform", chip(f(S.souls), "souls"), { n: 2 }) +
+    step("shrine", "Shrines", "Open once any pair of Base Guardians falls; hit them from their platform", chip(f(S.health || SHRINE_HP), "health each") + chip(f(S.souls), "souls"), { n: 2 }) +
     step("patron", "Patron", "Can’t be hurt until both Shrines fall. Destroy it to win", P.health ? chip(f(P.health) + (P.phase2_health ? " + " + f(P.phase2_health) : ""), "health, two phases") : "", { bd: true }) +
     '<button class="glbd" id="g-backdoor" data-g="backdoor"><span class="gbd">' + shield + '</span><span><b>Backdoor protection</b>Marked objectives take much less damage from heroes and heal quickly unless your troopers are nearby.</span><span class="gtc">›</span></button>' +
     "</div>";
@@ -4447,7 +4455,8 @@ function renderGlossary() {
     jump = '<div class="gaz">' + Object.keys(Ls).sort().map(function (L) { return '<button class="gazl" data-gl="' + L + '">' + L + "</button>"; }).join("") + "</div>";
   } else jump = '<div class="gjump">' + [["gs-lane", "Lane"], ["g-match-timeline", "Timeline"], ["gc-econ", "Economy"], ["gc-hero", "Hero effects"]].map(function (j) { return '<button class="gjb" data-gj="' + j[0] + '">' + j[1] + "</button>"; }).join("") + "</div>"; // jump to each section
   var seg = '<div class="gview" role="group" aria-label="Glossary view"><button data-gv="cat" aria-pressed="' + !az + '"' + (az ? "" : ' class="on"') + '>Categories</button><button data-gv="az" aria-pressed="' + az + '"' + (az ? ' class="on"' : "") + ">A–Z</button></div>";
-  $("main").innerHTML = '<div class="ghead"><div class="gtop"><div><h1 class="gtitle">Glossary</h1><div class="gsub">' + GLOSS.length + " terms · tap one for the details</div></div>" + seg + "</div>" + jump + '</div><div id="glist">' + glossList() + "</div>";
+  var book = '<span class="gbook" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></span>';
+  $("main").innerHTML = '<div class="ghead"><div class="gcard">' + book + '<div class="gcm"><div class="gtop"><h1 class="gtitle">Glossary</h1>' + seg + "</div></div></div>" + jump + '</div><div id="glist">' + glossList() + "</div>";
 }
 function setGlossView(v) {
   if (state.gview === v) return; state.gview = v; try { localStorage.setItem("gview", v); } catch (e) {}
@@ -4459,6 +4468,7 @@ function setGlossView(v) {
 var USED_KEEP_DMG = { bleed: 1, burn: 1, parry: 1, melee: 1 }, USED_OFF = { "bullet-resist": 1, "spirit-resist": 1 }, USED_ITEMS_ONLY = { melee: 1 };
 // hand edits, by the ability's or item's name as the game spells it: drop ones that mention a term without causing it
 var USED_DROP = { // from the review of every mention (Nov 2026)
+  "kill-bounty": ["Trophy Collector"],
   "spirit-power": ["Soul Exchange", "Leech Therapy", "Doorway", "Project Mind", "Power Slash", "Mercurial Magnum"],
   "scaling": ["Siphon Life", "Flawless Advance", "Feed The Birds", "Blasted", "Dazzling Trick", "Light Eater", "Shining Wonder", "Strix Salvo", "Charged Shot", "Powder Keg", "Concussive Combustion", "Air Drop", "Entangling Thorns", "Stone Form", "Arctic Beam", "Frost Grenade", "Frozen Shelter", "Life Drain", "Ground Strike", "Heavy Barrage", "Rake", "Dust Devil", "Fire Scarabs", "Combo", "Healing Needles", "Lurking Terrors", "Leech Therapy", "Plot Armor", "Kinetic Carbine", "Pulse Grenade", "Affliction", "Tag Along", "Power Surge", "Serrated Knives", "Call Bell", "Jumpstart", "Pain Battery", "Flight", "Living Ink", "Goo Ball", "Splatter", "Willpower", "Card Trick", "Full Auto", "Crimson Slash", "Power Slash"],
   "souls": ["Arctic Beam", "Lil Helpers", "Shadow Transformation"],
