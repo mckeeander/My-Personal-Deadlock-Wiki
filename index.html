@@ -731,13 +731,13 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gmb{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;font-weight:600;color:var(--gc,var(--gold))}
 /* the top of the glossary sits on a raised purple band like a hero page's Abilities: it runs past both screen edges, its bottom edge tilts
    down to the right, and a shadow lifts it off the page. The band is cut to shape inside a wrapper that casts the shadow, so the shadow follows the tilt */
-.ghead{position:relative;margin:4px 0 34px;padding:6px 0 0}
+.ghead{position:relative;margin:4px 0 58px;padding:6px 0 0}
 /* the title card, like a hero page's: a book where the portrait would be, the title and view switch, then the jump links */
-.gcard{position:relative;overflow:hidden;display:flex;align-items:stretch;border:1px solid var(--line);border-radius:16px;background:linear-gradient(120deg,rgba(255,255,255,.055),rgba(255,255,255,.015))}
-.gbook{flex:none;width:78px;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#3a2f5c,#231c38);color:#e6d4a8;border-right:1px solid var(--line)}.gbook svg{width:38px;height:38px}
-.gcm{flex:1;min-width:0;display:flex;align-items:center;padding:22px 12px 22px 14px}.gcm .gtop{flex:1}
-.gcm .gtop{align-items:center}
-.ghead > .gjump{margin-top:12px}
+.gcard{position:relative;overflow:hidden;display:flex;align-items:stretch;border:1px solid rgba(162,131,240,.28);border-radius:16px;background:radial-gradient(130% 150% at 0 0,rgba(162,131,240,.24),transparent 62%),linear-gradient(120deg,rgba(255,255,255,.05),rgba(255,255,255,.015));box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.gbook{flex:none;width:96px;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#4a3a78,#271f40);color:#efdcae;border-right:1px solid rgba(162,131,240,.25)}.gbook svg{width:44px;height:44px}
+.gcm{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px 14px 22px 16px}
+.gcm .gtitle{font-size:32px}
+.ghead > .gjump{margin-top:14px}
 .gpanel{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:0;bottom:0;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.42))}
 .gpanel i{position:absolute;inset:0;clip-path:polygon(0 0,100% 24px,100% 100%,0 calc(100% - 24px))}
 .gjump{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
@@ -745,11 +745,12 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gjb:active{color:var(--fg);border-color:var(--gold)}
 /* the chooser for the six mechanics categories: two rows of three, the chosen one lit in its colour */
 .gsw{scroll-margin-top:16px}
-.gswt{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 4px}
-.gsc{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 7px;border-radius:11px;background:rgba(20,17,26,.55);border:1px solid rgba(255,255,255,.08);color:var(--dim);font:inherit;text-align:left;cursor:pointer;min-height:44px;transition:background-color .2s ease,border-color .2s ease,color .2s ease}.gsc:last-child:nth-child(odd){grid-column:1/-1;width:calc(50% - 3px);justify-self:center}
+/* the chooser is one panel: eight cells in two columns behind a shared frame, the chosen one lit in its colour with a bar on its left */
+.gswt{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:0 0 4px;padding:5px;border-radius:16px;background:rgba(12,10,18,.55);border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 2px 8px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.04)}
+.gsc{position:relative;display:flex;align-items:center;gap:8px;padding:8px 10px 8px 8px;border-radius:11px;background:transparent;border:1px solid transparent;color:var(--dim);font:inherit;text-align:left;cursor:pointer;min-height:42px;transition:background-color .2s ease,border-color .2s ease,color .2s ease}
 .gsc .gsci{flex:none;display:flex;width:28px;height:28px;border-radius:8px;align-items:center;justify-content:center;color:var(--dim)}.gsc .gsci svg{width:17px;height:17px}
 .gsc b{flex:1;min-width:0;font-size:13.5px;font-weight:600;line-height:1.2}
-.gsc.on{color:var(--fg);background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.06));border-color:var(--gc);box-shadow:0 0 0 1px rgba(var(--gcr),.35) inset}
+.gsc.on{color:var(--fg);background:linear-gradient(90deg,rgba(var(--gcr),.26),rgba(var(--gcr),.08));border-color:rgba(var(--gcr),.45)}.gsc.on::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:0 2px 2px 0;background:var(--gc)}
 .gsc.on .gsci{background:var(--gct);color:var(--gc)}
 .gsw .gh.gch{margin-top:26px}
 /* category titles: chapter style, like a hero page's: the icon, a big serif name, the count, and a short slanted bar on a faint line */
@@ -761,11 +762,14 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gch + .ghh{margin-top:0}
 /* the lane diagram: a dashed road down the left joins each step's picture, from your wave at the top to the enemy Patron */
 .glmap{position:relative;margin:0 0 30px}
-.glmap::before{content:"";position:absolute;left:33px;top:70px;bottom:110px;width:3px;margin-left:-1.5px;background:repeating-linear-gradient(to bottom,#c49a6c 0 8px,transparent 8px 14px);opacity:.7}
+/* the road: each step draws the stretch below its picture, and each section label carries it through; the Patron, the last step, draws none */
+.gld:not(.end)::before{content:"";position:absolute;left:33px;top:40px;bottom:-14px;width:3px;margin-left:-1.5px;background:repeating-linear-gradient(to bottom,#c49a6c 0 8px,transparent 8px 14px);opacity:.7}
+.gls::before{content:"";position:absolute;left:-49px;top:0;bottom:-12px;width:3px;margin-left:-1.5px;background:repeating-linear-gradient(to bottom,#c49a6c 0 8px,transparent 8px 14px);opacity:.7}
+.gls.gate::before{top:-1px}
 .glin{margin:-6px 0 18px;text-align:center;font-size:13px;color:#bfa78c}
 .gls{position:relative;margin:4px 0 12px 82px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#d2a679}
 .gls.gate{margin-top:10px;padding-top:12px;border-top:1px dashed rgba(210,166,121,.4)}
-.gld{position:relative;display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;padding:0;margin:0 0 14px;color:var(--fg);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;scroll-margin-top:24px}
+.gld{position:relative;display:flex;align-items:flex-start;gap:14px;width:100%;background:none;border:0;padding:0;margin:0 0 14px;color:var(--fg);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;scroll-margin-top:24px}
 .gpic{position:relative;z-index:1;flex:none;width:66px;height:66px;border-radius:14px;border:2px solid #9c7a55;background:#2a231c;box-shadow:0 6px 14px rgba(0,0,0,.55)}
 .gpic img{width:100%;height:100%;object-fit:cover;border-radius:12px}
 .gld.wave .gpic{border-color:#d2a679}
@@ -822,7 +826,10 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
    bronze for the lane (tilted the other way), slate for Hero effects */
 .gband{position:relative;isolation:isolate;margin:40px 0 44px;padding:36px 0 40px}
 .gband.gpur{margin-top:10px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
-.gband.gpur .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.11),transparent 80%),#1d1828;box-shadow:0 5px 12px rgba(0,0,0,.3)}
+.gband.gpur .gt{background:#1d1828;border-color:rgba(255,255,255,.09);box-shadow:0 4px 10px rgba(0,0,0,.28)}
+.gband.gpur .gt::before,.gband.gpur .gt::after{display:none}
+.gsw{position:relative}
+.gwash{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw);right:calc(50% - 50vw);top:-36px;clip-path:polygon(0 0,100% 24px,100% 100%,0 100%);height:min(900px,100%);background:radial-gradient(90% 55% at 50% 0,rgba(var(--gcr),.2),transparent 70%),linear-gradient(to bottom,rgba(var(--gcr),.09),transparent 80%)}
 .gband.gsl{margin-top:56px;margin-bottom:22px;padding-bottom:62px}
 .gband.gsl .gpanel i{background:linear-gradient(to bottom,#2a2d35 0,#24262d 140px,#1f2026 45%,#1a1a1f 100%)}
 .gband.gsl .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent 80%),#1c1d22;box-shadow:0 8px 18px rgba(0,0,0,.45)}
@@ -4318,19 +4325,19 @@ function glossList() {
   var band = function (cls, id, inner) { return '<section class="gband ' + cls + '"' + (id ? ' id="' + id + '"' : "") + '><div class="gpanel" aria-hidden="true"><i></i></div>' + inner + "</section>"; };
   var chap = function (k, name, sub, id) { return '<h2 class="gh gch"' + (id ? ' id="' + id + '"' : "") + gcStyle(k) + '><span class="ghi">' + gcSvg(k) + "</span><b>" + esc(name) + "</b>" + (sub ? "<small>" + esc(sub) + "</small>" : "") + '<span class="gln2"></span></h2>'; };
   html = band("gpur", "", gswHtml()) +
-    band("gbr", "gs-lane", chap("map", "Lane layout", "Tap a step for the details") + laneMap()) +
+    band("gbr", "gs-lane", chap("map", "Lane layout", "") + laneMap()) +
     '<section class="gtsec" id="g-match-timeline"' + gcStyle("map") + ">" + chap("map", "Match timeline", "From the first second to 40 minutes. Tap an event for the details") + timelineHtml() + "</section>" +
-    catHtml(C("econ"), hit, q) + band("gsl", "", catHtml(C("hero"), hit, q));
+    band("gsl", "", catHtml(C("hero"), hit, q));
   return html;
 }
-var GTABS = ["dmg", "scale", "def", "cc", "buff", "move", "map"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement", map: "Map & objectives" };
+var GTABS = ["dmg", "scale", "def", "cc", "buff", "move", "map", "econ"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement", map: "Map", econ: "Economy" };
 function glossTab() { if (GTABS.indexOf(state.gtab) >= 0) return state.gtab; var t = null; try { t = localStorage.getItem("gtab"); } catch (e) {} return (state.gtab = GTABS.indexOf(t) >= 0 ? t : "dmg"); }
 function gswHtml(tabs) { // the chooser (six buttons, two rows) over the chosen category's title and cards
   tabs = tabs || GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; });
   var cur = glossTab(), c = tabs.filter(function (x) { return x[0] === cur; })[0] || tabs[0];
   var chips = tabs.map(function (x) { var on = x[0] === c[0], n = GLOSS.filter(function (g) { return g.c === x[0]; }).length;
     return '<button class="gsc' + (on ? " on" : "") + '" data-gt="' + x[0] + '" aria-pressed="' + on + '"' + gcStyle(x[0]) + '><span class="gsci">' + gcSvg(x[0]) + "</span><b>" + esc(GTAB_SHORT[x[0]] || x[1]) + "</b></button>"; }).join("");
-  return '<section class="gsw" id="gsw"><div class="gswt" role="group" aria-label="Choose a category">' + chips + "</div>" + catHtml(c, null, "") + "</section>";
+  return '<section class="gsw" id="gsw"' + gcStyle(c[0]) + '><i class="gwash" aria-hidden="true"></i><div class="gswt" role="group" aria-label="Choose a category">' + chips + "</div>" + catHtml(c, null, "") + "</section>";
 }
 function setGlossTab(k) { // show another of the six, keeping the chooser where it is on screen
   if (GTABS.indexOf(k) < 0) return;
@@ -4428,7 +4435,7 @@ function laneMap() {
   var chip = function (v, l) { if (!v) return ""; if (l === "souls") return '<span class="glc"><img class="glsi" alt="souls" src="' + GA + 'hud/icons/icon_soul.svg"><b>' + esc(v) + "</b></span>"; return '<span class="glc"><b>' + esc(v) + "</b> " + esc(l) + "</span>"; };
   var step = function (k, name, note, chips, opt) {
     opt = opt || {};
-    return '<button class="gld' + (opt.wave ? " wave" : "") + '" id="g-' + k + '" data-g="' + k + '"><span class="gpic"><img alt="" src="img/' + k + '.jpg" onerror="this.remove()">' +
+    return '<button class="gld' + (opt.wave ? " wave" : "") + (k === "patron" ? " end" : "") + '" id="g-' + k + '" data-g="' + k + '"><span class="gpic"><img alt="" src="img/' + k + '.jpg" onerror="this.remove()">' +
       (opt.bd ? '<span class="gbd" title="Backdoor protection">' + shield + "</span>" : "") + (opt.n ? '<span class="gnx">×' + opt.n + "</span>" : "") + "</span>" +
       '<span class="gbody"><span class="gbn"><b>' + esc(name) + '</b><span class="gtc">›</span></span>' + (note ? '<span class="gbt">' + esc(note) + "</span>" : "") + (chips ? '<span class="glcs">' + chips + "</span>" : "") + "</span></button>";
   };
@@ -4453,10 +4460,10 @@ function renderGlossary() {
   if (az) { // letter buttons, only for letters that have a term
     var Ls = {}; GLOSS.forEach(function (g) { Ls[g.t.charAt(0).toUpperCase()] = 1; });
     jump = '<div class="gaz">' + Object.keys(Ls).sort().map(function (L) { return '<button class="gazl" data-gl="' + L + '">' + L + "</button>"; }).join("") + "</div>";
-  } else jump = '<div class="gjump">' + [["gs-lane", "Lane"], ["g-match-timeline", "Timeline"], ["gc-econ", "Economy"], ["gc-hero", "Hero effects"]].map(function (j) { return '<button class="gjb" data-gj="' + j[0] + '">' + j[1] + "</button>"; }).join("") + "</div>"; // jump to each section
+  } else jump = '<div class="gjump">' + [["gs-lane", "Lane"], ["g-match-timeline", "Timeline"], ["gc-hero", "Hero effects"]].map(function (j) { return '<button class="gjb" data-gj="' + j[0] + '">' + j[1] + "</button>"; }).join("") + "</div>"; // jump to each section
   var seg = '<div class="gview" role="group" aria-label="Glossary view"><button data-gv="cat" aria-pressed="' + !az + '"' + (az ? "" : ' class="on"') + '>Categories</button><button data-gv="az" aria-pressed="' + az + '"' + (az ? ' class="on"' : "") + ">A–Z</button></div>";
   var book = '<span class="gbook" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></span>';
-  $("main").innerHTML = '<div class="ghead"><div class="gcard">' + book + '<div class="gcm"><div class="gtop"><h1 class="gtitle">Glossary</h1>' + seg + "</div></div></div>" + jump + '</div><div id="glist">' + glossList() + "</div>";
+  $("main").innerHTML = '<div class="ghead"><div class="gcard">' + book + '<div class="gcm"><h1 class="gtitle">Glossary</h1>' + seg + "</div></div>" + jump + '</div><div id="glist">' + glossList() + "</div>";
 }
 function setGlossView(v) {
   if (state.gview === v) return; state.gview = v; try { localStorage.setItem("gview", v); } catch (e) {}
