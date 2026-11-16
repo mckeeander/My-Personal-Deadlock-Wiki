@@ -762,6 +762,31 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .glbd{display:flex;align-items:center;gap:12px;width:100%;margin-top:22px;padding:12px;border-radius:12px;background:rgba(230,180,90,.07);border:1px dashed rgba(230,180,90,.45);color:#d9c7b1;font:inherit;font-size:13px;text-align:left;cursor:pointer;scroll-margin-top:24px}
 .glbd .gbd{position:static;flex:none}.glbd b{display:block;color:var(--fg);font-size:14px;margin-bottom:2px}.glbd .gtc{color:#d2a679}
 .gld.pop .gbody,.glbd.pop{animation:boxup 1.5s ease-in-out both}
+/* diagrams on the Map & objectives cards and pop-ups */
+.gviz{margin:14px 0 2px;padding:12px;border-radius:12px;background:rgba(0,0,0,.22);border:1px solid rgba(210,166,121,.18);cursor:default}
+.mbm{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--dim);margin-bottom:6px}.mbm b{color:var(--fg);font-size:15px}.mbm span{font-size:11.5px}
+.mbp{margin-top:8px}.mbh{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim)}.mbh b{color:var(--fg);font-variant-numeric:tabular-nums;font-size:14px}
+.gviz.mb svg{display:block;width:100%;height:auto;touch-action:pan-y;cursor:ew-resize;margin-top:2px}
+.mbg{stroke:rgba(255,255,255,.07);stroke-width:1}.mbb{stroke:rgba(255,255,255,.22);stroke-width:1}
+.mba{fill:rgba(210,166,121,.16)}.mbl{fill:none;stroke:#d2a679;stroke-width:2;stroke-linecap:round}
+.mbx{stroke:rgba(241,233,216,.55);stroke-width:1;stroke-dasharray:3 3}.mbd{fill:#d2a679;stroke:#231d18;stroke-width:2}
+.mbt{position:relative;height:14px;font-size:10.5px;color:#9d8f80;margin-top:4px;font-variant-numeric:tabular-nums;touch-action:pan-y}
+.mbt span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}.mbt span:first-child{transform:none}.mbt span:last-child{transform:translateX(-100%)}
+.mbtab{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)} /* the same numbers as a table, for screen readers */
+.gsft.mbf{margin:10px 0 0}
+.gviz.rv svg{display:block;width:100%;height:auto}
+.rvr{fill:rgba(210,166,121,.05);stroke:#a98a68;stroke-width:1.5;stroke-dasharray:5 5}.rvc{fill:rgba(210,166,121,.1);stroke:#a98a68;stroke-width:1}
+.rvt{fill:#bfa78c;font-size:11px;text-anchor:middle;font-family:var(--body)}
+.rvw{fill:#7d6a56;stroke:#c9ae8e;stroke-width:1}
+.rvs{stroke:#ec5b4e;stroke-width:2}.rvs.off{stroke:#8f8496}.rvs.dim{stroke-dasharray:3 4;opacity:.6}
+.rvb{stroke:#8f8496;stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round}
+.rvu{fill:#e6b45a;stroke:#231d18;stroke-width:2}.rvut{fill:var(--fg);font-size:11px;font-weight:600;text-anchor:middle;font-family:var(--body)}
+.rvm circle{fill:#2b2530;stroke:#8f8496;stroke-width:2}.rvm text{fill:#cfc6d8;font-size:11px;font-weight:700;text-anchor:middle;font-family:var(--body)}
+.rvm.on circle{fill:#4a1f1c;stroke:#ec5b4e}.rvm.on text{fill:#fff}
+.rvl{white-space:normal;list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--dim)}
+.rvl li{display:flex;gap:9px;align-items:flex-start}.rvl li > span:last-child{flex:1;min-width:0}.rvl b{display:block;color:#bdb3c6;font-size:12px;letter-spacing:.04em}.rvl li.on b{color:#f08a80}
+.rvn{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid #8f8496;color:#cfc6d8;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.rvl li.on .rvn{border-color:#ec5b4e;background:#4a1f1c;color:#fff}
 /* Map & objectives: its own raised band, a dusky bronze, tilted the other way (high on the right), with each card lifted off it */
 .gband{position:relative;isolation:isolate;margin:56px 0 44px;padding:30px 0 34px}
 .gband .gpanel{top:0;bottom:0}
@@ -2965,6 +2990,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
   function typing() { return /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || ""); }
   function sideScroller(el) { // a row that scrolls sideways owns horizontal drags
     for (; el && el !== document.body && el.nodeType === 1; el = el.parentElement) {
+      if (el.classList.contains("mb")) return true; // a Mid Boss chart owns sideways drags
       var o = getComputedStyle(el).overflowX;
       if ((o === "auto" || o === "scroll") && el.scrollWidth > el.clientWidth + 1) return true;
     }
@@ -4172,7 +4198,7 @@ function glossBody(g) {
   return esc(glossFill(g.d)).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, function (m, k, txt) { return GBY[k] ? '<span class="gl" data-g="' + k + '">' + txt + "</span>" : txt; });
 }
 function glossCard(g, az) { // az: the A–Z view, where a small label says which category it's from
-  return '<section class="gt" id="g-' + g.k + '"' + gcStyle(g.c) + '><div class="gth">' + gTile(g) + '<div class="gtn"><h3>' + esc(g.t) + gChev(g.k) + "</h3>" + (az ? '<span class="gtcat">' + esc(gcName(g.c)) + "</span>" : "") + "</div></div>" + (function () { var sp = glossSplit(g.d); return "<p>" + glossText(sp[0]) + (sp[1] ? '<span class="grest"> ' + glossText(sp[1]) + "</span>" : "") + "</p>" + (sp[1] ? '<button class="gmb" aria-expanded="false">Show more</button>' : ""); })() + usedChip(g) + "</section>";
+  return '<section class="gt" id="g-' + g.k + '"' + gcStyle(g.c) + '><div class="gth">' + gTile(g) + '<div class="gtn"><h3>' + esc(g.t) + gChev(g.k) + "</h3>" + (az ? '<span class="gtcat">' + esc(gcName(g.c)) + "</span>" : "") + "</div></div>" + (function () { var sp = glossSplit(g.d); return "<p>" + glossText(sp[0]) + (sp[1] ? '<span class="grest"> ' + glossText(sp[1]) + "</span>" : "") + "</p>" + (sp[1] ? '<button class="gmb" aria-expanded="false">Show more</button>' : ""); })() + (!az && GVIS[g.k] ? GVIS[g.k]() : "") + usedChip(g) + "</section>";
 }
 // the game's own property icons, for terms that have one
 var GA = "https://assets-bucket.deadlock-api.com/assets-api-res/icons/", GP = GA + "icons/properties/";
@@ -4262,6 +4288,68 @@ function glossList() {
   });
   return n ? html : '<p class="status">No term matches “' + esc(q) + '”.</p>';
 }
+// ---- glossary diagrams: the Mid Boss growth charts and the minimap reveal map. Each sits on its card in Map & objectives and in its pop-up ----
+// Mid Boss: three small charts, one per number (they're in different units, so never one chart with two scales), sharing one minute.
+// Drag across any of them to move the minute; it opens at 20.
+function mbChart() {
+  var x = (state.mc || {}).mid_boss || {};
+  var S = [["Health", x.health, x.health_per_min, ""], ["Shield soaks up", x.shield_per_sec, x.shield_per_min, "/s"], ["Souls for the team", x.souls, x.souls_per_min, ""]].filter(function (r) { return r[1] != null && r[2] != null; });
+  if (!S.length) return "";
+  var W = 320, H = 58, MAX = 40, M0 = 20, X = function (m) { return 4 + (W - 8) * m / MAX; };
+  var panels = S.map(function (r) {
+    var top = r[1] + r[2] * MAX, Y = function (v) { return (H - 2 - (H - 10) * v / top).toFixed(1); };
+    var y0 = Y(r[1]), y1 = Y(top), base = H - 2;
+    var grid = [10, 20, 30].map(function (m) { return '<line class="mbg" x1="' + X(m) + '" x2="' + X(m) + '" y1="4" y2="' + base + '"/>'; }).join("");
+    return '<div class="mbp" data-b="' + r[1] + '" data-r="' + r[2] + '" data-u="' + r[3] + '"><div class="mbh"><span>' + esc(r[0]) + '</span><b class="mbv">' + Math.round(r[1] + r[2] * M0).toLocaleString() + r[3] + "</b></div>" +
+      '<svg viewBox="0 0 ' + W + " " + H + '" aria-hidden="true">' + grid + '<line class="mbb" x1="4" x2="' + (W - 4) + '" y1="' + base + '" y2="' + base + '"/>' +
+      '<path class="mba" d="M' + X(0) + " " + base + " L" + X(0) + " " + y0 + " L" + X(MAX) + " " + y1 + " L" + X(MAX) + " " + base + 'Z"/><path class="mbl" d="M' + X(0) + " " + y0 + " L" + X(MAX) + " " + y1 + '"/>' +
+      '<line class="mbx" x1="' + X(M0) + '" x2="' + X(M0) + '" y1="2" y2="' + base + '"/><circle class="mbd" r="4.5" cx="' + X(M0) + '" cy="' + Y(r[1] + r[2] * M0) + '" data-top="' + top + '"/></svg></div>';
+  }).join("");
+  var ticks = [0, 10, 20, 30, 40].map(function (m) { return '<span style="left:' + (X(m) / W * 100).toFixed(2) + '%">' + m + (m === 40 ? " min" : "") + "</span>"; }).join(""); // each under its gridline
+  var tbl = '<table class="mbtab"><caption>Mid Boss at each 10 minutes</caption><tr><th>Minute</th>' + S.map(function (r) { return "<th>" + esc(r[0]) + "</th>"; }).join("") + "</tr>" +
+    [0, 10, 20, 30, 40].map(function (m) { return "<tr><td>" + m + "</td>" + S.map(function (r) { return "<td>" + Math.round(r[1] + r[2] * m).toLocaleString() + r[3] + "</td>"; }).join("") + "</tr>"; }).join("") + "</table>";
+  return '<div class="gviz mb" data-max="' + MAX + '"><div class="mbm">At <b class="mbmin">' + M0 + ' min</b><span>Drag across to check another minute</span></div>' + panels + '<div class="mbt">' + ticks + "</div>" + tbl +
+    '<div class="gsft mbf">Health counts from when it spawns, so the first Mid Boss matches the match clock and a respawned one starts again at ' + Number(x.health).toLocaleString() + ". The shield and the souls go by the match clock.</div></div>";
+}
+function mbScrub(viz, clientX) {
+  var svg = viz.querySelector("svg"); if (!svg) return;
+  var rc = svg.getBoundingClientRect(), MAX = +viz.getAttribute("data-max") || 40;
+  var m = Math.max(0, Math.min(MAX, Math.round((clientX - rc.left - rc.width * 4 / 320) / (rc.width * 312 / 320) * MAX)));
+  var X = 4 + 312 * m / MAX;
+  viz.querySelector(".mbmin").textContent = m + " min";
+  Array.prototype.forEach.call(viz.querySelectorAll(".mbp"), function (p) {
+    var b = +p.getAttribute("data-b"), r = +p.getAttribute("data-r"), v = b + r * m, d = p.querySelector(".mbd"), top = +d.getAttribute("data-top");
+    p.querySelector(".mbv").textContent = Math.round(v).toLocaleString() + p.getAttribute("data-u");
+    var l = p.querySelector(".mbx"); l.setAttribute("x1", X); l.setAttribute("x2", X);
+    d.setAttribute("cx", X); d.setAttribute("cy", (56 - 48 * v / top).toFixed(1));
+  });
+}
+(function () { // drag (or tap) across a Mid Boss chart to move its minute
+  var on = null;
+  document.addEventListener("pointerdown", function (e) { var v = e.target.closest && e.target.closest(".gviz.mb"); if (!v || !e.target.closest("svg, .mbt")) return; on = v; mbScrub(v, e.clientX); });
+  document.addEventListener("pointermove", function (e) { if (on) mbScrub(on, e.clientX); });
+  ["pointerup", "pointercancel"].forEach(function (t) { document.addEventListener(t, function () { on = null; }); });
+})();
+// Minimap reveal: a top-down sketch around you. The dashed ring is the 50–60m line-of-sight distance, the small one is close range;
+// red markers put you on the enemy minimap, grey ones don't. The numbers match the list under it.
+function revealMap() {
+  var eye = function (x, y, n, red) { return '<g class="rvm' + (red ? " on" : "") + '"><circle cx="' + x + '" cy="' + y + '" r="11"/><text x="' + x + '" y="' + (y + 4) + '">' + n + "</text></g>"; };
+  var svg = '<svg viewBox="0 0 340 220" role="img" aria-label="What reveals you on the minimap">' +
+    '<circle class="rvr" cx="120" cy="112" r="92"/><text class="rvt" x="120" y="14">~50–60m</text>' +
+    '<circle class="rvc" cx="120" cy="112" r="24"/>' +
+    '<rect class="rvw" x="150" y="140" width="40" height="9" rx="2" transform="rotate(-28 170 144)"/>' +
+    '<line class="rvs" x1="120" y1="112" x2="185" y2="58"/>' +                       // 1: clear line of sight, inside the ring
+    '<line class="rvs off" x1="120" y1="112" x2="158" y2="146"/><line class="rvs off dim" x1="176" y1="152" x2="206" y2="178"/>' + // 2: a wall breaks it
+    '<line class="rvb" x1="312" y1="118" x2="136" y2="113"/>' +                      // 3: shot from beyond the ring
+    '<line class="rvs" x1="40" y1="40" x2="110" y2="104"/>' +                         // 5: troopers shooting you
+    '<circle class="rvu" cx="120" cy="112" r="9"/><text class="rvut" x="120" y="134">You</text>' +
+    eye(188, 55, 1, true) + eye(210, 182, 2) + eye(316, 118, 3) + eye(96, 124, 4, true) + eye(36, 36, 5, true) +
+    "</svg>";
+  var L = [[1, true, "An enemy hero with a clear line of sight within about 50–60m"], [2, false, "A wall or anything else that blocks vision breaks the line"], [3, false, "Shooting you from beyond about 50–60m, even with line of sight"],
+    [4, true, "Very close, just under light melee range, even facing away"], [5, true, "Enemy troopers or structures targeting or shooting you"]];
+  return '<div class="gviz rv">' + svg + '<ol class="rvl">' + L.map(function (r) { return '<li class="' + (r[1] ? "on" : "") + '"><span class="rvn">' + r[0] + "</span><span><b>" + (r[1] ? "Reveals you" : "Doesn’t") + "</b>" + esc(r[2]) + "</span></li>"; }).join("") + "</ol></div>";
+}
+var GVIS = { "mid-boss": mbChart, "minimap-reveal": revealMap };
 // Map & objectives opens with a diagram of a lane: the steps you fight through, from your wave to the enemy Patron. Each step is its term
 // (tap for the pop-up, and links elsewhere on the page land on it), so these terms don't get cards of their own in the category view
 var LANE_KEYS = { "lane-layout": 1, troopers: 1, guardian: 1, walker: 1, "base-guardian": 1, shrine: 1, patron: 1, backdoor: 1 };
@@ -4311,8 +4399,21 @@ function setGlossView(v) {
 // terms so broad that "mentioned in" would list half the game: none for most damage terms and the two resists, items only for melee
 var USED_KEEP_DMG = { bleed: 1, burn: 1, parry: 1, melee: 1 }, USED_OFF = { "bullet-resist": 1, "spirit-resist": 1 }, USED_ITEMS_ONLY = { melee: 1 };
 // hand edits, by the ability's or item's name as the game spells it: drop ones that mention a term without causing it
-var USED_DROP = {
-  // "invisible": ["Sleep Dagger"],
+var USED_DROP = { // from the review of every mention (Nov 2026)
+  "spirit-power": ["Soul Exchange", "Leech Therapy", "Doorway", "Project Mind", "Power Slash", "Mercurial Magnum"],
+  "scaling": ["Siphon Life", "Flawless Advance", "Feed The Birds", "Blasted", "Dazzling Trick", "Light Eater", "Shining Wonder", "Strix Salvo", "Charged Shot", "Powder Keg", "Concussive Combustion", "Air Drop", "Entangling Thorns", "Stone Form", "Arctic Beam", "Frost Grenade", "Frozen Shelter", "Life Drain", "Ground Strike", "Heavy Barrage", "Rake", "Dust Devil", "Fire Scarabs", "Combo", "Healing Needles", "Lurking Terrors", "Leech Therapy", "Plot Armor", "Kinetic Carbine", "Pulse Grenade", "Affliction", "Tag Along", "Power Surge", "Serrated Knives", "Call Bell", "Jumpstart", "Pain Battery", "Flight", "Living Ink", "Goo Ball", "Splatter", "Willpower", "Card Trick", "Full Auto", "Crimson Slash", "Power Slash"],
+  "souls": ["Arctic Beam", "Lil Helpers", "Shadow Transformation"],
+  "cooldown": ["Shoulder Charge", "Flawless Advance", "Granny Long Legs", "Threadsap", "Exploding Uppercut", "Bashdown", "Rising Ram", "Ava", "Leaping Slash", "Return to Shadows", "Dazzling Trick", "Light Eater", "Shining Wonder", "Chimera Mk1", "Strix Salvo", "Rend", "Stalker's Mark", "Rejuvenating Aurora", "Borrowed Decree", "Grasping Hands", "Bullet Dance", "Sleep Dagger", "Bounce Pad", "Crackshot", "Concussive Combustion", "Air Drop", "Arctic Beam", "Frost Grenade", "Flog", "Heavy Barrage", "Medicinal Specter", "Spectral Wall", "Love Bites", "Rake", "Djinn's Mark", "Dust Devil", "Burrow", "Combo", "Sand Blast", "Scorn", "Leech Therapy", "Wretched Vapors", "Bookwyrm", "Rallying Charge", "Kinetic Carbine", "Paradoxical Swap", "Flying Cloak", "Royal Pestments", "Rule, Ratannia!", "Naptime", "Pillow Toss", "Killing Blow", "Slice and Dice", "Audience Participation", "Rook Battery", "Hotel Guest", "Luggage Cart", "Gutshot", "Ira Domini", "Jumpstart", "Shocking Reanimation", "Crow Familiar", "Flow State", "Living Ink", "Still Life", "Puddle Punch", "The Cube", "Lethal Venom", "Screwjab Dagger", "Alchemical Flask", "Binding Word", "Last Stand", "Willpower", "Crimson Slash", "Power Slash", "Shadow Transformation", "Melee Lifesteal", "Spirit Strike", "Guardian Ward", "Lifestrike", "Divine Barrier", "Spirit Burn"],
+  "charges": ["Shoulder Charge", "Itani Lo Sahn", "Granny Long Legs", "Threadsap", "Bashdown", "Blasted", "Rising Ram", "Kinetic Pulse", "Quantum Entanglement", "Charged Shot", "Smoke Bomb", "Powder Keg", "Flame Dash", "Life Drain", "Grapple", "Fire Scarabs", "Healing Needles", "Bookwyrm", "Rallying Charge", "Kinetic Carbine", "Time Wall", "Rule, Ratannia!", "Pillow Toss", "Static Charge", "Serrated Knives", "Call Bell", "Consecrating Grenade", "Hex-Lined Snap Trap", "Jumpstart", "Pain Battery", "Puddle Punch", "Screwjab Dagger", "Flying Slash", "Mystic Burst", "Quicksilver Reload", "Tankbuster", "Mercurial Magnum"],
+  "stamina": ["Heavy Barrage"],
+  "dash": ["Riposte", "Leaping Slash", "Rejuvenating Aurora", "Flame Dash", "Ice Path", "Slice and Dice", "Boot Kick"],
+  "slide": ["Granny Long Legs", "Ice Path"],
+  "troopers": ["Mini Turret", "Lil Helpers", "Slam Fire", "Heroic Aura"],
+  "minimap-reveal": ["Lurking Terrors"],
+  "neutral-camps": ["Slam Fire"],
+  "soul-orbs": ["Shining Wonder"],
+  "burn": ["Spirit Burn"],
+  "movement-silence": ["Traveler"]
 };
 // a sentence that says the term does NOT happen ("does not break your invisibility") doesn't count
 var USED_NEG = /\b(not|no longer|never|without|cannot|can['’]t|doesn['’]t|don['’]t|won['’]t|isn['’]t|aren['’]t|unaffected|immune)\b/i;
@@ -4474,7 +4575,7 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
     if (x.shield_per_sec != null) notes.push("The shield soaks up the first " + f(x.shield_per_sec) + " damage it takes every second" + (x.shield_per_min ? ", plus " + f(x.shield_per_min) + " more for each minute of the match" : "") + ". Only damage past that hurts its health.");
     if (x.health_per_min != null) notes.push("Health grows from the moment it spawns.");
     if (x.shred_resist) notes.push("Resist reduction works at " + (100 - x.shred_resist) + "% strength on it.");
-    return blocks.join("") + (notes.length ? '<div class="gsft">' + esc(notes.join(" ")) + "</div>" : "");
+    return blocks.join("") + (notes.length ? '<div class="gsft">' + esc(notes.join(" ")) + "</div>" : "") + '<div class="blk">Over a match</div>' + mbChart();
   }
   else if (g.k === "backdoor") { var b = M.backdoor || {}; add(b.mitigation != null ? b.mitigation + "%" : null, "Less damage from heroes"); add(b.regen != null ? b.regen + "/s" : null, "Health regen"); }
   else if (g.k === "rejuvenator") {
@@ -4634,7 +4735,7 @@ function relatedHtml(g) {
 function glossSheet(k, fromBack) {
   var g = GBY[k]; if (!g) return;
   if (!fromBack) { if (ISTACK[ISTACK.length - 1] !== "g:" + k) ISTACK.push("g:" + k); if (!FWD) FSTACK = []; }
-  var html = '<div class="gsh"' + gcStyle(g.c) + '><div class="gcat2"><span class="ghi">' + gcSvg(g.c) + "</span>" + esc(gcName(g.c)) + '</div><div class="gth">' + gTile(g) + "<h3>" + esc(g.t) + gChev(g.k) + "</h3></div><p>" + glossBody(g) + "</p>" + gameText(g) + listHtml(g) + mechHtml(g) + sourcesHtml(g) + usedHtml(g) + relatedHtml(g) + "</div>" +
+  var html = '<div class="gsh"' + gcStyle(g.c) + '><div class="gcat2"><span class="ghi">' + gcSvg(g.c) + "</span>" + esc(gcName(g.c)) + '</div><div class="gth">' + gTile(g) + "<h3>" + esc(g.t) + gChev(g.k) + "</h3></div><p>" + glossBody(g) + "</p>" + gameText(g) + (g.k === "minimap-reveal" ? revealMap() : "") + listHtml(g) + mechHtml(g) + sourcesHtml(g) + usedHtml(g) + relatedHtml(g) + "</div>" +
     // bottom row: back (when there is one), Close, then a small book button on the right that opens the full glossary
     '<div class="gsbtns">' + backBtn() + '<button class="ibtn" id="close">Close</button><button class="ibtn" id="gall" aria-label="Open the glossary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></button></div>';
   function bind() {
@@ -5340,7 +5441,7 @@ $("main").addEventListener("click", function (e) {
   var gmb = e.target.closest ? e.target.closest(".gmb") : null;
   if (gmb) { var gtc = gmb.closest(".gt"), op = !gtc.classList.contains("open"); gtc.classList.toggle("open", op); gmb.textContent = op ? "Show less" : "Show more"; gmb.setAttribute("aria-expanded", op); return; }
   var gt = state.tab === "glossary" && e.target.closest ? e.target.closest(".gt[id^='g-']") : null;
-  if (gt && !(e.target.closest && e.target.closest("a,button"))) { glossSheet(gt.id.slice(2)); return; }
+  if (gt && !(e.target.closest && e.target.closest("a,button,.gviz"))) { glossSheet(gt.id.slice(2)); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
   if (gc) { var h0 = $("gc-" + gc.getAttribute("data-gc")); if (h0) scrollToEl(h0, true); return; }
   var gv = e.target.closest ? e.target.closest("[data-gv]") : null;
@@ -5528,7 +5629,7 @@ $("sheet").onclick = function (e) { if (e.target === $("sheet")) sinkSheet(); };
     later(reset, 200);
   }
   sh.addEventListener("touchstart", function (e) {
-    clearTimeout(RT); act = e.touches.length === 1 && !(e.target.closest && e.target.closest('input[type="range"]')); mode = null; dd = 0; // dragging a slider never moves the card
+    clearTimeout(RT); act = e.touches.length === 1 && !(e.target.closest && e.target.closest('input[type="range"], .gviz.mb')); mode = null; dd = 0; // dragging a slider never moves the card
     if (act) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }
   }, { passive: true });
   sh.addEventListener("touchmove", function (e) {
