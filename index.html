@@ -199,7 +199,7 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .hc{--tc:#7a6a9a;position:relative;padding:0;border:0;border-radius:6px;background:none;aspect-ratio:3/4;-webkit-tap-highlight-color:transparent} /* the outline is a 1px ring outside the tile, not a border: on iOS the tile border lost its top/bottom lines at fractional positions (zoomed in), whether clipped by the tile or its own layer; nothing can overlap or clip a ring that sits outside, and the tile is no longer forced onto its own layer */
 /* the card is the lower part of the tile; the portrait (a cut-out down to about a third of the way) stands in it a little smaller, its head rising above the card */
 .hc::before{content:"";position:absolute;inset:0;box-sizing:border-box;border-radius:6px;background:linear-gradient(transparent,var(--panel2) 55%);border:1px solid var(--line);-webkit-mask:linear-gradient(rgba(0,0,0,.4),#000 55%);mask:linear-gradient(rgba(0,0,0,.4),#000 55%)} /* the card fades out over its top half; its outline keeps a faint line at the top, so the heroes poke out of it */
-.hc img{position:absolute;left:1px;bottom:1px;width:calc(100% - 2px);height:111%;object-fit:cover;object-position:50% 100%;clip-path:inset(-20% 0 0 0 round 0 0 5px 5px)} /* taller than the card, cut only at the bottom corners: heads, hats and horns rise out of the top */ /* no fade of its own: in Safari a fading image gets its own graphics layer, drawn a pixel off from the name strip over it; on the first screen the whole tile fades in under a cover instead (.hrv) */
+.hc img{position:absolute;left:1px;bottom:calc(1px - var(--dy,0%));width:calc(100% - 2px);height:111%;object-fit:cover;object-position:50% 100%;clip-path:inset(-20% 0 calc(var(--dy,0%) / 1.11) 0 round 0 0 5px 5px)} /* taller than the card, cut only at the bottom corners: heads, hats and horns rise out of the top */ /* no fade of its own: in Safari a fading image gets its own graphics layer, drawn a pixel off from the name strip over it; on the first screen the whole tile fades in under a cover instead (.hrv) */
 body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
 /* first screen: the whole tile fades in, not just the portrait. Not with opacity: in Safari a fading element gets its own graphics layer, and those layers
    were drawn a couple of pixels off (every other row too low) until the fade ended. Instead a cover in the page colour sits over the tile (and its outline)
@@ -1668,8 +1668,8 @@ function renderHeroes() {
   var html = statusLine() + '<div class="hg">';
   var first = FIRSTLIST; HLIST_T0 = performance.now();
   list.forEach(function (h, i) { // portraits fade in as they arrive; on the first screen after opening each whole tile (ring, shadow, name and portrait) fades in on its own turn, one after another
-    var hcc = state.hcol && state.hcol.heroes && state.hcol.heroes[h.class_name], tc = hcc && hcc.colors && hcc.colors[0];
-    html += '<button class="hc' + (first ? " hrv" : "") + '" data-hero="' + esc(h.class_name) + '"' + (tc ? ' style="--tc:' + tc + '"' : "") + (first ? ' data-d="' + Math.min(i * 30, 700) + '"' : "") + '><img decoding="async" alt="" src="' + esc(heroImg(h)) + '" onload="this.classList.add(\'ld\');heroIn(this.parentNode)" onerror="this.classList.add(\'ld\');heroIn(this.parentNode)"><span><em><i>' + esc(h.name) + "</i></em></span></button>";
+    var hcc = state.hcol && state.hcol.heroes && state.hcol.heroes[h.class_name], tc = hcc && hcc.colors && hcc.colors[0], dy = HERO_DROP[h.class_name];
+    html += '<button class="hc' + (first ? " hrv" : "") + '" data-hero="' + esc(h.class_name) + '"' + ((tc || dy) ? ' style="' + (tc ? "--tc:" + tc + ";" : "") + (dy ? "--dy:" + dy + "%" : "") + '"' : "") + (first ? ' data-d="' + Math.min(i * 30, 700) + '"' : "") + '><img decoding="async" alt="" src="' + esc(heroImg(h)) + '" onload="this.classList.add(\'ld\');heroIn(this.parentNode)" onerror="this.classList.add(\'ld\');heroIn(this.parentNode)"><span><em><i>' + esc(h.name) + "</i></em></span></button>";
   });
   FIRSTLIST = false;
   $("main").innerHTML = html + "</div>";
@@ -3313,6 +3313,9 @@ function sbkShow(on) { // the search bar makes room for the back button (and giv
 function pageWantsBack() { return (state.tab === "heroes" && !!state.hero) || state.tab === "item" || state.tab === "glossary" || state.tab === "news"; }
 function sbkWanted() { return !$("main").hidden && !searchOn() && !$("sq").matches(":focus") && pageWantsBack(); }
 new MutationObserver(function () { sbkShow(sbkWanted()); }).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // pages that have a way back
+// portraits whose art reaches the very top of the image would rise too far above their card: each is lowered so none rises
+// more than 8% of the card (measured from the game's card images; a new hero simply isn't lowered)
+var HERO_DROP = { hero_punkgoat: 3, hero_unicorn: 3, hero_ratking: 3, hero_shiv: 3, hero_chessmaster: 2.7, hero_fencer: 2.4, hero_haze: 1.8, hero_artist: 1.2, hero_nano: .7, hero_magician: .4 };
 function tintTiles() { // hero list name tags take each hero's colour once hero_colors.json is in
   var H = state.hcol && state.hcol.heroes; if (!H) return;
   Array.prototype.forEach.call(document.querySelectorAll(".hc[data-hero]"), function (t) { var c = H[t.getAttribute("data-hero")]; if (c && c.colors && c.colors[0]) t.style.setProperty("--tc", c.colors[0]); });
