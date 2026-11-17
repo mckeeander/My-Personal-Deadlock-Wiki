@@ -3210,14 +3210,15 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
   });
 })();
 var EASE = 0, EASE_DUR = 0;
+function easeIO(p) { return p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; } // every automatic scroll uses this: slow start, slow finish
 function easeScroll(y) { // ease-in-out scroll; a touch or wheel cancels it so it never fights your finger
   var from = window.pageYOffset || 0, d = y - from, t0 = 0, id = ++EASE;
-  var dur = Math.min(1000, Math.max(380, Math.abs(d) * 0.3)); EASE_DUR = dur;
+  var dur = Math.min(1350, Math.max(520, Math.abs(d) * 0.4)); EASE_DUR = dur;
   function stop() { EASE++; }
   window.addEventListener("touchstart", stop, { once: true, passive: true }); window.addEventListener("wheel", stop, { once: true, passive: true });
   requestAnimationFrame(function step(t) {
     if (id !== EASE) return; if (!t0) t0 = t;
-    var p = Math.min(1, (t - t0) / dur), e = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+    var p = Math.min(1, (t - t0) / dur), e = easeIO(p);
     window.scrollTo(0, from + d * e);
     if (p < 1) requestAnimationFrame(step);
   });
@@ -5898,7 +5899,7 @@ function gakFold(d) {
   if (!opening) { // fold this one shut
     if (calm) return gakSet(d, false);
     var h0 = d.offsetHeight; d.classList.remove("on"); var hs = sm.offsetHeight + 1; d._busy = true; d.style.overflow = "hidden";
-    var a = d.animate([{ height: h0 + "px" }, { height: hs + "px" }], { duration: 260, easing: "cubic-bezier(.4,0,.2,1)" });
+    var a = d.animate([{ height: h0 + "px" }, { height: hs + "px" }], { duration: 340, easing: "cubic-bezier(.65,0,.35,1)" });
     a.onfinish = function () { gakSet(d, false); d.style.overflow = ""; d._busy = false; };
     return;
   }
@@ -5912,11 +5913,12 @@ function gakFold(d) {
   var y1 = Math.max(0, Math.min(sm.getBoundingClientRect().top + y0 - 70, document.documentElement.scrollHeight - window.innerHeight));
   d._busy = true; d.style.overflow = "hidden"; d.style.height = hs2 + "px";
   var kids = d.querySelector(".gakb"); kids.animate([{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }], { duration: 380, easing: "ease-out", delay: 60, fill: "backwards" });
-  var t0 = 0, dur = 420;
+  var t0 = 0, dur = 600, off = false, stop = function () { off = true; };
+  window.addEventListener("touchstart", stop, { once: true, passive: true });
   requestAnimationFrame(function step(t) {
-    if (!t0) t0 = t; var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    if (!t0) t0 = t; var p = Math.min(1, (t - t0) / dur), e = easeIO(p);
     d.style.height = (hs2 + (full - hs2) * e) + "px";
-    if (Math.abs(y1 - y0) > 2) window.scrollTo(0, y0 + (y1 - y0) * e);
+    if (Math.abs(y1 - y0) > 2 && !off) window.scrollTo(0, y0 + (y1 - y0) * e);
     if (p < 1) requestAnimationFrame(step); else { d.style.height = ""; d.style.overflow = ""; d._busy = false; }
   });
 }
@@ -5959,7 +5961,7 @@ function shrinkSpacer(sp) {
   sp._stop = function () { live = false; sp._stop = null; };
   requestAnimationFrame(function step(t) {
     if (!live) return; if (!t0) t0 = t;
-    var p = Math.min(1, (t - t0) / 380), e = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+    var p = Math.min(1, (t - t0) / 500), e = easeIO(p);
     sp.style.height = h0 * (1 - e) + "px";
     var max = document.documentElement.scrollHeight - window.innerHeight; if ((window.pageYOffset || 0) > max) window.scrollTo(0, max); // the page shortens, so it scrolls up with it
     if (p < 1) requestAnimationFrame(step); else { sp.style.height = "0px"; sp._stop = null; }
@@ -5985,7 +5987,7 @@ function foldDetails(d) {
     y1 = d.getBoundingClientRect().top + (window.pageYOffset || 0) - off; // the live scroll: a browser that anchors scrolling may have moved it
     y1 = Math.max(0, Math.min(y1, document.documentElement.scrollHeight - window.innerHeight));
   }
-  var dist = Math.abs(y1 - y0), dur = opening ? Math.min(560, 300 + dist * 0.25) : 240, id = {}, t0 = 0;
+  var dist = Math.abs(y1 - y0), dur = opening ? Math.min(760, 420 + dist * 0.3) : 320, id = {}, t0 = 0;
   d._busy = true;
   parts.forEach(function (q) {
     q.el._fold = id; if (q.el.classList.contains("phd")) q.el.style.clipPath = "inset(-4px -4px 0 -4px)"; else q.el.style.overflow = "hidden"; q.el.style.height = q.h0 + "px"; // a chapter card clips only its bottom, so its edge (drawn just outside it) is never shaved off mid-animation
@@ -6012,7 +6014,7 @@ function foldDetails(d) {
   window.addEventListener("touchstart", stop, { once: true, passive: true });
   requestAnimationFrame(function step(t) {
     if (d._fold !== id) return; if (!t0) t0 = t;
-    var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    var p = Math.min(1, (t - t0) / dur), e = easeIO(p);
     parts.forEach(function (q) { q.el.style.height = (q.h0 + (q.h1 - q.h0) * e) + "px"; }); pad();
     if (y1 !== y0 && !cancelled) window.scrollTo(0, y0 + (y1 - y0) * e);
     if (p < 1) requestAnimationFrame(step); else { window.removeEventListener("touchstart", stop); finish(); }
