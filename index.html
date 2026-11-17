@@ -207,10 +207,10 @@ body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
 .hc.hrv::after{content:"";position:absolute;inset:-2px;border-radius:8px;background-color:rgba(20,17,26,1);transition:background-color .55s ease-out;pointer-events:none}
 .hc.hrv.in::after{background-color:rgba(20,17,26,0)}
 @media (prefers-reduced-motion:reduce){.hc.hrv::after,.credits{transition:none}}
-.hc span{position:absolute;left:1px;right:1px;bottom:1px;border-radius:0 0 5px 5px;padding:22px 3px 7px;display:flex;justify-content:center;background:linear-gradient(transparent,rgba(10,8,14,.85) 70%)}
+.hc span{position:absolute;left:1px;right:1px;bottom:1px;border-radius:0 0 5px 5px;padding:22px 3px 7px;display:flex;justify-content:center;background:linear-gradient(transparent,color-mix(in srgb,var(--tc) 32%,rgba(10,8,14,.88)) 72%)} /* the fade behind the name, tinted with the hero's colour */
 /* the name on a stuck-on label in the hero's colour, tilted like the tags on a hero card */
 .hc span em{font-style:normal;display:inline-block;max-width:100%;text-align:center;line-height:1.3}
-.hc span i{font-style:normal;padding:1px 6px 1px;border-radius:2px;background:color-mix(in srgb,var(--tc) 38%,#110e16);color:#fff;font-family:var(--body);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;text-shadow:0 1px 1px rgba(0,0,0,.6);box-shadow:2px 2px 0 color-mix(in srgb,var(--tc) 30%,#000);-webkit-box-decoration-break:clone;box-decoration-break:clone} /* each line of a two-line name gets its own label, as wide as its word */
+.hc span i{font-style:normal;padding:1px 6px 1px;border-radius:2px;background:color-mix(in srgb,var(--tc) 38%,#110e16);color:#fff;font-family:var(--body);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;text-shadow:0 1px 1px rgba(0,0,0,.6);box-shadow:2px 2px 0 rgba(0,0,0,.7);-webkit-box-decoration-break:clone;box-decoration-break:clone} /* each line of a two-line name gets its own label, as wide as its word */
 .hc:nth-child(3n+1) span em{transform:rotate(-2deg)}.hc:nth-child(3n+2) span em{transform:rotate(1.5deg)}.hc:nth-child(3n) span em{transform:rotate(-1deg)}
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
