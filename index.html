@@ -812,17 +812,17 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gsw .gh.gch{margin-top:22px}
 /* Terms: stacked category blocks; the open one is tinted in its colour */
 .gacc{display:flex;flex-direction:column;gap:0}
-.gak{border-bottom:1px solid rgba(255,255,255,.08);scroll-margin-top:16px}
+.gak{margin-bottom:8px;border:1px solid transparent;border-radius:16px;scroll-margin-top:16px}
+.gak:not(.on) > summary{padding:12px 12px;border-radius:15px;background:linear-gradient(90deg,rgba(var(--gcr),.16),rgba(var(--gcr),.03) 70%);box-shadow:inset 0 0 0 1px rgba(var(--gcr),.2)} /* closed: each row is its own card tinted in its colour */
 .gak > summary{list-style:none;display:flex;align-items:center;gap:12px;padding:12px 4px;cursor:pointer;-webkit-tap-highlight-color:transparent}.gak > summary::-webkit-details-marker{display:none}
 .gaki{flex:none;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--gct);color:var(--gc)}.gaki svg{width:19px;height:19px}
-.gak > summary b{flex:1;min-width:0;font-family:var(--disp);font-size:21px;font-weight:700;color:var(--fg)}
+.gak > summary b{flex:1;min-width:0;font-family:var(--disp);font-size:19px;font-weight:700;color:var(--fg)}
 .gak > summary small{font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums}
 .gakc{flex:none;width:18px;height:18px;color:var(--dim);transition:transform .25s ease}
-.gak{transition:background-color .3s ease,border-color .3s ease,box-shadow .3s ease}.gak.on{margin:6px 0;border:1px solid rgba(var(--gcr),.4);border-radius:16px;background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.05) 140px,rgba(0,0,0,.12));box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.gak{transition:background-color .3s ease,border-color .3s ease,box-shadow .3s ease}.gak.on{margin:0 0 8px;border:1px solid rgba(var(--gcr),.4);border-radius:16px;background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.05) 140px,rgba(0,0,0,.12));box-shadow:0 10px 24px rgba(0,0,0,.35)}
 .gak.on > summary{padding:12px 12px}
 .gak.on .gakc{transform:rotate(180deg);color:var(--gc)}
 .gakb{padding:2px 10px 10px}
-.gak:has(+ .gak.on){border-bottom-color:transparent}
 /* category titles: chapter style, like a hero page's: the icon, a big serif name, the count, and a short slanted bar on a faint line */
 .gh.gch{display:block;text-align:center;border:0;margin:44px 0 24px;padding:0;color:var(--fg);letter-spacing:.03em;text-transform:none}
 .gch .ghi{margin:0 auto 10px;width:36px;height:36px;border-radius:10px}.gch .ghi svg{width:20px;height:20px;color:var(--gc)}
