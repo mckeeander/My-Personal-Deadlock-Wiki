@@ -761,8 +761,6 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gban{position:relative;overflow:hidden;text-align:center;padding:46px 16px 44px;border-radius:18px;border:1px solid rgba(162,131,240,.28);background:radial-gradient(90% 150% at 22% 40%,#a283f05c,#a283f01f 45%,transparent 80%),radial-gradient(85% 140% at 95% 5%,#e6b45a40,#e6b45a12 45%,transparent 80%),radial-gradient(95% 150% at 62% 120%,#3fc9b040,#3fc9b010 45%,transparent 82%),var(--panel);box-shadow:0 10px 24px rgba(0,0,0,.3)}
 .gban .gtitle{margin:0;font-family:var(--disp);font-size:36px;letter-spacing:.03em}
 .gbar{display:block;position:relative;width:104px;height:1px;margin:14px auto 0;background:rgba(241,233,216,.28)}.gbar::after{content:"";position:absolute;left:50%;width:44px;margin-left:-22px;top:-2px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
-.gintro{margin:28px auto 0;max-width:34ch;text-align:center;font-size:14.5px;line-height:1.55;color:#c9bfd6;text-wrap:balance}
-.gnote{margin:0 auto;max-width:32ch;text-align:center;font-size:14px;line-height:1.55;color:#b9b0c6;text-wrap:balance}
 /* Terms of the day: stuck-on labels in each term's category colour, tilted like a hero card's tags */
 .gtod{margin-top:28px;text-align:center}
 .gtodl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
@@ -772,7 +770,14 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gtodb:nth-child(3n+1){transform:rotate(-2deg)}.gtodb:nth-child(3n+2){transform:rotate(1.5deg)}.gtodb:nth-child(3n){transform:rotate(-1deg)}
 /* every page: a soft purple glow from the top and faint warm and teal ones, fixed behind everything */
 body{background:transparent}
-body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 55% at 50% -5%,rgba(140,105,230,.17),transparent 70%),radial-gradient(90% 50% at 105% 105%,rgba(230,170,90,.08),transparent 70%),radial-gradient(70% 45% at -10% 70%,rgba(70,160,190,.06),transparent 70%)}
+/* a few soft sparkles drifting down from the top, behind everything; raised bands and cards cover them */
+.sparks{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.spk{position:absolute;top:-12px;width:var(--s);height:var(--s);opacity:0;animation:spkfall var(--d) linear var(--w) infinite}
+.spk::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,#fff6dd 0,rgba(240,215,160,.7) 30%,transparent 70%);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:spktw 2.6s ease-in-out infinite alternate}
+@keyframes spkfall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:var(--o)}50%{transform:translate(var(--x),50vh) rotate(90deg)}85%{opacity:var(--o)}100%{transform:translate(0,75vh) rotate(180deg);opacity:0}}
+@keyframes spktw{from{transform:scale(.7);filter:brightness(.8)}to{transform:scale(1.15);filter:brightness(1.3)}}
+@media (prefers-reduced-motion:reduce){.sparks{display:none}}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(145,108,236,.06) 45%,transparent 72%),radial-gradient(90% 50% at 105% 105%,rgba(230,170,90,.08),transparent 70%),radial-gradient(70% 45% at -10% 70%,rgba(70,160,190,.06),transparent 70%)}
 .gpanel{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:0;bottom:0;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.42))}
 .gpanel i{position:absolute;inset:0;clip-path:polygon(0 0,100% 24px,100% 100%,0 calc(100% - 24px))}
 .gjump{display:flex;flex-wrap:wrap;gap:8px 9px;margin-top:2px;padding:2px 0 4px}
@@ -859,7 +864,7 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .gte{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 6px 6px;border-radius:10px;background:rgba(var(--gcr),.07);border:1px solid rgba(var(--gcr),.22);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
 .gtkp{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(var(--gcr),.15);color:var(--gc);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .gtkp svg{width:17px;height:17px}.gtkp.ph img{width:100%;height:100%;object-fit:cover}
-.gtkx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;white-space:normal}.gtkx i{display:flex;align-items:center;gap:4px}.gsoul{flex:none;width:6px;height:11px}.gtkx b{font-size:14px;font-weight:600}.gtkx i{font-style:normal;font-size:12px;color:#a6cfa8}
+.gtkx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;white-space:normal}.gtkx i{display:flex;align-items:center;gap:2px}.gsoul{flex:none;width:6px;height:11px}.gtkx b{font-size:14px;font-weight:600}.gtkx i{font-style:normal;font-size:12px;color:#a6cfa8}
 .gte .gtc{color:var(--gc)}
 .gsft.gtkf{margin:12px 0 0 2px}
 /* Map & objectives: its own raised band, a dusky bronze, tilted the other way (high on the right), with each card lifted off it */
@@ -872,7 +877,7 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .gsw{position:relative}
 .gwash{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw);right:calc(50% - 50vw);top:-50px;clip-path:polygon(0 0,100% 24px,100% 100%,0 100%);height:min(900px,100%);background:radial-gradient(90% 55% at 50% 0,rgba(var(--gcr),.2),transparent 70%),linear-gradient(to bottom,rgba(var(--gcr),.09),transparent 80%)}
 .gband.gsl{margin-top:56px;margin-bottom:22px;padding-bottom:62px}
-.gband.gsl .ghh{font-size:0;line-height:0;height:0;overflow:hidden;margin:20px 0 0}.gband.gsl .gch + .ghh{margin:0}
+.gband.gsl .ghh{display:none}.gband.gsl .gch + .ghh{margin:0}
 .gband.gsl .gpanel i{background:linear-gradient(to bottom,#222d4d 0,#1d2642 140px,#192037 45%,#161b29 100%)}
 .gband.gsl .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent 80%),#1c1d22;box-shadow:0 4px 10px rgba(0,0,0,.25)}
 .gtsec{position:relative;isolation:isolate;margin:8px 0 40px;padding:6px 14px 18px;border-radius:20px;border:1px solid rgba(var(--gcr),.24);background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent clamp(160px,40%,320px)),rgba(255,255,255,.028);scroll-margin-top:16px}
@@ -4362,7 +4367,6 @@ function glossList() {
   var band = function (cls, id, inner) { return '<section class="gband ' + cls + '"' + (id ? ' id="' + id + '"' : "") + '><div class="gpanel" aria-hidden="true"><i></i></div>' + inner + "</section>"; };
   var chap = function (k, name, sub, id) { return '<h2 class="gh gch"' + (id ? ' id="' + id + '"' : "") + gcStyle(k) + '><span class="ghi">' + gcSvg(k) + "</span><b>" + esc(name) + "</b>" + (sub ? "<small>" + esc(sub) + "</small>" : "") + '<span class="gln2"></span></h2>'; };
   html = band("gpur", "", gswHtml()) +
-    '<p class="gnote">That’s the vocabulary. Next is the map: what stands between your wave and the enemy Patron, then when things happen across a match.</p>' +
     band("gbr", "gs-lane", chap("map", "Lane layout", "") + laneMap()) +
     '<section class="gtsec" id="g-match-timeline"' + gcStyle("time") + ">" + chap("time", "Match timeline", "") + timelineHtml() + "</section>" +
     band("gsl", "", catHtml(C("hero"), hit, q));
@@ -4496,8 +4500,7 @@ function renderGlossary() {
   state.gq = ""; state.gview = "cat";
   var tod = todTerms(5).map(function (g) { return '<button class="gtodb" data-g="' + g.k + '"' + gcStyle(g.c) + ">" + esc(g.t) + "</button>"; }).join("");
   $("main").innerHTML = '<div class="ghead"><div class="gban"><h1 class="gtitle">Glossary</h1><span class="gbar" aria-hidden="true"></span></div>' +
-    '<div class="gtod"><div class="gtodl">Terms of the day</div><div class="gtodt">' + tod + "</div></div>" +
-    '<p class="gintro">Deadlock is a 6v6 hero shooter with MOBA roots: teams push lanes alongside troopers, earn souls to buy items and level abilities, and win by destroying the enemy Patron. This is the language the game uses for all of it, in plain words.</p></div>' + '<div id="glist">' + glossList() + "</div>";
+    '<div class="gtod"><div class="gtodl">Terms of the day</div><div class="gtodt">' + tod + "</div></div>" + "</div>" + '<div id="glist">' + glossList() + "</div>";
 }
 // Terms of the day: five terms picked from the date, the same all day and different tomorrow, so there's a small set to look over (or edit) each day
 function todTerms(n) {
@@ -5871,6 +5874,16 @@ function refreshNow() {
     if (state.heroes.length) { state.note = "Couldn’t refresh (offline?). Showing saved data."; render(); } else showError(e);
   });
 };
+(function () { // the sparkles: a dozen, each with its own size, pace, sway and start
+  var box = document.createElement("div"); box.className = "sparks"; box.setAttribute("aria-hidden", "true");
+  for (var i = 0; i < 12; i++) {
+    var e = document.createElement("i"), r = function (a, b) { return a + Math.random() * (b - a); };
+    e.className = "spk"; e.style.left = r(2, 98).toFixed(1) + "%";
+    e.style.cssText += ";--s:" + r(5, 10).toFixed(1) + "px;--d:" + r(14, 26).toFixed(1) + "s;--w:-" + r(0, 26).toFixed(1) + "s;--x:" + r(-30, 30).toFixed(0) + "px;--o:" + r(.35, .8).toFixed(2);
+    box.appendChild(e);
+  }
+  document.body.appendChild(box);
+})();
 if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {} }
 
 setTimeout(function () { document.body.classList.remove("boot"); }, 6000); // failsafe: the credits always appear
