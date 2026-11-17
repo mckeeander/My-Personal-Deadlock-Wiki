@@ -768,16 +768,9 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gtodb{display:inline-block;font:inherit;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:11.5px;padding:5px 10px;border:0;border-radius:2px;box-shadow:2px 3px 0 rgba(0,0,0,.55);cursor:pointer;
   background:linear-gradient(rgba(var(--gcr),.3),rgba(var(--gcr),.3)),#1a1622;color:color-mix(in srgb,var(--gc) 55%,#fff)}
 .gtodb:nth-child(3n+1){transform:rotate(-2deg)}.gtodb:nth-child(3n+2){transform:rotate(1.5deg)}.gtodb:nth-child(3n){transform:rotate(-1deg)}
-/* every page: a soft purple glow from the top and faint warm and teal ones, fixed behind everything */
-body{background:transparent}
-/* a few soft sparkles drifting down from the top, behind everything; raised bands and cards cover them */
-.sparks{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-.spk{position:absolute;top:-12px;width:var(--s);height:var(--s);opacity:0;animation:spkfall var(--d) linear var(--w) infinite}
-.spk::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,#fff6dd 0,rgba(240,215,160,.7) 30%,transparent 70%);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:spktw 2.6s ease-in-out infinite alternate}
-@keyframes spkfall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:var(--o)}50%{transform:translate(var(--x),50vh) rotate(90deg)}85%{opacity:var(--o)}100%{transform:translate(0,75vh) rotate(180deg);opacity:0}}
-@keyframes spktw{from{transform:scale(.7);filter:brightness(.8)}to{transform:scale(1.15);filter:brightness(1.3)}}
-@media (prefers-reduced-motion:reduce){.sparks{display:none}}
-body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(145,108,236,.06) 45%,transparent 72%),radial-gradient(90% 50% at 105% 105%,rgba(230,170,90,.08),transparent 70%),radial-gradient(70% 45% at -10% 70%,rgba(70,160,190,.06),transparent 70%)}
+/* every page: a soft purple glow from the top and a faint teal one at the side */
+/* painted as the page's own background (not a fixed layer, which made Safari lift the hero tiles onto their own layers and draw them a pixel off) */
+body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(145,108,236,.06) 45%,transparent 72%) top/100% 100vh no-repeat,radial-gradient(70% 45% at -10% 70%,rgba(70,160,190,.06),transparent 70%) top/100% 100vh no-repeat,var(--bg)}
 .gpanel{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw - 2px);right:calc(50% - 50vw - 2px);top:0;bottom:0;filter:drop-shadow(0 14px 16px rgba(0,0,0,.72)) drop-shadow(0 -6px 12px rgba(0,0,0,.42))}
 .gpanel i{position:absolute;inset:0;clip-path:polygon(0 0,100% 24px,100% 100%,0 calc(100% - 24px))}
 .gjump{display:flex;flex-wrap:wrap;gap:8px 9px;margin-top:2px;padding:2px 0 4px}
@@ -5874,16 +5867,6 @@ function refreshNow() {
     if (state.heroes.length) { state.note = "Couldn’t refresh (offline?). Showing saved data."; render(); } else showError(e);
   });
 };
-(function () { // the sparkles: a dozen, each with its own size, pace, sway and start
-  var box = document.createElement("div"); box.className = "sparks"; box.setAttribute("aria-hidden", "true");
-  for (var i = 0; i < 12; i++) {
-    var e = document.createElement("i"), r = function (a, b) { return a + Math.random() * (b - a); };
-    e.className = "spk"; e.style.left = r(2, 98).toFixed(1) + "%";
-    e.style.cssText += ";--s:" + r(5, 10).toFixed(1) + "px;--d:" + r(14, 26).toFixed(1) + "s;--w:-" + r(0, 26).toFixed(1) + "s;--x:" + r(-30, 30).toFixed(0) + "px;--o:" + r(.35, .8).toFixed(2);
-    box.appendChild(e);
-  }
-  document.body.appendChild(box);
-})();
 if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {} }
 
 setTimeout(function () { document.body.classList.remove("boot"); }, 6000); // failsafe: the credits always appear
