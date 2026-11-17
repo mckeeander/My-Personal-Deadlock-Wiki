@@ -886,6 +886,24 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gmf{display:flex;gap:10px;align-items:flex-start;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.06)}.gmf:last-child{border-bottom:0}
 .gmf img{flex:none;width:52px;height:74px;object-fit:cover;border-radius:6px}
 .gmf b{display:block;font-size:14px;margin-bottom:2px}.gmf > div > span{display:block;font-size:13px;line-height:1.45;color:#cfc6d8}
+/* the lane card: York / Broadway / Greenwich, the lane's map faded in behind the text on the right */
+.gml2{border-radius:16px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.07);overflow:hidden}
+.gmlts{display:flex;gap:6px;padding:10px 10px 0}
+.gmlt{flex:1;padding:9px 0;border:0;border-radius:10px;font:inherit;font-size:13.5px;font-weight:700;color:var(--dim);background:rgba(255,255,255,.04);transition:background-color .2s ease,color .2s ease}
+.gmlt.on{background:color-mix(in srgb,var(--lc) 20%,transparent);color:var(--lc);box-shadow:inset 0 -2px 0 var(--lc)}
+.gmlb{position:relative;border-top:2px solid var(--lc);margin-top:10px}
+.gmlf{position:relative;transition:opacity .17s ease}.gmlf.out{opacity:0}
+.gmlbg{position:absolute;right:-44px;top:-8px;width:250px;opacity:.5;pointer-events:none;-webkit-mask:linear-gradient(to left,#000 40%,transparent);mask:linear-gradient(to left,#000 40%,transparent)}
+.gmlx{position:relative;padding:18px 16px 0;max-width:68%}
+.gmlx b{display:block;font-family:var(--disp);font-size:26px;color:var(--lc);line-height:1.1}.gmlx small{display:block;font-size:12px;color:var(--dim);margin-top:3px}
+.gmlx p{margin:10px 0 0;font-size:14px;line-height:1.55;color:#d9d1e3;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.gmcw{position:relative;margin-top:16px;padding-bottom:14px}
+.gmcw::before,.gmcw::after{content:"";position:absolute;top:0;bottom:36px;width:34px;z-index:2;pointer-events:none;opacity:0;transition:opacity .2s ease}
+.gmcw::before{left:0;background:linear-gradient(to right,rgba(14,11,20,.95),transparent)}.gmcw::after{right:0;background:linear-gradient(to left,rgba(14,11,20,.95),transparent)}
+.gmcw.l::before,.gmcw:not(.l)::after,.gmcw.r::after{opacity:1}.gmcw.l:not(.r)::after{opacity:0}
+.gmcr{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;scroll-padding:0 16px;scroll-snap-type:x mandatory;scrollbar-width:none}.gmcr::-webkit-scrollbar{display:none}
+.gmcr figure{flex:none;width:80%;margin:0;scroll-snap-align:start}.gmcr img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;display:block;background:var(--panel2);box-shadow:0 6px 14px rgba(0,0,0,.4)}
+.gmcr figcaption{text-align:center;font-size:12.5px;font-weight:600;color:#d6cee0;margin-top:7px}
 /* Map & objectives: its own raised band, a dusky bronze, tilted the other way (high on the right), with each card lifted off it */
 /* raised bands, like a hero page's Abilities and Popular items: they run past both screen edges, tilt, and cast a shadow. Purple for the terms,
    bronze for the lane (tilted the other way), slate for Hero effects */
@@ -3314,8 +3332,8 @@ function pageWantsBack() { return (state.tab === "heroes" && !!state.hero) || st
 function sbkWanted() { return !$("main").hidden && !searchOn() && !$("sq").matches(":focus") && pageWantsBack(); }
 new MutationObserver(function () { sbkShow(sbkWanted()); }).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // pages that have a way back
 // portraits whose art reaches the very top of the image would rise too far above their card: each is lowered so none rises
-// more than 8% of the card (measured from the game's card images; a new hero simply isn't lowered)
-var HERO_DROP = { hero_punkgoat: 3, hero_unicorn: 3, hero_ratking: 3, hero_shiv: 3, hero_chessmaster: 2.7, hero_fencer: 2.4, hero_haze: 1.8, hero_artist: 1.2, hero_nano: .7, hero_magician: .4 };
+// more than about 6% of the card (measured from the game's card images; a new hero simply isn't lowered)
+var HERO_DROP = { hero_punkgoat: 5.5, hero_unicorn: 5.5, hero_ratking: 5.5, hero_shiv: 5.5, hero_chessmaster: 5.2, hero_fencer: 4.9, hero_haze: 4.3, hero_artist: 3.7, hero_nano: 3.2, hero_magician: 2.9 };
 function tintTiles() { // hero list name tags take each hero's colour once hero_colors.json is in
   var H = state.hcol && state.hcol.heroes; if (!H) return;
   Array.prototype.forEach.call(document.querySelectorAll(".hc[data-hero]"), function (t) { var c = H[t.getAttribute("data-hero")]; if (c && c.colors && c.colors[0]) t.style.setProperty("--tc", c.colors[0]); });
@@ -4530,12 +4548,28 @@ var MAPDATA = {
     ["Spawn rooms", "Each has a shop and a Soul Well (from 3:00), heals allies quickly, and four Base Turrets shoot intruders."]
   ]
 };
+function laneCard() { // the chosen lane: three buttons, then its map as a faded backdrop behind the name and notes, then its photos
+  var L = MAPDATA.lanes, cur = L.filter(function (l) { return l.k === state.lane; })[0] || L[0];
+  var tabs = L.map(function (l) { return '<button class="gmlt' + (l === cur ? " on" : "") + '" data-lane="' + l.k + '" style="--lc:' + l.c + '">' + esc(l.name) + "</button>"; }).join("");
+  return '<div class="gmlts">' + tabs + '</div><div class="gmlb" style="--lc:' + cur.c + '"><div class="gmlf" id="gmlf"><img class="gmlbg" alt="" src="img/map/lane-' + cur.k + '.png"><div class="gmlx"><b>' + esc(cur.name) + "</b><small>" + esc(cur.aka) + "</small><p>" + glossText(cur.t) + "</p></div>" +
+    '<div class="gmcw"><div class="gmcr">' + cur.locs.map(function (x) { return '<figure><img loading="lazy" alt="" src="img/map/' + x[0] + '.jpg"><figcaption>' + esc(x[1]) + "</figcaption></figure>"; }).join("") + "</div></div></div></div>";
+}
+function setLane(k) {
+  if (state.lane === k) return; state.lane = k;
+  var f = $("gmlf"), box = $("gml2"); if (!box) return;
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var swap = function () { box.innerHTML = laneCard(); var n = $("gmlf"); if (!calm) { n.classList.add("out"); void n.offsetWidth; n.classList.remove("out"); } };
+  if (calm || !f) return swap();
+  f.classList.add("out"); setTimeout(swap, 170); // fade out, swap, fade in
+}
+document.addEventListener("scroll", function (e) { // the photo row: a shadow at whichever edge has more to see
+  var r = e.target; if (!r.classList || !r.classList.contains("gmcr")) return;
+  r.parentNode.classList.toggle("l", r.scrollLeft > 4); r.parentNode.classList.toggle("r", r.scrollLeft < r.scrollWidth - r.clientWidth - 4);
+}, true);
 function mapSec(part) {
   var D = MAPDATA, I = function (k, ext) { return "img/map/" + k + (ext || ".jpg"); }, T = function (t) { return glossText(t); };
   var photo = function (k, cap) { return '<figure class="gmph"><img loading="lazy" alt="" src="' + I(k) + '"><figcaption>' + esc(cap) + "</figcaption></figure>"; };
-  var lanes = D.lanes.map(function (l) {
-    return '<div class="gml" style="--lc:' + l.c + '"><div class="gmlh"><img loading="lazy" alt="" src="' + I("lane-" + l.k, ".png") + '"><div><b>' + esc(l.name) + "</b><small>" + esc(l.aka) + "</small><p>" + T(l.t) + '</p></div></div><div class="gmrow">' + l.locs.map(function (x) { return photo(x[0], x[1]); }).join("") + "</div></div>";
-  }).join("");
+  var lanes = '<div class="gml2" id="gml2">' + laneCard() + "</div>";
   var card = function (x) { return '<div class="gmc"><img loading="lazy" alt="" src="' + I(x.k) + '"><div class="gmct"><b>' + esc(x.name) + "</b><small>" + esc(x.side) + "</small><p>" + T(x.t) + "</p></div></div>"; };
   var feats = D.features.map(function (f) { return '<div class="gmf">' + (f[2] ? '<img loading="lazy" alt="" src="' + I(f[2]) + '">' : "") + "<div><b>" + esc(f[0]) + "</b><span>" + T(f[1]) + "</span></div></div>"; }).join("");
   var h = function (t) { return '<div class="gms">' + t + "</div>"; };
@@ -5693,6 +5727,8 @@ $("main").addEventListener("click", function (e) {
   if (gl) { if (state.tab === "glossary") { glossReveal(gl.getAttribute("data-g")); var t0 = $("g-" + gl.getAttribute("data-g")); if (t0) { var fromCard = gl.closest(".gt"), fromY = window.pageYOffset || 0; EASE_DUR = 0; scrollToEl(t0, true); setTimeout(function () { t0.classList.add("pop"); setTimeout(function () { t0.classList.remove("pop"); }, 1700); if (fromCard && fromCard !== t0) showBackGloss(fromCard.id.slice(2), fromY); }, EASE_DUR); return; } } glossSheet(gl.getAttribute("data-g")); return; }
   var gld = state.tab === "glossary" && e.target.closest ? e.target.closest(".gld[data-g], .glbd[data-g], .gte[data-g], .gtodb[data-g]") : null;
   if (gld) { glossSheet(gld.getAttribute("data-g")); return; }
+  var gln = e.target.closest ? e.target.closest("[data-lane]") : null;
+  if (gln) { setLane(gln.getAttribute("data-lane")); return; }
   var gmb = e.target.closest ? e.target.closest(".gmb") : null;
   if (gmb) { var gtc = gmb.closest(".gt"), op = !gtc.classList.contains("open"); gtc.classList.toggle("open", op); gmb.textContent = op ? "Show less" : "Show more"; gmb.setAttribute("aria-expanded", op); return; }
   var gt = state.tab === "glossary" && e.target.closest ? e.target.closest(".gt[id^='g-']") : null;
