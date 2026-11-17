@@ -116,6 +116,22 @@
    "comeback_redirect": 0.7,
    "tick_start_sec": 480
   },
+  "urn": {
+   "first_sec": 600,
+   "respawn_sec": 300,
+   "souls": 250,
+   "souls_per_min": 70
+  },
+  "rift": {
+   "respawn_sec": 420,
+   "souls_base": 1260,
+   "souls_per_min": 222,
+   "capture_sec": 12,
+   "capture_sec_behind": 6,
+   "capture_sec_ahead": 18,
+   "draw_sec": 60.0,
+   "radius_m": 20
+  },
   "shop": {
    "tier_prices": [
     800,
@@ -367,22 +383,6 @@
     "PowerIncrease": true,
     "AbilityPoints": 1
    }
-  ],
-  "urn": {
-   "first_sec": 600,
-   "respawn_sec": 300,
-   "souls": 250,
-   "souls_per_min": 70
-  },
-  "rift": {
-   "respawn_sec": 420,
-   "souls_base": 1260,
-   "souls_per_min": 222,
-   "capture_sec": 12,
-   "capture_sec_behind": 6,
-   "capture_sec_ahead": 18,
-   "draw_sec": 60.0,
-   "radius_m": 20
-  }
+  ]
  }
 }
