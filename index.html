@@ -776,7 +776,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gsep{display:block;position:relative;height:1px;margin:22px 0 18px;background:rgba(241,233,216,.14)}.gsep::after{content:"";position:absolute;left:50%;top:-1.5px;width:34px;margin-left:-17px;height:3px;border-radius:1px;transform:skewX(-28deg);background:#6fcfbd}
 .gdyk{position:relative;padding:0 34px 0 0}
 .gdykl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7fd6c6}
-.gdyk p{margin:8px 0 0;font-size:14px;line-height:1.55;color:#d6cee0;overflow:hidden;transition:opacity .17s ease,height .25s ease}.gdyk p.out{opacity:0}
+.gdyk p{margin:8px 0 0;font-size:14px;line-height:1.55;color:#d6cee0;overflow:hidden;transition:opacity .3s ease,height .35s ease}.gdyk p.out{opacity:0}
 .gdie{position:absolute;right:-6px;top:-6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:rgba(111,207,189,.12);color:#7fd6c6}.gdie svg{width:16px;height:16px}
 .gdie.roll svg{animation:dieroll .45s cubic-bezier(.3,.7,.3,1)}@keyframes dieroll{from{transform:rotate(-200deg) scale(.7)}to{transform:none}}
 /* Terms of the day: stuck-on labels in each term's category colour, tilted like a hero card's tags */
@@ -919,6 +919,10 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gmcr{display:flex;gap:10px;overflow-x:auto;padding:0 10% 4px;scroll-snap-type:x mandatory;scrollbar-width:none}.gmcr::-webkit-scrollbar{display:none}
 .gmcr figure{flex:none;width:80%;margin:0;scroll-snap-align:center}.gmcr img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;display:block;background:var(--panel2);box-shadow:0 6px 14px rgba(0,0,0,.4)}
 .gmcr figcaption{text-align:center;font-size:12.5px;font-weight:600;color:#d6cee0;margin-top:7px}
+.ghf{display:flex;flex-direction:column}
+.ghx{display:flex;gap:12px;align-items:flex-start;padding:10px 2px;border-bottom:1px solid rgba(255,255,255,.06)}.ghx:last-child{border-bottom:0}
+.ghx img,.ghe{flex:none;width:52px;height:52px;object-fit:contain;border-radius:10px;background:rgba(var(--gcr),.1)}.ghx .ghe{display:flex!important;align-items:center;justify-content:center;color:rgba(var(--gcr),.6)}.ghx .ghe svg{width:24px;height:24px;margin:0}
+.ghx > div{flex:1;min-width:0}.ghx b{display:block;font-size:14px}.ghx small{display:block;font-size:11.5px;color:var(--gc);margin:1px 0 3px}.ghx span{display:block;font-size:13px;line-height:1.45;color:#cfc6d8}
 /* Map & objectives: its own raised band, a dusky bronze, tilted the other way (high on the right), with each card lifted off it */
 /* raised bands, like a hero page's Abilities and Popular items: they run past both screen edges, tilt, and cast a shadow. Purple for the terms,
    bronze for the lane (tilted the other way), slate for Hero effects */
@@ -4245,9 +4249,11 @@ var GLOSS = [
   { k: "mid-boss", c: "map", t: "Mid Boss", a: ["mid boss", "midboss", "mid-boss", "temple guardian"], d: "A huge neutral boss in a pit under the middle of the map, there from the start of the match. It only attacks heroes inside its pit, beaming whoever is closest, and it can only be hurt from inside the pit too. A shield that refills constantly soaks up the first part of the damage it takes every second, so a lone hero barely scratches it. Its health and its shield both grow every minute, and it roars to both teams when it drops to 25% health. Killing it gives the team souls and 2 [[permanent-buffs|permanent buffs]] per player, and drops the [[rejuvenator|Rejuvenator]]. It comes back 7 minutes after the first kill, 6 after the second, and 5 after each one after that. The damage report calls it the Temple Guardian." },
   { k: "rejuvenator", c: "map", t: "Rejuvenator", a: ["rejuvenator", "rejuv", "rejuvenator credit", "rejuvenator crystal", "rejuvenator crystals"], d: "When the [[mid-boss|Mid Boss]] dies, three crystals float down over its pit. They can’t be touched until they land. Breaking one with a heavy [[melee|melee]] gives your team a revive and fully heals whoever broke it. Either team can break them, no matter who killed the Mid Boss, so revives can be stolen. While your team holds revives, anyone who dies gets back up on the spot a few seconds later instead of waiting to respawn, using one up. Each player can only use one. The buff ends when the revives run out or the time is up." },
   { k: "permanent-buffs", c: "map", t: "Permanent buffs", a: ["permanent buff", "permanent buffs", "permanent stat buff", "permanent stat buffs", "permanent stat boost", "permanent stat boosts"], d: "A small stat boost that lasts for the rest of the match, picked at random from a set list. They stack. [[golden-statues|Golden Statues]] drop them, the [[mid-boss|Mid Boss]] gives 2 to each player on the team that kills it, and the Golden Goose Egg item grants them when it hatches. Not the same as [[map-buffs|map buffs]], which wear off after a few minutes." },
-  { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups"], d: "Glowing pickups around the map, broken open with a melee hit. Each gives a few minutes of extra stats, and they get stronger as the match goes on." },
+  { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups", "bridge buff", "bridge buffs", "rune", "runes"], d: "Glowing stones on the two bridges by the [[soul-urn|Soul Urn]] spawns, from 5 minutes and every 5 minutes after. Break one with a heavy melee for a few minutes of extra stats: Casting, Gun, Movement or Survival. They get stronger as the match goes on, show on the minimap by type, and are lost when you die (or taken by Cursed Relic)." },
+  { k: "soul-urn", c: "map", t: "Soul Urn", a: ["soul urn", "urn", "spirit urn", "idol"], d: "A talking urn that floats down by a side-lane bridge from 10 minutes and every 5 minutes after, alternating between the Yellow and Green lanes (Yellow first). Hit it with a melee to pick it up and carry it to the drop-off on the other side of the map for souls and 4 [[permanent-buffs|permanent buffs]]. The carrier is faster with more [[stamina|stamina]] and full [[slow-resist|Slow Resist]], but can’t use ziplines, teleporters or [[parry|parry]], and drops it to any melee hit or [[stun|stun]]. Held more than 45 seconds, its value starts draining away." },
+  { k: "unstable-rift", c: "map", t: "Unstable Rift", a: ["unstable rift", "rift", "the rift"], d: "A capture point that opens on a random side-lane bridge around 11 minutes and about every 7 after. It glows on the bridge first, is announced a minute later, and opens 20 seconds after that. A team captures it by being the only one in the circle; both teams fill their bar while inside, and anyone there shows on the [[minimap-reveal|minimap]]. The winners get souls straight away and a wave of big black Rift Troopers in that lane. The team behind in souls captures faster and gets resist inside it." },
   { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues", "breakable", "breakables", "crate", "crates"], d: "Golden statues around the map that drop a small [[permanent-buffs|permanent stat boost]] when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
-  { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Monster camps around the map, in three sizes. They give souls, and their bounty grows a little every minute." },
+  { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Camps of Haunts, neutral monsters with a single eye, in three sizes: small from 2:00, medium from 5:00, large from 8:00. They give souls split between everyone who hit one in the last five seconds, and their bounty grows a little every minute. Each camp is one family, always the same ones in the same place; the medium and large ones have a special attack." },
   // economy (numbers from the game data)
   { k: "shop", c: "econ", t: "Shop", a: ["shop", "shops", "item tiers", "sell", "selling", "sell back"], d: "Items come in four price tiers. You can sell an item back for part of what you paid." },
   { k: "kill-bounty", c: "econ", t: "Kill bounty", a: ["kill bounty", "hero bounty", "bounty", "assist", "assists"], d: "Souls for killing an enemy hero. They’re split between the killer and everyone who damaged the hero shortly before, and the killer gets the biggest share." },
@@ -4370,7 +4376,7 @@ var GSI = { headshot: "gcrit", "fire-rate": "bps", melee: "fist", "spirit-power"
   "move-speed": "boot", stun: "stun", silence: "silence", sleep: "sleep", immobilize: "root", disarm: "disarm", bleed: "bleed", curse: "curse", burn: "burn",
   displace: "knock", slide: "slide", falloff: "range", dot: "duration" };
 // map terms that have a picture of their own (img/)
-var GIMG = { troopers: "img/troopers.jpg", guardian: "img/guardian.jpg", walker: "img/walker.jpg", "base-guardian": "img/base-guardian.jpg", shrine: "img/shrine.jpg", patron: "img/patron.jpg", "golden-statues": "img/golden-statue.png" };
+var GIMG = { "soul-urn": "img/soul-urn.png", "unstable-rift": "img/unstable-rift.png", "map-buffs": "img/map-buffs.jpg", "neutral-camps": "img/haunt-gutter-ghoul.png", troopers: "img/troopers.jpg", guardian: "img/guardian.jpg", walker: "img/walker.jpg", "base-guardian": "img/base-guardian.jpg", shrine: "img/shrine.jpg", patron: "img/patron.jpg", "golden-statues": "img/golden-statue.png" };
 // hand-drawn icons for terms the game has no icon or picture for, so each card is recognisable at a glance
 var GSVG = {
   "bonus-damage": '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10"/>',
@@ -4589,6 +4595,18 @@ function placeSheet(k) { // a district or base, opened: its photo, name and note
   clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
   $("close").onclick = sinkSheet;
 }
+// Haunt families (deadlock.wiki, Haunt): name, where, what sets them apart, picture
+var HAUNTS = [
+  ["Gutter Ghoul", "Everywhere; tiers I–III", "The most common family. Bigger ones lob toxic waste that leaves a damaging, slowing puddle.", "gutter-ghoul"],
+  ["Underhand", "Side-lane rooftops, tunnels, the basketball court; II–III", "No melee. Fires a slow-tracking laser that leaves a burning trail.", ""],
+  ["Barrel Mimic", "Haunted Lot garage, Shipyard Docks; II–III", "Hides as a barrel. Channels for 4 seconds, then explodes around itself.", ""],
+  ["Specimen", "Times Square on Broadway; I–II", "A hand in a jar. The medium one explodes when it dies, slowing you.", ""],
+  ["Past Dues", "Greenwich, and one camp in the Plaza; I–II", "Overdue library books. The medium one throws books that slow, then put you to sleep.", ""],
+  ["Stage Hand", "Theater only; I–III", "Marionettes. Same burning-trail laser as Underhands.", ""],
+  ["Crabbage Pot", "Chinatown, and one large camp in Central Park; I–III", "A thorn burst around itself that deals bullet damage and can be parried.", ""],
+  ["Festival Spirit", "Chinatown only; II–III", "Paper lanterns. No melee; fires homing fireworks.", "festival-spirit"],
+  ["Slum Shroom", "Haunted Lot only; II–III", "The rarest: two camps. Scatters spore mines that slow and halve healing.", "slum-shroom"]
+];
 function mapSec(part) {
   var D = MAPDATA, I = function (k, ext) { return "img/map/" + k + (ext || ".jpg"); }, T = function (t) { return glossText(t); };
   var photo = function (k, cap) { return '<figure class="gmph"><img loading="lazy" alt="" src="' + I(k) + '"><figcaption>' + esc(cap) + "</figcaption></figure>"; };
@@ -4602,6 +4620,7 @@ function mapSec(part) {
     h("Lanes") + lanes + "</section>";
   return title("gs-city", "The city") + '<div class="gms first">Districts</div>' + '<figure class="gmmini sm"><img loading="lazy" alt="The four districts" src="' + I("districts", ".png") + '"></figure>' + D.districts.map(card).join("") +
     h("Bases") + D.bases.map(card).join("") +
+    h("Haunts") + '<div class="ghf">' + HAUNTS.map(function (x) { return '<div class="ghx">' + (x[3] ? '<img loading="lazy" alt="" src="img/haunt-' + x[3] + '.png">' : '<span class="ghe" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r=".8" fill="currentColor"/></svg></span>') /* no picture yet: a single eye, which every Haunt has */ + '<div><b>' + esc(x[0]) + '</b><small>' + esc(x[1]) + "</small><span>" + esc(x[2]) + "</span></div></div>"; }).join("") + "</div>" +
     h("Around the map") + '<div class="gmfs">' + feats + "</div></section>";
 }
 // Map & objectives opens with a diagram of a lane: the steps you fight through, from your wave to the enemy Patron. Each step is its term
@@ -4636,7 +4655,7 @@ function laneMap() {
 function renderGlossary() {
   state.gq = ""; state.gview = "cat";
   var tod = todTerms(5).map(function (g) { return '<button class="gtodb" data-g="' + g.k + '"' + gcStyle(g.c) + ">" + esc(g.t) + "</button>"; }).join("");
-  $("main").innerHTML = '<div class="ghead"><div class="gopen"><div class="gok">Deadlock</div><h1 class="gtitle">Glossary</h1><span class="gob" aria-hidden="true"></span></div>' +
+  $("main").innerHTML = '<div class="ghead"><div class="gopen"><div class="gok">' + esc(new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })) + '</div><h1 class="gtitle">Glossary</h1><span class="gob" aria-hidden="true"></span></div>' +
     '<div class="gday"><div class="gtod"><div class="gtodl">Terms of the day</div><div class="gtodt">' + tod + "</div></div>" +
     '<span class="gsep" aria-hidden="true"></span><div class="gdyk"><div class="gdykl">Did you know</div><button class="gdie" id="gdie" aria-label="Another fact">' + DIE_SVG + '</button><p id="gdykt">' + esc(dykPick()) + "</p></div></div></div>" + '<div id="glist">' + glossList() + "</div>";
 }
@@ -4656,7 +4675,15 @@ var DYK = [
   "Deadlock’s Times Square is a small anachronism: the real one is named after the New York Times building, which in the game is the New York Oracle building.",
   "The Atlas statue in the Plaza is based on a similar statue at Rockefeller Center.",
   "The map was first called “street_test”, then “dl_streets”, and now “dl_midtown”.",
-  "Many buildings in the Cursed Apple’s skyline are based on real New York buildings from the early 1900s."
+  "Many buildings in the Cursed Apple’s skyline are based on real New York buildings from the early 1900s.",
+  "The Soul Urn’s name is Earnest. It’s a civil servant of the New York Municipal Coven, and it calls Billy “William”.",
+  "The Soul Urn is a bit of a fashionista: it compliments Shiv’s pompadour, Dynamo’s jacket and Vindicta’s lack of shoes.",
+  "The Unstable Rift was called “Dying Star” during development.",
+  "Before it was its own objective, the Unstable Rift was briefly part of the Soul Urn: delivering the Urn started the capture point.",
+  "Past Dues are overdue library books, stamped “PAST DUE”. The bigger one’s head looks like a lava lamp.",
+  "Crabbage Pots may be a nod to Audrey II, the man-eating plant from The Little Shop of Horrors.",
+  "Barrel Mimics are a spin on the Dungeons & Dragons mimic, a monster disguised as an everyday object.",
+  "Before the City Never Sleeps update, every camp held the same plain “Neutrals”. Gutter Ghouls still use their old files."
 ];
 var DIE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/></svg>';
 function dykPick() { var i; do { i = Math.floor(Math.random() * DYK.length); } while (DYK.length > 1 && i === state.dyk); state.dyk = i; return DYK[i]; }
@@ -4669,8 +4696,8 @@ function dykNext() {
   setTimeout(function () {
     t.style.height = "auto"; t.textContent = dykPick(); var h1 = t.offsetHeight; // measure the new text
     t.style.height = h0 + "px"; void t.offsetWidth; t.style.height = h1 + "px"; t.classList.remove("out"); // grow or shrink to it while fading in
-    setTimeout(function () { t.style.height = ""; }, 260);
-  }, 170);
+    setTimeout(function () { t.style.height = ""; }, 380);
+  }, 300);
 }
 // Terms of the day: five terms picked from the date, the same all day and different tomorrow, so there's a small set to look over (or edit) each day
 function todTerms(n) {
@@ -4827,9 +4854,9 @@ function timelineHtml() {
   at(180, "souls", "Soul Wells open in the spawn rooms"); ic("soul-orbs");
   at(480, "neutral-camps", "Sinner’s Sacrifice camps", "11 camps, 15 machines"); ic("investment");
   at(480, "golden-statues", "Breakables in the Sunken Plaza and Bell Tower");
-  at(600, null, "Soul Urn drops", "Lands 12.5s later, then every 5 min"); ic("comeback-souls");
+  at(600, "soul-urn", "Soul Urn drops", "Lands 12.5s later, then every 5 min");
   at(600, "golden-statues", "Breakables above the Mid Boss");
-  at(660, null, "Unstable Rift, earliest", "About 11:00, then every 7 min or so"); ic("lane-layout");
+  at(660, "unstable-rift", "Unstable Rift", "11:00 give or take a minute, then about every 7");
   at(720, "guardian", "Guardians lose their damage resist");
   at(1080, "walker", "Walkers lose their damage resist");
   if (T.wave_late_sec) at(T.wave_late_min * 60, "troopers", "Troopers every " + T.wave_late_sec + "s", "Was " + T.wave_sec + "s");
@@ -4897,6 +4924,16 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
     add(r.crystals != null ? String(r.crystals) : "3", "Crystals (one revive each)"); add(r.drop_sec != null ? r.drop_sec + "s" : null, "Time to land");
     add(r.revive_delay_sec != null ? r.revive_delay_sec + "s" : null, "Revive delay"); add(r.revive_health_pct != null ? Math.round(r.revive_health_pct) + "%" : null, "Revive health");
     add(r.duration != null ? Math.round(r.duration / 60) + " min" : null, "Revives last up to");
+  }
+  else if (g.k === "soul-urn" && M.urn) {
+    var U = M.urn; add(U.souls != null ? f(U.souls) : null, "Souls to start"); add(U.souls_per_min != null ? "+" + f(U.souls_per_min) : null, "Souls per minute"); add("4", "Permanent buffs");
+    add(U.first_sec ? Math.round(U.first_sec / 60) + " min" : null, "First one"); add(U.respawn_sec ? "Every " + Math.round(U.respawn_sec / 60) + " min" : null, "After that");
+    return '<div class="stats">' + T.join("") + '</div><div class="gsft">The value is set when the Urn spawns and is paid out as soul orbs the enemy can deny; an ally who grabs one splits it with the carrier.</div>';
+  }
+  else if (g.k === "unstable-rift" && M.rift) {
+    var R = M.rift; add(R.souls_base != null ? f(R.souls_base + (R.souls_per_min || 0)) : null, "Souls to start"); add(R.souls_per_min != null ? "+" + f(R.souls_per_min) : null, "Souls per minute, from 13 min");
+    add(R.capture_sec ? R.capture_sec + "s" : null, "To capture"); add(R.capture_sec_behind ? R.capture_sec_behind + "s / " + R.capture_sec_ahead + "s" : null, "Team behind / ahead, at most"); add(R.radius_m ? R.radius_m + "m" : null, "Circle radius");
+    return '<div class="stats">' + T.join("") + "</div>" + (R.draw_sec ? '<div class="gsft">Contested for ' + R.draw_sec + "s, it ends in a draw: no Rift Troopers, and the souls drop as orbs for either team.</div>" : "");
   }
   else if (g.k === "neutral-camps") {
     var out = (M.camps || []).map(function (c) {
