@@ -195,11 +195,11 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .sc .wsi{width:12px;height:12px;vertical-align:-2px;margin:0 3px 0 0}
 .sc .bsi{width:8.85px}
 .sc.bn{background:#1f3320;color:var(--vital)}
-.hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding-top:2px}
+.hg{display:grid;grid-template-columns:repeat(4,1fr);gap:13px 6px;padding-top:12px}
 .hc{--tc:#7a6a9a;position:relative;padding:0;border:0;border-radius:6px;background:none;aspect-ratio:3/4;-webkit-tap-highlight-color:transparent} /* the outline is a 1px ring outside the tile, not a border: on iOS the tile border lost its top/bottom lines at fractional positions (zoomed in), whether clipped by the tile or its own layer; nothing can overlap or clip a ring that sits outside, and the tile is no longer forced onto its own layer */
 /* the card is the lower part of the tile; the portrait (a cut-out down to about a third of the way) stands in it a little smaller, its head rising above the card */
 .hc::before{content:"";position:absolute;inset:0;box-sizing:border-box;border-radius:6px;background:linear-gradient(transparent,var(--panel2) 55%);border:1px solid var(--line);-webkit-mask:linear-gradient(rgba(0,0,0,.4),#000 55%);mask:linear-gradient(rgba(0,0,0,.4),#000 55%)} /* the card fades out over its top half; its outline keeps a faint line at the top, so the heroes poke out of it */
-.hc img{position:absolute;left:1px;bottom:1px;width:calc(100% - 2px);height:calc(100% - 1px);object-fit:cover;object-position:50% 100%;clip-path:inset(0 round 5px)} /* no fade of its own: in Safari a fading image gets its own graphics layer, drawn a pixel off from the name strip over it; on the first screen the whole tile fades in under a cover instead (.hrv) */
+.hc img{position:absolute;left:1px;bottom:1px;width:calc(100% - 2px);height:111%;object-fit:cover;object-position:50% 100%;clip-path:inset(-20% 0 0 0 round 0 0 5px 5px)} /* taller than the card, cut only at the bottom corners: heads, hats and horns rise out of the top */ /* no fade of its own: in Safari a fading image gets its own graphics layer, drawn a pixel off from the name strip over it; on the first screen the whole tile fades in under a cover instead (.hrv) */
 body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
 /* first screen: the whole tile fades in, not just the portrait. Not with opacity: in Safari a fading element gets its own graphics layer, and those layers
    were drawn a couple of pixels off (every other row too low) until the fade ended. Instead a cover in the page colour sits over the tile (and its outline)
@@ -209,8 +209,8 @@ body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
 @media (prefers-reduced-motion:reduce){.hc.hrv::after,.credits{transition:none}}
 .hc span{position:absolute;left:1px;right:1px;bottom:1px;border-radius:0 0 5px 5px;padding:22px 3px 7px;display:flex;justify-content:center;background:linear-gradient(transparent,rgba(10,8,14,.85) 70%)}
 /* the name on a stuck-on label in the hero's colour, tilted like the tags on a hero card */
-.hc span em{font-style:normal;display:inline-block;max-width:100%;text-align:center;line-height:1.42}
-.hc span i{font-style:normal;padding:2px 6px 1px;border-radius:2px;background:color-mix(in srgb,var(--tc) 38%,#110e16);color:#fff;font-family:var(--body);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;text-shadow:0 1px 1px rgba(0,0,0,.6);box-shadow:2px 2px 0 rgba(0,0,0,.7);-webkit-box-decoration-break:clone;box-decoration-break:clone} /* each line of a two-line name gets its own label, as wide as its word */
+.hc span em{font-style:normal;display:inline-block;max-width:100%;text-align:center;line-height:1.3}
+.hc span i{font-style:normal;padding:1px 6px 1px;border-radius:2px;background:color-mix(in srgb,var(--tc) 38%,#110e16);color:#fff;font-family:var(--body);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;text-shadow:0 1px 1px rgba(0,0,0,.6);box-shadow:2px 2px 0 rgba(0,0,0,.7);-webkit-box-decoration-break:clone;box-decoration-break:clone} /* each line of a two-line name gets its own label, as wide as its word */
 .hc:nth-child(3n+1) span em{transform:rotate(-2deg)}.hc:nth-child(3n+2) span em{transform:rotate(1.5deg)}.hc:nth-child(3n) span em{transform:rotate(-1deg)}
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
@@ -868,7 +868,7 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gsft.gtkf{margin:12px 0 0 2px}
 /* The map section */
 .gmap .gh.gch{margin-top:22px}
-.gms{margin:30px 0 12px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gc);display:flex;align-items:center;gap:10px}.gms::after{content:"";flex:1;height:1px;background:rgba(var(--gcr),.25)}
+.gms.first{margin-top:6px}.gms{margin:30px 0 12px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gc);display:flex;align-items:center;gap:10px}.gms::after{content:"";flex:1;height:1px;background:rgba(var(--gcr),.25)}
 .gmmini{margin:4px auto 0;text-align:center}.gmmini img{width:min(300px,85%);height:auto;display:block;margin:0 auto}.gmmini.sm img{width:min(260px,75%)}
 .gmmini figcaption{margin:12px auto 0;max-width:34ch;font-size:12.5px;line-height:1.45;color:var(--dim)}
 .gml{margin-bottom:18px;padding:12px;border-radius:14px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.07);border-top:2px solid var(--lc)}
@@ -1105,7 +1105,7 @@ body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
 <button class="backpill" id="backpill" hidden></button>
 <button class="backpill" id="srchpill" hidden></button>
 <button class="backpill" id="glbpill" hidden></button>
-<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#62c46f"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button><button role="menuitem" data-sec="gs-map" class="sm-atlas" style="--sc:#c98aa6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>The map</button><button role="menuitem" data-sec="gc-hero" class="sm-hero" style="--sc:#7c9be6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Hero effects</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="spi" id="secpi" aria-hidden="true"></span></button></div>
+<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button><button role="menuitem" data-sec="gs-map" class="sm-atlas" style="--sc:#c98aa6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>The map</button><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="gs-city" class="sm-city" style="--sc:#c98aa6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V8l5-3v16"/><path d="M10 21V3l9 4v14"/><path d="M13 9h3M13 13h3M13 17h3"/></svg></span>The city</button><button role="menuitem" data-sec="gc-hero" class="sm-hero" style="--sc:#7c9be6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Hero effects</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#62c46f"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="spi" id="secpi" aria-hidden="true"></span></button></div>
 <button class="backpill" id="toppill" hidden aria-label="Back to top"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
@@ -4392,10 +4392,10 @@ function glossList() {
   var C = function (k) { return GCATS.filter(function (c) { return c[0] === k; })[0]; };
   var band = function (cls, id, inner) { return '<section class="gband ' + cls + '"' + (id ? ' id="' + id + '"' : "") + '><div class="gpanel" aria-hidden="true"><i></i></div>' + inner + "</section>"; };
   var chap = function (k, name, sub, id) { return '<h2 class="gh gch"' + (id ? ' id="' + id + '"' : "") + gcStyle(k) + '><span class="ghi">' + gcSvg(k) + "</span><b>" + esc(name) + "</b>" + (sub ? "<small>" + esc(sub) + "</small>" : "") + '<span class="gln2"></span></h2>'; };
-  html = band("gpur", "", gswHtml()) +
-    band("gbr", "gs-lane", chap("map", "Lane layout", "") + laneMap()) +
-    '<section class="gtsec" id="g-match-timeline"' + gcStyle("time") + ">" + chap("time", "Match timeline", "") + timelineHtml() + "</section>" +
-    mapSec() + band("gsl", "", catHtml(C("hero"), hit, q));
+  html = band("gpur", "", gswHtml()) + mapSec("top") +
+    band("gbr", "gs-lane", chap("map", "Lane layout", "") + laneMap()) + mapSec("city") +
+    band("gsl", "", catHtml(C("hero"), hit, q)) +
+    '<section class="gtsec" id="g-match-timeline"' + gcStyle("time") + ">" + chap("time", "Match timeline", "") + timelineHtml() + "</section>";
   return html;
 }
 var GTABS = ["dmg", "scale", "def", "cc", "buff", "move", "map", "econ"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement", map: "Map", econ: "Economy" }, GTAB_TINY = { cc: "Control" };
@@ -4527,7 +4527,7 @@ var MAPDATA = {
     ["Spawn rooms", "Each has a shop and a Soul Well (from 3:00), heals allies quickly, and four Base Turrets shoot intruders."]
   ]
 };
-function mapSec() {
+function mapSec(part) {
   var D = MAPDATA, I = function (k, ext) { return "img/map/" + k + (ext || ".jpg"); }, T = function (t) { return glossText(t); };
   var photo = function (k, cap) { return '<figure class="gmph"><img loading="lazy" alt="" src="' + I(k) + '"><figcaption>' + esc(cap) + "</figcaption></figure>"; };
   var lanes = D.lanes.map(function (l) {
@@ -4536,13 +4536,13 @@ function mapSec() {
   var card = function (x) { return '<div class="gmc"><img loading="lazy" alt="" src="' + I(x.k) + '"><div class="gmct"><b>' + esc(x.name) + "</b><small>" + esc(x.side) + "</small><p>" + T(x.t) + "</p></div></div>"; };
   var feats = D.features.map(function (f) { return '<div class="gmf">' + (f[2] ? '<img loading="lazy" alt="" src="' + I(f[2]) + '">' : "") + "<div><b>" + esc(f[0]) + "</b><span>" + T(f[1]) + "</span></div></div>"; }).join("");
   var h = function (t) { return '<div class="gms">' + t + "</div>"; };
-  return '<section class="gtsec gmap" id="gs-map"' + gcStyle("atlas") + '><h2 class="gh gch"' + gcStyle("atlas") + '><span class="ghi">' + gcSvg("atlas") + '</span><b>The map</b><span class="gln2"></span></h2>' +
-    '<figure class="gmmini"><img loading="lazy" alt="The minimap" src="' + I("minimap", ".png") + '"><figcaption>The Cursed Apple, Deadlock’s New York. Your Patron is always at the bottom of the minimap, so which side lane is on your left depends on your team.</figcaption></figure>' +
-    h("Lanes") + lanes +
-    h("Districts") + '<figure class="gmmini sm"><img loading="lazy" alt="The four districts" src="' + I("districts", ".png") + '"><figcaption>The jungle between the lanes: no structures or troopers, just haunts, breakables and fights.</figcaption></figure>' + D.districts.map(card).join("") +
+  var title = function (id, name) { return '<section class="gtsec gmap" id="' + id + '"' + gcStyle("atlas") + '><h2 class="gh gch"' + gcStyle("atlas") + '><span class="ghi">' + gcSvg("atlas") + "</span><b>" + name + '</b><span class="gln2"></span></h2>'; };
+  if (part === "top") return title("gs-map", "The map") +
+    '<figure class="gmmini"><img loading="lazy" alt="The minimap" src="' + I("minimap", ".png") + '"><figcaption>The Cursed Apple</figcaption></figure>' +
+    h("Lanes") + lanes + "</section>";
+  return title("gs-city", "The city") + '<div class="gms first">Districts</div>' + '<figure class="gmmini sm"><img loading="lazy" alt="The four districts" src="' + I("districts", ".png") + '"><figcaption>The jungle between the lanes: no structures or troopers, just haunts, breakables and fights.</figcaption></figure>' + D.districts.map(card).join("") +
     h("Bases") + D.bases.map(card).join("") +
-    h("Around the map") + '<div class="gmfs">' + feats + "</div>" +
-    h("Concept art") + '<div class="gmrow art">' + photo("art-crowleys", "Crowley’s") + photo("art-firehouse", "The firehouse") + "</div></section>";
+    h("Around the map") + '<div class="gmfs">' + feats + "</div></section>";
 }
 // Map & objectives opens with a diagram of a lane: the steps you fight through, from your wave to the enemy Patron. Each step is its term
 // (tap for the pop-up, and links elsewhere on the page land on it), so these terms don't get cards of their own in the category view
@@ -4729,20 +4729,33 @@ function timelineHtml() {
   var pk = state.pw && state.pw.powerups && Object.keys(state.pw.powerups)[0], pd = pk && state.pw.powerups[pk];
   if (pd) { at(pd.from_min * 60, "map-buffs", "Map buffs start growing"); at(pd.to_min * 60, "map-buffs", "Map buffs at full strength", ""); }
   if (M.patron && M.patron.growth1_from_min) at(M.patron.growth1_from_min * 60, "patron", "Patron starts gaining health");
+  // from deadlock.wiki, The Cursed Apple: Map Timings & Events (the game data the site reads doesn't carry these)
+  var T = M.trooper || {}, ic = function (k) { ev[ev.length - 1].ic = k; };
+  at(180, "souls", "Soul Wells open in the spawn rooms"); ic("soul-orbs");
+  at(480, "neutral-camps", "Sinner’s Sacrifice camps", "11 camps, 15 machines"); ic("investment");
+  at(480, "golden-statues", "Breakables in the Sunken Plaza and Bell Tower");
+  at(600, null, "Soul Urn drops", "Lands 12.5s later, then every 5 min"); ic("comeback-souls");
+  at(600, "golden-statues", "Breakables above the Mid Boss");
+  at(660, null, "Unstable Rift, earliest", "About 11:00, then every 7 min or so"); ic("lane-layout");
+  at(720, "guardian", "Guardians lose their damage resist");
+  at(1080, "walker", "Walkers lose their damage resist");
+  if (T.wave_late_sec) at(T.wave_late_min * 60, "troopers", "Troopers every " + T.wave_late_sec + "s", "Was " + T.wave_sec + "s");
+  if (T.wave_very_late_sec) at(T.wave_very_late_min * 60, "troopers", "Troopers every " + T.wave_very_late_sec + "s, +50% health");
   if (!ev.length) return "";
   ev.sort(function (a, b) { return a.s - b.s; });
   var stops = []; ev.forEach(function (e) { var last = stops[stops.length - 1]; if (last && last.s === e.s) last.ev.push(e); else stops.push({ s: e.s, ev: [e] }); });
   var mm = function (s) { return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); };
-  var pic = function (k) {
+  var pic = function (k, i) {
+    if (i) k = i;
     if (GIMG[k]) return '<span class="gtkp ph"><img alt="" src="' + GIMG[k] + '" onerror="this.remove()"></span>';
     return '<span class="gtkp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (GSVG[k] || GCI.map) + "</svg></span>";
   };
   var html = stops.map(function (st, i) {
     var gap = i ? Math.round(10 + 13 * Math.sqrt((st.s - stops[i - 1].s) / 60)) : 0; // more time, a longer stretch of track
     return '<div class="gtks" style="margin-top:' + gap + 'px"><span class="gtkt">' + mm(st.s) + '</span><span class="gtkd"></span><div class="gtke">' +
-      st.ev.map(function (e) { return '<button class="gte" data-g="' + e.k + '">' + pic(e.k) + '<span class="gtkx"><b>' + esc(e.l) + "</b>" + (e.h ? "<i>" + e.h + "</i>" : e.n ? "<i>" + esc(e.n) + "</i>" : "") + '</span><span class="gtc">›</span></button>'; }).join("") + "</div></div>";
+      st.ev.map(function (e) { return '<button class="gte"' + (e.k && GBY[e.k] ? ' data-g="' + e.k + '"' : "") + ">" + pic(e.k, e.ic) + '<span class="gtkx"><b>' + esc(e.l) + "</b>" + (e.h ? "<i>" + e.h + "</i>" : e.n ? "<i>" + esc(e.n) + "</i>" : "") + "</span>" + (e.k && GBY[e.k] ? '<span class="gtc">›</span>' : "") + "</button>"; }).join("") + "</div></div>";
   }).join("");
-  var rift = M.rift_interval_sec ? '<div class="gsft gtkf">The Unstable Rift also opens about every ' + Math.round(M.rift_interval_sec / 60) + " minutes.</div>" : "";
+  var rift = "";
   return '<div class="gviz gtk"><div class="gtkw">' + html + "</div>" + rift + "</div>";
 }
 function gameText(g) { // the game's own name for the effect and the message it shows when the effect stops you
