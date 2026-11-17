@@ -195,11 +195,11 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .sc .wsi{width:12px;height:12px;vertical-align:-2px;margin:0 3px 0 0}
 .sc .bsi{width:8.85px}
 .sc.bn{background:#1f3320;color:var(--vital)}
-.hg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px 6px;padding-top:4px}
+.hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding-top:2px}
 .hc{--tc:#7a6a9a;position:relative;padding:0;border:0;border-radius:6px;background:none;aspect-ratio:3/4;-webkit-tap-highlight-color:transparent;transition:transform .15s ease} /* the outline is a 1px ring outside the tile, not a border: on iOS the tile border lost its top/bottom lines at fractional positions (zoomed in), whether clipped by the tile or its own layer; nothing can overlap or clip a ring that sits outside, and the tile is no longer forced onto its own layer */
 /* the card is the lower part of the tile; the portrait (a cut-out down to about a third of the way) stands in it a little smaller, its head rising above the card */
-.hc::before{content:"";position:absolute;left:0;right:0;bottom:0;top:24%;border-radius:6px;background:var(--panel2);box-shadow:0 0 0 1px var(--line)} /* a ring outside, not a border: see below */
-.hc img{position:absolute;left:5%;right:5%;bottom:0;width:90%;height:100%;object-fit:contain;object-position:50% 100%;clip-path:inset(-50% 0 0 0 round 0 0 6px 6px)} /* no fade of its own: in Safari a fading image gets its own graphics layer, drawn a pixel off from the name strip over it; on the first screen the whole tile fades in under a cover instead (.hrv) */
+.hc::before{content:"";position:absolute;inset:0;box-sizing:border-box;border-radius:6px;background:var(--panel2);border:1px solid var(--line);-webkit-mask:linear-gradient(transparent,#000 55%);mask:linear-gradient(transparent,#000 55%)} /* the card fades out over its top half, outline and all */
+.hc img{position:absolute;left:0;bottom:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;clip-path:inset(0 round 6px)} /* no fade of its own: in Safari a fading image gets its own graphics layer, drawn a pixel off from the name strip over it; on the first screen the whole tile fades in under a cover instead (.hrv) */
 body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
 /* first screen: the whole tile fades in, not just the portrait. Not with opacity: in Safari a fading element gets its own graphics layer, and those layers
    were drawn a couple of pixels off (every other row too low) until the fade ended. Instead a cover in the page colour sits over the tile (and its outline)
@@ -209,10 +209,10 @@ body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
 @media (prefers-reduced-motion:reduce){.hc.hrv::after,.credits{transition:none}}
 .hc span{position:absolute;left:0;right:0;bottom:0;border-radius:0 0 6px 6px;padding:22px 3px 7px;display:flex;justify-content:center;background:linear-gradient(transparent,rgba(10,8,14,.85) 70%)}
 /* the name on a stuck-on label in the hero's colour, tilted like the tags on a hero card */
-.hc span em{font-style:normal;display:inline-block;max-width:100%;padding:3px 6px 2px;border-radius:2px;background:color-mix(in srgb,var(--tc) 38%,#110e16);color:#fff;font-family:var(--body);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;line-height:1.15;text-align:center;text-shadow:0 1px 1px rgba(0,0,0,.6);box-shadow:2px 2px 0 rgba(0,0,0,.7),inset 0 0 0 1px rgba(255,255,255,.12);overflow-wrap:anywhere}
+.hc span em{font-style:normal;display:inline-block;max-width:100%;padding:3px 6px 2px;border-radius:2px;background:color-mix(in srgb,var(--tc) 38%,#110e16);color:#fff;font-family:var(--body);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;line-height:1.15;text-align:center;text-shadow:0 1px 1px rgba(0,0,0,.6);box-shadow:2px 2px 0 rgba(0,0,0,.7);overflow-wrap:break-word}
 .hc:nth-child(3n+1) span em{transform:rotate(-2deg)}.hc:nth-child(3n+2) span em{transform:rotate(1.5deg)}.hc:nth-child(3n) span em{transform:rotate(-1deg)}
 /* pressed: the tile lifts and its card takes a ring and glow in the hero's colour */
-.hc:active{transform:translateY(-3px) scale(1.03);z-index:2}.hc:active::before{box-shadow:0 0 0 1.5px var(--tc),0 8px 18px rgba(0,0,0,.5),0 0 16px color-mix(in srgb,var(--tc) 55%,transparent)}
+.hc:active{transform:translateY(-3px) scale(1.03);z-index:2}.hc:active::before{border-color:var(--tc);-webkit-mask:none;mask:none;box-shadow:0 8px 18px rgba(0,0,0,.5),0 0 16px color-mix(in srgb,var(--tc) 55%,transparent)}
 @media (prefers-reduced-motion:reduce){.hc{transition:none}}
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
@@ -3295,6 +3295,12 @@ function sbkShow(on) { // the search bar makes room for the back button (and giv
 function pageWantsBack() { return (state.tab === "heroes" && !!state.hero) || state.tab === "item" || state.tab === "glossary" || state.tab === "news"; }
 function sbkWanted() { return !$("main").hidden && !searchOn() && !$("sq").matches(":focus") && pageWantsBack(); }
 new MutationObserver(function () { sbkShow(sbkWanted()); }).observe($("main"), { childList: true, attributes: true, attributeFilter: ["hidden"] }); // pages that have a way back
+function fitTags() { // a name that wraps onto two lines: the tag narrows to its longest line instead of the full tile width
+  Array.prototype.forEach.call(document.querySelectorAll(".hc span em"), function (e) {
+    e.style.width = ""; var r = document.createRange(); r.selectNodeContents(e); var rs = r.getClientRects(); if (rs.length < 2) return;
+    var w = 0; Array.prototype.forEach.call(rs, function (x) { w = Math.max(w, x.width); }); e.style.width = Math.ceil(w + 12) + "px";
+  });
+}
 function tintTiles() { // hero list name tags take each hero's colour once hero_colors.json is in
   var H = state.hcol && state.hcol.heroes; if (!H) return;
   Array.prototype.forEach.call(document.querySelectorAll(".hc[data-hero]"), function (t) { var c = H[t.getAttribute("data-hero")]; if (c && c.colors && c.colors[0]) t.style.setProperty("--tc", c.colors[0]); });
@@ -5127,7 +5133,9 @@ function topPill() { // glossary: a round ↑ on the right once you've scrolled 
   if (gshow) gb.textContent = "‹ Back to " + nm;
   if (gshow !== !gb.hidden) { gb.hidden = !gshow; if (gshow) { gb.classList.remove("in"); void gb.offsetWidth; gb.classList.add("in"); } }
 }
-new MutationObserver(function () { topPill(); }).observe($("main"), { childList: true });
+new MutationObserver(function () { topPill(); if (document.querySelector("#main .hg")) fitTags(); }).observe($("main"), { childList: true });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTags);
+window.addEventListener("resize", function () { clearTimeout(window._ftT); window._ftT = setTimeout(fitTags, 150); });
 function secCur() { // the menu item for the section you're in: the last one whose top is above the upper part of the screen
   var cur = null; Array.prototype.forEach.call($("secmenu").querySelectorAll("[data-sec]"), function (x) { var t = $(x.getAttribute("data-sec")); if (t && t.getBoundingClientRect().top < window.innerHeight * .4) cur = x; });
   return cur || $("secmenu").querySelector("[data-sec]");
