@@ -761,6 +761,8 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gban{position:relative;overflow:hidden;text-align:center;padding:46px 16px 44px;border-radius:18px;border:1px solid rgba(162,131,240,.28);background:radial-gradient(90% 150% at 22% 40%,#a283f05c,#a283f01f 45%,transparent 80%),radial-gradient(85% 140% at 95% 5%,#e6b45a40,#e6b45a12 45%,transparent 80%),radial-gradient(95% 150% at 62% 120%,#3fc9b040,#3fc9b010 45%,transparent 82%),var(--panel);box-shadow:0 10px 24px rgba(0,0,0,.3)}
 .gban .gtitle{margin:0;font-family:var(--disp);font-size:36px;letter-spacing:.03em}
 .gbar{display:block;position:relative;width:104px;height:1px;margin:14px auto 0;background:rgba(241,233,216,.28)}.gbar::after{content:"";position:absolute;left:50%;width:44px;margin-left:-22px;top:-2px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
+.gintro{margin:28px auto 0;max-width:34ch;text-align:center;font-size:14.5px;line-height:1.55;color:#c9bfd6;text-wrap:balance}
+.gnote{margin:0 auto;max-width:32ch;text-align:center;font-size:14px;line-height:1.55;color:#b9b0c6;text-wrap:balance}
 /* Terms of the day: stuck-on labels in each term's category colour, tilted like a hero card's tags */
 .gtod{margin-top:28px;text-align:center}
 .gtodl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
@@ -782,13 +784,16 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 /* the chooser for the six mechanics categories: two rows of three, the chosen one lit in its colour */
 .gsw{scroll-margin-top:16px}
 /* the chooser is one panel: eight cells in two columns behind a shared frame, the chosen one lit in its colour with a bar on its left */
-.gswt{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:0 0 4px;padding:5px;border-radius:16px;background:rgba(12,10,18,.55);border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 2px 8px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.04)}
-.gsc{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 10px;border-radius:11px;background:transparent;border:1px solid transparent;color:var(--dim);font:inherit;text-align:center;cursor:pointer;min-height:42px;transition:background-color .2s ease,border-color .2s ease,color .2s ease}
-.gsc .gsci{flex:none;display:flex;width:28px;height:28px;border-radius:8px;align-items:center;justify-content:center;color:var(--dim)}.gsc .gsci svg{width:17px;height:17px}
-.gsc b{min-width:0;font-size:13.5px;font-weight:600;line-height:1.2}
-.gsc.on{color:var(--fg);background:linear-gradient(90deg,rgba(var(--gcr),.26),rgba(var(--gcr),.08));border-color:rgba(var(--gcr),.45)}.gsc.on::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:0 2px 2px 0;background:var(--gc)}
-.gsc.on .gsci{background:var(--gct);color:var(--gc)}
-.gsw .gh.gch{margin-top:26px}
+/* Terms sit in one card; the eight categories are a bar across its top, four to a row, the chosen one underlined in its colour */
+.gtcard{border-radius:18px;background:#1b1626;border:1px solid rgba(255,255,255,.09);box-shadow:0 10px 26px rgba(0,0,0,.4);overflow:hidden}
+.gtin{padding:2px 12px 12px}
+.gswt{display:grid;grid-template-columns:repeat(4,1fr);gap:0 2px;padding:4px 6px 0;background:rgba(0,0,0,.22);border-bottom:1px solid rgba(255,255,255,.08)}
+.gsc{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 2px 9px;background:none;border:0;border-bottom:3px solid transparent;color:var(--dim);font:inherit;text-align:center;cursor:pointer;min-height:58px;transition:color .2s ease,border-color .2s ease}
+.gsc .gsci{flex:none;display:flex;width:20px;height:20px;align-items:center;justify-content:center;color:inherit}.gsc .gsci svg{width:18px;height:18px}
+.gsc b{min-width:0;font-size:12px;font-weight:600;line-height:1.15}
+.gsc.on{color:var(--fg);border-bottom-color:var(--gc)}
+.gsc.on .gsci{color:var(--gc)}
+.gsw .gh.gch{margin-top:22px}
 /* category titles: chapter style, like a hero page's: the icon, a big serif name, the count, and a short slanted bar on a faint line */
 .gh.gch{display:block;text-align:center;border:0;margin:44px 0 24px;padding:0;color:var(--fg);letter-spacing:.03em;text-transform:none}
 .gch .ghi{margin:0 auto 10px;width:36px;height:36px;border-radius:10px}.gch .ghi svg{width:20px;height:20px;color:var(--gc)}
@@ -854,7 +859,7 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .gte{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 6px 6px;border-radius:10px;background:rgba(var(--gcr),.07);border:1px solid rgba(var(--gcr),.22);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
 .gtkp{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(var(--gcr),.15);color:var(--gc);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .gtkp svg{width:17px;height:17px}.gtkp.ph img{width:100%;height:100%;object-fit:cover}
-.gtkx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;white-space:normal}.gtkx i{display:flex;align-items:center;gap:4px}.gsoul{flex:none;width:6px;height:11px}.gtkx b{font-size:14px;font-weight:600}.gtkx i{font-style:normal;font-size:12px;color:#a8c7ae}
+.gtkx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;white-space:normal}.gtkx i{display:flex;align-items:center;gap:4px}.gsoul{flex:none;width:6px;height:11px}.gtkx b{font-size:14px;font-weight:600}.gtkx i{font-style:normal;font-size:12px;color:#a6cfa8}
 .gte .gtc{color:var(--gc)}
 .gsft.gtkf{margin:12px 0 0 2px}
 /* Map & objectives: its own raised band, a dusky bronze, tilted the other way (high on the right), with each card lifted off it */
@@ -862,13 +867,14 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
    bronze for the lane (tilted the other way), slate for Hero effects */
 .gband{position:relative;isolation:isolate;margin:40px 0 44px;padding:36px 0 40px}
 .gband.gpur{margin-top:10px;padding-top:50px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
-.gband.gpur .gt{background:#1d1828;border-color:rgba(255,255,255,.09);box-shadow:0 4px 10px rgba(0,0,0,.28)}
+.gband.gpur .gt{background:#221c2e;border-color:rgba(255,255,255,.09);box-shadow:0 4px 10px rgba(0,0,0,.28)}
 .gband.gpur .gt::before,.gband.gpur .gt::after{display:none}
 .gsw{position:relative}
 .gwash{position:absolute;z-index:-1;pointer-events:none;left:calc(50% - 50vw);right:calc(50% - 50vw);top:-50px;clip-path:polygon(0 0,100% 24px,100% 100%,0 100%);height:min(900px,100%);background:radial-gradient(90% 55% at 50% 0,rgba(var(--gcr),.2),transparent 70%),linear-gradient(to bottom,rgba(var(--gcr),.09),transparent 80%)}
 .gband.gsl{margin-top:56px;margin-bottom:22px;padding-bottom:62px}
-.gband.gsl .gpanel i{background:linear-gradient(to bottom,#252c42 0,#20263a 140px,#1b2030 45%,#181b25 100%)}
-.gband.gsl .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent 80%),#1c1d22;box-shadow:0 8px 18px rgba(0,0,0,.45)}
+.gband.gsl .ghh{font-size:0;line-height:0;height:0;overflow:hidden;margin:20px 0 0}.gband.gsl .gch + .ghh{margin:0}
+.gband.gsl .gpanel i{background:linear-gradient(to bottom,#222d4d 0,#1d2642 140px,#192037 45%,#161b29 100%)}
+.gband.gsl .gt{background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent 80%),#1c1d22;box-shadow:0 4px 10px rgba(0,0,0,.25)}
 .gtsec{position:relative;isolation:isolate;margin:8px 0 40px;padding:6px 14px 18px;border-radius:20px;border:1px solid rgba(var(--gcr),.24);background:linear-gradient(to bottom,rgba(var(--gcr),.1),transparent clamp(160px,40%,320px)),rgba(255,255,255,.028);scroll-margin-top:16px}
 .gtsec::before{content:"";position:absolute;z-index:-1;pointer-events:none;left:-1px;right:-1px;top:-1px;height:min(max(200px,45%),520px);border-top:2px solid var(--gc);border-left:2px solid var(--gc);border-radius:20px;-webkit-mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent);mask:radial-gradient(110% 100% at 0 0,#000 6%,transparent)}
 .gtsec .gviz.gtk{background:none;border:0;padding:4px 0 0;margin:0}
@@ -1075,7 +1081,7 @@ body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
 <button class="backpill" id="backpill" hidden></button>
 <button class="backpill" id="srchpill" hidden></button>
 <button class="backpill" id="glbpill" hidden></button>
-<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#6fb185"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button><button role="menuitem" data-sec="gc-hero" class="sm-hero" style="--sc:#8c9ccc"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Hero effects</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="spi" id="secpi" aria-hidden="true"></span></button></div>
+<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#62c46f"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button><button role="menuitem" data-sec="gc-hero" class="sm-hero" style="--sc:#7c9be6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Hero effects</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="spi" id="secpi" aria-hidden="true"></span></button></div>
 <button class="backpill" id="toppill" hidden aria-label="Back to top"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
@@ -4082,7 +4088,7 @@ function openResult(b) {
 // [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
 var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Immunity & stealth"], ["move", "Movement"], ["map", "Map & objectives"], ["econ", "Economy"], ["hero", "Hero effects"]];
 // each category's colour and icon: on its jump card, its heading, the stripe down each card and the tile behind each term's icon
-var GCOL = { time: "#6fb185", dmg: "#ec5b4e", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#c99257", hero: "#8c9ccc" };
+var GCOL = { time: "#62c46f", dmg: "#ec5b4e", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#c99257", hero: "#7c9be6" };
 var GCI = {
   time: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   dmg: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/>',
@@ -4356,19 +4362,20 @@ function glossList() {
   var band = function (cls, id, inner) { return '<section class="gband ' + cls + '"' + (id ? ' id="' + id + '"' : "") + '><div class="gpanel" aria-hidden="true"><i></i></div>' + inner + "</section>"; };
   var chap = function (k, name, sub, id) { return '<h2 class="gh gch"' + (id ? ' id="' + id + '"' : "") + gcStyle(k) + '><span class="ghi">' + gcSvg(k) + "</span><b>" + esc(name) + "</b>" + (sub ? "<small>" + esc(sub) + "</small>" : "") + '<span class="gln2"></span></h2>'; };
   html = band("gpur", "", gswHtml()) +
+    '<p class="gnote">That’s the vocabulary. Next is the map: what stands between your wave and the enemy Patron, then when things happen across a match.</p>' +
     band("gbr", "gs-lane", chap("map", "Lane layout", "") + laneMap()) +
     '<section class="gtsec" id="g-match-timeline"' + gcStyle("time") + ">" + chap("time", "Match timeline", "") + timelineHtml() + "</section>" +
     band("gsl", "", catHtml(C("hero"), hit, q));
   return html;
 }
-var GTABS = ["dmg", "scale", "def", "cc", "buff", "move", "map", "econ"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement", map: "Map", econ: "Economy" };
+var GTABS = ["dmg", "scale", "def", "cc", "buff", "move", "map", "econ"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement", map: "Map", econ: "Economy" }, GTAB_TINY = { cc: "Control" };
 function glossTab() { if (GTABS.indexOf(state.gtab) >= 0) return state.gtab; var t = null; try { t = localStorage.getItem("gtab"); } catch (e) {} return (state.gtab = GTABS.indexOf(t) >= 0 ? t : "dmg"); }
 function gswHtml(tabs) { // the chooser (six buttons, two rows) over the chosen category's title and cards
   tabs = tabs || GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; });
   var cur = glossTab(), c = tabs.filter(function (x) { return x[0] === cur; })[0] || tabs[0];
   var chips = tabs.map(function (x) { var on = x[0] === c[0], n = GLOSS.filter(function (g) { return g.c === x[0]; }).length;
-    return '<button class="gsc' + (on ? " on" : "") + '" data-gt="' + x[0] + '" aria-pressed="' + on + '"' + gcStyle(x[0]) + '><span class="gsci">' + gcSvg(x[0]) + "</span><b>" + esc(GTAB_SHORT[x[0]] || x[1]) + "</b></button>"; }).join("");
-  return '<section class="gsw" id="gsw"' + gcStyle(c[0]) + '><i class="gwash" aria-hidden="true"></i><div class="gswt" role="group" aria-label="Choose a category">' + chips + "</div>" + catHtml(c, null, "") + "</section>";
+    return '<button class="gsc' + (on ? " on" : "") + '" data-gt="' + x[0] + '" aria-pressed="' + on + '"' + gcStyle(x[0]) + '><span class="gsci">' + gcSvg(x[0]) + "</span><b>" + esc(GTAB_TINY[x[0]] || GTAB_SHORT[x[0]] || x[1]) + "</b></button>"; }).join("");
+  return '<section class="gsw" id="gsw"' + gcStyle(c[0]) + '><i class="gwash" aria-hidden="true"></i><div class="gtcard"><div class="gswt" role="group" aria-label="Choose a category">' + chips + '</div><div class="gtin">' + catHtml(c, null, "") + "</div></div></section>";
 }
 function setGlossTab(k) { // show another of the six, keeping the chooser where it is on screen
   if (GTABS.indexOf(k) < 0) return; setTimeout(function () { if (!$("secnav").hidden) secMark(); }, 0);
@@ -4474,7 +4481,7 @@ function laneMap() {
   var G = M.guardian || {}, W = M.walker || {}, B = M.base_guardian || {}, S = M.shrine || {}, P = M.patron || {}, T = M.trooper || {};
   var waves = T.wave_sec ? (T.squad ? "Squads of " + T.squad + " every " : "A wave every ") + T.wave_sec + "s" + (T.wave_late_sec ? ", " + T.wave_late_sec + "s from " + T.wave_late_min + " min" : "") + (T.wave_very_late_sec ? ", " + T.wave_very_late_sec + "s from " + T.wave_very_late_min : "") : "";
   return '<div class="glmap">' +
-    step("troopers", "Troopers", waves, chip(f(T.health), "health"), { wave: true }) +
+    step("troopers", "Troopers", [T.squad ? T.squad + " per squad" : "", T.dps_vs_heroes ? f(T.dps_vs_heroes) + " DPS to heroes" : ""].filter(Boolean).join(" · "), chip(f(T.health), "health"), { wave: true }) +
     '<div class="gls">In each lane</div>' +
     step("guardian", "Guardian", G.dps_vs_heroes ? f(G.dps_vs_heroes) + " DPS to heroes" : "", chip(f(G.health), "health") + chip(f(G.souls), "souls"), { bd: true }) +
     step("walker", "Walker", "Rockets, a laser and a stomp", chip(f(W.health), "health") + chip(f(W.souls), "souls"), { bd: true }) +
@@ -4489,7 +4496,8 @@ function renderGlossary() {
   state.gq = ""; state.gview = "cat";
   var tod = todTerms(5).map(function (g) { return '<button class="gtodb" data-g="' + g.k + '"' + gcStyle(g.c) + ">" + esc(g.t) + "</button>"; }).join("");
   $("main").innerHTML = '<div class="ghead"><div class="gban"><h1 class="gtitle">Glossary</h1><span class="gbar" aria-hidden="true"></span></div>' +
-    '<div class="gtod"><div class="gtodl">Terms of the day</div><div class="gtodt">' + tod + "</div></div></div>" + '<div id="glist">' + glossList() + "</div>";
+    '<div class="gtod"><div class="gtodl">Terms of the day</div><div class="gtodt">' + tod + "</div></div>" +
+    '<p class="gintro">Deadlock is a 6v6 hero shooter with MOBA roots: teams push lanes alongside troopers, earn souls to buy items and level abilities, and win by destroying the enemy Patron. This is the language the game uses for all of it, in plain words.</p></div>' + '<div id="glist">' + glossList() + "</div>";
 }
 // Terms of the day: five terms picked from the date, the same all day and different tomorrow, so there's a small set to look over (or edit) each day
 function todTerms(n) {
@@ -4677,7 +4685,8 @@ function mechHtml(g) { // the numbers behind a map term, from the game data
   var x = { troopers: M.trooper, guardian: M.guardian, walker: M.walker, "base-guardian": M.base_guardian, shrine: M.shrine, patron: M.patron, "mid-boss": M.mid_boss }[g.k] || {};
   if (g.k === "troopers") {
     add(f(x.health), "Trooper health"); add(f(x.melee_health), "Melee trooper health"); add(f(x.medic_health), "Medic trooper health"); add(f(x.dps_vs_heroes), "Damage to heroes per second");
-    if (T.length) return '<div class="stats">' + T.join("") + "</div>" + (x.medic_heal ? '<div class="gsft">Medic troopers heal for ' + f(x.medic_heal) + " plus " + x.medic_heal_pct + "% of missing health over " + x.medic_heal_sec + "s.</div>" : "");
+    if (T.length) return '<div class="stats">' + T.join("") + "</div>" + (x.medic_heal ? '<div class="gsft">Medic troopers heal for ' + f(x.medic_heal) + " plus " + x.medic_heal_pct + "% of missing health over " + x.medic_heal_sec + "s.</div>" : "") +
+      (x.wave_sec ? '<div class="gsft">' + (x.squad ? "Squads of " + x.squad + " leave every " : "A wave leaves every ") + x.wave_sec + "s" + (x.wave_late_sec ? ", every " + x.wave_late_sec + "s from " + x.wave_late_min + " minutes" : "") + (x.wave_very_late_sec ? " and every " + x.wave_very_late_sec + "s from " + x.wave_very_late_min : "") + ".</div>" : "");
   }
   else if (g.k === "mid-boss") { // three groups: how tough it is, how it hits, what it's worth
     var pct = function (v) { return v == null ? null : f(v) + "%"; }, blocks = [], grp = function (name) { if (T.length) blocks.push('<div class="blk">' + name + '</div><div class="stats">' + T.join("") + "</div>"); T = []; };
