@@ -210,8 +210,7 @@ body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
 .hc span{position:absolute;left:1px;right:1px;bottom:1px;border-radius:0 0 5px 5px;padding:22px 3px 7px;display:flex;justify-content:center;background:linear-gradient(transparent,color-mix(in srgb,var(--tc) 32%,rgba(10,8,14,.88)) 72%)} /* the fade behind the name, tinted with the hero's colour */
 /* the name on a stuck-on label in the hero's colour, tilted like the tags on a hero card */
 .hc span em{font-style:normal;display:inline-block;max-width:100%;text-align:center;line-height:1.3}
-.hc span i{font-style:normal;padding:1px 6px 1px;border-radius:2px;background:color-mix(in srgb,var(--tc) 38%,#110e16);color:#fff;font-family:var(--body);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;text-shadow:0 1px 1px rgba(0,0,0,.6);box-shadow:2px 2px 0 rgba(0,0,0,.7);-webkit-box-decoration-break:clone;box-decoration-break:clone} /* each line of a two-line name gets its own label, as wide as its word */
-.hc:nth-child(3n+1) span em{transform:rotate(-2deg)}.hc:nth-child(3n+2) span em{transform:rotate(1.5deg)}.hc:nth-child(3n) span em{transform:rotate(-1deg)}
+.hc span i{font-style:normal;color:#fff;font-family:var(--body);font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 8px rgba(0,0,0,.6)} /* the name in plain white over the hero-coloured fade */
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
 /* the form-switch wrappers slide and fade as their own layer; on iOS that layer's top edge could shave the card's 1px top border, so the layer gets 3px of its own padding there (cancelled by the negative margin, so nothing moves) */
@@ -768,17 +767,17 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gban .gtitle{margin:0;font-family:var(--disp);font-size:36px;letter-spacing:.03em}
 .gbar{display:block;position:relative;width:104px;height:1px;margin:14px auto 0;background:rgba(241,233,216,.28)}.gbar::after{content:"";position:absolute;left:50%;width:44px;margin-left:-22px;top:-2px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
 /* the glossary header: an open title, no card */
-.gopen{padding:64px 4px 0}.gok{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.gopen{padding:46px 4px 0}.gok{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .ghead .gopen .gtitle{margin:6px 0 0;font-family:var(--disp);font-size:44px;line-height:1}
-.gob{display:block;position:relative;height:1px;margin:22px calc(50% - 50vw) 8px;background:rgba(241,233,216,.2)}.gob::after{content:"";position:absolute;left:max(18px,calc(50vw - 50% + 6px));top:-2px;width:58px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
+.gob{display:block;position:relative;height:1px;margin:22px calc(50% - 50vw) 32px;background:rgba(241,233,216,.2)}.gob::after{content:"";position:absolute;left:max(18px,calc(50vw - 50% + 6px));top:-2px;width:58px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
 /* Terms of the day and Did you know share one card, split by a short gold mark on a faint line */
-.gday{margin-top:30px;padding:20px 16px 18px;border-radius:18px;background:radial-gradient(120% 90% at 0 0,rgba(230,180,90,.15),transparent 60%),radial-gradient(100% 90% at 100% 100%,rgba(162,131,240,.16),transparent 65%),rgba(255,255,255,.03);border:1px solid rgba(230,180,90,.22);box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.gday{margin-top:0;padding:20px 16px 18px;border-radius:18px;background:radial-gradient(120% 90% at 0 0,rgba(84,190,170,.17),transparent 60%),radial-gradient(100% 90% at 100% 100%,rgba(90,140,230,.17),transparent 65%),rgba(255,255,255,.03);border:1px solid rgba(110,200,185,.24);box-shadow:0 10px 24px rgba(0,0,0,.3)}
 .gday .gtod{margin-top:0}
-.gsep{display:block;position:relative;height:1px;margin:22px 0 18px;background:rgba(241,233,216,.14)}.gsep::after{content:"";position:absolute;left:50%;top:-1.5px;width:34px;margin-left:-17px;height:3px;border-radius:1px;transform:skewX(-28deg);background:rgba(230,180,90,.8)}
+.gsep{display:block;position:relative;height:1px;margin:22px 0 18px;background:rgba(241,233,216,.14)}.gsep::after{content:"";position:absolute;left:50%;top:-1.5px;width:34px;margin-left:-17px;height:3px;border-radius:1px;transform:skewX(-28deg);background:#6fcfbd}
 .gdyk{position:relative;padding:0 34px 0 0}
-.gdykl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.gdykl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7fd6c6}
 .gdyk p{margin:8px 0 0;font-size:14px;line-height:1.55;color:#d6cee0;transition:opacity .16s ease}.gdyk p.out{opacity:0}
-.gdie{position:absolute;right:-6px;top:-6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:rgba(230,180,90,.1);color:var(--gold)}.gdie svg{width:16px;height:16px}
+.gdie{position:absolute;right:-6px;top:-6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:rgba(111,207,189,.12);color:#7fd6c6}.gdie svg{width:16px;height:16px}
 .gdie.roll svg{animation:dieroll .45s cubic-bezier(.3,.7,.3,1)}@keyframes dieroll{from{transform:rotate(-200deg) scale(.7)}to{transform:none}}
 /* Terms of the day: stuck-on labels in each term's category colour, tilted like a hero card's tags */
 .gtod{margin-top:34px;text-align:center}
@@ -904,14 +903,14 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gmf b{display:block;font-size:14px;margin-bottom:2px}.gmf > div > span{display:block;font-size:13px;line-height:1.45;color:#cfc6d8}
 /* the lane card: York / Broadway / Greenwich, the lane's map faded in behind the text on the right */
 .gml2{border-radius:16px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.07);overflow:hidden}
-.gmlts{display:flex;gap:6px;padding:10px 10px 0}
-.gmlt{flex:1;padding:9px 0;border:0;border-radius:10px;font:inherit;font-size:13.5px;font-weight:700;color:var(--dim);background:rgba(255,255,255,.04);transition:background-color .2s ease,color .2s ease}
-.gmlt.on{background:color-mix(in srgb,var(--lc) 20%,transparent);color:var(--lc);box-shadow:inset 0 -2px 0 var(--lc)}
-.gmlb{position:relative;overflow:hidden;border-top:2px solid var(--lc);margin-top:10px}
+.gmlts{display:grid;grid-template-columns:repeat(3,1fr);background:rgba(0,0,0,.22);border-bottom:1px solid rgba(255,255,255,.08)}
+.gmlt{padding:14px 0 11px;border:0;border-bottom:3px solid transparent;border-radius:0;background:none;font:inherit;font-size:13.5px;font-weight:700;color:var(--dim);transition:color .2s ease,border-color .2s ease}
+.gmlt.on{color:var(--fg);border-bottom-color:var(--lc)}
+.gmlb{position:relative;overflow:hidden}
 .gmlf{position:relative;transition:opacity .17s ease}.gmlf.out{opacity:0}
 .gmlbg{position:absolute;right:-44px;top:8px;width:250px;opacity:.5;pointer-events:none;-webkit-mask:linear-gradient(to left,#000 40%,transparent);mask:linear-gradient(to left,#000 40%,transparent)}
-.gmlx{position:relative;padding:18px 16px 0;max-width:68%}
-.gmlx b{display:block;font-family:var(--body);font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--lc);line-height:1.1}.gmlx small{display:block;font-size:12px;color:var(--dim);margin-top:3px}
+.gmlx{position:relative;display:flex;flex-direction:column;padding:18px 16px 0;max-width:68%}
+.gmlx b{display:block;font-family:var(--disp);font-weight:700;font-size:30px;color:var(--fg);line-height:1.1}.gmlx small{order:-1;display:block;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--lc);margin-bottom:4px}
 .gmlx p{margin:10px 0 0;font-size:14px;line-height:1.55;color:#d9d1e3;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .gmcw{position:relative;margin-top:16px;padding-bottom:14px}
 .gmcw::before,.gmcw::after{content:"";position:absolute;top:0;bottom:36px;width:34px;z-index:2;pointer-events:none;opacity:0;transition:opacity .2s ease}
