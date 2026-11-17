@@ -810,6 +810,19 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gsc.on{color:var(--fg);border-bottom-color:var(--gc)}
 .gsc.on .gsci{color:var(--gc)}
 .gsw .gh.gch{margin-top:22px}
+/* Terms: stacked category blocks; the open one is tinted in its colour */
+.gacc{display:flex;flex-direction:column;gap:0}
+.gak{border-bottom:1px solid rgba(255,255,255,.08);scroll-margin-top:16px}
+.gak > summary{list-style:none;display:flex;align-items:center;gap:12px;padding:12px 4px;cursor:pointer;-webkit-tap-highlight-color:transparent}.gak > summary::-webkit-details-marker{display:none}
+.gaki{flex:none;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--gct);color:var(--gc)}.gaki svg{width:19px;height:19px}
+.gak > summary b{flex:1;min-width:0;font-family:var(--disp);font-size:21px;font-weight:700;color:var(--fg)}
+.gak > summary small{font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums}
+.gakc{flex:none;width:18px;height:18px;color:var(--dim);transition:transform .25s ease}
+.gak[open]:not(.closing){margin:6px 0;border:1px solid rgba(var(--gcr),.4);border-radius:16px;background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.05) 140px,rgba(0,0,0,.12));box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.gak[open]:not(.closing) > summary{padding:12px 12px}
+.gak[open]:not(.closing) .gakc{transform:rotate(180deg);color:var(--gc)}
+.gakb{padding:2px 10px 10px}
+.gak:has(+ .gak[open]:not(.closing)){border-bottom-color:transparent}
 /* category titles: chapter style, like a hero page's: the icon, a big serif name, the count, and a short slanted bar on a faint line */
 .gh.gch{display:block;text-align:center;border:0;margin:44px 0 24px;padding:0;color:var(--fg);letter-spacing:.03em;text-transform:none}
 .gch .ghi{margin:0 auto 10px;width:36px;height:36px;border-radius:10px}.gch .ghi svg{width:20px;height:20px;color:var(--gc)}
@@ -4442,24 +4455,26 @@ function glossList() {
 }
 var GTABS = ["dmg", "scale", "def", "cc", "buff", "move", "map", "econ"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement", map: "Map", econ: "Economy" }, GTAB_TINY = { cc: "Control" };
 function glossTab() { if (GTABS.indexOf(state.gtab) >= 0) return state.gtab; var t = null; try { t = localStorage.getItem("gtab"); } catch (e) {} return (state.gtab = GTABS.indexOf(t) >= 0 ? t : "dmg"); }
-function gswHtml(tabs) { // the chooser (six buttons, two rows) over the chosen category's title and cards
-  tabs = tabs || GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; });
-  var cur = glossTab(), c = tabs.filter(function (x) { return x[0] === cur; })[0] || tabs[0];
-  var chips = tabs.map(function (x) { var on = x[0] === c[0], n = GLOSS.filter(function (g) { return g.c === x[0]; }).length;
-    return '<button class="gsc' + (on ? " on" : "") + '" data-gt="' + x[0] + '" aria-pressed="' + on + '"' + gcStyle(x[0]) + '><span class="gsci">' + gcSvg(x[0]) + "</span><b>" + esc(GTAB_TINY[x[0]] || GTAB_SHORT[x[0]] || x[1]) + "</b></button>"; }).join("");
-  return '<section class="gsw" id="gsw"' + gcStyle(c[0]) + '><i class="gwash" aria-hidden="true"></i><div class="gtcard"><div class="gswt" role="group" aria-label="Choose a category">' + chips + '</div><div class="gtin">' + catHtml(c, null, "") + "</div></div></section>";
+// Terms: one block per category, stacked; tap a block to open it (one at a time). Folding uses the same animation as the patch lists
+function gswHtml() {
+  var cur = glossTab(), tabs = GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; });
+  var ico = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>';
+  var head = '<h2 class="gh gch" style="--gc:#e6b45a;--gcr:230,180,90;--gct:rgba(230,180,90,.13)"><span class="ghi">' + ico + '</span><b>Terms</b><span class="gln2"></span></h2>';
+  var blocks = tabs.map(function (c) {
+    var list = GLOSS.filter(function (g) { return g.c === c[0] && (c[0] !== "map" || (!LANE_KEYS[g.k] && g.k !== "match-timeline")); });
+    return '<details class="gak" id="gc-' + c[0] + '" data-cat="' + c[0] + '"' + gcStyle(c[0]) + (c[0] === cur ? " open" : "") + '><summary><span class="gaki">' + gcSvg(c[0]) + "</span><b>" + esc(c[1]) + '</b><small>' + list.length + '</small><svg class="gakc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><div class="gakb">' +
+      list.map(function (g) { return glossCard(g); }).join("") + "</div></details>";
+  }).join("");
+  return '<section class="gsw" id="gsw">' + head + '<div class="gacc">' + blocks + "</div></section>";
 }
-function setGlossTab(k) { // show another of the six, keeping the chooser where it is on screen
-  if (GTABS.indexOf(k) < 0) return; setTimeout(function () { if (!$("secnav").hidden) secMark(); }, 0);
-  state.gtab = k; try { localStorage.setItem("gtab", k); } catch (e) {}
-  var sec = $("gsw"); if (!sec) return;
-  var y0 = sec.getBoundingClientRect().top;
-  sec.outerHTML = gswHtml();
-  var y1 = $("gsw").getBoundingClientRect().top; if (y1 !== y0) window.scrollBy(0, y1 - y0);
+function setGlossTab(k) { // open a category's block (closing the others) without animating, e.g. when a link points into it
+  if (GTABS.indexOf(k) < 0) return; state.gtab = k; try { localStorage.setItem("gtab", k); } catch (e) {}
+  Array.prototype.forEach.call(document.querySelectorAll("#gsw details.gak"), function (d) { d.open = d.getAttribute("data-cat") === k; d.classList.remove("closing"); d.style.height = ""; });
+  setTimeout(function () { if (!$("secnav").hidden) secMark(); }, 0);
 }
 function glossReveal(k) { // a link to a term in one of the six that isn't showing: switch to its category first
   var g = GBY[k]; if (!g || LANE_KEYS[k] || k === "match-timeline") return; // those have sections of their own
-  if (state.gview !== "az" && GTABS.indexOf(g.c) >= 0 && glossTab() !== g.c) setGlossTab(g.c);
+  var d = $("gc-" + g.c); if (GTABS.indexOf(g.c) >= 0 && d && d.tagName === "DETAILS" && !d.open) setGlossTab(g.c);
 }
 function catHtml(c, hit, q) { // one category's chapter title and its cards
   var list = GLOSS.filter(function (g) { return g.c === c[0] && (!hit || hit(g)); });
@@ -5830,7 +5845,7 @@ $("main").addEventListener("click", function (e) {
   var gt = state.tab === "glossary" && e.target.closest ? e.target.closest(".gt[id^='g-']") : null;
   if (gt && !(e.target.closest && e.target.closest("a,button,.gviz"))) { glossSheet(gt.id.slice(2)); return; }
   var gc = e.target.closest ? e.target.closest("[data-gc]") : null;
-  if (gc) { var gck = gc.getAttribute("data-gc"); if (GTABS.indexOf(gck) >= 0 && state.gview !== "az") { setGlossTab(gck); var sw = $("gsw"); if (sw) scrollToEl(sw, true); return; } var h0 = $("gc-" + gck); if (h0) scrollToEl(h0, true); return; }
+  if (gc) { var gck = gc.getAttribute("data-gc"); if (GTABS.indexOf(gck) >= 0) { setGlossTab(gck); var sw = $("gc-" + gck); if (sw) scrollToEl(sw, true); return; } var h0 = $("gc-" + gck); if (h0) scrollToEl(h0, true); return; }
   var gtb = e.target.closest ? e.target.closest("[data-gt]") : null;
   if (gtb) { setGlossTab(gtb.getAttribute("data-gt")); return; }
 
@@ -5875,8 +5890,12 @@ $("main").addEventListener("click", function (e) {
 // Revisions / What's New dates and the Notes / Interactions rows: the section grows open and folds shut (its height animates while the content fades and slides), instead of snapping.
 // Opening a native <details> just flips it, so the tap is taken over: the height is measured open and shut, animated, and the open attribute is set at the end of a close.
 window.addEventListener("resize", function () { clearTimeout(window._cgT); window._cgT = setTimeout(function () { chapterGlints(); popLayout(); chjFill(); }, 200); }); // the glints follow a chapter's new height
+document.addEventListener("toggle", function (e) { // without animation (Reduce Motion): still one term category open at a time
+  var d = e.target; if (!d.classList || !d.classList.contains("gak") || !d.open || d._busy) return;
+  Array.prototype.forEach.call(document.querySelectorAll("#gsw details.gak[open]"), function (o) { if (o !== d) o.open = false; });
+}, true);
 document.addEventListener("click", function (e) {
-  var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary, details.phd > summary") : null; if (!sm) return;
+  var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary, details.phd > summary, details.gak > summary") : null; if (!sm) return;
   if (sm.classList.contains("nofold")) { e.preventDefault(); return; } // Base stats, Abilities and Ability order don't fold
   var d = sm.parentNode;
   if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
@@ -5917,8 +5936,9 @@ function shrinkSpacer(sp) {
   });
 }
 function foldDetails(d) {
-  var list = d.closest("#revs.news, #revs.phist"), opening = !d.open, others = [];
-  if (opening && list) others = Array.prototype.filter.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { return o !== d && o.offsetParent; }); // one patch open at a time
+  var list = d.closest("#revs.news, #revs.phist, .gacc"), opening = !d.open, others = [];
+  if (opening && list) others = Array.prototype.filter.call(d.parentNode.querySelectorAll(":scope > details.rpt[open], :scope > details.gak[open]"), function (o) { return o !== d && o.offsetParent; }); // one patch (or term category) open at a time
+  if (d.classList.contains("gak") && opening) { state.gtab = d.getAttribute("data-cat"); try { localStorage.setItem("gtab", state.gtab); } catch (e) {} }
   others.forEach(function (o) { if (o._stop) o._stop(); });
   var parts = [d].concat(others).map(function (x) {
     var on = x === d ? opening : false, h0 = x.offsetHeight;
