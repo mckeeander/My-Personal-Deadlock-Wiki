@@ -818,11 +818,11 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gak > summary b{flex:1;min-width:0;font-family:var(--disp);font-size:21px;font-weight:700;color:var(--fg)}
 .gak > summary small{font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums}
 .gakc{flex:none;width:18px;height:18px;color:var(--dim);transition:transform .25s ease}
-.gak[open]:not(.closing){margin:6px 0;border:1px solid rgba(var(--gcr),.4);border-radius:16px;background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.05) 140px,rgba(0,0,0,.12));box-shadow:0 10px 24px rgba(0,0,0,.35)}
-.gak[open]:not(.closing) > summary{padding:12px 12px}
-.gak[open]:not(.closing) .gakc{transform:rotate(180deg);color:var(--gc)}
+.gak{transition:background-color .3s ease,border-color .3s ease,box-shadow .3s ease}.gak.on{margin:6px 0;border:1px solid rgba(var(--gcr),.4);border-radius:16px;background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.05) 140px,rgba(0,0,0,.12));box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.gak.on > summary{padding:12px 12px}
+.gak.on .gakc{transform:rotate(180deg);color:var(--gc)}
 .gakb{padding:2px 10px 10px}
-.gak:has(+ .gak[open]:not(.closing)){border-bottom-color:transparent}
+.gak:has(+ .gak.on){border-bottom-color:transparent}
 /* category titles: chapter style, like a hero page's: the icon, a big serif name, the count, and a short slanted bar on a faint line */
 .gh.gch{display:block;text-align:center;border:0;margin:44px 0 24px;padding:0;color:var(--fg);letter-spacing:.03em;text-transform:none}
 .gch .ghi{margin:0 auto 10px;width:36px;height:36px;border-radius:10px}.gch .ghi svg{width:20px;height:20px;color:var(--gc)}
@@ -940,7 +940,7 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 /* raised bands, like a hero page's Abilities and Popular items: they run past both screen edges, tilt, and cast a shadow. Purple for the terms,
    bronze for the lane (tilted the other way), slate for Hero effects */
 .gband{position:relative;isolation:isolate;margin:40px 0 44px;padding:36px 0 40px}
-.gband.gpur{margin-top:10px;padding-top:50px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
+.gband.gpur{margin-top:10px;padding-top:38px;padding-bottom:64px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
 .gband.gpur .gt{background:#221c2e;border-color:rgba(255,255,255,.09);box-shadow:0 4px 10px rgba(0,0,0,.28)}
 .gband.gpur .gt::before,.gband.gpur .gt::after{display:none}
 .gsw{position:relative}
@@ -4457,19 +4457,19 @@ var GTABS = ["dmg", "scale", "def", "cc", "buff", "move", "map", "econ"], GTAB_S
 function glossTab() { if (GTABS.indexOf(state.gtab) >= 0) return state.gtab; var t = null; try { t = localStorage.getItem("gtab"); } catch (e) {} return (state.gtab = GTABS.indexOf(t) >= 0 ? t : "dmg"); }
 // Terms: one block per category, stacked; tap a block to open it (one at a time). Folding uses the same animation as the patch lists
 function gswHtml() {
-  var cur = glossTab(), tabs = GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; });
+  var tabs = GCATS.filter(function (c) { return GTABS.indexOf(c[0]) >= 0; });
   var ico = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>';
   var head = '<h2 class="gh gch" style="--gc:#e6b45a;--gcr:230,180,90;--gct:rgba(230,180,90,.13)"><span class="ghi">' + ico + '</span><b>Terms</b><span class="gln2"></span></h2>';
   var blocks = tabs.map(function (c) {
     var list = GLOSS.filter(function (g) { return g.c === c[0] && (c[0] !== "map" || (!LANE_KEYS[g.k] && g.k !== "match-timeline")); });
-    return '<details class="gak" id="gc-' + c[0] + '" data-cat="' + c[0] + '"' + gcStyle(c[0]) + (c[0] === cur ? " open" : "") + '><summary><span class="gaki">' + gcSvg(c[0]) + "</span><b>" + esc(c[1]) + '</b><small>' + list.length + '</small><svg class="gakc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><div class="gakb">' +
+    return '<details class="gak" id="gc-' + c[0] + '" data-cat="' + c[0] + '"' + gcStyle(c[0]) + '><summary><span class="gaki">' + gcSvg(c[0]) + "</span><b>" + esc(c[1]) + '</b><small>' + list.length + '</small><svg class="gakc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><div class="gakb">' +
       list.map(function (g) { return glossCard(g); }).join("") + "</div></details>";
   }).join("");
   return '<section class="gsw" id="gsw">' + head + '<div class="gacc">' + blocks + "</div></section>";
 }
 function setGlossTab(k) { // open a category's block (closing the others) without animating, e.g. when a link points into it
   if (GTABS.indexOf(k) < 0) return; state.gtab = k; try { localStorage.setItem("gtab", k); } catch (e) {}
-  Array.prototype.forEach.call(document.querySelectorAll("#gsw details.gak"), function (d) { d.open = d.getAttribute("data-cat") === k; d.classList.remove("closing"); d.style.height = ""; });
+  Array.prototype.forEach.call(document.querySelectorAll("#gsw details.gak"), function (d) { gakSet(d, d.getAttribute("data-cat") === k); d.style.height = ""; });
   setTimeout(function () { if (!$("secnav").hidden) secMark(); }, 0);
 }
 function glossReveal(k) { // a link to a term in one of the six that isn't showing: switch to its category first
@@ -5890,12 +5890,43 @@ $("main").addEventListener("click", function (e) {
 // Revisions / What's New dates and the Notes / Interactions rows: the section grows open and folds shut (its height animates while the content fades and slides), instead of snapping.
 // Opening a native <details> just flips it, so the tap is taken over: the height is measured open and shut, animated, and the open attribute is set at the end of a close.
 window.addEventListener("resize", function () { clearTimeout(window._cgT); window._cgT = setTimeout(function () { chapterGlints(); popLayout(); chjFill(); }, 200); }); // the glints follow a chapter's new height
-document.addEventListener("toggle", function (e) { // without animation (Reduce Motion): still one term category open at a time
-  var d = e.target; if (!d.classList || !d.classList.contains("gak") || !d.open || d._busy) return;
-  Array.prototype.forEach.call(document.querySelectorAll("#gsw details.gak[open]"), function (o) { if (o !== d) o.open = false; });
-}, true);
+// Terms categories: one open at a time. The open one shuts at once, with the scroll adjusted so the tapped header doesn't move
+// under your finger; then the tapped one grows open (its tint on from the start) while the page eases it toward the top.
+function gakSet(d, on) { d.open = on; d.classList.toggle("on", on); }
+function gakFold(d) {
+  if (d._busy) return;
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches, sm = d.querySelector("summary"), opening = !d.open;
+  if (!opening) { // fold this one shut
+    if (calm) return gakSet(d, false);
+    var h0 = d.offsetHeight; d.classList.remove("on"); var hs = sm.offsetHeight + 1; d._busy = true; d.style.overflow = "hidden";
+    var a = d.animate([{ height: h0 + "px" }, { height: hs + "px" }], { duration: 260, easing: "cubic-bezier(.4,0,.2,1)" });
+    a.onfinish = function () { gakSet(d, false); d.style.overflow = ""; d._busy = false; };
+    return;
+  }
+  state.gtab = d.getAttribute("data-cat"); try { localStorage.setItem("gtab", state.gtab); } catch (e) {}
+  var top0 = sm.getBoundingClientRect().top;
+  Array.prototype.forEach.call(document.querySelectorAll("#gsw details.gak[open]"), function (o) { if (o !== d) gakSet(o, false); });
+  gakSet(d, true);
+  window.scrollBy(0, sm.getBoundingClientRect().top - top0); // the header stays put
+  if (calm) return;
+  var full = d.offsetHeight, hs2 = sm.offsetHeight + 14, y0 = window.pageYOffset || 0;
+  var y1 = Math.max(0, Math.min(sm.getBoundingClientRect().top + y0 - 70, document.documentElement.scrollHeight - window.innerHeight));
+  d._busy = true; d.style.overflow = "hidden"; d.style.height = hs2 + "px";
+  var kids = d.querySelector(".gakb"); kids.animate([{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }], { duration: 380, easing: "ease-out", delay: 60, fill: "backwards" });
+  var t0 = 0, dur = 420;
+  requestAnimationFrame(function step(t) {
+    if (!t0) t0 = t; var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    d.style.height = (hs2 + (full - hs2) * e) + "px";
+    if (Math.abs(y1 - y0) > 2) window.scrollTo(0, y0 + (y1 - y0) * e);
+    if (p < 1) requestAnimationFrame(step); else { d.style.height = ""; d.style.overflow = ""; d._busy = false; }
+  });
+}
 document.addEventListener("click", function (e) {
-  var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary, details.phd > summary, details.gak > summary") : null; if (!sm) return;
+  var sm = e.target.closest ? e.target.closest("details.gak > summary") : null; if (!sm) return;
+  e.preventDefault(); gakFold(sm.parentNode);
+});
+document.addEventListener("click", function (e) {
+  var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary, details.phd > summary") : null; if (!sm) return;
   if (sm.classList.contains("nofold")) { e.preventDefault(); return; } // Base stats, Abilities and Ability order don't fold
   var d = sm.parentNode;
   if (!d.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return; // plain toggle
@@ -5936,9 +5967,8 @@ function shrinkSpacer(sp) {
   });
 }
 function foldDetails(d) {
-  var list = d.closest("#revs.news, #revs.phist, .gacc"), opening = !d.open, others = [];
-  if (opening && list) others = Array.prototype.filter.call(d.parentNode.querySelectorAll(":scope > details.rpt[open], :scope > details.gak[open]"), function (o) { return o !== d && o.offsetParent; }); // one patch (or term category) open at a time
-  if (d.classList.contains("gak") && opening) { state.gtab = d.getAttribute("data-cat"); try { localStorage.setItem("gtab", state.gtab); } catch (e) {} }
+  var list = d.closest("#revs.news, #revs.phist"), opening = !d.open, others = [];
+  if (opening && list) others = Array.prototype.filter.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { return o !== d && o.offsetParent; }); // one patch open at a time
   others.forEach(function (o) { if (o._stop) o._stop(); });
   var parts = [d].concat(others).map(function (x) {
     var on = x === d ? opening : false, h0 = x.offsetHeight;
