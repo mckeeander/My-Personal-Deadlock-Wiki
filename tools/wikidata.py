@@ -289,6 +289,12 @@ def mechanics(repo):
                       "trooper_instant_ratio": c("citadel_trooper_instant_gold_ratio_laning"), "comeback_redirect": c("citadel_comeback_redirect_fraction"),
                       "tick_start_sec": c("citadel_tick_gold_start_time")}
     out["mid_boss"].update({"souls": c("citadel_super_neutral_gold_reward"), "souls_per_min": c("citadel_super_neutral_gold_reward_bonus_per_minute")})
+    # the Soul Urn and the Unstable Rift
+    kc = (misc or {}).get("citadel_koth_cashin") or {}
+    out["urn"] = {"first_sec": c("citadel_crate_spawn_initial_delay"), "respawn_sec": c("citadel_crate_respawn_interval"), "souls": c("citadel_crate_reward_base"), "souls_per_min": c("citadel_crate_reward_time_multiplier")}
+    out["rift"] = {"respawn_sec": c("citadel_koth_respawn_interval"), "souls_base": c("citadel_koth_reward_base"), "souls_per_min": c("citadel_koth_reward_time_multiplier"),
+                   "capture_sec": kc.get("TotalTimeToCapture"), "capture_sec_behind": kc.get("TotalTimeToCaptureFavored"), "capture_sec_ahead": kc.get("TotalTimeToCaptureUnfavored"),
+                   "draw_sec": kc.get("TimeToGiveUp"), "radius_m": round(((kc.get("AuraModifier") or {}).get("AuraRadius") or 0) * 0.0254) or None}
     # trooper waves: the first one, then the gap between waves as the match goes on, and how many troopers come in a squad
     out["trooper"].update({"wave_first_sec": c("citadel_trooper_spawn_initial"), "wave_sec": c("citadel_trooper_spawn_interval_early"),
                            "wave_late_sec": c("citadel_trooper_spawn_interval_late"), "wave_late_min": c("citadel_trooper_spawn_interval_late_time"),
