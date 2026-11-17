@@ -770,14 +770,14 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 /* the glossary header: an open title, no card */
 .gopen{padding:8px 4px 0}.gok{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .ghead .gopen .gtitle{margin:6px 0 0;font-family:var(--disp);font-size:44px;line-height:1}
-.gob{display:block;width:58px;height:4px;margin:14px 0 0 2px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
-.gdyk{position:relative;margin-top:26px;padding:14px 52px 15px 16px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
-.gdykl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.gob{display:block;position:relative;height:1px;margin:22px calc(50% - 50vw) 8px;background:rgba(241,233,216,.2)}.gob::after{content:"";position:absolute;left:max(18px,calc(50vw - 50% + 6px));top:-2px;width:58px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
+.gdyk{position:relative;margin-top:26px;padding:14px 44px 15px 16px;border-radius:14px;background:radial-gradient(120% 140% at 0 0,rgba(230,180,90,.16),transparent 60%),radial-gradient(90% 120% at 100% 100%,rgba(162,131,240,.12),transparent 65%),rgba(255,255,255,.03);border:1px solid rgba(230,180,90,.25)}
+.gdykl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
 .gdyk p{margin:8px 0 0;font-size:14px;line-height:1.55;color:#d6cee0;transition:opacity .16s ease}.gdyk p.out{opacity:0}
-.gdie{position:absolute;right:8px;top:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:rgba(230,180,90,.1);color:var(--gold)}.gdie svg{width:21px;height:21px}
+.gdie{position:absolute;right:9px;top:9px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:rgba(230,180,90,.1);color:var(--gold)}.gdie svg{width:16px;height:16px}
 .gdie.roll svg{animation:dieroll .45s cubic-bezier(.3,.7,.3,1)}@keyframes dieroll{from{transform:rotate(-200deg) scale(.7)}to{transform:none}}
 /* Terms of the day: stuck-on labels in each term's category colour, tilted like a hero card's tags */
-.gtod{margin-top:30px;text-align:center}
+.gtod{margin-top:34px;text-align:center}
 .gtodl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 .gtodt{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 10px;margin-top:12px}
 .gtodb{display:inline-block;font:inherit;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:11.5px;padding:5px 10px;border:0;border-radius:2px;box-shadow:2px 3px 0 rgba(0,0,0,.55);cursor:pointer;
@@ -877,6 +877,8 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gsft.gtkf{margin:12px 0 0 2px}
 /* The map section */
 .gmap .gh.gch{margin-top:22px}
+.gtsec.gmap::before{top:auto;bottom:-1px;border-top:0;border-left:0;border-bottom:2px solid var(--gc);border-right:2px solid var(--gc);-webkit-mask:radial-gradient(110% 100% at 100% 100%,#000 6%,transparent);mask:radial-gradient(110% 100% at 100% 100%,#000 6%,transparent)}
+.gtsec.gmap{background:linear-gradient(to top,rgba(var(--gcr),.1),transparent clamp(160px,40%,320px)),rgba(255,255,255,.028)}
 .gms.first{margin-top:6px}.gms{margin:30px 0 12px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gc);display:flex;align-items:center;gap:10px}.gms::after{content:"";flex:1;height:1px;background:rgba(var(--gcr),.25)}
 .gmmini{margin:4px auto 0;text-align:center}.gmmini img{width:min(300px,85%);height:auto;display:block;margin:0 auto}.gmmini.sm img{width:min(260px,75%)}
 .gmmini figcaption{margin:12px auto 0;max-width:34ch;font-size:12.5px;line-height:1.45;color:var(--dim)}
@@ -888,9 +890,10 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gmph{flex:none;width:78%;margin:0;scroll-snap-align:start}.gmph img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;display:block;background:var(--panel2)}
 .gmph figcaption{font-size:12px;font-weight:600;color:#cfc6d8;margin:6px 2px 0}
 .gmrow.art{margin:0 -14px;padding:0 14px 4px}.gmrow.art .gmph{width:62%}.gmrow.art .gmph img{aspect-ratio:auto;height:200px}
-.gmc{margin-bottom:12px;border-radius:14px;overflow:hidden;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.07)}
+.gmc{position:relative;display:block;width:100%;padding:0;margin-bottom:12px;border-radius:14px;overflow:hidden;background:var(--panel2);border:1px solid rgba(255,255,255,.07);font:inherit;color:var(--fg);text-align:left;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.35)}
 .gmc img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--panel2)}
-.gmct{padding:10px 12px 12px}.gmct b{font-size:16px}.gmct small{margin-left:8px;font-size:11.5px;color:var(--dim)}
+.gmct{position:absolute;left:0;right:0;bottom:0;padding:34px 14px 12px;background:linear-gradient(transparent,rgba(10,8,14,.88))}.gmct b{display:block;font-family:var(--disp);font-size:22px;line-height:1.1;text-shadow:0 2px 6px rgba(0,0,0,.6)}.gmct small{display:block;margin-top:3px;font-size:12px;color:#d6cee0}
+.gplace img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;display:block;margin-bottom:14px}
 .gmfs{display:flex;flex-direction:column;gap:2px}
 .gmf{display:flex;gap:10px;align-items:flex-start;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.06)}.gmf:last-child{border-bottom:0}
 .gmf img{flex:none;width:52px;height:74px;object-fit:cover;border-radius:6px}
@@ -900,18 +903,18 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gmlts{display:flex;gap:6px;padding:10px 10px 0}
 .gmlt{flex:1;padding:9px 0;border:0;border-radius:10px;font:inherit;font-size:13.5px;font-weight:700;color:var(--dim);background:rgba(255,255,255,.04);transition:background-color .2s ease,color .2s ease}
 .gmlt.on{background:color-mix(in srgb,var(--lc) 20%,transparent);color:var(--lc);box-shadow:inset 0 -2px 0 var(--lc)}
-.gmlb{position:relative;border-top:2px solid var(--lc);margin-top:10px}
+.gmlb{position:relative;overflow:hidden;border-top:2px solid var(--lc);margin-top:10px}
 .gmlf{position:relative;transition:opacity .17s ease}.gmlf.out{opacity:0}
-.gmlbg{position:absolute;right:-44px;top:-8px;width:250px;opacity:.5;pointer-events:none;-webkit-mask:linear-gradient(to left,#000 40%,transparent);mask:linear-gradient(to left,#000 40%,transparent)}
+.gmlbg{position:absolute;right:-44px;top:8px;width:250px;opacity:.5;pointer-events:none;-webkit-mask:linear-gradient(to left,#000 40%,transparent);mask:linear-gradient(to left,#000 40%,transparent)}
 .gmlx{position:relative;padding:18px 16px 0;max-width:68%}
-.gmlx b{display:block;font-family:var(--disp);font-size:26px;color:var(--lc);line-height:1.1}.gmlx small{display:block;font-size:12px;color:var(--dim);margin-top:3px}
+.gmlx b{display:block;font-family:var(--body);font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--lc);line-height:1.1}.gmlx small{display:block;font-size:12px;color:var(--dim);margin-top:3px}
 .gmlx p{margin:10px 0 0;font-size:14px;line-height:1.55;color:#d9d1e3;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .gmcw{position:relative;margin-top:16px;padding-bottom:14px}
 .gmcw::before,.gmcw::after{content:"";position:absolute;top:0;bottom:36px;width:34px;z-index:2;pointer-events:none;opacity:0;transition:opacity .2s ease}
 .gmcw::before{left:0;background:linear-gradient(to right,rgba(14,11,20,.95),transparent)}.gmcw::after{right:0;background:linear-gradient(to left,rgba(14,11,20,.95),transparent)}
 .gmcw.l::before,.gmcw:not(.l)::after,.gmcw.r::after{opacity:1}.gmcw.l:not(.r)::after{opacity:0}
-.gmcr{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;scroll-padding:0 16px;scroll-snap-type:x mandatory;scrollbar-width:none}.gmcr::-webkit-scrollbar{display:none}
-.gmcr figure{flex:none;width:80%;margin:0;scroll-snap-align:start}.gmcr img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;display:block;background:var(--panel2);box-shadow:0 6px 14px rgba(0,0,0,.4)}
+.gmcr{display:flex;gap:10px;overflow-x:auto;padding:0 10% 4px;scroll-snap-type:x mandatory;scrollbar-width:none}.gmcr::-webkit-scrollbar{display:none}
+.gmcr figure{flex:none;width:80%;margin:0;scroll-snap-align:center}.gmcr img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;display:block;background:var(--panel2);box-shadow:0 6px 14px rgba(0,0,0,.4)}
 .gmcr figcaption{text-align:center;font-size:12.5px;font-weight:600;color:#d6cee0;margin-top:7px}
 /* Map & objectives: its own raised band, a dusky bronze, tilted the other way (high on the right), with each card lifted off it */
 /* raised bands, like a hero page's Abilities and Popular items: they run past both screen edges, tilt, and cast a shadow. Purple for the terms,
@@ -1132,7 +1135,7 @@ body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
 <button class="backpill" id="backpill" hidden></button>
 <button class="backpill" id="srchpill" hidden></button>
 <button class="backpill" id="glbpill" hidden></button>
-<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button><button role="menuitem" data-sec="gs-map" class="sm-atlas" style="--sc:#c98aa6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>The map</button><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="gs-city" class="sm-city" style="--sc:#c98aa6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V8l5-3v16"/><path d="M10 21V3l9 4v14"/><path d="M13 9h3M13 13h3M13 17h3"/></svg></span>The city</button><button role="menuitem" data-sec="gc-hero" class="sm-hero" style="--sc:#7c9be6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Hero effects</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#62c46f"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="spi" id="secpi" aria-hidden="true"></span></button></div>
+<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button><button role="menuitem" data-sec="gs-map" class="sm-atlas" style="--sc:#5bb6c9"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>The map</button><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="gs-city" class="sm-city" style="--sc:#5bb6c9"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V8l5-3v16"/><path d="M10 21V3l9 4v14"/><path d="M13 9h3M13 13h3M13 17h3"/></svg></span>The city</button><button role="menuitem" data-sec="gc-hero" class="sm-hero" style="--sc:#7c9be6"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Hero effects</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#62c46f"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="spi" id="secpi" aria-hidden="true"></span></button></div>
 <button class="backpill" id="toppill" hidden aria-label="Back to top"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
@@ -4148,7 +4151,7 @@ function openResult(b) {
 // [[key|text]] in a body links to another entry. Numbers follow the wiki at the time of writing and can shift with patches.
 var GCATS = [["dmg", "Damage"], ["scale", "Scaling & progression"], ["def", "Defense & healing"], ["cc", "Crowd control"], ["buff", "Immunity & stealth"], ["move", "Movement"], ["map", "Map & objectives"], ["econ", "Economy"], ["hero", "Hero effects"]];
 // each category's colour and icon: on its jump card, its heading, the stripe down each card and the tile behind each term's icon
-var GCOL = { atlas: "#c98aa6", time: "#62c46f", dmg: "#ec5b4e", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#c99257", hero: "#7c9be6" };
+var GCOL = { atlas: "#5bb6c9", time: "#62c46f", dmg: "#ec5b4e", scale: "#b583f0", def: "#6fc56d", cc: "#5f9cf5", buff: "#e78bd0", move: "#3fc9b0", map: "#d2a679", econ: "#c99257", hero: "#7c9be6" };
 var GCI = {
   atlas: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
   time: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
@@ -4575,11 +4578,18 @@ document.addEventListener("scroll", function (e) { // the photo row: a shadow at
   var r = e.target; if (!r.classList || !r.classList.contains("gmcr")) return;
   r.parentNode.classList.toggle("l", r.scrollLeft > 4); r.parentNode.classList.toggle("r", r.scrollLeft < r.scrollWidth - r.clientWidth - 4);
 }, true);
+function placeSheet(k) { // a district or base, opened: its photo, name and notes
+  var x = MAPDATA.districts.concat(MAPDATA.bases).filter(function (y) { return y.k === k; })[0]; if (!x) return;
+  ISTACK = []; FSTACK = [];
+  var html = '<div class="gsh gplace"' + gcStyle("atlas") + '><img alt="" src="img/map/' + x.k + '.jpg"><div class="gcat2"><span class="ghi">' + gcSvg("atlas") + "</span>" + esc(x.side) + "</div><h3>" + esc(x.name) + "</h3><p>" + glossText(x.t) + '</p></div><div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
+  clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
+  $("close").onclick = sinkSheet;
+}
 function mapSec(part) {
   var D = MAPDATA, I = function (k, ext) { return "img/map/" + k + (ext || ".jpg"); }, T = function (t) { return glossText(t); };
   var photo = function (k, cap) { return '<figure class="gmph"><img loading="lazy" alt="" src="' + I(k) + '"><figcaption>' + esc(cap) + "</figcaption></figure>"; };
   var lanes = '<div class="gml2" id="gml2">' + laneCard() + "</div>";
-  var card = function (x) { return '<div class="gmc"><img loading="lazy" alt="" src="' + I(x.k) + '"><div class="gmct"><b>' + esc(x.name) + "</b><small>" + esc(x.side) + "</small><p>" + T(x.t) + "</p></div></div>"; };
+  var card = function (x) { return '<button class="gmc" data-place="' + x.k + '"><img loading="lazy" alt="" src="' + I(x.k) + '"><span class="gmct"><b>' + esc(x.name) + "</b><small>" + esc(x.side) + "</small></span></button>"; };
   var feats = D.features.map(function (f) { return '<div class="gmf">' + (f[2] ? '<img loading="lazy" alt="" src="' + I(f[2]) + '">' : "") + "<div><b>" + esc(f[0]) + "</b><span>" + T(f[1]) + "</span></div></div>"; }).join("");
   var h = function (t) { return '<div class="gms">' + t + "</div>"; };
   var title = function (id, name) { return '<section class="gtsec gmap" id="' + id + '"' + gcStyle("atlas") + '><h2 class="gh gch"' + gcStyle("atlas") + '><span class="ghi">' + gcSvg("atlas") + "</span><b>" + name + '</b><span class="gln2"></span></h2>'; };
@@ -5765,6 +5775,8 @@ $("main").addEventListener("click", function (e) {
   var gld = state.tab === "glossary" && e.target.closest ? e.target.closest(".gld[data-g], .glbd[data-g], .gte[data-g], .gtodb[data-g]") : null;
   if (gld) { glossSheet(gld.getAttribute("data-g")); return; }
   if (e.target.closest && e.target.closest("#gdie")) { dykNext(); return; }
+  var gpl = e.target.closest ? e.target.closest("[data-place]") : null;
+  if (gpl) { placeSheet(gpl.getAttribute("data-place")); return; }
   var gln = e.target.closest ? e.target.closest("[data-lane]") : null;
   if (gln) { setLane(gln.getAttribute("data-lane")); return; }
   var gmb = e.target.closest ? e.target.closest(".gmb") : null;
