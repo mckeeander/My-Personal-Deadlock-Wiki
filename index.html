@@ -767,16 +767,16 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .gban .gtitle{margin:0;font-family:var(--disp);font-size:36px;letter-spacing:.03em}
 .gbar{display:block;position:relative;width:104px;height:1px;margin:14px auto 0;background:rgba(241,233,216,.28)}.gbar::after{content:"";position:absolute;left:50%;width:44px;margin-left:-22px;top:-2px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
 /* the glossary header: an open title, no card */
-.gopen{padding:46px 4px 0}.gok{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.gopen{padding:36px 4px 0}.gok{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .ghead .gopen .gtitle{margin:6px 0 0;font-family:var(--disp);font-size:44px;line-height:1}
-.gob{display:block;position:relative;height:1px;margin:22px calc(50% - 50vw) 32px;background:rgba(241,233,216,.2)}.gob::after{content:"";position:absolute;left:max(18px,calc(50vw - 50% + 6px));top:-2px;width:58px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
+.gob{display:block;position:relative;height:1px;margin:22px calc(50% - 50vw) 48px;background:rgba(241,233,216,.2)}.gob::after{content:"";position:absolute;left:max(18px,calc(50vw - 50% + 6px));top:-2px;width:58px;height:4px;border-radius:1px;transform:skewX(-28deg);background:var(--gold)}
 /* Terms of the day and Did you know share one card, split by a short gold mark on a faint line */
 .gday{margin-top:0;padding:20px 16px 18px;border-radius:18px;background:radial-gradient(120% 90% at 0 0,rgba(84,190,170,.17),transparent 60%),radial-gradient(100% 90% at 100% 100%,rgba(90,140,230,.17),transparent 65%),rgba(255,255,255,.03);border:1px solid rgba(110,200,185,.24);box-shadow:0 10px 24px rgba(0,0,0,.3)}
 .gday .gtod{margin-top:0}
 .gsep{display:block;position:relative;height:1px;margin:22px 0 18px;background:rgba(241,233,216,.14)}.gsep::after{content:"";position:absolute;left:50%;top:-1.5px;width:34px;margin-left:-17px;height:3px;border-radius:1px;transform:skewX(-28deg);background:#6fcfbd}
 .gdyk{position:relative;padding:0 34px 0 0}
 .gdykl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7fd6c6}
-.gdyk p{margin:8px 0 0;font-size:14px;line-height:1.55;color:#d6cee0;transition:opacity .16s ease}.gdyk p.out{opacity:0}
+.gdyk p{margin:8px 0 0;font-size:14px;line-height:1.55;color:#d6cee0;overflow:hidden;transition:opacity .17s ease,height .25s ease}.gdyk p.out{opacity:0}
 .gdie{position:absolute;right:-6px;top:-6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:rgba(111,207,189,.12);color:#7fd6c6}.gdie svg{width:16px;height:16px}
 .gdie.roll svg{animation:dieroll .45s cubic-bezier(.3,.7,.3,1)}@keyframes dieroll{from{transform:rotate(-200deg) scale(.7)}to{transform:none}}
 /* Terms of the day: stuck-on labels in each term's category colour, tilted like a hero card's tags */
@@ -883,7 +883,7 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gtsec.gmap::before{top:auto;bottom:-1px;border-top:0;border-left:0;border-bottom:2px solid var(--gc);border-right:2px solid var(--gc);-webkit-mask:radial-gradient(110% 100% at 100% 100%,#000 6%,transparent);mask:radial-gradient(110% 100% at 100% 100%,#000 6%,transparent)}
 .gtsec.gmap{background:linear-gradient(to top,rgba(var(--gcr),.1),transparent clamp(160px,40%,320px)),rgba(255,255,255,.028)}
 .gms.first{margin-top:6px}.gms{margin:30px 0 12px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gc);display:flex;align-items:center;gap:10px}.gms::after{content:"";flex:1;height:1px;background:rgba(var(--gcr),.25)}
-.gmmini{margin:4px auto 0;text-align:center}.gmmini img{width:min(300px,85%);height:auto;display:block;margin:0 auto}.gmmini.sm img{width:min(260px,75%)}
+.gmmini{margin:4px auto 0;text-align:center}.gmmini img{width:min(300px,85%);height:auto;display:block;margin:0 auto}.gmmini.sm img{width:min(260px,75%)}.gmmini.sm{margin-bottom:18px}
 .gmmini figcaption{margin:12px auto 0;max-width:34ch;font-size:12.5px;line-height:1.45;color:var(--dim)}
 .gml{margin-bottom:18px;padding:12px;border-radius:14px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.07);border-top:2px solid var(--lc)}
 .gmlh{display:flex;gap:12px;align-items:flex-start}.gmlh img{flex:none;width:84px;height:auto}
@@ -4600,7 +4600,7 @@ function mapSec(part) {
   if (part === "top") return title("gs-map", "The map") +
     '<figure class="gmmini"><img loading="lazy" alt="The minimap" src="' + I("minimap", ".png") + '"><figcaption>The Cursed Apple</figcaption></figure>' +
     h("Lanes") + lanes + "</section>";
-  return title("gs-city", "The city") + '<div class="gms first">Districts</div>' + '<figure class="gmmini sm"><img loading="lazy" alt="The four districts" src="' + I("districts", ".png") + '"><figcaption>The jungle between the lanes: no structures or troopers, just haunts, breakables and fights.</figcaption></figure>' + D.districts.map(card).join("") +
+  return title("gs-city", "The city") + '<div class="gms first">Districts</div>' + '<figure class="gmmini sm"><img loading="lazy" alt="The four districts" src="' + I("districts", ".png") + '"></figure>' + D.districts.map(card).join("") +
     h("Bases") + D.bases.map(card).join("") +
     h("Around the map") + '<div class="gmfs">' + feats + "</div></section>";
 }
@@ -4629,7 +4629,7 @@ function laneMap() {
     '<div class="gls gate">The enemy base</div>' +
     step("base-guardian", "Base Guardians", "Destroy one pair to open the Shrines", chip(f(B.health), "health each") + chip(f(B.souls), "souls"), { bd: true, n: 2 }) +
     step("shrine", "Shrines", "Open once any pair of Base Guardians falls", chip(f(S.health || SHRINE_HP), "health each") + chip(f(S.souls), "souls"), { n: 2 }) +
-    step("patron", "Patron", "Can’t be hurt until both Shrines fall", P.health ? chip(f(P.health) + (P.phase2_health ? " + " + f(P.phase2_health) : ""), "health, two phases") : "", { bd: true }) +
+    step("patron", "Patron", "Can’t be hurt until both Shrines fall", P.health ? chip(f(P.health) + (P.phase2_health ? " + " + f(P.phase2_health) : ""), "health") : "", { bd: true }) +
     '<button class="glbd" id="g-backdoor" data-g="backdoor"><span class="gbd">' + shield + '</span><span><b>Backdoor protection</b>Marked objectives take much less damage from heroes and heal quickly unless your troopers are nearby.</span><span class="gtc">›</span></button>' +
     "</div>";
 }
@@ -4665,7 +4665,12 @@ function dykNext() {
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (d && !calm) { d.classList.remove("roll"); void d.offsetWidth; d.classList.add("roll"); }
   if (calm) { t.textContent = dykPick(); return; }
-  t.classList.add("out"); setTimeout(function () { t.textContent = dykPick(); t.classList.remove("out"); }, 160);
+  var h0 = t.offsetHeight; t.style.height = h0 + "px"; t.classList.add("out"); // hold the height, fade out
+  setTimeout(function () {
+    t.style.height = "auto"; t.textContent = dykPick(); var h1 = t.offsetHeight; // measure the new text
+    t.style.height = h0 + "px"; void t.offsetWidth; t.style.height = h1 + "px"; t.classList.remove("out"); // grow or shrink to it while fading in
+    setTimeout(function () { t.style.height = ""; }, 260);
+  }, 170);
 }
 // Terms of the day: five terms picked from the date, the same all day and different tomorrow, so there's a small set to look over (or edit) each day
 function todTerms(n) {
@@ -5282,7 +5287,7 @@ function glossBack() { // back to the page the glossary was opened from (Abrams,
   if (f.back) { if (f.back.search != null) showBackSearch(f.back.search); else showBack(f.back.hero, f.back.y); }
 }
 function topPill() { // glossary: a round ↑ on the right once you've scrolled past the category cards, and "‹ Back to Abrams" when you came from somewhere
-  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gban"), inG = state.tab === "glossary" && !searchOn();
+  var tp = $("toppill"), gb = $("glbpill"), c = document.querySelector("#main .gopen"), inG = state.tab === "glossary" && !searchOn();
   var inN = state.tab === "news" && !searchOn(), nt = inN && document.querySelector("#main .gtitle");
   var inH = state.tab === "heroes" && !!state.hero && !searchOn(), hh = inH && document.querySelector("#main .hero-h"); // hero pages: once the header is a screen behind you
   var show = (inH && $("backpill").hidden && !!hh && hh.getBoundingClientRect().bottom < -400) || (inG && $("backpill").hidden && !!c && c.getBoundingClientRect().bottom < 0) || (inN && $("backpill").hidden && !!nt && nt.getBoundingClientRect().bottom < -300); // What's New: once you've scrolled a screen or so down
