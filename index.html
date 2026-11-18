@@ -952,7 +952,7 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 /* raised bands, like a hero page's Abilities and Popular items: they run past both screen edges, tilt, and cast a shadow. Purple for the terms,
    bronze for the lane (tilted the other way), slate for Hero effects */
 .gband{position:relative;isolation:isolate;margin:40px 0 44px;padding:36px 0 40px}
-.gband.gpur{margin-top:10px;padding-top:38px;padding-bottom:64px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
+.gband.gfirst{margin-top:10px}.gband.gpur{margin-top:48px;padding-top:38px;padding-bottom:64px}.gband.gpur .gpanel i{background:linear-gradient(to bottom,#2e274d 0,#27203e 140px,#221c36 45%,#1c172b 100%)}
 .gband.gpur .gt{background:#221c2e;border-color:rgba(255,255,255,.09);box-shadow:0 4px 10px rgba(0,0,0,.28)}
 .gband.gpur .gt::before,.gband.gpur .gt::after{display:none}
 .gsw{position:relative}
@@ -1167,7 +1167,7 @@ body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
 <button class="backpill" id="backpill" hidden></button>
 <button class="backpill" id="srchpill" hidden></button>
 <button class="backpill" id="glbpill" hidden></button>
-<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#6f9fd8"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="secpi" id="secpi" aria-hidden="true"></span></button></div>
+<div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#6f9fd8"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="secpi" id="secpi" aria-hidden="true"></span></button></div>
 <button class="backpill" id="toppill" hidden aria-label="Back to top"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
@@ -4475,9 +4475,9 @@ function glossList() {
   var C = function (k) { return GCATS.filter(function (c) { return c[0] === k; })[0]; };
   var band = function (cls, id, inner) { return '<section class="gband ' + cls + '"' + (id ? ' id="' + id + '"' : "") + '><div class="gpanel" aria-hidden="true"><i></i></div>' + inner + "</section>"; };
   var chap = function (k, name, sub, id) { return '<h2 class="gh gch"' + (id ? ' id="' + id + '"' : "") + gcStyle(k) + '><span class="ghi">' + gcSvg(k) + "</span><b>" + esc(name) + "</b>" + (sub ? "<small>" + esc(sub) + "</small>" : "") + '<span class="gln2"></span></h2>'; };
-  html = band("gpur", "", gswHtml()) +
-    band("gbr", "gs-lane", chap("map", "Lane layout", "") + laneMap()) +
-    '<section class="gtsec" id="g-match-timeline"' + gcStyle("time") + ">" + chap("time", "Match timeline", "") + timelineHtml() + "</section>";
+  html = band("gbr gfirst", "gs-lane", chap("map", "Lane layout", "") + laneMap()) +
+    '<section class="gtsec" id="g-match-timeline"' + gcStyle("time") + ">" + chap("time", "Match timeline", "") + timelineHtml() + "</section>" +
+    band("gpur", "", gswHtml()); // the two diagrams first, to browse; the terms after, mostly reached by links
   return html;
 }
 var GTABS = ["dmg", "scale", "def", "cc", "buff", "move", "map", "econ", "haunt", "hero"], GTAB_SHORT = { dmg: "Damage", scale: "Scaling", def: "Defense", cc: "Crowd control", buff: "Immunity", move: "Movement", map: "Map", econ: "Economy" }, GTAB_TINY = { cc: "Control" };
