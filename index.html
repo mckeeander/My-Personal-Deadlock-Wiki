@@ -821,13 +821,13 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gakc{flex:none;width:18px;height:18px;color:var(--dim);transition:transform .25s ease}
 .gak{transition:background-color .3s ease,border-color .3s ease,box-shadow .3s ease}.gak.on{margin:0 0 8px;border:1px solid rgba(var(--gcr),.4);border-radius:16px;background:linear-gradient(to bottom,rgba(var(--gcr),.2),rgba(var(--gcr),.05) 140px,rgba(0,0,0,.12));box-shadow:0 10px 24px rgba(0,0,0,.35)}
 .gak.on > summary{padding:12px 12px}
-.gak.on .gakc{transform:rotate(180deg);color:var(--gc)}
+.gak.on .gakc{transform:rotate(180deg);color:var(--gc)}.gak.on.closing .gakc{transform:none}
 .gakb{padding:2px 10px 10px}
 /* a Haunt family's tiers: portrait with its tier numeral in the eye colour, then what it adds */
 .ghts{display:flex;flex-direction:column;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07)}
 .ght{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:#d6cee0}
-.ghtn{flex:none;min-width:26px;height:20px;margin-top:1px;padding:0 5px;border-radius:10px;background:var(--tc);color:#120f18;font-family:var(--disp);font-size:12px;display:flex;align-items:center;justify-content:center}
-.ghtt{flex:none;display:flex;gap:6px;margin-bottom:4px}
+.ghtn{flex:none;min-width:24px;height:18px;margin-top:1px;padding:0 4px;border-radius:5px;background:color-mix(in srgb,var(--tc) 13%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc) 30%,transparent);color:var(--tc);font-family:var(--disp);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.ghtt{flex:none;order:2;margin-left:auto;display:flex;gap:6px}
 .ghtt .ghti{width:44px;height:44px}
 .ghti{position:relative;flex:none;width:58px;height:58px;border-radius:10px;background:rgba(var(--gcr),.08);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc) 45%,transparent)}
 .ghti img{width:100%;height:100%;object-fit:contain;border-radius:10px}
@@ -4276,13 +4276,13 @@ var GLOSS = [
   { k: "permanent-buffs", c: "map", t: "Permanent buffs", a: ["permanent buff", "permanent buffs", "permanent stat buff", "permanent stat buffs", "permanent stat boost", "permanent stat boosts"], d: "A small stat boost that lasts for the rest of the match, picked at random from a set list. They stack. [[golden-statues|Golden Statues]] drop them, the [[mid-boss|Mid Boss]] gives 2 to each player on the team that kills it, and the Golden Goose Egg item grants them when it hatches. Not the same as [[map-buffs|map buffs]], which wear off after a few minutes." },
   { k: "map-buffs", c: "map", t: "Map buffs", a: ["map buff", "map buffs", "powerup", "powerups", "bridge buff", "bridge buffs", "rune", "runes"], d: "Glowing stones on the two bridges by the [[soul-urn|Soul Urn]] spawns, from 5 minutes and every 5 minutes after. Break one with a heavy melee for a few minutes of extra stats: Casting, Gun, Movement or Survival. They get stronger as the match goes on, show on the minimap by type, and are lost when you die (or taken by Cursed Relic)." },
   { k: "soul-urn", c: "map", t: "Soul Urn", a: ["soul urn", "urn", "spirit urn", "idol"], d: "A talking urn that floats down by a side-lane bridge from 10 minutes and every 5 minutes after, alternating between the Yellow and Green lanes (Yellow first). Hit it with a melee to pick it up and carry it to the drop-off on the other side of the map for souls and 4 [[permanent-buffs|permanent buffs]]. The carrier is faster with more [[stamina|stamina]] and full [[slow-resist|Slow Resist]], but can’t use ziplines, teleporters or [[parry|parry]], and drops it to any melee hit or [[stun|stun]]. Held more than 45 seconds, its value starts draining away." },
-  { k: "haunt-gutter-ghoul", c: "haunt", t: "Gutter Ghoul", a: ["gutter ghoul", "gutter ghouls"], d: "The most common Haunt family, found everywhere. They shoot from range and swing in melee; bigger ones lob toxic waste." },
+  { k: "haunt-gutter-ghoul", c: "haunt", t: "Gutter Ghoul", a: ["gutter ghoul", "gutter ghouls"], d: "The most common Haunt family, found everywhere." },
   { k: "haunt-underhand", c: "haunt", t: "Underhand", a: ["underhand", "underhands"], d: "On the side-lane rooftops, in the tunnels, and at the Haunted Lot basketball court. No melee: they always shoot, even up close." },
   { k: "haunt-barrel-mimic", c: "haunt", t: "Barrel Mimic", a: ["barrel mimic", "barrel mimics"], d: "In the Haunted Lot garage (II) and by the Shipyard Docks (III). They sit still as barrels until you get close, then shoot and swing a makeshift weapon." },
-  { k: "haunt-specimen", c: "haunt", t: "Specimen", a: ["specimen", "specimens"], d: "Only in the camps near Times Square on Broadway. Hands in jars that poke in melee and shoot from range." },
+  { k: "haunt-specimen", c: "haunt", t: "Specimen", a: ["specimen", "specimens"], d: "Only in the camps near Times Square on Broadway. Hands in jars." },
   { k: "haunt-past-dues", c: "haunt", t: "Past Dues", a: ["past due", "past dues"], d: "Around Greenwich, and one camp in the Plaza. The two tiers fight completely differently." },
   { k: "haunt-stage-hand", c: "haunt", t: "Stage Hand", a: ["stage hand", "stage hands"], d: "Only in the Theater. Marionettes that ram you in melee and shoot from range." },
-  { k: "haunt-crabbage-pot", c: "haunt", t: "Crabbage Pot", a: ["crabbage pot", "crabbage pots"], d: "In Chinatown, and one large camp in Central Park. Bite in melee and fire their own green bullets." },
+  { k: "haunt-crabbage-pot", c: "haunt", t: "Crabbage Pot", a: ["crabbage pot", "crabbage pots"], d: "In Chinatown, and one large camp in Central Park. Potted plants that fight in melee and at range." },
   { k: "haunt-festival-spirit", c: "haunt", t: "Festival Spirit", a: ["festival spirit", "festival spirits"], d: "Only in Chinatown. Paper lanterns with no melee; they always shoot." },
   { k: "haunt-slum-shroom", c: "haunt", t: "Slum Shroom", a: ["slum shroom", "slum shrooms"], d: "The rarest family: two camps in the Haunted Lot. They shoot from range and swing in melee." },
   { k: "tunnel-vents", c: "map", t: "Tunnel vents", a: ["tunnel vent", "tunnel vents", "vent", "vents", "tunnels"], d: "Grates leading into the tunnels under the map, home to rats and cockroaches worth a soul each. Only a few heroes can travel them: Rat King, Rem, Calico while in Ava, and Mo & Krill while using Burrow. None of them can enter while carrying the [[soul-urn|Soul Urn]]." },
@@ -4455,7 +4455,7 @@ var GSVG = {
 };
 function gTile(g) { // the square at the start of a term: its picture, the game's icon (tinted in its category colour unless it has colours of its own), or the category's icon
   var hx = g.c === "hero" && heroEffect(g.k); if (hx) return '<span class="gti gtih">' + heroEffectIcons(hx) + "</span>";
-  if (g.c === "haunt") { var hf = g.k.replace(/^haunt-/, ""), ht = HAUNT_T[hf]; if (ht) return '<span class="ghtt">' + ht.map(function (t) { return '<span class="ghti" style="--tc:' + TIERC[t[0]] + '"><img alt="" loading="lazy" src="img/haunt/' + hf + "-" + t[0] + '.png" onerror="this.remove()"><b>' + ROMAN[t[0]] + "</b></span>"; }).join("") + "</span>"; }
+  if (g.c === "haunt") { var hf = g.k.replace(/^haunt-/, ""), ht = HAUNT_T[hf]; if (ht) return '<span class="ghtt">' + ht.map(function (t) { return '<span class="ghti" style="--tc:' + TIERC[t[0]] + '"><img alt="" loading="lazy" src="img/haunt/' + hf + "-" + t[0] + '.png" onerror="this.remove()"></span>'; }).join("") + "</span>"; }
   if (GIMG[g.k]) return '<span class="gti gtip"><img alt="" loading="lazy" src="' + GIMG[g.k] + '" onerror="this.remove()"></span>';
   if (GSI[g.k] && SIG[GSI[g.k]]) return '<span class="gti gtig">' + siIcon(GSI[g.k]) + "</span>";
   if (GICON[g.k]) return '<span class="gti"><img class="gi" alt="" loading="lazy" src="' + GICON[g.k] + '" onerror="this.remove()"></span>';
@@ -4581,7 +4581,7 @@ var HAUNT_T = {
   "gutter-ghoul": [[1, "Ranged shots and melee swipes."], [2, "Now and then lobs a ball of toxic waste: the puddle deals spirit damage and slows move and sprint speed."], [3, "Launches 10 balls of toxic waste in quick succession, slowly turning to track you. The balls are slow; keep moving."]],
   "underhand": [[2, "A slow-tracking laser that leaves a burning trail: 30 spirit damage a tick to anyone standing on it."], [3, "The same laser; the trail deals 50 a tick."]],
   "barrel-mimic": [[2, "A blue oil barrel with a metal pipe. Channels for 4 seconds, then explodes around itself; an orange circle shows where."], [3, "A red gunpowder barrel with a nailed plank. Same explosion with a much larger red circle."]],
-  "specimen": [[1, "Melee pokes and ranged shots, no special attack."], [2, "Explodes when it dies: 75 spirit damage and a slow to anyone close."]],
+  "specimen": [[1, "No special attack: melee pokes and ranged shots only."], [2, "Explodes when it dies: 75 spirit damage and a slow to anyone close."]],
   "past-dues": [[1, "A flying book. No melee: always shoots, even up close."], [2, "A stack of books with a lava-lamp head. Melee only. Circles itself with books, then throws six at a zone around you: 20 spirit damage each and a slow, and sleep if you’re still inside when it ends."]],
   "stage-hand": [[2, "A slow-tracking laser that leaves a burning trail: 30 spirit damage a tick (50 for the large Tier III ones)."]],
   "crabbage-pot": [[1, "Bites with its roots; slow green shots."], [2, "Fires green bursts of three. A thorn burst around itself deals 125 bullet damage, and can be parried."], [3, "Single shots at a normal rate; the thorn burst deals 187."]],
@@ -5850,9 +5850,9 @@ function gakFold(d) {
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches, sm = d.querySelector("summary"), opening = !d.open;
   if (!opening) { // fold this one shut
     if (calm) return gakSet(d, false);
-    var h0 = d.offsetHeight; d.classList.remove("on"); var hs = sm.offsetHeight + 1; d._busy = true; d.style.overflow = "hidden";
+    var h0 = d.offsetHeight, hs = sm.offsetHeight + 2; d._busy = true; d.style.overflow = "hidden"; d.classList.add("closing"); // the chevron turns back at once; the card folds with its content
     var a = d.animate([{ height: h0 + "px" }, { height: hs + "px" }], { duration: 340, easing: "cubic-bezier(.65,0,.35,1)" });
-    a.onfinish = function () { gakSet(d, false); d.style.overflow = ""; d._busy = false; };
+    d.style.height = hs + "px"; a.onfinish = function () { gakSet(d, false); d.classList.remove("closing"); d.style.height = ""; d.style.overflow = ""; d._busy = false; };
     return;
   }
   state.gtab = d.getAttribute("data-cat"); try { localStorage.setItem("gtab", state.gtab); } catch (e) {}
