@@ -900,7 +900,7 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gtkp svg{width:17px;height:17px}.gtkp.gtki svg{width:20px;height:20px}.gtkp.gtki{position:relative}.gtkp.gtki .itab{transform:scale(.72);transform-origin:top right}.gtkp.ph img{width:100%;height:100%;object-fit:cover}.gtkp.fit img{object-fit:contain;padding:2px;box-sizing:border-box}.gtkp.right img{object-position:88% 50%}.gtkp.crate img{object-position:14% 70%}
 .gtkp.urn{position:relative}.gtkp.urn img{position:absolute;top:14%;left:50%;width:auto;height:104%;transform:translateX(-50%)} /* space above, the stand cut off below */.gtkp.rift img{padding:4px}
 .gtkp.ph{background:radial-gradient(circle at 50% 42%,rgba(235,228,245,.32),rgba(235,228,245,.08) 72%)} /* a lit backdrop so dark pictures read */
-.gtkx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;white-space:normal}.gtkx i{display:flex;align-items:center;gap:2px}.gsoul{flex:none;width:6px;height:11px}.gtkx b{font-size:14px;font-weight:600}.gtkx i{font-style:normal;font-size:12px;color:#a9c3e6}
+.gtkx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;white-space:normal}.gtkx i{display:flex;align-items:center;gap:2px}.gtkm{font-weight:500;color:color-mix(in srgb,var(--fg) 58%,transparent)} /* the (what happens) part of a label */.gte{padding:10px 12px}.gsoul{flex:none;width:6px;height:11px}.gtkx b{font-size:14px;font-weight:600}.gtkx i{font-style:normal;font-size:12px;color:#a9c3e6}
 .gte .gtc{color:var(--gc)}
 .gsft.gtkf{margin:12px 0 0 2px}
 /* The map section */
@@ -4833,25 +4833,26 @@ function timelineHtml() {
   var camp = function (i) { return (M.camps || [])[i] || null; };
   var ic = function (k) { ev[ev.length - 1].ic = k; };
   if (M.mid_boss_first_sec) at(M.mid_boss_first_sec, "mid-boss", "Mid Boss is up"); // there from the start: no stop for it
-  ["Small", "Medium", "Large"].forEach(function (nm, i) { var c = camp(i); if (c) { at(c.from_sec, "neutral-camps", nm + " neutral camps"); ic("neutral-camps-" + (i + 1)); if (c.souls) ev[ev.length - 1].h = SOUL_SVG + f(c.souls) + " each, rising every minute"; } });
-  at(M.crate_first_sec, "golden-statues", "Golden Statues appear");
-  at(M.crate_first_sec, "crates", "Crates appear", "Back 3 min after breaking");
-  var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "golden-statues", "Statues level 2 pickups"); if (lv[2]) at(lv[2] * 60, "golden-statues", "Statues level 3 pickups");
+  // labels: the thing, then (what happens) in a quieter tone
+  ["Small", "Medium", "Large"].forEach(function (nm, i) { var c = camp(i); if (c) at(c.from_sec, "neutral-camps", nm + " neutral camps"); });
+  at(M.crate_first_sec, "golden-statues", "Golden Statues (appear)");
+  at(M.crate_first_sec, "crates", "Crates (appear)");
+  var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "golden-statues", "Golden Statues (level 2)"); if (lv[2]) at(lv[2] * 60, "golden-statues", "Golden Statues (level 3)");
   var pk = state.pw && state.pw.powerups && Object.keys(state.pw.powerups)[0], pd = pk && state.pw.powerups[pk];
-  if (pd) { at(pd.from_min * 60, "map-buffs", "Map buffs start growing"); at(pd.to_min * 60, "map-buffs", "Map buffs at full strength", ""); }
-  if (M.patron && M.patron.growth1_from_min) at(M.patron.growth1_from_min * 60, "patron", "Patron starts gaining health");
+  if (pd) { at(pd.from_min * 60, "map-buffs", "Map buffs (start growing)"); at(pd.to_min * 60, "map-buffs", "Map buffs (reach full strength)"); }
+  if (M.patron && M.patron.growth1_from_min) at(M.patron.growth1_from_min * 60, "patron", "Patron (starts gaining health)");
   // from deadlock.wiki, The Cursed Apple: Map Timings & Events (the game data the site reads doesn't carry these)
   var T = M.trooper || {};
-  at(150, "healing-snacks", "Healing Snacks appear", "Back 3 min after each pickup");
-  at(480, "neutral-camps", "Sinner’s Sacrifice camps", "11 camps, 15 machines; three in the Bell Tower, two in the Haunted Lot garage"); ic("sinners");
-  at(300, "crates", "Crates in the Sunken Plaza, Bell Tower and tunnels", "Plaza and Bell Tower back every 3 min, tunnels every 5");
-  at(600, "soul-urn", "Soul Urn drops", "Lands 12.5s later, then every 5 min");
-  at(600, "crates", "Crates above the Mid Boss", "Back every 3 min");
-  at(660, "unstable-rift", "Unstable Rift", "11:00 give or take a minute, then about every 7");
-  at(720, "guardian", "Guardians lose their damage resist");
-  at(1080, "walker", "Walkers lose their damage resist");
-  if (T.wave_late_sec) at(T.wave_late_min * 60, "troopers", "Troopers every " + T.wave_late_sec + "s", "Was " + T.wave_sec + "s");
-  if (T.wave_very_late_sec) at(T.wave_very_late_min * 60, "troopers", "Troopers every " + T.wave_very_late_sec + "s, +50% health");
+  at(150, "healing-snacks", "Healing Snacks (appear)");
+  at(300, "crates", "Crates (in the Sunken Plaza, Bell Tower and tunnels)");
+  at(480, "neutral-camps", "Sinner’s Sacrifice");
+  at(600, "soul-urn", "Soul Urn (drops)");
+  at(600, "crates", "Crates (above Mid Boss)");
+  at(660, "unstable-rift", "Unstable Rift");
+  at(720, "guardian", "Guardians (lose damage resist)");
+  at(1080, "walker", "Walkers (lose damage resist)");
+  if (T.wave_late_sec) at(T.wave_late_min * 60, "troopers", "Troopers every " + T.wave_late_sec + "s");
+  if (T.wave_very_late_sec) at(T.wave_very_late_min * 60, "troopers", "Troopers every " + T.wave_very_late_sec + "s");
   if (!ev.length) return "";
   ev.sort(function (a, b) { return a.s - b.s; });
   var stops = []; ev.forEach(function (e) { var last = stops[stops.length - 1]; if (last && last.s === e.s) last.ev.push(e); else stops.push({ s: e.s, ev: [e] }); });
@@ -4871,7 +4872,7 @@ function timelineHtml() {
   var html = stops.map(function (st, i) {
     var gap = i ? Math.round(10 + 13 * Math.sqrt((st.s - stops[i - 1].s) / 60)) : 0; // more time, a longer stretch of track
     return '<div class="gtks" style="margin-top:' + gap + 'px"><span class="gtkt">' + mm(st.s) + '</span><span class="gtkd"></span><div class="gtke">' +
-      st.ev.map(function (e) { return '<button class="gte"' + (e.k && GBY[e.k] ? ' data-g="' + e.k + '"' : "") + ">" + pic(e.k, e.ic) + '<span class="gtkx"><b>' + esc(e.l) + "</b>" + (e.h ? "<i>" + e.h + "</i>" : e.n ? "<i>" + esc(e.n) + "</i>" : "") + "</span>" + (e.k && GBY[e.k] ? '<span class="gtc">›</span>' : "") + "</button>"; }).join("") + "</div></div>";
+      st.ev.map(function (e) { var lab = esc(e.l).replace(/\s*\(([^)]*)\)/, ' <span class="gtkm">$1</span>'); return '<button class="gte"' + (e.k && GBY[e.k] ? ' data-g="' + e.k + '"' : "") + '><span class="gtkx"><b>' + lab + "</b></span>" + (e.k && GBY[e.k] ? '<span class="gtc">›</span>' : "") + "</button>"; }).join("") + "</div></div>";
   }).join("");
   var rift = "";
   return '<div class="gviz gtk"><div class="gtkw">' + html + "</div>" + rift + "</div>";
