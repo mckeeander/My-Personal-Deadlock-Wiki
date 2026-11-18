@@ -826,10 +826,13 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 /* a Haunt family's tiers: portrait with its tier numeral in the eye colour, then what it adds */
 .ghts{display:flex;flex-direction:column;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07)}
 .ght{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:#d6cee0}
+.ghtn{flex:none;min-width:26px;height:20px;margin-top:1px;padding:0 5px;border-radius:10px;background:var(--tc);color:#120f18;font-family:var(--disp);font-size:12px;display:flex;align-items:center;justify-content:center}
+.ghtt{flex:none;display:flex;gap:6px;margin-bottom:4px}
+.ghtt .ghti{width:44px;height:44px}
 .ghti{position:relative;flex:none;width:58px;height:58px;border-radius:10px;background:rgba(var(--gcr),.08);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc) 45%,transparent)}
 .ghti img{width:100%;height:100%;object-fit:contain;border-radius:10px}
 .ghti b{position:absolute;right:-5px;bottom:-5px;min-width:20px;height:18px;padding:0 4px;border-radius:9px;background:var(--tc);color:#120f18;font-family:var(--disp);font-size:11px;display:flex;align-items:center;justify-content:center}
-.ght > span:last-child{flex:1;min-width:0;padding-top:2px}
+.ght > span:last-child{flex:1;min-width:0}
 /* category titles: chapter style, like a hero page's: the icon, a big serif name, the count, and a short slanted bar on a faint line */
 .gh.gch{display:block;text-align:center;border:0;margin:44px 0 24px;padding:0;color:var(--fg);letter-spacing:.03em;text-transform:none}
 .gch .ghi{margin:0 auto 10px;width:36px;height:36px;border-radius:10px}.gch .ghi svg{width:20px;height:20px;color:var(--gc)}
@@ -4452,7 +4455,7 @@ var GSVG = {
 };
 function gTile(g) { // the square at the start of a term: its picture, the game's icon (tinted in its category colour unless it has colours of its own), or the category's icon
   var hx = g.c === "hero" && heroEffect(g.k); if (hx) return '<span class="gti gtih">' + heroEffectIcons(hx) + "</span>";
-  if (g.c === "haunt") { var hf = g.k.replace(/^haunt-/, ""), ht = HAUNT_T[hf]; if (ht) return '<span class="gti gtip"><img alt="" loading="lazy" src="img/haunt/' + hf + "-" + ht[0][0] + '.png" onerror="this.remove()"></span>'; }
+  if (g.c === "haunt") { var hf = g.k.replace(/^haunt-/, ""), ht = HAUNT_T[hf]; if (ht) return '<span class="ghtt">' + ht.map(function (t) { return '<span class="ghti" style="--tc:' + TIERC[t[0]] + '"><img alt="" loading="lazy" src="img/haunt/' + hf + "-" + t[0] + '.png" onerror="this.remove()"><b>' + ROMAN[t[0]] + "</b></span>"; }).join("") + "</span>"; }
   if (GIMG[g.k]) return '<span class="gti gtip"><img alt="" loading="lazy" src="' + GIMG[g.k] + '" onerror="this.remove()"></span>';
   if (GSI[g.k] && SIG[GSI[g.k]]) return '<span class="gti gtig">' + siIcon(GSI[g.k]) + "</span>";
   if (GICON[g.k]) return '<span class="gti"><img class="gi" alt="" loading="lazy" src="' + GICON[g.k] + '" onerror="this.remove()"></span>';
@@ -4588,7 +4591,7 @@ var HAUNT_T = {
 var TIERC = { 1: "#4fc9b6", 2: "#e6cf4a", 3: "#ec5b4e" }, ROMAN = { 1: "I", 2: "II", 3: "III" };
 function hauntTiers(k) {
   var fam = k.replace(/^haunt-/, ""), T = HAUNT_T[fam]; if (!T) return "";
-  return '<div class="ghts">' + T.map(function (t) { return '<div class="ght" style="--tc:' + TIERC[t[0]] + '"><span class="ghti"><img loading="lazy" alt="" src="img/haunt/' + fam + "-" + t[0] + '.png"><b>' + ROMAN[t[0]] + "</b></span><span>" + glossText(t[1]) + "</span></div>"; }).join("") + "</div>";
+  return '<div class="ghts">' + T.map(function (t) { return '<div class="ght" style="--tc:' + TIERC[t[0]] + '"><b class="ghtn">' + ROMAN[t[0]] + "</b><span>" + glossText(t[1]) + "</span></div>"; }).join("") + "</div>";
 }
 // Map & objectives opens with a diagram of a lane: the steps you fight through, from your wave to the enemy Patron. Each step is its term
 // (tap for the pop-up, and links elsewhere on the page land on it), so these terms don't get cards of their own in the category view
