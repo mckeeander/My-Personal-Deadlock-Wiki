@@ -897,7 +897,7 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gtke{display:flex;flex-direction:column;gap:6px;padding-left:10px;min-width:0}
 .gte{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 6px 6px;border-radius:10px;background:rgba(var(--gcr),.07);border:1px solid rgba(var(--gcr),.22);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
 .gtkp{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(var(--gcr),.15);color:var(--gc);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.gtkp svg{width:17px;height:17px}.gtkp.ph img{width:100%;height:100%;object-fit:cover}.gtkp.fit img{object-fit:contain;padding:2px;box-sizing:border-box}.gtkp.right img{object-position:88% 50%}
+.gtkp svg{width:17px;height:17px}.gtkp.ph img{width:100%;height:100%;object-fit:cover}.gtkp.fit img{object-fit:contain;padding:2px;box-sizing:border-box}.gtkp.right img{object-position:88% 50%}.gtkp.crate img{object-position:14% 70%}
 .gtkp.urn{position:relative}.gtkp.urn img{position:absolute;top:14%;left:50%;width:auto;height:104%;transform:translateX(-50%)} /* space above, the stand cut off below */.gtkp.rift img{padding:4px}
 .gtkp.ph{background:radial-gradient(circle at 50% 42%,rgba(235,228,245,.32),rgba(235,228,245,.08) 72%)} /* a lit backdrop so dark pictures read */
 .gtkx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;white-space:normal}.gtkx i{display:flex;align-items:center;gap:2px}.gsoul{flex:none;width:6px;height:11px}.gtkx b{font-size:14px;font-weight:600}.gtkx i{font-style:normal;font-size:12px;color:#a9c3e6}
@@ -4287,12 +4287,13 @@ var GLOSS = [
   { k: "haunt-crabbage-pot", c: "haunt", t: "Crabbage Pot", a: ["crabbage pot", "crabbage pots"], d: "In Chinatown, and one large camp in Central Park. Potted plants that fight in melee and at range." },
   { k: "haunt-festival-spirit", c: "haunt", t: "Festival Spirit", a: ["festival spirit", "festival spirits"], d: "Only in Chinatown. Paper lanterns with no melee; they always shoot." },
   { k: "haunt-slum-shroom", c: "haunt", t: "Slum Shroom", a: ["slum shroom", "slum shrooms"], d: "The rarest family: two camps in the Haunted Lot. They shoot from range and swing in melee." },
+  { k: "crates", c: "map", t: "Crates", a: ["crate", "crates", "box", "boxes", "breakable", "breakables", "tough crate", "tough crates"], d: "Breakable boxes all over the map (518 of them) that can drop Haunted Souls. Break one by punching it, shooting it, using abilities, or dashing, sliding or even walking through it with enough momentum. Most appear at 3:00 and come back 3 minutes after breaking; the ones in the tunnels take 5, and those in the Sunken Plaza and Bell Tower appear at 5:00. Leaving the souls on the ground delays the respawn. Their soul value starts growing from the first minute, even before they spawn. Tough Crates, teal with thick metal edges and fist-shaped locks, need a [[melee|heavy melee]] to break; heavy-melee upgrades on Puddle Punch, Rend and Bashdown can’t do it, but Rallying Charge knights can." },
   { k: "tunnel-vents", c: "map", t: "Tunnel vents", a: ["tunnel vent", "tunnel vents", "vent", "vents", "tunnels"], d: "Grates leading into the tunnels under the map, home to rats and cockroaches worth a soul each. Only a few heroes can travel them: Rat King, Rem, Calico while in Ava, and Mo & Krill while using Burrow. None of them can enter while carrying the [[soul-urn|Soul Urn]]." },
   { k: "healing-snacks", c: "map", t: "Healing Snacks", a: ["healing snack", "healing snacks", "snack", "snacks"], d: "Winged green apples tucked into high or awkward spots around the map. Grab one for a small heal. They first appear at 2:30 and come back 3 minutes after being picked up." },
   { k: "steam-vents", c: "map", t: "Steam vents", a: ["steam vent", "steam vents"], d: "Stand in one to be [[invisible|invisible]] and [[untargetable|untargetable]], with faster health and [[stamina|stamina]] regen." },
   { k: "juke-rooms", c: "map", t: "Juke Rooms", a: ["juke room", "juke rooms"], d: "Dead ends behind a shadowy doorway under a red sign. You can see out but enemies can’t see in, so they’re good for breaking a chase or waiting out a cooldown." },
   { k: "unstable-rift", c: "map", t: "Unstable Rift", a: ["unstable rift", "rift", "the rift"], d: "A capture point that opens on a random side-lane bridge around 11 minutes and about every 7 after. It glows on the bridge first, is announced a minute later, and opens 20 seconds after that. A team captures it by being the only one in the circle; both teams fill their bar while inside, and anyone there shows on the [[minimap-reveal|minimap]]. The winners get souls straight away and a wave of big black Rift Troopers in that lane. The team behind in souls captures faster and gets resist inside it." },
-  { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues", "breakable", "breakables", "crate", "crates"], d: "Golden statues around the map that drop a small [[permanent-buffs|permanent stat boost]] when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
+  { k: "golden-statues", c: "map", t: "Golden Statues", a: ["golden statue", "golden statues", "statue", "statues"], d: "Golden statues around the map that drop a small [[permanent-buffs|permanent stat boost]] when broken. The boosts stack for the rest of the match, and later statues drop bigger ones." },
   { k: "neutral-camps", c: "map", t: "Neutral camps", a: ["neutral camp", "neutral camps", "neutrals", "denizens", "jungle"], d: "Camps of Haunts, neutral monsters with a single eye, in three sizes: small from 2:00, medium from 5:00, large from 8:00. They give souls split between everyone who hit one in the last five seconds, and their bounty grows a little every minute. Each camp is one family, always the same ones in the same place; the medium and large ones have a special attack." },
   // economy (numbers from the game data)
   { k: "shop", c: "econ", t: "Shop", a: ["shop", "shops", "item tiers", "sell", "selling", "sell back"], d: "Items come in four price tiers. You can sell an item back for part of what you paid. There are ten shops: one by each Guardian that only its own team can use, two neutral “secret” shops, and one in each spawn room." },
@@ -4416,7 +4417,7 @@ var GSI = { headshot: "gcrit", "fire-rate": "bps", melee: "fist", "spirit-power"
   "move-speed": "boot", stun: "stun", silence: "silence", sleep: "sleep", immobilize: "root", disarm: "disarm", bleed: "bleed", curse: "curse", burn: "burn",
   displace: "knock", slide: "slide", falloff: "range", dot: "duration" };
 // map terms that have a picture of their own (img/)
-var GIMG = { "soul-urn": "img/soul-urn.png", "unstable-rift": "img/unstable-rift.png", "map-buffs": "img/map-buffs.jpg", "neutral-camps": "img/haunt-gutter-ghoul.png", troopers: "img/troopers.jpg", guardian: "img/guardian.jpg", walker: "img/walker.jpg", "base-guardian": "img/base-guardian.jpg", shrine: "img/shrine.jpg", patron: "img/patron.jpg", "golden-statues": "img/golden-statue.png" };
+var GIMG = { crates: "img/tough-crate.jpg", "soul-urn": "img/soul-urn.png", "unstable-rift": "img/unstable-rift.png", "map-buffs": "img/map-buffs.jpg", "neutral-camps": "img/haunt-gutter-ghoul.png", troopers: "img/troopers.jpg", guardian: "img/guardian.jpg", walker: "img/walker.jpg", "base-guardian": "img/base-guardian.jpg", shrine: "img/shrine.jpg", patron: "img/patron.jpg", "golden-statues": "img/golden-statue.png" };
 // hand-drawn icons for terms the game has no icon or picture for, so each card is recognisable at a glance
 var GSVG = {
   "bonus-damage": '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10"/>',
@@ -4818,6 +4819,7 @@ function timelineHtml() {
   if (M.mid_boss_first_sec) at(M.mid_boss_first_sec, "mid-boss", "Mid Boss is up"); // there from the start: no stop for it
   ["Small", "Medium", "Large"].forEach(function (nm, i) { var c = camp(i); if (c) { at(c.from_sec, "neutral-camps", nm + " neutral camps"); ic("neutral-camps-" + (i + 1)); if (c.souls) ev[ev.length - 1].h = SOUL_SVG + f(c.souls) + " each, rising every minute"; } });
   at(M.crate_first_sec, "golden-statues", "Golden Statues appear");
+  at(M.crate_first_sec, "crates", "Crates appear", "Back 3 min after breaking");
   var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "golden-statues", "Statues level 2 pickups"); if (lv[2]) at(lv[2] * 60, "golden-statues", "Statues level 3 pickups");
   var pk = state.pw && state.pw.powerups && Object.keys(state.pw.powerups)[0], pd = pk && state.pw.powerups[pk];
   if (pd) { at(pd.from_min * 60, "map-buffs", "Map buffs start growing"); at(pd.to_min * 60, "map-buffs", "Map buffs at full strength", ""); }
@@ -4826,10 +4828,10 @@ function timelineHtml() {
   var T = M.trooper || {};
   at(150, "healing-snacks", "Healing Snacks appear", "Back 3 min after each pickup");
   at(180, "souls", "Soul Wells open in the spawn rooms"); ic("soul-well");
-  at(480, "neutral-camps", "Sinner’s Sacrifice camps", "11 camps, 15 machines; three in the Bell Tower, two in the Haunted Lot garage"); ic("investment");
-  at(480, "golden-statues", "Breakables in the Sunken Plaza and Bell Tower");
+  at(480, "neutral-camps", "Sinner’s Sacrifice camps", "11 camps, 15 machines; three in the Bell Tower, two in the Haunted Lot garage"); ic("sinners");
+  at(300, "crates", "Crates in the Sunken Plaza, Bell Tower and tunnels", "Plaza and Bell Tower back every 3 min, tunnels every 5");
   at(600, "soul-urn", "Soul Urn drops", "Lands 12.5s later, then every 5 min");
-  at(600, "golden-statues", "Breakables above the Mid Boss");
+  at(600, "crates", "Crates above the Mid Boss", "Back every 3 min");
   at(660, "unstable-rift", "Unstable Rift", "11:00 give or take a minute, then about every 7");
   at(720, "guardian", "Guardians lose their damage resist");
   at(1080, "walker", "Walkers lose their damage resist");
@@ -4839,8 +4841,8 @@ function timelineHtml() {
   ev.sort(function (a, b) { return a.s - b.s; });
   var stops = []; ev.forEach(function (e) { var last = stops[stops.length - 1]; if (last && last.s === e.s) last.ev.push(e); else stops.push({ s: e.s, ev: [e] }); });
   var mm = function (s) { return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); };
-  var TLP = { "neutral-camps-1": ["img/haunt/crabbage-pot-1.png"], "neutral-camps-2": ["img/haunt/festival-spirit-2.png"], "neutral-camps-3": ["img/haunt/gutter-ghoul-3.png"],
-    "healing-snacks": ["img/healing-snack.png", "fit"], "soul-well": ["img/soul-well.jpg"], "map-buffs": ["img/map-buffs.jpg", "right"], "golden-statues": ["img/golden-statue.png", "fit"], "soul-urn": ["img/soul-urn.png", "urn"], "unstable-rift": ["img/unstable-rift.png", "fit rift"] };
+  var TLP = { "neutral-camps-1": ["img/haunt/gutter-ghoul-1.png"], "neutral-camps-2": ["img/haunt/festival-spirit-2.png"], "neutral-camps-3": ["img/haunt/slum-shroom-3.png"], "crates": ["img/crates.jpg", "crate"], "sinners": ["img/sinners-sacrifice.png", "fit"],
+    "healing-snacks": ["img/healing-snack.png", "fit"], "soul-well": ["img/soul-well.jpg"], "map-buffs": ["img/map-buffs.jpg"], "golden-statues": ["img/golden-statue.png", "fit"], "soul-urn": ["img/soul-urn.png", "urn"], "unstable-rift": ["img/unstable-rift.png", "fit rift"] };
   var pic = function (k, i) {
     if (i) k = i;
     var tp = TLP[k]; if (tp) return '<span class="gtkp ph' + (tp[1] ? " " + tp[1] : "") + '"><img alt="" src="' + tp[0] + '" onerror="this.remove()"></span>';
