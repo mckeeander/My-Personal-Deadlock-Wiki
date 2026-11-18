@@ -897,7 +897,7 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gtke{display:flex;flex-direction:column;gap:6px;padding-left:10px;min-width:0}
 .gte{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 6px 6px;border-radius:10px;background:rgba(var(--gcr),.07);border:1px solid rgba(var(--gcr),.22);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
 .gtkp{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(var(--gcr),.15);color:var(--gc);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.gtkp svg{width:17px;height:17px}.gtkp.ph img{width:100%;height:100%;object-fit:cover}
+.gtkp svg{width:17px;height:17px}.gtkp.ph img{width:100%;height:100%;object-fit:cover}.gtkp.fit img{object-fit:contain;padding:2px;box-sizing:border-box}.gtkp.left img{object-position:12% 50%}
 .gtkx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;white-space:normal}.gtkx i{display:flex;align-items:center;gap:2px}.gsoul{flex:none;width:6px;height:11px}.gtkx b{font-size:14px;font-weight:600}.gtkx i{font-style:normal;font-size:12px;color:#a6cfa8}
 .gte .gtc{color:var(--gc)}
 .gsft.gtkf{margin:12px 0 0 2px}
@@ -4812,17 +4812,18 @@ function timelineHtml() {
   var M = state.mc || {}, C = (state.pw && state.pw.crates) || {}, ev = [], f = function (n) { return Number(n).toLocaleString(); };
   var at = function (sec, k, label, note) { if (sec != null) ev.push({ s: sec, k: k, l: label, n: note || "" }); };
   var camp = function (i) { return (M.camps || [])[i] || null; };
+  var ic = function (k) { ev[ev.length - 1].ic = k; };
   if (M.mid_boss_first_sec) at(M.mid_boss_first_sec, "mid-boss", "Mid Boss is up"); // there from the start: no stop for it
-  ["Small", "Medium", "Large"].forEach(function (nm, i) { var c = camp(i); if (c) { at(c.from_sec, "neutral-camps", nm + " neutral camps"); if (c.souls) ev[ev.length - 1].h = SOUL_SVG + f(c.souls) + " each, rising every minute"; } });
+  ["Small", "Medium", "Large"].forEach(function (nm, i) { var c = camp(i); if (c) { at(c.from_sec, "neutral-camps", nm + " neutral camps"); ic("neutral-camps-" + (i + 1)); if (c.souls) ev[ev.length - 1].h = SOUL_SVG + f(c.souls) + " each, rising every minute"; } });
   at(M.crate_first_sec, "golden-statues", "Golden Statues appear");
   var lv = C.levels_from_min || []; if (lv[1]) at(lv[1] * 60, "golden-statues", "Statues level 2 pickups"); if (lv[2]) at(lv[2] * 60, "golden-statues", "Statues level 3 pickups");
   var pk = state.pw && state.pw.powerups && Object.keys(state.pw.powerups)[0], pd = pk && state.pw.powerups[pk];
   if (pd) { at(pd.from_min * 60, "map-buffs", "Map buffs start growing"); at(pd.to_min * 60, "map-buffs", "Map buffs at full strength", ""); }
   if (M.patron && M.patron.growth1_from_min) at(M.patron.growth1_from_min * 60, "patron", "Patron starts gaining health");
   // from deadlock.wiki, The Cursed Apple: Map Timings & Events (the game data the site reads doesn't carry these)
-  var T = M.trooper || {}, ic = function (k) { ev[ev.length - 1].ic = k; };
+  var T = M.trooper || {};
   at(150, "healing-snacks", "Healing Snacks appear", "Back 3 min after each pickup");
-  at(180, "souls", "Soul Wells open in the spawn rooms"); ic("soul-orbs");
+  at(180, "souls", "Soul Wells open in the spawn rooms"); ic("soul-well");
   at(480, "neutral-camps", "Sinner’s Sacrifice camps", "11 camps, 15 machines; three in the Bell Tower, two in the Haunted Lot garage"); ic("investment");
   at(480, "golden-statues", "Breakables in the Sunken Plaza and Bell Tower");
   at(600, "soul-urn", "Soul Urn drops", "Lands 12.5s later, then every 5 min");
@@ -4836,8 +4837,11 @@ function timelineHtml() {
   ev.sort(function (a, b) { return a.s - b.s; });
   var stops = []; ev.forEach(function (e) { var last = stops[stops.length - 1]; if (last && last.s === e.s) last.ev.push(e); else stops.push({ s: e.s, ev: [e] }); });
   var mm = function (s) { return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); };
+  var TLP = { "neutral-camps-1": ["img/haunt/gutter-ghoul-1.png"], "neutral-camps-2": ["img/haunt/gutter-ghoul-2.png"], "neutral-camps-3": ["img/haunt/gutter-ghoul-3.png"],
+    "healing-snacks": ["img/healing-snack.png", "fit"], "soul-well": ["img/soul-well.jpg"], "map-buffs": ["img/map-buffs.jpg", "left"], "golden-statues": ["img/golden-statue.png", "fit"], "soul-urn": ["img/soul-urn.png", "fit"] };
   var pic = function (k, i) {
     if (i) k = i;
+    var tp = TLP[k]; if (tp) return '<span class="gtkp ph' + (tp[1] ? " " + tp[1] : "") + '"><img alt="" src="' + tp[0] + '" onerror="this.remove()"></span>';
     if (GIMG[k]) return '<span class="gtkp ph"><img alt="" src="' + GIMG[k] + '" onerror="this.remove()"></span>';
     return '<span class="gtkp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (GSVG[k] || GCI.map) + "</svg></span>";
   };
