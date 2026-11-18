@@ -824,13 +824,13 @@ body{background:radial-gradient(125% 62% at 50% -6%,rgba(145,108,236,.25),rgba(1
 .gak.on .gakc{transform:rotate(180deg);color:var(--gc)}.gak.on.closing .gakc{transform:none}
 .gakb{padding:2px 10px 10px}
 /* a Haunt family's tiers: portrait with its tier numeral in the eye colour, then what it adds */
-.ghts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.ght{display:flex;gap:12px;align-items:center;padding:8px 10px 8px 8px;border-radius:12px;border:1px solid color-mix(in srgb,var(--tc) 28%,rgba(255,255,255,.08));background:transparent;font-size:13.5px;line-height:1.45;color:#d6cee0}
+.ghts{display:flex;flex-direction:column;margin-top:4px}.ght:last-child{border-bottom:0;padding-bottom:2px}
+.ght{display:flex;gap:12px;align-items:center;padding:10px 2px;border-bottom:1px solid rgba(255,255,255,.07);font-size:13.5px;line-height:1.45;color:#d6cee0}
 .ghtn{flex:none;min-width:24px;height:18px;margin-top:1px;padding:0 4px;border-radius:5px;background:color-mix(in srgb,var(--tc) 13%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc) 30%,transparent);color:var(--tc);font-family:var(--disp);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .ghtt{flex:none;order:2;margin-left:auto;display:flex;gap:6px}
 .ghtt .ghti{width:44px;height:44px}
 .ghti{position:relative;flex:none;width:40px;height:40px;border-radius:9px;background:rgba(var(--gcr),.08)}.ghti::after{content:"";position:absolute;inset:0;border-radius:9px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc) 50%,transparent);pointer-events:none} /* the frame is drawn over the picture */
-.ghti img{display:block;width:100%;height:100%;object-fit:cover;border-radius:9px}
+.ghti img{display:block;width:100%;height:100%;object-fit:cover;border-radius:9px}.ghti .itab{border-top-right-radius:9px;overflow:hidden}.ghti::after{z-index:2}
 .ghti b{position:absolute;z-index:1;right:-5px;bottom:-5px;min-width:17px;height:15px;padding:0 3px;border-radius:8px;font-size:9px!important;background:var(--tc);color:#120f18;font-family:var(--disp);font-size:11px;display:flex;align-items:center;justify-content:center}
 .ght > span:last-child{flex:1;min-width:0}
 /* category titles: chapter style, like a hero page's: the icon, a big serif name, the count, and a short slanted bar on a faint line */
@@ -4591,7 +4591,7 @@ var HAUNT_T = {
 var TIERC = { 1: "#4fc9b6", 2: "#e6cf4a", 3: "#ec5b4e" }, ROMAN = { 1: "I", 2: "II", 3: "III" };
 function hauntTiers(k) {
   var fam = k.replace(/^haunt-/, ""), T = HAUNT_T[fam]; if (!T) return "";
-  return '<div class="ghts">' + T.map(function (t) { return '<div class="ght" style="--tc:' + TIERC[t[0]] + '"><span class="ghti"><img loading="lazy" alt="" src="img/haunt/' + fam + "-" + t[0] + '.png"><b>' + ROMAN[t[0]] + "</b></span><span>" + glossText(t[1]) + "</span></div>"; }).join("") + "</div>";
+  return '<div class="ghts">' + T.map(function (t) { return '<div class="ght" style="--tc:' + TIERC[t[0]] + '"><span class="ghti"><img loading="lazy" alt="" src="img/haunt/' + fam + "-" + t[0] + '.png"><span class="itab" style="--itc:' + TIERC[t[0]] + '" aria-label="Tier ' + t[0] + '"><i>' + ROMAN[t[0]] + "</i></span></span><span>" + glossText(t[1]) + "</span></div>"; }).join("") + "</div>";
 }
 // Map & objectives opens with a diagram of a lane: the steps you fight through, from your wave to the enemy Patron. Each step is its term
 // (tap for the pop-up, and links elsewhere on the page land on it), so these terms don't get cards of their own in the category view
