@@ -177,7 +177,6 @@ body.jump #backpill{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
 .chip{background:var(--panel2);border-radius:5px;padding:4px 8px;font-size:13px}
 .chip .cl{color:var(--dim)}
-.ut .tul{text-decoration:underline;text-decoration-color:var(--ul);text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-skip-ink:none}
 .chip.cd{border-left:3px solid var(--gold);color:#fff;padding:4px 10px 4px 8px;flex:none} /* the cooldown leads the chip row: a gold edge on the left of a normal rounded pill, set apart from the other pills by a divider */
 .cdsep{width:1px;height:20px;background:#4a4058;margin:0 4px;flex:none;align-self:center}
 .cdsep:last-child{display:none}
@@ -2306,15 +2305,13 @@ function tierSplit(h) {
     return parts.join("<br>");
   }).join("");
 }
-var TIER_UL = { "Abrams": 1 }; // experiment: on these heroes the tier text stays plain and each stat gets a coloured underline instead of coloured letters
 function upgradesHtml(it, sel) {
-  var t = upgradeTexts(it), costs = ["1", "2", "5"], cells = "", wts = [], ul = CTX && CTX.hero && TIER_UL[CTX.hero.name];
+  var t = upgradeTexts(it), costs = ["1", "2", "5"], cells = "", wts = [];
   for (var i = 0; i < 3; i++) {
     var raw = String(t[i]).replace(/\bSpirit\s+[Ss]caling\b/g, STAR); // the purple star says "Spirit scaling" in far fewer letters
     var body = tierSplit(tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, raw)), it, i)).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>')
       .replace(/(<b class="v">(?:[^<]|<span[^>]*>[^<]*<\/span>)*<\/b>)\s+(<span class="ss"[^>]*>★<\/span>)/g, '<span class="nw">$1 $2</span>') // a ★ that wraps takes its number down with it
       .replace(/(<span style="color:[^"]*">[^<]{1,16}<\/span>)\s+(<span class="ss"[^>]*>★<\/span>)/g, '<span class="nw">$1 $2</span>');
-    if (ul) body = body.replace(/<span style="color:([^";]*)">/g, '<span class="tul" style="--ul:$1">');
     wts.push(Math.max(4, Math.sqrt(body.replace(/<[^>]+>/g, "").length))); // the tier with the most text gets the widest column
     cells += '<div class="up' + (i < sel ? " on" : "") + '" data-t="' + (i + 1) + '"><div>◆ ' + costs[i] + '</div><div><div class="ut">' + body + "</div></div></div>";
   }
