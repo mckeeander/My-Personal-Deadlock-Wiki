@@ -668,15 +668,14 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}.aolu{position:absolute;top:0;bottom:0;right:0;background:rgba(216,207,245,.07);border-left:1px solid rgba(216,207,245,.25)}
+.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}.aolu{position:absolute;top:0;bottom:0;right:-600px;z-index:0;background:#28222f;border-left:1px solid rgba(216,207,245,.18);will-change:transform} /* after the unlock the row darkens; wide on the right so sliding it on a tab switch never shows its end; its own layer, so animations nearby don't nudge it a pixel */
+.aobx.lines .aotr{background:#3a3346}.aobx.lines .aogl{z-index:1}.aobx.lines .aol{z-index:2}
 .aobx{position:relative}
-.aol{position:absolute;top:0;height:28px;width:18px;margin-left:-9px;cursor:pointer;-webkit-tap-highlight-color:transparent;--alc:#bdb4d0}.aol.t3{--alc:#d8b45c}
+.aol{position:absolute;top:0;height:28px;width:18px;margin-left:-9px;cursor:pointer;-webkit-tap-highlight-color:transparent;--alc:#bdb4d0;will-change:transform}.aol.mrg{display:none}.aol.t3{--alc:#d8b45c}
 .aol::before,.aol::after{content:"";position:absolute;left:8px;width:2px;background:repeating-linear-gradient(to bottom,var(--alc) 0 3px,transparent 3px 5px)}
 .aol::before{top:0;height:7px}.aol::after{bottom:0;height:7px;background-position:0 1px} /* the line stops short of its number, above and below */
-.aol.hi::before{display:none}.aol.hi::after{top:15px;height:auto}
-.aol.lo::after{display:none}.aol.lo::before{height:13px}
 .aol i{position:absolute;z-index:2;top:8px;left:9px;transform:translateX(-50%);font-style:normal;font-size:11px;font-weight:700;line-height:12px;color:#e9e2d2;font-variant-numeric:tabular-nums;pointer-events:none}
-.aol.t3 i{color:#e6c46e}.aol.hi i{top:1px}.aol.lo i{top:15px}
+.aol.t3 i{color:#e6c46e}
 .aouh{position:absolute;top:0;height:28px;width:18px;margin-left:-9px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .aotip{position:absolute;z-index:6;white-space:nowrap;background:#2b2540;border:1px solid #3e3658;color:var(--fg);font-size:12px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0,.5);pointer-events:none;animation:aotip .18s ease-out}
 .aotip b{color:#e6c46e;font-weight:700}
@@ -3645,7 +3644,8 @@ var AO_SHUT = null, AO_TAB = {}; // the hero whose Ability order you folded away
 function aoRank() { var b = (state.ao && state.ao.badge) || (state.pop && state.pop.badge), r = b && RANKS[Math.floor(b / 10)]; return r ? r + " " + (b % 10) + " and up" : "the top ranks"; }
 function aoSig(h) { return [1, 2, 3, 4].map(function (i) { return state.byClass[(h.items || {})["signature" + i]]; }); }
 var AO_LINES = !/[?&]aochips/.test(location.search); // points as dashed lines with their number in the line; the earlier chips (1, 2, 5 tabs, back-to-back ones merged) stay in the code: set this to false, or open the site with ?aochips
-var AO_MERGE = 0.12; // back-to-back points closer than this share of the timeline become one chip (the version without it: commit 99f232f)
+var AO_MERGE = 0.12;
+var AO_TOUCH = 12; // lines closer than this many pixels share one line and one "1+2" label // back-to-back points closer than this share of the timeline become one chip (the version without it: commit 99f232f)
 function abilityOrderHtml(h) {
   var A = state.ao && state.ao.heroes && state.ao.heroes[h.class_name]; if (!A || !A.builds || !A.builds.length) return "";
   var sig = aoSig(h); if (sig.some(function (x) { return !x; })) return "";
@@ -3668,8 +3668,8 @@ function abilityOrderHtml(h) {
     });
     if (AO_LINES) { // each point is a dashed line at its exact time with its number set into the line; the unlock lights up the row from then on. Tap any of them for the time
       mine.forEach(function (p) {
-        if (!p[1]) { mk = '<span class="aolu" style="left:' + X(p[2]) + '"></span><span class="aouh" data-at="' + p[2] + '" style="left:' + X(p[2]) + '"></span>' + mk; return; }
-        mk += '<span class="aol t' + p[1] + '" data-k="k' + s + "-" + p[1] + '" data-at="' + p[2] + '" data-n="' + L[p[1]] + '" style="left:' + X(p[2]) + '"><i>' + L[p[1]] + "</i></span>";
+        if (!p[1]) { mk = '<span class="aolu" data-k="u' + s + '" style="left:' + X(p[2]) + '"></span><span class="aouh" data-at="' + p[2] + '" style="left:' + X(p[2]) + '"></span>' + mk; return; }
+        mk += '<span class="aol t' + p[1] + '" data-k="k' + s + "-" + p[1] + '" data-at="' + p[2] + '" data-n="' + L[p[1]] + '" data-t="' + p[1] + '" style="left:' + X(p[2]) + '"><i>' + L[p[1]] + "</i></span>";
       });
       grp = [];
     }
@@ -3684,7 +3684,7 @@ function abilityOrderHtml(h) {
   var axis = '<div class="aoax">' + ticks.map(function (m) { return '<span data-k="a' + m + '" style="left:' + X(m * 60) + '">' + m + "m</span>"; }).join("") + "</div>";
   return '<details class="phd aod" open><summary class="sec nofold"><span class="sect">Ability order</span></summary>' +
     tabs +
-    '<div class="aobx"><p class="aohd">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>" + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players in " + esc(aoRank()) + " max these two first.</p></details>";
+    '<div class="aobx' + (AO_LINES ? " lines" : "") + '"><p class="aohd">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>" + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players in " + esc(aoRank()) + " max these two first.</p></details>";
 }
 function aoClock(t) { t = Math.round(+t); return Math.floor(t / 60) + ":" + ("0" + t % 60).slice(-2); }
 function aoTimeTip(e) { // tap a line (or a cluster of them) or an unlock: the actual time, in a label above it
@@ -3697,7 +3697,7 @@ function aoTimeTip(e) { // tap a line (or a cluster of them) or an unlock: the a
   var g = el._cl || [el], txt = el.classList.contains("aouh") ? "Unlocked at <b>" + aoClock(el.getAttribute("data-at")) + "</b>"
     : g.map(function (l) { l.classList.add("sel"); return l.getAttribute("data-n") + " at <b>" + aoClock(l.getAttribute("data-at")) + "</b>"; }).join(" · ");
   var tip = document.createElement("div"); tip.className = "aotip"; tip.innerHTML = txt; box.appendChild(tip);
-  var br = box.getBoundingClientRect(), a = g[0].getBoundingClientRect(), z = g[g.length - 1].getBoundingClientRect(), mid = (a.left + z.right) / 2 - br.left;
+  var br = box.getBoundingClientRect(), a = el.getBoundingClientRect(), mid = (a.left + a.right) / 2 - br.left;
   tip.style.left = Math.max(4, Math.min(br.width - tip.offsetWidth - 4, mid - tip.offsetWidth / 2)) + "px";
   tip.style.top = (a.top - br.top - tip.offsetHeight - 6) + "px";
   window._aotT = setTimeout(function () { tip.remove(); g.forEach(function (l) { l.classList.remove("sel"); }); el._tipOn = false; }, 2800);
@@ -3707,10 +3707,13 @@ function aoLayout(root) { // chips spent close together would overlap: each one 
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotabs"), function (t) { var on = t.querySelector(".aotab.on"), th = t.querySelector(".aoth"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; th.style.top = on.offsetTop + "px"; th.style.height = on.offsetHeight + "px"; } }); // the gold highlight sits behind the picked tab
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
     var u = tr.querySelector(".aou"); if (u) { u.style.marginLeft = ""; if (u.offsetLeft < 4) u.style.marginLeft = (4 - u.offsetLeft - 1) + "px"; } // an unlock in the first seconds sits just inside the row's rounded corner, which would otherwise clip all but its top pixel
-    // a number sits centred in its line; lines too close for their numbers to sit side by side form a cluster: the left one's number up top, the next down below, and so on
-    var cl = [], ls = Array.prototype.slice.call(tr.querySelectorAll(".aol"));
-    ls.forEach(function (l, k) { var prev = ls[k - 1]; if (prev && l.offsetLeft - prev.offsetLeft < 14) cl[cl.length - 1].push(l); else cl.push([l]); });
-    cl.forEach(function (g) { g.forEach(function (l, k) { l.classList.toggle("hi", g.length > 1 && k % 2 === 0); l.classList.toggle("lo", g.length > 1 && k % 2 === 1); l._cl = g; }); });
+    // every number sits centred in its line; lines so close that their numbers would touch become one line reading "1+2" (gold if it includes the 5)
+    var ls = Array.prototype.slice.call(tr.querySelectorAll(".aol[data-n]")), anc = null;
+    ls.forEach(function (l) { l.className = "aol t" + l.getAttribute("data-t"); l.querySelector("i").textContent = l.getAttribute("data-n"); l._cl = [l]; });
+    ls.forEach(function (l) {
+      if (anc && l.offsetLeft - anc.offsetLeft < AO_TOUCH) { anc._cl.push(l); l.classList.add("mrg"); anc.querySelector("i").textContent = anc._cl.map(function (x) { return x.getAttribute("data-n"); }).join("+"); anc.className = "aol t" + l.getAttribute("data-t"); }
+      else anc = l;
+    });
     var edge = 0; // the right edge of the last chip placed (a chip at 0:00 starts at the row's edge)
     Array.prototype.forEach.call(tr.querySelectorAll(".aok"), function (k) { // the unlock line sits behind the chips, so it never pushes one
       k.style.transform = ""; var x = k.offsetLeft, w = k.offsetWidth;
@@ -3778,6 +3781,7 @@ function aoSwitch(h, i) {
   var calm = !w.animate || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   var oth = w.querySelector(".aoth"), t0 = oth ? { l: oth.offsetLeft, w: oth.offsetWidth } : null, old = {}, pars = w.querySelectorAll(".aotr,.aoax");
   if (!calm) Array.prototype.forEach.call(w.querySelectorAll("[data-k]"), function (el) {
+    if (!el.offsetParent) return; // merged into its neighbour's line
     var pi = Array.prototype.indexOf.call(pars, el.parentNode); old[el.getAttribute("data-k")] = { x: el.getBoundingClientRect().left, pi: pi, node: el.cloneNode(true) };
   });
   AO_TAB[h.class_name] = i; aoRender(h);
@@ -3785,7 +3789,7 @@ function aoSwitch(h, i) {
   var D = 420, E = "cubic-bezier(.4,0,.2,1)", np = w.querySelectorAll(".aotr,.aoax"), seen = {};
   var th = w.querySelector(".aoth"); if (th && t0) th.animate([{ left: t0.l + "px", width: t0.w + "px" }, { left: th.style.left, width: th.style.width }], { duration: 320, easing: E });
   Array.prototype.forEach.call(w.querySelectorAll("[data-k]"), function (el) {
-    var k = el.getAttribute("data-k"), o = old[k]; seen[k] = 1;
+    var k = el.getAttribute("data-k"), o = old[k]; seen[k] = 1; if (!el.offsetParent) return;
     if (!o) { el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: 180, easing: "ease-out", fill: "backwards" }); return; }
     var dx = o.x - el.getBoundingClientRect().left; if (Math.abs(dx) > .5) el.animate([{ translate: dx + "px 0" }, { translate: "0 0" }], { duration: D, easing: E });
   });
@@ -4116,9 +4120,9 @@ function sinkSheet() { // Close (or a tap outside the card): the card sinks out 
   setTimeout(function () { sinkSheet.on = false; closeSheet(); box.style.transition = ""; box.style.transform = ""; }, 170);
 }
 function sheetArrive(open) { // reopen a card as part of going back: it slides in with the page instead of rising afterwards
-  var sh = $("sheet"); sh.classList.add("arrive"); open(); clearTimeout(sheetArrive.t); sheetArrive.t = setTimeout(function () { sh.classList.remove("arrive"); }, 300);
+  var sh = $("sheet"); sh.classList.add("arrive"); open(); // the class stays until the card closes: taking it off while open would swap in the rising animation and replay it (a jolt)
 }
-function closeSheet() { clearTimeout(SWAPT); resetSwap(); $("sheet").hidden = true; ISTACK = []; FSTACK = []; unlockBody(); }
+function closeSheet() { $("sheet").classList.remove("arrive"); clearTimeout(SWAPT); resetSwap(); $("sheet").hidden = true; ISTACK = []; FSTACK = []; unlockBody(); }
 function bindCommon() {
   var q = $("q");
   if (q) q.oninput = function () { state.q = q.value; var pos = q.selectionStart; render(); var n = $("q"); n.focus(); n.setSelectionRange(pos, pos); };
