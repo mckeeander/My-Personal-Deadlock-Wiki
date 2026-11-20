@@ -666,7 +666,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}
+.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}.aok.mg{width:auto;padding:0 5px;letter-spacing:.02em}
 .aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #141020}.aok.t3{box-shadow:0 1.5px 0 #5a4419} /* a darker edge underneath, so each chip looks raised a pixel */
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
@@ -3630,6 +3630,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero: the core 
 var AO_SHUT = null, AO_TAB = {}; // the hero whose Ability order you folded away; the style tab picked on each hero
 function aoRank() { var b = (state.ao && state.ao.badge) || (state.pop && state.pop.badge), r = b && RANKS[Math.floor(b / 10)]; return r ? r + " " + (b % 10) + " and up" : "the top ranks"; }
 function aoSig(h) { return [1, 2, 3, 4].map(function (i) { return state.byClass[(h.items || {})["signature" + i]]; }); }
+var AO_MERGE = 0.12; // back-to-back points closer than this share of the timeline become one chip (the version without it: commit 99f232f)
 function abilityOrderHtml(h) {
   var A = state.ao && state.ao.heroes && state.ao.heroes[h.class_name]; if (!A || !A.builds || !A.builds.length) return "";
   var sig = aoSig(h); if (sig.some(function (x) { return !x; })) return "";
@@ -3643,9 +3644,18 @@ function abilityOrderHtml(h) {
   var X = function (t) { return "calc((100% - var(--aop)) * " + (Math.min(t, T) / T).toFixed(4) + ")"; }; // 0m at the row's left edge; room on the right for the last chip
   var L = ["", "1", "2", "5"], rows = [0, 1, 2, 3].map(function (s) {
     var mine = pts.filter(function (p) { return p[0] === s; }).sort(function (a, b) { return a[1] - b[1]; }), mk = "";
-    mine.forEach(function (p, k) {
-      var fd = "";
-      mk += p[1] ? '<span class="aok t' + p[1] + fd + '" data-k="k' + s + "-" + p[1] + '" style="left:' + X(p[2]) + '">' + L[p[1]] + "</span>" : '<span class="aou' + fd + '" data-k="u' + s + '" style="left:' + X(p[2]) + '"></span>';
+    // two points on one ability bought back to back (no other ability's point between them, and close enough that their chips would crowd) share one chip: "1+2"
+    var grp = [];
+    mine.forEach(function (p) {
+      var g = grp[grp.length - 1], q = g && g[g.length - 1];
+      var b2b = q && p[1] && q[1] && p[2] - q[2] < T * AO_MERGE && !pts.some(function (o) { return o[0] !== s && o[1] && o[2] >= q[2] && o[2] <= p[2]; });
+      if (b2b) g.push(p); else grp.push([p]);
+    });
+    grp.forEach(function (g) {
+      var p = g[0], fd = "";
+      if (!p[1]) { mk += '<span class="aou' + fd + '" data-k="u' + s + '" style="left:' + X(p[2]) + '"></span>'; return; }
+      var last = g[g.length - 1][1];
+      mk += '<span class="aok t' + last + (g.length > 1 ? " mg" : "") + fd + '" data-k="k' + s + "-" + p[1] + '" style="left:' + X(p[2]) + '">' + g.map(function (x) { return L[x[1]]; }).join("+") + "</span>";
     });
     return '<div class="aor">' + ico(s).replace('class="aoic"', 'class="aoic" role="button" tabindex="0" aria-label="' + esc(nameOf(sig[s])) + '" data-tip="' + esc(nameOf(sig[s])) + '"') + '<div class="aotr">' + ticks.map(function (m) { return '<span class="aogl" data-k="g' + s + "-" + m + '" style="left:' + X(m * 60) + '"></span>'; }).join("") + mk + "</div></div>";
   }).join("");
