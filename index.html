@@ -470,6 +470,8 @@ html.lock,html.lock body{overflow:hidden}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 .sheet:not([hidden]){animation:fadein .18s ease-out}
 .sheet:not([hidden]) .in{animation:slideup .24s cubic-bezier(.2,.8,.25,1)}
+.sheet.arrive:not([hidden]){animation:fadein .18s ease-out}.sheet.arrive:not([hidden]) .in{animation:arrive .18s ease-out} /* back to a page that had a card open: the card comes in with the page, as if it never left */
+@keyframes arrive{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
 .stat.pop{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.pop,.pop .si,.pop img,.minor span.pop,.minor span.pop .si,.minor span.pop img,.sheet:not([hidden]),.sheet:not([hidden]) .in{animation:none}}
 .hname{margin:0 0 8px}
@@ -483,7 +485,7 @@ html.lock,html.lock body{overflow:hidden}
 /* the glossary's Sections button, bottom left, and the menu that grows out of it: each section has its own icon and colour */
 .secnav{position:fixed;z-index:8;left:max(22px,calc((100% - 600px)/2 + 22px));bottom:calc(env(safe-area-inset-bottom,0) + 82px)}.secnav[hidden]{display:none}
 .secpill{position:static;transform:none;display:flex;align-items:center;justify-content:center;width:41px;height:41px;padding:0;border-radius:50%}
-.secpill.in{animation:topin .22s ease-out}
+.secnav .secpill.in{animation:topin .22s ease-out} /* stronger than .backpill.in, whose entrance slides it in from half its width to the left */
 .secpill{--sc:var(--gold);border-color:var(--sc);color:var(--sc);transition:border-color .25s ease,color .25s ease}
 .secpi{display:flex;width:20px;height:20px}.secpi svg{width:20px;height:20px}.secpi.swap{animation:spiin .25s ease-out}
 @keyframes spiin{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
@@ -667,11 +669,17 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
 .aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}.aolu{position:absolute;top:0;bottom:0;right:0;background:rgba(216,207,245,.07);border-left:1px solid rgba(216,207,245,.25)}
-.aol{position:absolute;top:0;height:28px;width:0}
-.aol::before{content:"";position:absolute;top:0;bottom:0;left:-1px;width:2px;background:repeating-linear-gradient(to bottom,var(--alc) 0 3px,transparent 3px 5px)}
-.aol{--alc:#bdb4d0}.aol.t3{--alc:#d8b45c}
-.aol i{position:absolute;z-index:2;top:1px;left:0;transform:translateX(-50%);font-style:normal;font-size:10px;font-weight:700;line-height:12px;padding:0 3px;border-radius:3px;background:var(--panel2);color:#e9e2d2;font-variant-numeric:tabular-nums}
-.aol.t3 i{color:#e6c46e}.aol.lo i{top:15px}
+.aobx{position:relative}
+.aol{position:absolute;top:0;height:28px;width:18px;margin-left:-9px;cursor:pointer;-webkit-tap-highlight-color:transparent;--alc:#bdb4d0}.aol.t3{--alc:#d8b45c}
+.aol::before,.aol::after{content:"";position:absolute;left:8px;width:2px;background:repeating-linear-gradient(to bottom,var(--alc) 0 3px,transparent 3px 5px)}
+.aol::before{top:0;height:7px}.aol::after{bottom:0;height:7px;background-position:0 1px} /* the line stops short of its number, above and below */
+.aol.hi::before{display:none}.aol.hi::after{top:15px;height:auto}
+.aol.lo::after{display:none}.aol.lo::before{height:13px}
+.aol i{position:absolute;z-index:2;top:8px;left:9px;transform:translateX(-50%);font-style:normal;font-size:11px;font-weight:700;line-height:12px;color:#e9e2d2;font-variant-numeric:tabular-nums;pointer-events:none}
+.aol.t3 i{color:#e6c46e}.aol.hi i{top:1px}.aol.lo i{top:15px}
+.aouh{position:absolute;top:0;height:28px;width:18px;margin-left:-9px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.aotip{position:absolute;z-index:6;white-space:nowrap;background:#2b2540;border:1px solid #3e3658;color:var(--fg);font-size:12px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0,.5);pointer-events:none;animation:aotip .18s ease-out}
+.aotip b{color:#e6c46e;font-weight:700}
 .aok.mg{width:auto;padding:0 5px;letter-spacing:.02em}
 .aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #141020}.aok.t3{box-shadow:0 1.5px 0 #5a4419} /* a darker edge underneath, so each chip looks raised a pixel */
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
@@ -3636,7 +3644,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero: the core 
 var AO_SHUT = null, AO_TAB = {}; // the hero whose Ability order you folded away; the style tab picked on each hero
 function aoRank() { var b = (state.ao && state.ao.badge) || (state.pop && state.pop.badge), r = b && RANKS[Math.floor(b / 10)]; return r ? r + " " + (b % 10) + " and up" : "the top ranks"; }
 function aoSig(h) { return [1, 2, 3, 4].map(function (i) { return state.byClass[(h.items || {})["signature" + i]]; }); }
-var AO_LINES = /[?&]aolines/.test(location.search); // mock-up of points as dashed lines (open the site with ?aolines)
+var AO_LINES = !/[?&]aochips/.test(location.search); // points as dashed lines with their number in the line; the earlier chips (1, 2, 5 tabs, back-to-back ones merged) stay in the code: set this to false, or open the site with ?aochips
 var AO_MERGE = 0.12; // back-to-back points closer than this share of the timeline become one chip (the version without it: commit 99f232f)
 function abilityOrderHtml(h) {
   var A = state.ao && state.ao.heroes && state.ao.heroes[h.class_name]; if (!A || !A.builds || !A.builds.length) return "";
@@ -3658,10 +3666,10 @@ function abilityOrderHtml(h) {
       var b2b = q && p[1] && q[1] && p[2] - q[2] < T * AO_MERGE && !pts.some(function (o) { return o[0] !== s && o[1] && o[2] >= q[2] && o[2] <= p[2]; });
       if (b2b) g.push(p); else grp.push([p]);
     });
-    if (AO_LINES) { // mock-up: each point is a dashed line at its exact time with its number set into the line; the unlock lights up the row from then on
+    if (AO_LINES) { // each point is a dashed line at its exact time with its number set into the line; the unlock lights up the row from then on. Tap any of them for the time
       mine.forEach(function (p) {
-        if (!p[1]) { mk = '<span class="aolu" style="left:' + X(p[2]) + '"></span>' + mk; return; }
-        mk += '<span class="aol t' + p[1] + '" data-k="k' + s + "-" + p[1] + '" style="left:' + X(p[2]) + '"><i>' + L[p[1]] + "</i></span>";
+        if (!p[1]) { mk = '<span class="aolu" style="left:' + X(p[2]) + '"></span><span class="aouh" data-at="' + p[2] + '" style="left:' + X(p[2]) + '"></span>' + mk; return; }
+        mk += '<span class="aol t' + p[1] + '" data-k="k' + s + "-" + p[1] + '" data-at="' + p[2] + '" data-n="' + L[p[1]] + '" style="left:' + X(p[2]) + '"><i>' + L[p[1]] + "</i></span>";
       });
       grp = [];
     }
@@ -3678,15 +3686,31 @@ function abilityOrderHtml(h) {
     tabs +
     '<div class="aobx"><p class="aohd">Max <b>' + esc(nameOf(sig[B.max[0]])) + "</b>, then <b>" + esc(nameOf(sig[B.max[1]])) + "</b></p>" + rows + axis + '</div><p class="aorank"><b>' + Math.round(B.share * 100) + "%</b> of players in " + esc(aoRank()) + " max these two first.</p></details>";
 }
+function aoClock(t) { t = Math.round(+t); return Math.floor(t / 60) + ":" + ("0" + t % 60).slice(-2); }
+function aoTimeTip(e) { // tap a line (or a cluster of them) or an unlock: the actual time, in a label above it
+  var el = e.target.closest ? e.target.closest(".aol[data-at], .aouh[data-at]") : null, box = el && el.closest(".aobx");
+  Array.prototype.forEach.call(document.querySelectorAll(".aotip"), function (x) { x.remove(); });
+  Array.prototype.forEach.call(document.querySelectorAll(".aol.sel"), function (x) { x.classList.remove("sel"); });
+  clearTimeout(window._aotT); if (!el) return false;
+  if (el._tipOn) { el._tipOn = false; return true; } // a second tap on the same one closes it
+  Array.prototype.forEach.call(box.querySelectorAll(".aol, .aouh"), function (x) { x._tipOn = false; }); el._tipOn = true;
+  var g = el._cl || [el], txt = el.classList.contains("aouh") ? "Unlocked at <b>" + aoClock(el.getAttribute("data-at")) + "</b>"
+    : g.map(function (l) { l.classList.add("sel"); return l.getAttribute("data-n") + " at <b>" + aoClock(l.getAttribute("data-at")) + "</b>"; }).join(" · ");
+  var tip = document.createElement("div"); tip.className = "aotip"; tip.innerHTML = txt; box.appendChild(tip);
+  var br = box.getBoundingClientRect(), a = g[0].getBoundingClientRect(), z = g[g.length - 1].getBoundingClientRect(), mid = (a.left + z.right) / 2 - br.left;
+  tip.style.left = Math.max(4, Math.min(br.width - tip.offsetWidth - 4, mid - tip.offsetWidth / 2)) + "px";
+  tip.style.top = (a.top - br.top - tip.offsetHeight - 6) + "px";
+  window._aotT = setTimeout(function () { tip.remove(); g.forEach(function (l) { l.classList.remove("sel"); }); el._tipOn = false; }, 2800);
+  return true;
+}
 function aoLayout(root) { // chips spent close together would overlap: each one is nudged just right of the one before it in its row
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotabs"), function (t) { var on = t.querySelector(".aotab.on"), th = t.querySelector(".aoth"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; th.style.top = on.offsetTop + "px"; th.style.height = on.offsetHeight + "px"; } }); // the gold highlight sits behind the picked tab
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
     var u = tr.querySelector(".aou"); if (u) { u.style.marginLeft = ""; if (u.offsetLeft < 4) u.style.marginLeft = (4 - u.offsetLeft - 1) + "px"; } // an unlock in the first seconds sits just inside the row's rounded corner, which would otherwise clip all but its top pixel
-    var lv = [-1e9, -1e9]; // line labels: two heights, top and bottom; a label that would touch the last one at its height takes the other
-    Array.prototype.forEach.call(tr.querySelectorAll(".aol"), function (l) {
-      var x = l.offsetLeft, i = l.querySelector("i"), w = i.offsetWidth + 3, lvl = x - lv[0] >= w ? 0 : x - lv[1] >= w ? 1 : (lv[0] <= lv[1] ? 0 : 1);
-      l.classList.toggle("lo", lvl === 1); lv[lvl] = x;
-    });
+    // a number sits centred in its line; lines too close for their numbers to sit side by side form a cluster: the left one's number up top, the next down below, and so on
+    var cl = [], ls = Array.prototype.slice.call(tr.querySelectorAll(".aol"));
+    ls.forEach(function (l, k) { var prev = ls[k - 1]; if (prev && l.offsetLeft - prev.offsetLeft < 14) cl[cl.length - 1].push(l); else cl.push([l]); });
+    cl.forEach(function (g) { g.forEach(function (l, k) { l.classList.toggle("hi", g.length > 1 && k % 2 === 0); l.classList.toggle("lo", g.length > 1 && k % 2 === 1); l._cl = g; }); });
     var edge = 0; // the right edge of the last chip placed (a chip at 0:00 starts at the row's edge)
     Array.prototype.forEach.call(tr.querySelectorAll(".aok"), function (k) { // the unlock line sits behind the chips, so it never pushes one
       k.style.transform = ""; var x = k.offsetLeft, w = k.offsetWidth;
@@ -4038,7 +4062,7 @@ function itemBack() { // to the page you opened the item from, its pop-up up aga
   if (f.search != null) { state.tab = f.tab; setTabsUI(f.tab); render(); showSearch(f.search); }
   else { state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y); }
   ISTACK = []; FSTACK = [];
-  setTimeout(function () { var k = f.sheet || cn; if (!k) return; if (k.indexOf("g:") === 0) glossSheet(k.slice(2)); else itemSheet(k); }, 180);
+  var k = f.sheet || cn; if (k) sheetArrive(function () { if (k.indexOf("g:") === 0) glossSheet(k.slice(2)); else itemSheet(k); });
 }
 var SWAPT = 0, QUICK = false; // QUICK: the old content was already slid away by a swipe, so swapSheet skips its own fade-out
 function resetSwap() { var b = $("sheetin"); b.style.height = ""; b.style.overflow = ""; b.style.transition = ""; }
@@ -4090,6 +4114,9 @@ function sinkSheet() { // Close (or a tap outside the card): the card sinks out 
   sinkSheet.on = true;
   box.style.transition = "transform .18s ease-out"; box.style.transform = "translateY(100%)";
   setTimeout(function () { sinkSheet.on = false; closeSheet(); box.style.transition = ""; box.style.transform = ""; }, 170);
+}
+function sheetArrive(open) { // reopen a card as part of going back: it slides in with the page instead of rising afterwards
+  var sh = $("sheet"); sh.classList.add("arrive"); open(); clearTimeout(sheetArrive.t); sheetArrive.t = setTimeout(function () { sh.classList.remove("arrive"); }, 300);
 }
 function closeSheet() { clearTimeout(SWAPT); resetSwap(); $("sheet").hidden = true; ISTACK = []; FSTACK = []; unlockBody(); }
 function bindCommon() {
@@ -5326,7 +5353,7 @@ $("backpill").onclick = function (e) {
       state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y);
       if (f.search != null) { showSearch(f.search); window.scrollTo(0, f.sy || 0); } // the results you came from, over the page you were on
       ISTACK = []; FSTACK = [];
-      setTimeout(function () { if (f.sheet) glossSheet(f.sheet); else if (f.item) itemSheet(f.item); }, 180);
+      sheetArrive(function () { if (f.sheet) glossSheet(f.sheet); else if (f.item) itemSheet(f.item); });
     });
     return;
   }
@@ -5937,6 +5964,7 @@ $("main").addEventListener("click", function (e) {
     });
     return;
   }
+  if (aoTimeTip(e)) return;
   var ai = e.target.closest ? e.target.closest(".aoic[data-tip]") : null;
   Array.prototype.forEach.call(document.querySelectorAll(".aoic.tip"), function (x) { if (x !== ai) x.classList.remove("tip"); });
   if (ai) { ai.classList.toggle("tip"); clearTimeout(window._aoT); window._aoT = setTimeout(function () { ai.classList.remove("tip"); }, 2400); return; }
