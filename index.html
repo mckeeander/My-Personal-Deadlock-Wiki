@@ -302,7 +302,7 @@ details.lore{margin:4px 0 6px;color:var(--dim);font-size:14px;line-height:1.45}
 details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bottom:6px}
 .stat.plain{border-color:var(--line);background:var(--panel2)}
 .stat.big.wtile{border-color:var(--weapon);background:#3a2814}.stat.big.htile{border-color:var(--vital);background:#1d3320}.stat.big.btile{border-color:#6AA6FF;background:#1c2a44}
-.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}.bgrid .stats{grid-template-columns:1fr}.blk .suit{width:13px;height:13px;vertical-align:-2px;margin-right:5px}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 8px;margin-bottom:12px}.bgrid .stats{grid-template-columns:1fr;margin-bottom:0;flex:1}.bcell{display:flex;flex-direction:column} /* inside a grid cell the space under the cards and over the next heading would add up instead of overlapping, so the cards drop theirs; side by side they share a height */.blk .suit{width:13px;height:13px;vertical-align:-2px;margin-right:5px}
 .up{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
 .up.on{border-color:var(--spirit)}
 .up.on>div:first-child{background:#6b45a8;color:#fff}
@@ -1801,7 +1801,7 @@ function tile(v, l, r) {
   var dur = r && r.dur ? '<span class="dur">' + siIcon("hourglass") + esc(r.dur) + "</span>" : ""; // how long this effect lasts, tagged in the corner
   var corner = dur ? '<span class="corner">' + dur + badge + "</span>" : badge;
   var tech = r && r.tech && isDmgLbl(l); // purple boxes are for damage; a spirit-scaling heal, barrier or buff keeps its purple ★ tag on a plain card
-  var barrier = r && /^Barrier$|Barrier$/.test(l) && CTX && CTX.hero && BARRIER_BLUE[CTX.hero.name]; // trying it on Wraith: a barrier card in blue
+  var barrier = r && /Barrier$/.test(l); // a barrier card is blue
   return '<div class="stat' + (r && r.wpn ? " big wtile" : tech ? " big" : r && r.heal ? " big htile" : barrier ? " big btile" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
 }
 // abilities use tooltip_details.info_sections
@@ -2300,7 +2300,7 @@ function tierColor(h, it, ti) {
   h = String(h).replace(/<span class="nw">(<img\b[^>]*>|<svg class="ic[^"]*"[^>]*>(?:(?!<\/svg>)[\s\S])*<\/svg>)([^<]*)<\/span>/g, "$1$2"); // the icon-keeps-its-word wrapper goes first, or it splits phrases ("Bonus Move Speed")
   h = unGlossAll(h); // unwrap glossary links so phrases stay whole
   h = String(h).replace(/\s+data-g="[^"]*"/g, "").replace(/class="([^"]*)\bgl\b([^"]*)"/g, function (m, a, b) { return 'class="' + (a + b).trim() + '"'; }).replace(/<img\b[^>]*>/g, "").replace(/<svg class="ic(?! key)[^"]*"[\s\S]*?<\/svg>/g, "").replace(/(<span\b[^>]*?)\s+style="color:[^"]*"/g, "$1");
-  var list = (CTX && CTX.hero && BARRIER_BLUE[CTX.hero.name] ? [["barrier", TIER_BL]] : []).concat(TIER_OV[it && it.name] || []).concat(tierDmg(it).concat(tierBarrier(it), TIER_STATS).map(function (x, n) { return [x, n]; }).sort(function (a, b) { return b[0][0].length - a[0][0].length || a[1] - b[1]; }).map(function (x) { return x[0]; })), seen = "", base = tierBase(it); // longest phrase wins
+  var list = [["barrier", TIER_BL]].concat(TIER_OV[it && it.name] || []).concat(tierDmg(it).concat(tierBarrier(it), TIER_STATS).map(function (x, n) { return [x, n]; }).sort(function (a, b) { return b[0][0].length - a[0][0].length || a[1] - b[1]; }).map(function (x) { return x[0]; })), seen = "", base = tierBase(it); // longest phrase wins
   // the stat this tier actually upgrades decides a bare "Damage" (Rend T1 adds spirit damage to a melee ability)
   (((it && it.upgrades || [])[ti] || {}).property_upgrades || []).forEach(function (pu) {
     var pp = ((it.properties || {})[pu.name]) || {}; if (pu.upgrade_type || !/^(Damage|DPS|Damage Per Second)$/.test(propLabel(pp, pu.name) || "")) return;
@@ -2995,7 +2995,6 @@ function sameSheet(t) { // a stat every hero shares: the value and a line saying
     slideForward(function () { state.from = null; renderHero(to); showBack(fromHero, fromY, { same: label }); setTimeout(function () { openSameOn(label); }, 200); });
   };
 }
-var BARRIER_BLUE = { "Wraith": 1 };
 var BUCKET = { "wep|Damage per second": 10 }; // stats whose ranked list groups heroes by range (this wide) rather than by exact value
 function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from lowest to highest, then every hero in order, this one picked out
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
