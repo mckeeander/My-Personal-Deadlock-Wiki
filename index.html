@@ -404,7 +404,8 @@ details.notes > summary + *{margin-top:2px} /* content starts the same distance 
 .wtags{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .wdps1{margin:14px 0 4px;font-size:16px;color:var(--dim)}
 .wdps1 b{font-size:20px;color:var(--fg);margin-right:3px}
-.wrank{display:inline-flex;align-items:center;gap:3px;margin:4px auto 0;padding:2px 2px 2px 6px;background:none;border:0;font:inherit;font-size:12.5px;color:var(--dim);cursor:pointer;-webkit-tap-highlight-color:transparent}.wrank b{color:var(--weapon);font-weight:700}.wrank .wrc{width:13px;height:13px;opacity:.7}.wrank:active{color:var(--fg)}
+.wrank{display:block;width:100%;max-width:190px;margin:6px auto 0;padding:4px 0;background:none;border:0;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;--c:var(--weapon)}
+.wrank .trk{height:10px}.wrank .trk::before{top:4px;height:1.5px;opacity:.7}.wrank .trk i{top:3.25px;width:3.5px;height:3.5px;margin-left:-1.75px;opacity:.55}.wrank .trk b{top:0;width:10px;height:10px;margin-left:-5px;border-width:1.5px}.wrank .rkl{display:none}
 .wdps1 .si{height:1.3em;width:1.3em;vertical-align:-.3em;margin-right:6px;color:var(--weapon)}
 .wimg img{width:100%;max-width:240px;height:150px;object-fit:contain}
 .fr{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:4px}
@@ -1481,7 +1482,7 @@ function effP(it, key) {
 // extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
 var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Ava": { OutgoingDamagePercent: "DamageAmpDuration" }, "Serrated Knives": { BleedDPSPerStack: "BleedDuration" }, "Bloodletting": { DamagePctDeferred: "DeferredDamageDuration" }, "Death Slam": { SlowPercent: "SlowDuration" },
   "Threadsap": { MagicDamagePerBullet: "DebuffDuration" }, "Granny Long Legs": { HeavyMeleeSlowPercent: "HeavyMeleeSlowDuration" }, "Baba's Brew": { DamagePerSecond: "BurnDuration", SpiritResistReduction: "BurnDuration" },
-  "Exploding Uppercut": { BonusFireRate: "ExplodeDebuffDuration", BuffBaseWeaponPct: "UppercutBuffOnHit" }, "Frost Grenade": { PauseStaminaRegen: "SlowDuration" }, "Grapple Arm": { BulletAmp: "BulletAmpDuration" } };
+  "Exploding Uppercut": { BonusFireRate: "ExplodeDebuffDuration", BuffBaseWeaponPct: "UppercutBuffOnHit" }, "Grapple Arm": { BulletAmp: "BulletAmpDuration" } };
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
@@ -1550,7 +1551,7 @@ var ORDER_OV = { "Malice": ["Damage", "Health Cost", "Blood Shards", "Spread Ang
   "Exploding Uppercut": ["Weapon Damage", "Weapon Range", "Missing HP Heal"] };
 var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
 var SPIRIT_WP = { "Borrowed Decree|SummonMeleeDamage": 1, "Grapple Arm|BulletAmp": 1 }; // melee damage (an orange card) that scales with spirit: the card is orange, its ★ tag stays purple
-var FLAG_CARD = { "Frost Grenade|PauseStaminaRegen": { v: "Paused", l: "Stamina Regen" } }; // an upgrade switch shown as a card (so it can carry a timer tag) rather than a line of text
+var FLAG_CARD = {}; // an upgrade switch shown as a card (so it can carry a timer tag) rather than a line of text
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"], "Disengaging Sigil": ["SigilRadius"], "Flawless Advance": ["AttackDashRange", "DashSpeed"], "Hyper Beam": ["BeamLength", "BeamWidth"], "Arctic Beam": ["PathLength"] }; // stats shown as a header chip beside the cooldown and range, not as a card
 var PROMOTE = { "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 } }; // listed as small text by the game; shown as a card
@@ -1568,7 +1569,7 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
   "Ava|OutgoingDamagePercent": "Max Damage Amp", "Ava|DamageAmpBuildDuration": "Build-up Time", "Ava|DamageAmpDuration": "Lingers For", "Gloom Bombs|MeleeResistReductionDuration": "Debuff Duration", "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
   "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
-  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Death Slam|SlowPercent": "Enemy Move Speed", "Bloodscent|WeaponDmgPerIsolationKill": "Weapon Damage", "Killing Blow|BuffDamage": "Damage Bonus", "Killing Blow|BonusMoveSpeed": "Move Speed", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold", "Granny Long Legs|HeavyMeleeSpiritDamage": "Damage", "Granny Long Legs|HeavyMeleeSlowPercent": "Movement Slow" }; // some game labels need the subject spelled out
+  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Death Slam|SlowPercent": "Enemy Move Speed", "Bloodscent|WeaponDmgPerIsolationKill": "Weapon Damage", "Killing Blow|BuffDamage": "Damage Bonus", "Killing Blow|BonusMoveSpeed": "Move Speed", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold", "Arctic Beam|BeamSplitCount": "Extra Beams", "Granny Long Legs|HeavyMeleeSpiritDamage": "Damage", "Granny Long Legs|HeavyMeleeSlowPercent": "Movement Slow" }; // some game labels need the subject spelled out
 function propRec(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -1827,7 +1828,10 @@ var GROUP_OV = {
   "Disengaging Sigil": [{ l: "On Hit:", k: ["Damage", "SlowPercent", "FireRateSlow", "SlowDuration"] }, { l: "On Hit, You Gain:", k: ["StaminaToRestore"], f: { ResetsAirLimit: "Reset Air Jump/Dash Limit" } }],
   "Baba's Brew": [{ l: "", k: [], f: { BrewEffectiveness: "" } }],
   "Soul Exchange": [{ l: "On Cast, You Gain:", k: ["BonusSpirit", "TechResist", "BonusFireRate"] }],
-  "Frozen Shelter": [{ l: "Allies in the Dome:", k: ["BonusHealthRegen"] }, { l: "Enemies in the Dome:", k: ["SlowPercent", "FireRateSlow"] }],
+  "Frost Grenade": [{ l: "Enemies Hit:", k: ["Damage", "SlowPercent", "SlowDuration"], f: { PauseStaminaRegen: "Stamina regen paused for {SlowDuration}" }, late: true }, { l: "Allies Hit:", k: ["HealAmount"], late: true }],
+  "Ice Path": [{ l: "Kelvin and Allies Gain:", k: ["MoveSpeedBonus", "SprintSpeedBonus"], late: true }, { l: "Kelvin Gains:", k: ["SlowResistancePercent", "BulletResist", "BonusSpiritPct", "BonusSpirit"], late: true }],
+  "Arctic Beam": [{ l: "Enemies Hit:", k: ["DPS", "MaxSlowPercent", "MaxFireRateSlowPercent"], late: true }, { l: "Split Beams:", k: ["BeamSplitCount", "BeamSplit"], late: true }],
+  "Frozen Shelter": [{ l: "Allies in the Dome:", k: ["BonusHealthRegen"], f: { PurgeOnCast: "Purges debuffs on cast" } }, { l: "Enemies in the Dome:", k: ["SlowPercent", "FireRateSlow"] }],
   "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
 };
 var TILE_RE = /<div class="stat(?:\s[^"]*)?">[\s\S]*?<\/div>/g; // one stat tile (the space keeps it from matching the "stats" block)
@@ -2000,7 +2004,7 @@ function tooltipHtml(it) {
       }).join("");
       var t = arrange(g.k.map(function (k) { if (durUsed[k]) return ""; var r = withDur(k, propRec(it, k)); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join("") + cards);
       var mx = (g.x || []).filter(function (x) { return propRec(it, x.k); }).map(function (x) { return '<span class="fl">' + esc(x.t) + "</span>"; }).join("");
-      Object.keys(g.f || {}).forEach(function (k) { var e = effP(it, k); if (g.f[k] && e && parseFloat(e.value) > 0) mx += '<span class="fl">' + esc(g.f[k]) + "</span>"; });
+      Object.keys(g.f || {}).forEach(function (k) { var e = effP(it, k); if (g.f[k] && e && parseFloat(e.value) > 0) mx += '<span class="fl">' + esc(g.f[k].replace(/\{(\w+)\}/g, function (m0, k2) { return (propRec(it, k2) || {}).v || ""; })) + "</span>"; }); // "{SlowDuration}" stands for that stat's value
       if (!t && !mx) return; if (!g.l) return;
       var html = '<div class="blk">' + esc(g.l) + "</div>" + (t ? '<div class="stats">' + t + "</div>" : "") + (mx ? '<div class="minor">' + mx + "</div>" : "");
       if (g.late) late.push(html);
@@ -2573,8 +2577,8 @@ var WNAME = { citadel_weapon_werewolf_claws: "Loose Muzzle" }; // the game file 
 function ordinal(n) { var t = n % 100, u = n % 10; return n + (t >= 11 && t <= 13 ? "th" : u === 1 ? "st" : u === 2 ? "nd" : u === 3 ? "rd" : "th"); }
 function dpsRank(h) { // where this hero's weapon DPS ranks among every hero (heroes on the same DPS share a place); tap for the full list, as on the stat cards
   var xs = statPool()["wep|Damage per second"] || [], me = xs.filter(function (x) { return x.h === h; })[0]; if (!me || xs.length < 2) return "";
-  var place = 1 + xs.filter(function (x) { return x.n > me.n; }).length;
-  return '<button class="wrank" data-sk="wep|Damage per second" aria-label="Weapon DPS ranking"><b>' + ordinal(place) + "</b> of " + xs.length + " heroes" + rowSvg('<path d="M9 6l6 6-6 6"/>', "wrc") + "</button>";
+  var place = 1 + xs.filter(function (x) { return x.n > me.n; }).length, r = me.r; // a lowest-to-highest line like the stat cards' (the rank-as-text version: commit d5b1f3f)
+  return '<button class="wrank" data-sk="wep|Damage per second" aria-label="Weapon DPS: ' + ordinal(place) + " of " + xs.length + ' heroes. Show every hero">' + cardLine(h, xs, me.n, r, function (x) { return sfmt(x, r); }) + "</button>";
 }
 function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver's claws, Venator's crossbow)
   var w = alt || state.byClass[(h.items || {}).weapon_primary];
