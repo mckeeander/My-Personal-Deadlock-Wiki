@@ -666,7 +666,13 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}.aok.mg{width:auto;padding:0 5px;letter-spacing:.02em}
+.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}.aolu{position:absolute;top:0;bottom:0;right:0;background:rgba(216,207,245,.07);border-left:1px solid rgba(216,207,245,.25)}
+.aol{position:absolute;top:0;height:28px;width:0}
+.aol::before{content:"";position:absolute;top:0;bottom:0;left:-1px;width:2px;background:repeating-linear-gradient(to bottom,var(--alc) 0 3px,transparent 3px 5px)}
+.aol{--alc:#bdb4d0}.aol.t3{--alc:#d8b45c}
+.aol i{position:absolute;z-index:2;top:1px;left:0;transform:translateX(-50%);font-style:normal;font-size:10px;font-weight:700;line-height:12px;padding:0 3px;border-radius:3px;background:var(--panel2);color:#e9e2d2;font-variant-numeric:tabular-nums}
+.aol.t3 i{color:#e6c46e}.aol.lo i{top:15px}
+.aok.mg{width:auto;padding:0 5px;letter-spacing:.02em}
 .aok.t3{background:#c4a04e;color:#1c1608}.aok.t1,.aok.t2{box-shadow:0 1.5px 0 #141020}.aok.t3{box-shadow:0 1.5px 0 #5a4419} /* a darker edge underneath, so each chip looks raised a pixel */
 .aou{position:absolute;top:0;height:28px;width:2px;margin-left:-1px;background:repeating-linear-gradient(to bottom,rgba(216,207,245,.7) 0 3px,transparent 3px 5px)} /* the unlock: a vertical dotted line behind the chips; 6 dots of 3px with 2px gaps fill the 28px row exactly, so both ends match */
 .aoax{position:relative;height:16px;margin-left:37px;font-size:9.5px;color:var(--dim)}.aoax span{position:absolute;top:2px;transform:translateX(-50%)}.aoax span:first-child{transform:none}
@@ -3630,6 +3636,7 @@ function popularHtml(h) { // what top-ranked players buy on this hero: the core 
 var AO_SHUT = null, AO_TAB = {}; // the hero whose Ability order you folded away; the style tab picked on each hero
 function aoRank() { var b = (state.ao && state.ao.badge) || (state.pop && state.pop.badge), r = b && RANKS[Math.floor(b / 10)]; return r ? r + " " + (b % 10) + " and up" : "the top ranks"; }
 function aoSig(h) { return [1, 2, 3, 4].map(function (i) { return state.byClass[(h.items || {})["signature" + i]]; }); }
+var AO_LINES = /[?&]aolines/.test(location.search); // mock-up of points as dashed lines (open the site with ?aolines)
 var AO_MERGE = 0.12; // back-to-back points closer than this share of the timeline become one chip (the version without it: commit 99f232f)
 function abilityOrderHtml(h) {
   var A = state.ao && state.ao.heroes && state.ao.heroes[h.class_name]; if (!A || !A.builds || !A.builds.length) return "";
@@ -3651,6 +3658,13 @@ function abilityOrderHtml(h) {
       var b2b = q && p[1] && q[1] && p[2] - q[2] < T * AO_MERGE && !pts.some(function (o) { return o[0] !== s && o[1] && o[2] >= q[2] && o[2] <= p[2]; });
       if (b2b) g.push(p); else grp.push([p]);
     });
+    if (AO_LINES) { // mock-up: each point is a dashed line at its exact time with its number set into the line; the unlock lights up the row from then on
+      mine.forEach(function (p) {
+        if (!p[1]) { mk = '<span class="aolu" style="left:' + X(p[2]) + '"></span>' + mk; return; }
+        mk += '<span class="aol t' + p[1] + '" data-k="k' + s + "-" + p[1] + '" style="left:' + X(p[2]) + '"><i>' + L[p[1]] + "</i></span>";
+      });
+      grp = [];
+    }
     grp.forEach(function (g) {
       var p = g[0], fd = "";
       if (!p[1]) { mk += '<span class="aou' + fd + '" data-k="u' + s + '" style="left:' + X(p[2]) + '"></span>'; return; }
@@ -3668,6 +3682,11 @@ function aoLayout(root) { // chips spent close together would overlap: each one 
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotabs"), function (t) { var on = t.querySelector(".aotab.on"), th = t.querySelector(".aoth"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; th.style.top = on.offsetTop + "px"; th.style.height = on.offsetHeight + "px"; } }); // the gold highlight sits behind the picked tab
   Array.prototype.forEach.call((root || document).querySelectorAll(".aotr"), function (tr) {
     var u = tr.querySelector(".aou"); if (u) { u.style.marginLeft = ""; if (u.offsetLeft < 4) u.style.marginLeft = (4 - u.offsetLeft - 1) + "px"; } // an unlock in the first seconds sits just inside the row's rounded corner, which would otherwise clip all but its top pixel
+    var lv = [-1e9, -1e9]; // line labels: two heights, top and bottom; a label that would touch the last one at its height takes the other
+    Array.prototype.forEach.call(tr.querySelectorAll(".aol"), function (l) {
+      var x = l.offsetLeft, i = l.querySelector("i"), w = i.offsetWidth + 3, lvl = x - lv[0] >= w ? 0 : x - lv[1] >= w ? 1 : (lv[0] <= lv[1] ? 0 : 1);
+      l.classList.toggle("lo", lvl === 1); lv[lvl] = x;
+    });
     var edge = 0; // the right edge of the last chip placed (a chip at 0:00 starts at the row's edge)
     Array.prototype.forEach.call(tr.querySelectorAll(".aok"), function (k) { // the unlock line sits behind the chips, so it never pushes one
       k.style.transform = ""; var x = k.offsetLeft, w = k.offsetWidth;
