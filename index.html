@@ -301,7 +301,8 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 details.lore{margin:4px 0 6px;color:var(--dim);font-size:14px;line-height:1.45}
 details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bottom:6px}
 .stat.plain{border-color:var(--line);background:var(--panel2)}
-.stat.big.wtile{border-color:var(--weapon);background:#3a2814}.stat.big.htile{border-color:var(--vital);background:#1d3320}
+.stat.big.wtile{border-color:var(--weapon);background:#3a2814}.stat.big.htile{border-color:var(--vital);background:#1d3320}.stat.big.btile{border-color:#6AA6FF;background:#1c2a44}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}.bgrid .stats{grid-template-columns:1fr}.blk .suit{width:13px;height:13px;vertical-align:-2px;margin-right:5px}
 .up{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
 .up.on{border-color:var(--spirit)}
 .up.on>div:first-child{background:#6b45a8;color:#fff}
@@ -1081,7 +1082,7 @@ button.vh{background:none;border:0;padding:0;color:var(--gold);font:inherit;font
 .ssx li{display:grid;grid-template-columns:var(--vw,80px) 1fr;align-items:start;gap:8px;padding:9px 6px 9px 14px;border-top:1px solid #2c2539;font-size:13px}.ssx li:first-child{border-top:0}
 .ssx .rp{text-align:right;font-size:12px;line-height:24px;font-variant-numeric:tabular-nums;color:var(--dim)}
 .ssx .rvv{line-height:1.25;padding-top:3px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg)}
-.ssx .rhs{display:flex;flex-wrap:wrap;gap:4px 10px}.ssx .rh{cursor:pointer;-webkit-tap-highlight-color:transparent;display:inline-flex;align-items:center;gap:5px;line-height:24px;color:var(--dim);white-space:nowrap}.ssx .rh img{width:20px;height:20px;border-radius:5px;object-fit:cover}
+.ssx .rhs{display:flex;flex-wrap:wrap;gap:4px 10px}.ssx .rhv{font-style:normal;font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--dim);opacity:.8;margin-left:1px}.ssx .rh{cursor:pointer;-webkit-tap-highlight-color:transparent;display:inline-flex;align-items:center;gap:5px;line-height:24px;color:var(--dim);white-space:nowrap}.ssx .rh img{width:20px;height:20px;border-radius:5px;object-fit:cover}
 .ssx li.me{background:color-mix(in srgb,var(--c) 12%,transparent);border-radius:8px;border-top-color:transparent}.ssx li.me + li{border-top-color:transparent}.ssx li.me .rvv,.ssx .rh.on{color:var(--c);font-weight:700}
 .scpair{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px}
 .scpair > .scd{border:0;background:none}.scpair > .scd + .scd::after{content:"";position:absolute;left:0;top:12px;bottom:12px;border-left:1px solid var(--line)}
@@ -1482,7 +1483,7 @@ function effP(it, key) {
 // extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
 var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Ava": { OutgoingDamagePercent: "DamageAmpDuration" }, "Serrated Knives": { BleedDPSPerStack: "BleedDuration" }, "Bloodletting": { DamagePctDeferred: "DeferredDamageDuration" }, "Death Slam": { SlowPercent: "SlowDuration" },
   "Threadsap": { MagicDamagePerBullet: "DebuffDuration" }, "Granny Long Legs": { HeavyMeleeSlowPercent: "HeavyMeleeSlowDuration" }, "Baba's Brew": { DamagePerSecond: "BurnDuration", SpiritResistReduction: "BurnDuration" },
-  "Exploding Uppercut": { BonusFireRate: "ExplodeDebuffDuration", BuffBaseWeaponPct: "UppercutBuffOnHit" }, "Arctic Beam": { MaxSlowPercent: "IceBeamBuildupProcDuration", MaxFireRateSlowPercent: "IceBeamBuildupProcDuration", MaxGroundDashReductionPercent: "IceBeamBuildupProcDuration" }, "Grapple Arm": { BulletAmp: "BulletAmpDuration" } };
+  "Exploding Uppercut": { BonusFireRate: "ExplodeDebuffDuration", BuffBaseWeaponPct: "UppercutBuffOnHit" }, "Telekinesis": { SlowPercent: "AbilityDuration" }, "Arctic Beam": { MaxSlowPercent: "IceBeamBuildupProcDuration", MaxFireRateSlowPercent: "IceBeamBuildupProcDuration", MaxGroundDashReductionPercent: "IceBeamBuildupProcDuration" }, "Grapple Arm": { BulletAmp: "BulletAmpDuration" } };
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
@@ -1552,6 +1553,13 @@ var ORDER_OV = { "Malice": ["Damage", "Health Cost", "Blood Shards", "Spread Ang
 var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageReductionOnPlayerHitPercent: "No self damage on hero hit", BurstMarkStacks: "Marks enemies hit (Strix Salvo)", ChargeReplenish: "Replenishes 1 charge", NoChannel: "Move and use abilities freely", ZombieExplosionBuildUp: "All summons apply Essence Theft" };
 var SPIRIT_WP = { "Borrowed Decree|SummonMeleeDamage": 1, "Grapple Arm|BulletAmp": 1 }; // melee damage (an orange card) that scales with spirit: the card is orange, its ★ tag stays purple
 var FLAG_CARD = {}; // an upgrade switch shown as a card (so it can carry a timer tag) rather than a line of text
+var SUIT = function (d, c) { return '<svg class="suit" viewBox="0 0 24 24" aria-hidden="true" style="color:' + c + '"><path fill="currentColor" d="' + d + '"/></svg>'; };
+var PAIR_BLOCKS = { "Card Trick": { // each suit's block, two to a row, with its suit
+  Spade: SUIT("M12 2C9 6 4 9 4 13a4 4 0 0 0 7 2.6L10 21h4l-1-5.4A4 4 0 0 0 20 13c0-4-5-7-8-11z", "#d9d0e6"),
+  Diamond: SUIT("M12 2l7 10-7 10-7-10z", "#e0584f"),
+  Club: SUIT("M12 2a4 4 0 0 0-3.5 6A4 4 0 1 0 11 14.6L10 21h4l-1-6.4A4 4 0 1 0 15.5 8 4 4 0 0 0 12 2z", "#d9d0e6"),
+  Heart: SUIT("M12 21s-8-5.3-8-11.2A4.6 4.6 0 0 1 12 6.6a4.6 4.6 0 0 1 8 3.2C20 15.7 12 21 12 21z", "#e0584f") } };
+var NO_CHIP = { "Telekinesis": { AbilityDuration: 1 } }; // header chips left off because a card's timer tag already shows them
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"], "Disengaging Sigil": ["SigilRadius"], "Flawless Advance": ["AttackDashRange", "DashSpeed"], "Hyper Beam": ["BeamLength", "BeamWidth"], "Arctic Beam": ["PathLength"] }; // stats shown as a header chip beside the cooldown and range, not as a card
 var PROMOTE = { "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 } }; // listed as small text by the game; shown as a card
@@ -1793,7 +1801,8 @@ function tile(v, l, r) {
   var dur = r && r.dur ? '<span class="dur">' + siIcon("hourglass") + esc(r.dur) + "</span>" : ""; // how long this effect lasts, tagged in the corner
   var corner = dur ? '<span class="corner">' + dur + badge + "</span>" : badge;
   var tech = r && r.tech && isDmgLbl(l); // purple boxes are for damage; a spirit-scaling heal, barrier or buff keeps its purple ★ tag on a plain card
-  return '<div class="stat' + (r && r.wpn ? " big wtile" : tech ? " big" : r && r.heal ? " big htile" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
+  var barrier = r && /^Barrier$|Barrier$/.test(l) && CTX && CTX.hero && BARRIER_BLUE[CTX.hero.name]; // trying it on Wraith: a barrier card in blue
+  return '<div class="stat' + (r && r.wpn ? " big wtile" : tech ? " big" : r && r.heal ? " big htile" : barrier ? " big btile" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
 }
 // abilities use tooltip_details.info_sections
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
@@ -1958,6 +1967,7 @@ function tooltipHtml(it) {
     if (si > 0 && onlyDim && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc"><span class="dm">' + esc(onlyDim[2]) + "</span></div>"); // e.g. "Cooldown is increased by +30% if no hero is impacted."
     else if (si > 0 && locText && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc">' + rich(locText) + "</div>");
     (sec.properties_block || []).forEach(function (blk) {
+      var cellOf = (PAIR_BLOCKS[it.name] || {})[blk.loc_string]; // a block shown half width beside its neighbour, with an icon by its name (Card Trick's suits)
       var tiles = "", seen = {}, hadMoved = false, mv = MOVE_TO[it.name] || {}, props = (blk.properties || []).filter(function (pp) { var k = pp.important_property || pp.property; return !(mv[k] && mv[k] !== blk.loc_string); });
       secs.forEach(function (s2) { (s2.properties_block || []).forEach(function (b2) { (b2.properties || []).forEach(function (pp) { var k = pp.important_property || pp.property; if (mv[k] && mv[k] === blk.loc_string && b2 !== blk) props.push(pp); }); }); }); // a stat moved here from another block comes after this block's own
       props.forEach(function (pp) {
@@ -1977,7 +1987,8 @@ function tooltipHtml(it) {
       tiles += extraHtml(place[bi]);
       if ((tiles || (hadMoved && place[-1])) && !tilesDone) { tiles += extraHtml(place[-1]); tilesDone = true; } // other upgrade-added stats sit with the main tiles
       tiles = arrange(tiles);
-      if (tiles) { parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>"); if (firstStats < 0) firstStats = parts.length - 1; }
+      if (tiles && cellOf != null) parts.push('<div class="bcell"><div class="blk">' + cellOf + esc(blk.loc_string) + '</div><div class="stats">' + tiles + "</div></div>");
+      else if (tiles) { parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>"); if (firstStats < 0) firstStats = parts.length - 1; }
       bi++;
     });
     var minor = dem, promo = "";
@@ -2029,6 +2040,8 @@ function tooltipHtml(it) {
     else if (firstStats >= 0) parts.splice(firstStats + 1, 0, '<div class="minor">' + fl + "</div>");
     else parts.push('<div class="minor">' + fl + "</div>");
   }
+  for (var pc = parts.length - 1; pc > 0; pc--) if (/^<div class="bcell">/.test(parts[pc]) && /^<div class="bcell">/.test(parts[pc - 1])) { parts[pc - 1] += parts[pc]; parts.splice(pc, 1); } // half-width blocks side by side share one grid
+  parts = parts.map(function (p) { return /^<div class="bcell">/.test(p) ? '<div class="bgrid">' + p + "</div>" : p; });
   return parts.map(function (p) { return lifestealLast(orderLast(it, descOrderHits(it, p))); }).join("");
 }
 // every property key the game's own tooltip already lists for this ability
@@ -2058,7 +2071,7 @@ function chipsHtml(it) {
     return '<span class="chip" data-tip="' + esc(title) + '">' + (ic || glyph + " ") + esc(text) + "</span>";
   }
   [["AbilityDuration", "⏳", "Duration"], ["AbilityCastRange", "↔", "Range"]].forEach(function (g) {
-    var p = effP(it, g[0]); seen[g[0]] = 1;
+    var p = effP(it, g[0]); seen[g[0]] = 1; if ((NO_CHIP[it.name] || {})[g[0]]) return;
     if (isDisabled(p) || !(parseFloat(p.value) > 0 || isNaN(parseFloat(p.value)))) return;
     left += chip(g[0], g[1], fmtVal(p), g[2]);
   });
@@ -2238,7 +2251,7 @@ var TIER_STATS = [["heavy melee damage", TIER_WP], ["light melee damage", TIER_W
   ["explosion lifesteal", TIER_VT], ["lifesteal", TIER_VT], ["spirit resistance", TIER_SP], ["spirit resist", TIER_SP], ["bullet resistance", TIER_WP], ["bullet resist shred", TIER_WP], ["bullet resist", TIER_WP],
   ["spirit damage", TIER_SP], ["spirit power", TIER_SP], ["spirit scaling", TIER_SP], ["spirit amp", TIER_SP], ["weapon damage", TIER_WP], ["bullet damage", TIER_WP],
   ["burst damage", TIER_SP], ["melee damage", TIER_WP], ["bonus fire rate", TIER_WP], ["fire rate", TIER_WP], ["bullet speed", TIER_WP], ["bullet evasion", TIER_WP],
-  ["evasion", TIER_WP], ["per bullet", TIER_WP], ["ammo", TIER_WP], ["bullet amp", TIER_WP],
+  ["evasion", TIER_WP], ["spirit damage per bullet", TIER_SP], ["per bullet", TIER_WP], ["ammo", TIER_WP], ["bullet amp", TIER_WP],
   ["fading move speed", "mv"], ["bonus move speed", "mv"], ["move speed", "mv"], ["sprint speed", "mv"], ["flight speed", "mv"], ["dash speed", "mv"], ["rush speed", "mv"],
   ["ghoul speed", TIER_VT], ["movespeed", "mv"], ["lunge speed", "mv"], ["max health", TIER_VT], ["bonus health", TIER_VT], ["health regen", TIER_VT], ["max hp regen", TIER_VT],
   ["total hp regen", TIER_VT], ["hp regen", TIER_VT], ["regen", TIER_VT], ["stamina", "mv"],
@@ -2981,6 +2994,8 @@ function sameSheet(t) { // a stat every hero shares: the value and a line saying
     slideForward(function () { state.from = null; renderHero(to); showBack(fromHero, fromY, { same: label }); setTimeout(function () { openSameOn(label); }, 200); });
   };
 }
+var BARRIER_BLUE = { "Wraith": 1 };
+var BUCKET = { "wep|Damage per second": 10 }; // stats whose ranked list groups heroes by range (this wide) rather than by exact value
 function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from lowest to highest, then every hero in order, this one picked out
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
   var boon = sk.indexOf("boon|") === 0, key = boon ? sk.slice(5) : sk, r = (statPool()[key] || [])[0], xs;
@@ -2990,12 +3005,14 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   if (!boon && sk.indexOf("spi|") === 0 && r.l !== "Spirit power") fmt = function (x) { return "+" + String(Number(Number(x).toPrecision(3))) + (r.unit === "%" || r.unit === "/s" ? r.unit : r.unit ? " " + r.unit : ""); }; // growth per Spirit Power: exact, small numbers kept
   var lowb = !boon && LOWBETTER[r.l], me = xs.filter(function (x) { return x.h === h; })[0];
   var sorted = xs.slice().sort(function (a, b) { return (lowb ? a.n - b.n : b.n - a.n) || (a.h.name < b.h.name ? -1 : 1); });
-  var mine = 0, groups = []; // heroes on the same value share one row: the place and value once, then each hero as a chip
-  sorted.forEach(function (x, i) { var g = groups[groups.length - 1]; if (!g || g.n !== x.n) groups.push(g = { n: x.n, place: i + 1, xs: [] }); g.xs.push(x); if (x.h === h) mine = g.place; });
+  var mine = 0, groups = [], bk = BUCKET[sk]; // heroes on the same value share one row: the place and value once, then each hero as a chip
+  // some stats spread over many values (weapon DPS): one row per range instead ("60–70"), each hero carrying its exact number
+  var gk = function (n) { return bk ? Math.floor(n / bk) * bk : n; };
+  sorted.forEach(function (x, i) { var g = groups[groups.length - 1]; if (!g || g.k !== gk(x.n)) groups.push(g = { k: gk(x.n), n: x.n, place: i + 1, xs: [] }); g.xs.push(x); if (x.h === h) mine = g.place; });
   var list = groups.map(function (g) {
     var me = g.xs.some(function (x) { return x.h === h; });
-    return '<li' + (me ? ' class="me"' : "") + '><span class="rvv">' + esc(fmt(g.n)) + '</span><span class="rhs">' + g.xs.map(function (x) {
-      return '<span class="rh' + (x.h === h ? " on" : "") + '" data-rhero="' + esc(x.h.class_name) + '"><img alt="" src="' + esc(heroHead(x.h)) + '">' + esc(x.h.name) + "</span>";
+    return '<li' + (me ? ' class="me"' : "") + '><span class="rvv">' + esc(bk ? g.k + "–" + (g.k + bk) : fmt(g.n)) + '</span><span class="rhs">' + g.xs.map(function (x) {
+      return '<span class="rh' + (x.h === h ? " on" : "") + '" data-rhero="' + esc(x.h.class_name) + '"><img alt="" src="' + esc(heroHead(x.h)) + '">' + esc(x.h.name) + (bk ? '<i class="rhv">' + esc(fmtNum(Math.round(x.n * 10) / 10)) + "</i>" : "") + "</span>";
     }).join("") + "</span></li>";
   }).join("");
   var cat = sk.indexOf("spi|") === 0 ? "spi" : sec ? (sec.classList.contains("vit") ? "vit" : sec.classList.contains("spi") ? "spi" : "wep") : "wep";
@@ -3006,7 +3023,7 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   var html = '<div class="gsh ssh ' + cat + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(boon ? r.l + " per boon" : sk.indexOf("spi|") === 0 && r.l !== "Spirit power" ? r.l + " per Spirit Power" : r.l) + "</h3>" +
     '<div class="ssv"><b>' + esc(me ? fmt(me.n) : "") + "</b>" + (lowb ? "<span>lower is better</span>" : "") + "</div>" +
     '<div class="ssl">' + cardLine(h, xs, me ? me.n : 0, { l: "" }, fmt) + "</div>" + // the note above already says lower is better
-    '<ol class="ssx" style="--vw:' + Math.min(15, Math.max(6, Math.max.apply(null, groups.map(function (g) { return fmt(g.n).length; })) * 0.95 + 1)).toFixed(1) + 'ch">' + list + "</ol></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
+    '<ol class="ssx" style="--vw:' + Math.min(15, Math.max(6, Math.max.apply(null, groups.map(function (g) { return bk ? (g.k + "–" + (g.k + bk)).length + 1 : fmt(g.n).length; })) * 0.95 + 1)).toFixed(1) + 'ch">' + list + "</ol></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
   ISTACK = []; FSTACK = [];
   clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
   $("close").onclick = sinkSheet;
