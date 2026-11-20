@@ -404,7 +404,7 @@ details.notes > summary + *{margin-top:2px} /* content starts the same distance 
 .wtags{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .wdps1{margin:14px 0 4px;font-size:16px;color:var(--dim)}
 .wdps1 b{font-size:20px;color:var(--fg);margin-right:3px}
-.wrank{display:block;width:100%;max-width:190px;margin:6px auto 0;padding:4px 0;background:none;border:0;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;--c:var(--weapon)}
+.wrank{display:block;width:100%;max-width:130px;margin:6px auto 0;padding:4px 0;background:none;border:0;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;--c:var(--weapon)}
 .wrank .trk{height:10px}.wrank .trk::before{top:4px;height:1.5px;opacity:.7}.wrank .trk i{top:3.25px;width:3.5px;height:3.5px;margin-left:-1.75px;opacity:.55}.wrank .trk b{top:0;width:10px;height:10px;margin-left:-5px;border-width:1.5px}.wrank .rkl{display:none}
 .wdps1 .si{height:1.3em;width:1.3em;vertical-align:-.3em;margin-right:6px;color:var(--weapon)}
 .wimg img{width:100%;max-width:240px;height:150px;object-fit:contain}
@@ -659,7 +659,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aotab{position:relative;z-index:1;border:0;background:transparent;border-radius:8px;padding:6px 16px;color:var(--dim);font:inherit;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent;transition:color .3s ease}
 .aotab.on{color:var(--fg)}
 .aoth{position:absolute;top:3px;left:3px;border-radius:8px;background:rgba(196,160,78,.16);box-shadow:inset 0 0 0 1px var(--gold)} /* the highlight behind the picked tab; it slides when you switch */
-.aorank{font-variant-numeric:tabular-nums;font-size:12.5px;line-height:1.45;color:var(--dim);margin:8px 0 0}.aorank b{color:var(--fg);font-weight:600}
+.aorank{font-size:12.5px;line-height:1.45;color:var(--dim);margin:8px 0 0}.aorank b{color:var(--fg);font-weight:600}
 .aotw + .aobx{margin-top:16px}
 .aoic.tip::after{content:attr(data-tip);position:absolute;z-index:6;left:-2px;bottom:calc(100% + 7px);white-space:nowrap;background:#2b2540;border:1px solid #3e3658;color:var(--fg);font-size:12px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0,.5);pointer-events:none;animation:aotip .18s ease-out} /* tap an ability's icon to see its name */
 @keyframes aotip{from{opacity:0;transform:translateY(3px)}}
@@ -1482,7 +1482,7 @@ function effP(it, key) {
 // extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
 var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Ava": { OutgoingDamagePercent: "DamageAmpDuration" }, "Serrated Knives": { BleedDPSPerStack: "BleedDuration" }, "Bloodletting": { DamagePctDeferred: "DeferredDamageDuration" }, "Death Slam": { SlowPercent: "SlowDuration" },
   "Threadsap": { MagicDamagePerBullet: "DebuffDuration" }, "Granny Long Legs": { HeavyMeleeSlowPercent: "HeavyMeleeSlowDuration" }, "Baba's Brew": { DamagePerSecond: "BurnDuration", SpiritResistReduction: "BurnDuration" },
-  "Exploding Uppercut": { BonusFireRate: "ExplodeDebuffDuration", BuffBaseWeaponPct: "UppercutBuffOnHit" }, "Grapple Arm": { BulletAmp: "BulletAmpDuration" } };
+  "Exploding Uppercut": { BonusFireRate: "ExplodeDebuffDuration", BuffBaseWeaponPct: "UppercutBuffOnHit" }, "Arctic Beam": { MaxSlowPercent: "IceBeamBuildupProcDuration", MaxFireRateSlowPercent: "IceBeamBuildupProcDuration", MaxGroundDashReductionPercent: "IceBeamBuildupProcDuration" }, "Grapple Arm": { BulletAmp: "BulletAmpDuration" } };
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
@@ -1829,9 +1829,10 @@ var GROUP_OV = {
   "Baba's Brew": [{ l: "", k: [], f: { BrewEffectiveness: "" } }],
   "Soul Exchange": [{ l: "On Cast, You Gain:", k: ["BonusSpirit", "TechResist", "BonusFireRate"] }],
   "Frost Grenade": [{ l: "Enemies Hit:", k: ["Damage", "SlowPercent", "SlowDuration"], f: { PauseStaminaRegen: "Stamina regen paused for {SlowDuration}" }, late: true }, { l: "Allies Hit:", k: ["HealAmount"], late: true }],
-  "Ice Path": [{ l: "Kelvin and Allies Gain:", k: ["MoveSpeedBonus", "SprintSpeedBonus"], late: true }, { l: "Kelvin Gains:", k: ["SlowResistancePercent", "BulletResist", "BonusSpiritPct", "BonusSpirit"], late: true }],
-  "Arctic Beam": [{ l: "Enemies Hit:", k: ["DPS", "MaxSlowPercent", "MaxFireRateSlowPercent"], late: true }, { l: "Split Beams:", k: ["BeamSplitCount", "BeamSplit"], late: true }],
-  "Frozen Shelter": [{ l: "Allies in the Dome:", k: ["BonusHealthRegen"], f: { PurgeOnCast: "Purges debuffs on cast" } }, { l: "Enemies in the Dome:", k: ["SlowPercent", "FireRateSlow"] }],
+  "Ice Path": [{ l: "Kelvin and Allies Gain:", k: ["MoveSpeedBonus", "SprintSpeedBonus"], base: { MoveSpeedBonus: 1 }, late: true }, // the tier 1 move speed is Kelvin's alone: allies keep the base value
+    { l: "Kelvin Gains:", k: ["SlowResistancePercent", "BulletResist", "BonusSpirit", "BonusSpiritPct"], c: [{ k: "MoveSpeedBonus", l: "Move Speed", diff: true, first: true }], late: true }],
+  "Arctic Beam": [{ l: "Enemies Hit:", k: ["DPS", "MaxSlowPercent", "MaxFireRateSlowPercent", "MaxGroundDashReductionPercent"], late: true }, { l: "Split Beams:", k: ["BeamSplitCount", "BeamSplit"], late: true }],
+  "Frozen Shelter": [{ l: "Allies in the Dome:", k: ["BonusHealthRegen"], f: { PurgeOnCast: "Purges non-ult debuffs on cast" } }, { l: "Enemies in the Dome:", k: ["SlowPercent", "FireRateSlow"] }],
   "Spirit Snare": [{ l: "On Trigger:", k: ["TetherDuration", "Damage", "SlowPercent", "BulletArmorReduction", "BulletVulnerbility", "DebuffDuration"] }]
 };
 var TILE_RE = /<div class="stat(?:\s[^"]*)?">[\s\S]*?<\/div>/g; // one stat tile (the space keeps it from matching the "stats" block)
@@ -1998,11 +1999,16 @@ function tooltipHtml(it) {
     }
     if (minor) { parts.push('<div class="minor">' + minor + "</div>"); if (firstMinor < 0) firstMinor = parts.length - 1; }
     if (si === 0) GO.forEach(function (g) {
-      var cards = (g.c || []).filter(function (c) { return propRec(it, c.k); }).map(function (c) { // a card the game has no stat for (Exploding Uppercut's 2× weapon range): a multiplier from a percentage, with its duration tag
+      function baseRec(k) { var m0 = CTX.mods; CTX.mods = {}; try { return propRec(it, k); } finally { CTX.mods = m0; } } // the stat before any tier
+      var front = "", cards = (g.c || []).filter(function (c) { return propRec(it, c.k); }).map(function (c) { // a card the game has no stat for (Exploding Uppercut's 2× weapon range): a multiplier from a percentage, with its duration tag
+        if (c.diff) { // what the tiers add on top of the base value (Ice Path: Kelvin's extra move speed)
+          var e1 = propRec(it, c.k), b1 = baseRec(c.k), dv = parseFloat(e1.v) - parseFloat(b1 ? b1.v : 0); if (!(dv > 0)) return "";
+          var cd = tile("+" + fmtNum(dv) + e1.v.replace(/^[+-]?[\d.]+/, ""), c.l, { icon: e1.icon }); if (c.first) { front += cd; return ""; } return cd;
+        }
         var pv = parseFloat((effP(it, c.pct) || {}).value), d = c.d ? propRec(it, c.d) : null; if (isNaN(pv)) return "";
         return tile(fmtNum(1 + pv / 100) + "×", c.l, d ? { dur: d.v } : null);
       }).join("");
-      var t = arrange(g.k.map(function (k) { if (durUsed[k]) return ""; var r = withDur(k, propRec(it, k)); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join("") + cards);
+      var t = arrange(front + g.k.map(function (k) { if (durUsed[k]) return ""; var r = withDur(k, g.base && g.base[k] ? baseRec(k) : propRec(it, k)); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join("") + cards);
       var mx = (g.x || []).filter(function (x) { return propRec(it, x.k); }).map(function (x) { return '<span class="fl">' + esc(x.t) + "</span>"; }).join("");
       Object.keys(g.f || {}).forEach(function (k) { var e = effP(it, k); if (g.f[k] && e && parseFloat(e.value) > 0) mx += '<span class="fl">' + esc(g.f[k].replace(/\{(\w+)\}/g, function (m0, k2) { return (propRec(it, k2) || {}).v || ""; })) + "</span>"; }); // "{SlowDuration}" stands for that stat's value
       if (!t && !mx) return; if (!g.l) return;
@@ -3816,8 +3822,8 @@ function aoSwitch(h, i) {
     var g = o.node; g.removeAttribute("data-k"); g.style.left = (o.x - par.getBoundingClientRect().left) + "px"; g.style.marginLeft = "0"; g.style.transform = "none"; g.style.pointerEvents = "none";
     par.appendChild(g); g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: "ease-in", fill: "forwards" }).onfinish = function () { if (g.parentNode) g.parentNode.removeChild(g); };
   });
-  // the sentence under the chart just changes: fading it made iOS redraw it a couple of pixels off
-  Array.prototype.forEach.call(w.querySelectorAll(".aohd"), function (p) { p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: "ease-out" }); });
+  // the two lines of text fade in by their colour: an opacity fade put them on a layer of their own, and iOS redrew them a couple of pixels off
+  Array.prototype.forEach.call(w.querySelectorAll(".aohd, .aohd b, .aorank, .aorank b"), function (p) { var c = getComputedStyle(p).color; p.animate([{ color: "transparent" }, { color: c }], { duration: 300, easing: "ease-out" }); });
 }
 // Long chapters get long glints down their sides, alternating left and right at varied heights, so the card's edge shows up
 // as you scroll through it. The heights are seeded by hero and chapter, so a page looks the same every time it opens.
