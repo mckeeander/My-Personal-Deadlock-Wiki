@@ -500,7 +500,7 @@ html.lock,html.lock body{overflow:hidden}
 .secmenu button:active{background:rgba(255,255,255,.06)}
 @media (prefers-reduced-motion:reduce){.secmenu,.secmenu button{transition:none!important}}
 /* the glossary's Sections button, bottom left, and the menu it opens above itself */
-body.jump #toppill{bottom:calc(env(safe-area-inset-bottom,0px) + 86.5px)} /* on hero pages: level with the ability bar */
+body.jump #toppill,.hsecnav{bottom:calc(env(safe-area-inset-bottom,0px) + 86.5px)}body.typing .hsecnav{display:none} /* on hero pages: level with the ability bar */
 @keyframes topin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 #glbpill{padding:10px 18px}
 .backpill.in{animation:pillin .22s ease-out}
@@ -562,7 +562,7 @@ body.jump #toppill{bottom:calc(env(safe-area-inset-bottom,0px) + 86.5px)} /* on 
 /* What's New: official patch notes */
 .pnl{margin:4px 0 2px;padding-left:18px;font-size:14px;line-height:1.45;color:var(--fg)}.pnl li{margin:3px 0}.pnl li.sub{margin-left:16px;list-style:circle;color:#d6cee4}
 .pnh{font-size:12px;font-weight:600;color:var(--gold);letter-spacing:.04em;margin:10px 0 2px}
-.pni{white-space:nowrap}.pni img{width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:3px;border-radius:3px}.pni b{font-weight:600}
+.pni{white-space:nowrap}.pni img{width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:3px;border-radius:3px}.pni b{font-weight:600}.pni.pnii img{width:20px;height:20px;object-fit:cover;vertical-align:-5px;margin-right:4px;border-radius:4px}
 .pnsrc{display:inline-block;font-size:12px;color:var(--dim);margin:0 0 4px}
 .pncred{font-size:11px;color:var(--dim);opacity:.8;margin:14px 2px 0}
 .nhs .rch .pnl{margin-top:2px}
@@ -1169,6 +1169,7 @@ body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
 <button class="backpill" id="srchpill" hidden></button>
 <button class="backpill" id="glbpill" hidden></button>
 <div class="secnav" id="secnav" hidden><div class="secmenu" id="secmenu" role="menu"><button role="menuitem" data-sec="gs-lane" class="sm-lane" style="--sc:#d2a679"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"/></svg></span>Lane layout</button><button role="menuitem" data-sec="g-match-timeline" class="sm-time" style="--sc:#6f9fd8"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Match timeline</button><button role="menuitem" data-sec="gsw" class="sm-terms" style="--sc:#e6b45a"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Terms</button></div><button class="backpill secpill" id="secpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="secpi" id="secpi" aria-hidden="true"></span></button></div>
+<div class="secnav hsecnav" id="hsecnav" hidden><div class="secmenu" id="hsecmenu" role="menu"></div><button class="backpill secpill" id="hsecpill" aria-haspopup="menu" aria-expanded="false" aria-label="Sections"><span class="secpi" id="hsecpi" aria-hidden="true"></span></button></div>
 <button class="backpill" id="toppill" hidden aria-label="Back to top"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 <div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
 
@@ -3372,7 +3373,7 @@ function jtabHtml() { // a small tab rising from the top of the ability bar: Vit
 }
 function hnavGo(go) { // jump to a section of the hero page
   if (go.indexOf("ab:") === 0) { jumpTo(go.slice(3)); return; }
-  var el = { vit: "#main .scs.vit, #main .sblk.vit", wep: "#main .scs.wep, #main .sblk.wep", spi: "#main .scs.spi, #main .sblk.spi", pop: "#popwrap details.phd", hist: "#revwrap details.phd", stats: "#main details.bsd", abil: "#main details.abd" }[go];
+  var el = { vit: "#main .scs.vit, #main .sblk.vit", wep: "#main .scs.wep, #main .sblk.wep", spi: "#main .scs.spi, #main .sblk.spi", pop: "#popwrap details.phd", hist: "#revwrap details.phd", stats: "#main details.bsd", abil: "#main details.abd", ao: "#aowrap > *" }[go];
   el = el && document.querySelector(el); if (!el) return;
   var bs = el.closest("details"); if (bs && !bs.open) bs.open = true; // Base stats folded shut: open it on the way
   if (el.tagName === "DETAILS" && !el.open) el.open = true; // a folded section opens as you arrive
@@ -3913,7 +3914,7 @@ function itemSecHtml(it, sec, used) {
       if (used[k]) return;
       if (type === "innate") { big(k); return; }
       var r = propRec(it, k); if (!r) return; used[k] = 1;
-      if (k === "AbilityCooldown") chips += '<span class="chip" data-tip="Cooldown">' + (pIcon(r.icon) || "⟳ ") + esc(r.v) + "</span>";
+      if (k === "AbilityCooldown") chips = '<span class="chip" data-tip="Cooldown">' + (pIcon(r.icon) || "⟳ ") + esc(r.v) + "</span>" + chips; // the cooldown always leads, as on ability cards
       else if (k === "AbilityDuration") chips += '<span class="chip" data-tip="Duration">' + (pIcon(r.icon) || "⏳ ") + esc(r.v) + "</span>";
       else mini += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>";
     });
@@ -3976,6 +3977,12 @@ function itemBodyHtml(it) { // an item's card: header, pills, its text and stats
 // The item page: the item's card, then its patch history, as a page of its own (from the pop-up's Patch history row).
 // Back (the button or the edge swipe) returns to where you were, with the pop-up open again.
 function openItemPage(cn) {
+  if (state.tab === "item" && state.item) { // from one item page to another: back returns here, where you were on it
+    (state.itemTrail = state.itemTrail || []).push({ item: state.item, y: window.pageYOffset || 0 });
+    slideForward(function () { state.item = cn; renderItemPage(); window.scrollTo(0, 0); });
+    return;
+  }
+  state.itemTrail = [];
   var top = ISTACK[ISTACK.length - 1] || "";
   var from = state.tab === "item" ? state.itemFrom : { tab: state.tab, hero: state.hero, y: window.pageYOffset || 0, search: searchOn() ? ($("sq") || {}).value || "" : null, sheet: top };
   closeSheet();
@@ -3987,13 +3994,17 @@ function openItemPage(cn) {
 function renderItemPage() {
   var it = state.byClass[state.item]; if (!it) { itemBack(); return; }
   var f = state.itemFrom || {}, h = f.hero && state.heroes.filter(function (x) { return x.class_name === f.hero; })[0];
-  var where = f.search != null ? "Search" : h ? h.name : { heroes: "All heroes", weapon: "Weapon", vitality: "Vitality", spirit: "Spirit", news: "What\u2019s New", glossary: "Glossary" }[f.tab] || "Back";
+  var tr = state.itemTrail || [], prev = tr.length && state.byClass[tr[tr.length - 1].item];
+  var where = prev ? nameOf(prev) : f.search != null ? "Search" : h ? h.name : { heroes: "All heroes", weapon: "Weapon", vitality: "Vitality", spirit: "Spirit", news: "What\u2019s New", glossary: "Glossary" }[f.tab] || "Back";
   $("main").innerHTML = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + esc(where) + "</span></button>" +
     '<div class="ipage">' + glossOnce(itemBodyHtml(it)) + "</div>" + '<div id="revwrap">' + itemHistoryHtml(it) + "</div>";
   $("jbar").innerHTML = ""; updateJbar();
   $("back").onclick = function () { slideBack(itemBack); };
+  Array.prototype.forEach.call(document.querySelectorAll("#main .ipage [data-item]"), function (b) { b.onclick = function () { openItemPage(b.getAttribute("data-item")); }; });
 }
 function itemBack() { // to the page you opened the item from, its pop-up up again
+  var tr = state.itemTrail || [];
+  if (tr.length) { var pv = tr.pop(); state.item = pv.item; renderItemPage(); window.scrollTo(0, pv.y); return; } // the item page you came from
   var f = state.itemFrom || { tab: "heroes" }, cn = state.item; state.itemFrom = null; state.item = null;
   if (f.search != null) { state.tab = f.tab; setTabsUI(f.tab); render(); showSearch(f.search); }
   else { state.tab = f.tab; state.hero = f.hero; state.from = null; setTabsUI(f.tab); render(); window.scrollTo(0, f.y); }
@@ -5130,9 +5141,9 @@ function pnText(t) { // a patch-note line: hero, ability and item names keep the
   return esc(t).replace(/\[\[([hai]):([^\]]+)\]\]/g, function (m, k, nm) {
     var img = "", lo = nm.toLowerCase();
     if (k === "h") { var h = state.heroes.filter(function (x) { return x.name.toLowerCase() === lo || x.name.toLowerCase() === "the " + lo; })[0]; if (h) img = pick(h.images, ["icon_image_small", "icon_hero_card"]); }
-    else if (k === "i") { var cn = state.byName && state.byName[lo], it = cn && state.byClass[cn]; if (it) img = itemImg(it); }
+    else if (k === "i") { var cn = state.byName && state.byName[lo], it = cn && state.byClass[cn]; if (it) img = itemArt(it) || itemImg(it); } // the item's own picture, as in the shop
     else { var ab = (state.items || []).filter(function (x) { return x.type === "ability" && String(x.name || "").toLowerCase() === lo; })[0]; if (ab) img = itemImg(ab); }
-    return '<span class="pni">' + (img ? '<img alt="" src="' + esc(img) + '" onerror="this.remove()">' : "") + "<b>" + nm + "</b></span>";
+    return '<span class="pni' + (k === "i" ? " pnii" : "") + '">' + (img ? '<img alt="" src="' + esc(img) + '" onerror="this.remove()">' : "") + "<b>" + nm + "</b></span>";
   });
 }
 function pnList(lines) {
@@ -5352,6 +5363,10 @@ function topPill() { // glossary: a round ↑ on the right once you've scrolled 
   var sn = $("secnav"), sshow = inG && $("backpill").hidden;
   if (sshow !== !sn.hidden) { sn.hidden = !sshow; if (!sshow) secMenu(false); else { var spl = $("secpill"); spl.classList.remove("in"); void spl.offsetWidth; spl.classList.add("in"); } }
   if (sshow) secMark();
+  if (inH && HSECS) hsecFill();
+  var hn = $("hsecnav"), hshow = inH && $("backpill").hidden && !!$("hsecmenu").firstChild; // hero pages: the same kind of menu, left of the ability bar
+  if (hshow !== !hn.hidden) { hn.hidden = !hshow; if (!hshow) hsecMenu(false); else { var hpl = $("hsecpill"); hpl.classList.remove("in"); void hpl.offsetWidth; hpl.classList.add("in"); } }
+  if (hshow) hsecMark();
   var f = inG && state.glossFrom, nm = "";
   if (f) { var h = f.tab === "heroes" && f.hero && state.heroes.filter(function (x) { return x.class_name === f.hero; })[0]; nm = h ? h.name : { heroes: "Heroes", weapon: "Weapon", vitality: "Vitality", spirit: "Spirit" }[f.tab] || "page"; }
   var gshow = !!f && !f.quiet && $("backpill").hidden;
@@ -5384,6 +5399,37 @@ $("secmenu").onclick = function (e) {
   var t = $(x.getAttribute("data-sec")); if (t) scrollToEl(t, true);
 };
 document.addEventListener("click", function (e) { if ($("secnav").classList.contains("open") && !e.target.closest("#secnav")) secMenu(false); });
+// the hero page's Sections menu: its big sections, each with the colour its panel wears on the page
+var HSECS = [["stats", "Base stats", "#e6b45a", "#main details.bsd", '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'],
+  ["abil", "Abilities", "#a283f0", "#main details.abd", '<path d="M12 3l8 9-8 9-8-9z"/>'],
+  ["ao", "Ability order", "#5a9cf0", "#aowrap > *", '<path d="M4 6h10M4 12h16M4 18h7"/><circle cx="18" cy="6" r="2"/><circle cx="14" cy="18" r="2"/>'],
+  ["pop", "Items", "#a283f0", "#popwrap details.phd", '<path d="M5.5 8h13l-1 12.5h-11z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>'],
+  ["hist", "Patch history", "#5fc87a", "#revwrap details.phd", '<path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3 2"/>']];
+function hsecFill() { // only the sections this hero's page has (Items and Patch history can arrive after the page draws, so this runs again as you scroll)
+  var have = HSECS.filter(function (x) { return document.querySelector(x[3]); }), sig = state.hero + ":" + have.map(function (x) { return x[0]; }).join(",");
+  if ($("hsecmenu")._sig === sig) return; $("hsecmenu")._sig = sig;
+  $("hsecmenu").innerHTML = have.map(function (x) {
+    return '<button role="menuitem" data-hsec="' + x[0] + '" style="--sc:' + x[2] + '"><span class="smi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + x[4] + "</svg></span>" + x[1] + "</button>";
+  }).join("");
+  $("hsecpi")._k = "";
+}
+function hsecCur() {
+  var cur = null; Array.prototype.forEach.call($("hsecmenu").querySelectorAll("[data-hsec]"), function (x) {
+    var d = HSECS.filter(function (s) { return s[0] === x.getAttribute("data-hsec"); })[0], t = d && document.querySelector(d[3]);
+    if (t && t.getBoundingClientRect().top < window.innerHeight * .4) cur = x;
+  });
+  return cur || $("hsecmenu").querySelector("[data-hsec]");
+}
+function hsecMark() { // the button wears the icon and colour of the section you're in
+  var cur = hsecCur(), b = $("hsecpill"), pi = $("hsecpi"); if (!cur) return;
+  var k = cur.getAttribute("data-hsec"); if (pi._k !== k) { pi._k = k; pi.innerHTML = cur.querySelector(".smi").innerHTML; pi.classList.remove("swap"); void pi.offsetWidth; pi.classList.add("swap"); }
+  b.style.setProperty("--sc", cur.style.getPropertyValue("--sc"));
+  Array.prototype.forEach.call($("hsecmenu").querySelectorAll("[data-hsec]"), function (x) { x.classList.toggle("on", x === cur); });
+}
+function hsecMenu(open) { if (open) hsecMark(); $("hsecnav").classList.toggle("open", !!open); $("hsecpill").setAttribute("aria-expanded", open ? "true" : "false"); }
+$("hsecpill").onclick = function (e) { e.stopPropagation(); hsecMenu(!$("hsecnav").classList.contains("open")); };
+$("hsecmenu").onclick = function (e) { var x = e.target.closest("[data-hsec]"); if (!x) return; e.stopPropagation(); hsecMenu(false); EASE_DUR = 0; hnavGo(x.getAttribute("data-hsec")); };
+document.addEventListener("click", function (e) { if ($("hsecnav").classList.contains("open") && !e.target.closest("#hsecnav")) hsecMenu(false); });
 $("glbpill").onclick = function () { $("glbpill").hidden = true; slideBack(glossBack); };
 window.addEventListener("scroll", topPill, { passive: true });
 $("toppill").onclick = function () { if (state.tab === "heroes" && state.hero) { JLOCK = true; JTO = ""; clearTimeout(JT); JT = setTimeout(jumpUnlock, 450); updateJbar(); } easeScroll(0); }; // no ability lit while it glides up past them
@@ -6040,6 +6086,7 @@ $("sheetin").addEventListener("input", function (e) {
   Array.prototype.forEach.call(document.querySelectorAll("#sheetin [data-base]"), function (b) { b.textContent = Math.round(+b.dataset.base * (1 + +b.dataset.pct * m / 100)).toLocaleString(); });
 });
 $("sheetin").addEventListener("click", function (e) {
+  if (tapTip(e)) return; // an item's Cooldown / Duration chip names itself, as on ability cards
   var sa = e.target.closest ? e.target.closest(".gsall") : null;
   if (sa) { sa.parentNode.classList.remove("clip"); sa.remove(); return; }
   var gs = e.target.closest ? e.target.closest("[data-shc]") : null;
