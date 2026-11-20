@@ -404,6 +404,7 @@ details.notes > summary + *{margin-top:2px} /* content starts the same distance 
 .wtags{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .wdps1{margin:14px 0 4px;font-size:16px;color:var(--dim)}
 .wdps1 b{font-size:20px;color:var(--fg);margin-right:3px}
+.wrank{display:inline-flex;align-items:center;gap:3px;margin:4px auto 0;padding:2px 2px 2px 6px;background:none;border:0;font:inherit;font-size:12.5px;color:var(--dim);cursor:pointer;-webkit-tap-highlight-color:transparent}.wrank b{color:var(--weapon);font-weight:700}.wrank .wrc{width:13px;height:13px;opacity:.7}.wrank:active{color:var(--fg)}
 .wdps1 .si{height:1.3em;width:1.3em;vertical-align:-.3em;margin-right:6px;color:var(--weapon)}
 .wimg img{width:100%;max-width:240px;height:150px;object-fit:contain}
 .fr{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:4px}
@@ -2569,6 +2570,12 @@ function setForm(on, keepEl) { // keep the tapped switch where it is on screen w
 }
 var NOGUN = { citadel_weapon_werewolf_claws: 1 };
 var WNAME = { citadel_weapon_werewolf_claws: "Loose Muzzle" }; // the game file still calls it Lycan Claws; in game it's Loose Muzzle
+function ordinal(n) { var t = n % 100, u = n % 10; return n + (t >= 11 && t <= 13 ? "th" : u === 1 ? "st" : u === 2 ? "nd" : u === 3 ? "rd" : "th"); }
+function dpsRank(h) { // where this hero's weapon DPS ranks among every hero (heroes on the same DPS share a place); tap for the full list, as on the stat cards
+  var xs = statPool()["wep|Damage per second"] || [], me = xs.filter(function (x) { return x.h === h; })[0]; if (!me || xs.length < 2) return "";
+  var place = 1 + xs.filter(function (x) { return x.n > me.n; }).length;
+  return '<button class="wrank" data-sk="wep|Damage per second" aria-label="Weapon DPS ranking"><b>' + ordinal(place) + "</b> of " + xs.length + " heroes" + rowSvg('<path d="M9 6l6 6-6 6"/>', "wrc") + "</button>";
+}
 function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver's claws, Venator's crossbow)
   var w = alt || state.byClass[(h.items || {}).weapon_primary];
   if (!w || !w.weapon_info) return "";
@@ -2636,7 +2643,7 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
     }
     var cl2 = cn ? '<div class="wrow"><span class="wrl2">Clip <b class="wcn">' + cn + '</b></span><span class="wclip wfill" style="grid-template-columns:repeat(' + Math.min(cn, 60) + ',1fr);gap:' + (cn > 40 ? 1 : cn > 20 ? 2 : 3) + 'px">' + new Array(Math.min(cn, 60) + 1).join("<i></i>") + "</span>" + (crl ? "<em><b>" + esc(crl) + "</b> reload</em>" : "") + "</div>" : ""; // the clip size with its label, the reload on its own
     return '<section class="wpn wpc"><div class="wph">' + '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div><div><h3>" + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
-      (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> DPS</div>" : "") + "</div></div>" + fo2 + cl2 + notesBlock(wa) + "</section>" + cmp;
+      (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> DPS</div>" + (alt ? "" : dpsRank(h)) : "") + "</div></div>" + fo2 + cl2 + notesBlock(wa) + "</section>" + cmp;
   }
   return '<section class="wpn"><h3>' + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
     (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" + dline : "") +
@@ -2942,6 +2949,7 @@ function catCards(h, c0, opt) { // one category's cards; opt.noviz leaves out th
     return '<section class="scs ' + c[0] + '"><div class="scbox">' + (c[1] ? "<h4>" + c[1] + "</h4>" : "") + body + foot + "</div></section>"; // the title inside the section's box
   }).join("");
 }
+document.addEventListener("click", function (e) { var w = e.target.closest ? e.target.closest(".wrank[data-sk]") : null; if (w) statSheet(w.getAttribute("data-sk"), "Damage per second", null); }); // the DPS rank under the weapon's name
 document.addEventListener("click", function (e) { var c = e.target.closest ? e.target.closest(".scd.cmp[data-sk]") : null; if (c && !e.target.closest("a,button")) statSheet(c.getAttribute("data-sk"), c.getAttribute("data-st"), c.closest(".scs")); }); // a stat card opens every hero's value for it
 document.addEventListener("click", function (e) { var t = e.target.closest ? e.target.closest(".sctb") : null; if (t) sameSheet(t); });
 function linkOdd(txt, t) { // the odd hero's name in the note opens their page with this same card up
