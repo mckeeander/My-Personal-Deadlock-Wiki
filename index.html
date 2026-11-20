@@ -668,10 +668,9 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .aotr{position:relative;height:28px;background:var(--panel2);border-radius:6px;overflow:hidden}
 .aogl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.05)}
 .aok{position:absolute;z-index:1;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}.aolu{position:absolute;top:0;bottom:0;right:-600px;z-index:0;background:#28222f;border-left:1px solid rgba(216,207,245,.18);will-change:transform} /* after the unlock the row darkens; wide on the right so sliding it on a tab switch never shows its end; its own layer, so animations nearby don't nudge it a pixel */
-.aobx.lines .aotr{background:#3a3346}.aobx.lines .aogl{z-index:1}.aobx.lines .aol{z-index:2}
+.aok.t1,.aok.t2{background:#3a3548;color:#e9e2d2}.aolu{position:absolute;top:0;bottom:0;right:-600px;background:rgba(216,207,245,.07);border-left:1px solid rgba(216,207,245,.25)} /* the row lights up from the unlock on; wide on the right so sliding it on a tab switch never shows its end */
 .aobx{position:relative}
-.aol{position:absolute;top:0;height:28px;width:18px;margin-left:-9px;cursor:pointer;-webkit-tap-highlight-color:transparent;--alc:#bdb4d0;will-change:transform}.aol.mrg{display:none}.aol.t3{--alc:#d8b45c}
+.aol{position:absolute;top:0;height:28px;width:18px;margin-left:-9px;cursor:pointer;-webkit-tap-highlight-color:transparent;--alc:#bdb4d0}.aol.mrg{display:none}.aol.t3{--alc:#d8b45c}
 .aol::before,.aol::after{content:"";position:absolute;left:8px;width:2px;background:repeating-linear-gradient(to bottom,var(--alc) 0 3px,transparent 3px 5px)}
 .aol::before{top:0;height:7px}.aol::after{bottom:0;height:7px;background-position:0 1px} /* the line stops short of its number, above and below */
 .aol i{position:absolute;z-index:2;top:8px;left:9px;transform:translateX(-50%);font-style:normal;font-size:11px;font-weight:700;line-height:12px;color:#e9e2d2;font-variant-numeric:tabular-nums;pointer-events:none}
@@ -3700,7 +3699,7 @@ function aoTimeTip(e) { // tap a line (or a cluster of them) or an unlock: the a
   var br = box.getBoundingClientRect(), a = el.getBoundingClientRect(), mid = (a.left + a.right) / 2 - br.left;
   tip.style.left = Math.max(4, Math.min(br.width - tip.offsetWidth - 4, mid - tip.offsetWidth / 2)) + "px";
   tip.style.top = (a.top - br.top - tip.offsetHeight - 6) + "px";
-  window._aotT = setTimeout(function () { tip.remove(); g.forEach(function (l) { l.classList.remove("sel"); }); el._tipOn = false; }, 2800);
+  window._aotT = setTimeout(function () { tip.remove(); g.forEach(function (l) { l.classList.remove("sel"); }); el._tipOn = false; }, 6000);
   return true;
 }
 function aoLayout(root) { // chips spent close together would overlap: each one is nudged just right of the one before it in its row
@@ -3791,7 +3790,9 @@ function aoSwitch(h, i) {
   Array.prototype.forEach.call(w.querySelectorAll("[data-k]"), function (el) {
     var k = el.getAttribute("data-k"), o = old[k]; seen[k] = 1; if (!el.offsetParent) return;
     if (!o) { el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: 180, easing: "ease-out", fill: "backwards" }); return; }
-    var dx = o.x - el.getBoundingClientRect().left; if (Math.abs(dx) > .5) el.animate([{ translate: dx + "px 0" }, { translate: "0 0" }], { duration: D, easing: E });
+    var dx = o.x - el.getBoundingClientRect().left; if (Math.abs(dx) <= .5) return;
+    var ml = parseFloat(getComputedStyle(el).marginLeft) || 0; // slid by its margin rather than a transform: transforms put it on a layer of its own, and iOS then redraws the text around it a pixel off (a jiggle)
+    el.animate([{ marginLeft: (ml + dx) + "px" }, { marginLeft: ml + "px" }], { duration: D, easing: E });
   });
   Object.keys(old).forEach(function (k) { // gone from the new chart: fade out where it was
     if (seen[k]) return; var o = old[k], par = np[o.pi]; if (!par) return;
