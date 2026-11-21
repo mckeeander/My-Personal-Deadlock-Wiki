@@ -210,7 +210,7 @@ body.reveal .credits{opacity:0}.credits{transition:opacity .5s ease}
 @media (prefers-reduced-motion:reduce){.hc.hrv::after,.credits{transition:none}}
 .hc span{position:absolute;left:1px;right:1px;bottom:1px;border-radius:0 0 5px 5px;padding:22px 3px 7px;display:flex;justify-content:center;background:linear-gradient(transparent,color-mix(in srgb,var(--tc) 32%,rgba(10,8,14,.88)) 72%)} /* the fade behind the name, tinted with the hero's colour */
 /* the name on a stuck-on label in the hero's colour, tilted like the tags on a hero card */
-.hc span em{font-style:normal;display:inline-block;max-width:100%;text-align:center;line-height:1.3}
+.hc span em{font-style:normal;display:inline-block;max-width:100%;text-align:center;font-size:11px;line-height:1.2} /* line spacing from the name's own size, so a name on two lines sits close together */
 .hc span i{font-style:normal;color:#fff;font-family:var(--body);font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 8px rgba(0,0,0,.6)} /* the name in plain white over the hero-coloured fade */
 .trow{display:flex;gap:8px;margin-bottom:8px}
 #main:not(.alt) .f1,#main.alt .f0{display:none}
@@ -1572,6 +1572,7 @@ var MINOR_TXT = { "Smoke Bomb|SpottedRadius": "Enemies within {v} can see you", 
 var STATUS_OV = { "Powder Keg|Displacement": "Knockup" };
 var PLAIN_OV = { "Afterburn|OutgoingTechDamagePercent": 1 };
 var NO_SIGN = { "Fixation|SlowPercent": 1 };
+var BONUS_ONLY = { "Mini Turret|AttackSpeedMult": 1 };
 var NO_PLUS = { "Grapple Arm|BulletAmp": 1, "Essence Bomb|BloodSpillDPSPercent": 1 }; // a bonus shown without its "+" sign
 var MOVE_TO = { "Sticky Bomb": { FuseTime: "On Hit:" }, "Telekinesis": { Damage: 1 } }; // a listed stat shown in another of the game's blocks: by that block's heading, or (a number) the first block of that section
 var PCT_ITEM = { "Scorn|DamageBonus": 1 }; // an unlabelled value that is a percentage on just this ability
@@ -1621,6 +1622,7 @@ function propRec(it, key) {
   if (v != null && /^[+-]?[\d.]+m$/.test(v) && /Speed$/.test(label)) v = v.slice(0, -1) + "m/s";
   if (v != null && /Degrees$/.test(key) && /^[+-]?[\d.]+$/.test(v)) { v += "°"; label = label.replace(/\s*Degrees$/i, ""); } // "6°  Spread Angle", not "6  Spread Angle Degrees"
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
+  if (v != null && BONUS_ONLY[it.name + "|" + key]) { var bo = parseFloat(shown.value) - parseFloat(p0.value); if (!(bo > 0)) return null; v = "+" + fmtNum(bo) + (/%$/.test(v) ? "%" : ""); } // only what the tiers add (Mini Turret's fire rate: nothing at 100%, +25% at tier 3)
   if (v != null && NO_PLUS[it.name + "|" + key]) v = v.replace(/^\+/, "");
   if (v != null && NO_SIGN[it.name + "|" + key]) v = v.replace(/^[+-]/, ""); // "12% Slow", not "-12%"
   if (v != null && NEG_OV[it.name + "|" + key]) v = "-" + v.replace(/^[+-]/, ""); // a reduction the game stores as a positive number
