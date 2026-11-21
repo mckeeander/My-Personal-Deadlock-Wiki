@@ -1562,8 +1562,10 @@ var PAIR_BLOCKS = { "Card Trick": { // each suit's block, two to a row, with its
 var NO_CHIP = { "Telekinesis": { AbilityDuration: 1 } }; // header chips left off because a card's timer tag already shows them
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"], "Disengaging Sigil": ["SigilRadius"], "Flawless Advance": ["AttackDashRange", "DashSpeed"], "Hyper Beam": ["BeamLength", "BeamWidth"], "Arctic Beam": ["PathLength"] }; // stats shown as a header chip beside the cooldown and range, not as a card
-var PROMOTE = { "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 } }; // listed as small text by the game; shown as a card
+var PROMOTE = { "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 }, "Shining Wonder": { GroundDashReductionPercent: 1 } }; // listed as small text by the game; shown as a card
 var DEMOTE = { "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 }, "Threadsap": { StolenSpiritEffectiveness: 1 } }; // listed as cards by the game; shown as small text
+var NEG_OV = { "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": 1 }; // shown as a minus ("-50% Cooldown", as the tier text says)
+var UNIT_OV = { "Chimera Mk1|HeatDrainRate": "/s" }; // a rate the game leaves unlabelled (its Heat Gain beside it is per second)
 var NO_PLUS = { "Grapple Arm|BulletAmp": 1 }; // a bonus shown without its "+" sign
 var MOVE_TO = { "Sticky Bomb": { FuseTime: "On Hit:" }, "Telekinesis": { Damage: 1 } }; // a listed stat shown in another of the game's blocks: by that block's heading, or (a number) the first block of that section
 var PCT_ITEM = { "Scorn|DamageBonus": 1 }; // an unlabelled value that is a percentage on just this ability
@@ -1577,7 +1579,7 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Overheat Lockout Reduction", "Itani Lo Sahn|LowHealthEnemyThresholdPct": "Bonus Damage Threshold", "Leaping Slash|BonusGoldOnKill": "Bonus Souls", "Leaping Slash|BountyDuration": "Kill Window",
   "Ava|OutgoingDamagePercent": "Max Damage Amp", "Ava|DamageAmpBuildDuration": "Build-up Time", "Ava|DamageAmpDuration": "Lingers For", "Gloom Bombs|MeleeResistReductionDuration": "Debuff Duration", "Grapple Arm|BulletAmp": "Weapon Damage Taken", "Grapple Arm|BulletAmpDuration": "Debuff Duration",
   "Hyper Beam|BeamLifesteal": "Lifesteal vs Heroes", "Hyper Beam|BeamLifestealNonHeroPercent": "Lifesteal vs Non-Heroes",
-  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Death Slam|SlowPercent": "Enemy Move Speed", "Bloodscent|WeaponDmgPerIsolationKill": "Weapon Damage", "Killing Blow|BuffDamage": "Damage Bonus", "Killing Blow|BonusMoveSpeed": "Move Speed", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold", "Arctic Beam|BeamSplitCount": "Extra Beams", "Granny Long Legs|HeavyMeleeSpiritDamage": "Damage", "Granny Long Legs|HeavyMeleeSlowPercent": "Movement Slow" }; // some game labels need the subject spelled out
+  "Rising Ram|MaxHealthBuffDuration": "Max Health Duration", "Scrap Grenade|BigExplosionSlowPercent": "Big Detonation Slow", "Burrow|TossDuration": "Displacement", "Death Slam|SlowPercent": "Enemy Move Speed", "Bloodscent|WeaponDmgPerIsolationKill": "Weapon Damage", "Killing Blow|BuffDamage": "Damage Bonus", "Killing Blow|BonusMoveSpeed": "Move Speed", "Chain Gang|UnstoppablePerHero": "Unstoppable per Hero Pulled", "Borrowed Decree|MoveSpeedPercent": "Ghoul Move Speed", "Exploding Uppercut|BuffBaseWeaponPct": "Weapon Damage", "Exploding Uppercut|UppercutBuffOnHit": "Buff Duration", "Sticky Bomb|MovementSpeedBonusDuration": "Buff Duration", "Guided Owl|LowHealthEnemyThresholdPct": "Execute Threshold", "Arctic Beam|BeamSplitCount": "Extra Beams", "Dazzling Trick|DebuffDuration": "Silence Duration", "Strix Salvo|Range": "Line Length", "Chimera Mk1|HeatDrainRate": "Heat Drain", "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": "Cooldown", "Close The Deal|StunDuration": "Stun", "Granny Long Legs|HeavyMeleeSpiritDamage": "Damage", "Granny Long Legs|HeavyMeleeSlowPercent": "Movement Slow" }; // some game labels need the subject spelled out
 function propRec(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -1610,12 +1612,14 @@ function propRec(it, key) {
   if (v != null && /Degrees$/.test(key) && /^[+-]?[\d.]+$/.test(v)) { v += "°"; label = label.replace(/\s*Degrees$/i, ""); } // "6°  Spread Angle", not "6  Spread Angle Degrees"
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
   if (v != null && NO_PLUS[it.name + "|" + key]) v = v.replace(/^\+/, "");
+  if (v != null && NEG_OV[it.name + "|" + key]) v = "-" + v.replace(/^[+-]/, ""); // a reduction the game stores as a positive number
+  if (v != null && UNIT_OV[it.name + "|" + key] && /\d$/.test(v)) v += UNIT_OV[it.name + "|" + key];
   if (v != null && p0.css_class === "slow" && p0.prefix === "-" && /Move Speed/.test(label) && /^-/.test(v)) { v = v.slice(1); label = label.replace(/Move Speed/, "Slow"); } // an enemy slow reads "32% Slow"; the minus is implied
   if (key === "RatSwarmCols") return null; // shown together with the rows
   if (key === "RatSwarmRows" && v != null) { var rc = parseFloat((effP(it, "RatSwarmCols") || {}).value) || 1, rr = parseFloat(v) || 0; v = String(rr * rc); label = "Rats (" + rc + " wide × " + rr + " deep)"; }
   if (key === "RatSwarmWidth" && v != null) { v = Math.round(parseFloat(v) / 39.37 * 10) / 10 + "m"; label = "Swarm Width"; } // game units: 39.37 per meter
   var wpn = (((sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label)) || /^(Bonus )?Weapon Damage$/i.test(label)) || !!SPIRIT_WP[it.name + "|" + key];
-  var heal = (p0.css_class === "healing" || /^(Missing HP Heal|Heal Per Shot)$/.test(label)) && !/Bonus|Amp|Reduction|Effectiveness|Penalty|Threshold|Radius|Duration|Cooldown|Lifesteal|Headshot|Max /.test(label) && !/%$/.test(v) || label === "Missing HP Heal" || /^(Max Health|Bonus Health|Melee Bonus Health)$/.test(label); // a card that heals outright (a heal, health regen) or adds health: green
+  var heal = (p0.css_class === "healing" || /^(Missing HP Heal|Heal Per Shot)$/.test(label)) && !/Bonus|Amp|Reduction|Effectiveness|Penalty|Threshold|Radius|Duration|Cooldown|Lifesteal|Headshot|Max /.test(label) && !/%$/.test(v) || label === "Missing HP Heal" || /^(Heal|Max Health|Bonus Health|Melee Bonus Health)$/.test(label); // a card that heals outright (a heal, health regen) or adds health: green
   return v == null ? null : { heal: heal, icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label) || !!TECH_OV[it.name + "|" + key]) };
 }
 
@@ -1821,7 +1825,8 @@ var GROUP_OV = {
   "Ava": [{ l: "Damage Amp:", k: ["OutgoingDamagePercent", "DamageAmpBuildDuration", "DamageAmpDuration"] }],
   "Return to Shadows": [{ l: "On Completion:", k: ["HealAmount"], f: { RefundCooldowns: "Refunds all ability cooldowns" } }],
   "Chimera Mk1": [{ l: "On Hero Hit:", k: ["HealOnHit", "OverheatLockoutDurationReductionOnPlayerHitPercent"] }],
-  "Jettison Fuel": [{ l: "On Backblast Hit, You Gain:", k: ["BonusFireRate", "BuffDuration"] }],
+  "Jettison Fuel": [{ l: "On Backblast Hit:", k: ["ScorchDamage"], f: { BurstMarkStacks: "Marks enemies hit (Strix Salvo)" }, late: true }, { l: "On Backblast Hit, You Gain:", k: ["BonusFireRate", "BuffDuration"], late: true }],
+  "Close The Deal": [{ l: "While Falling:", k: ["DamagePerMeter"], late: true }, { l: "On Impact:", k: ["Damage", "StunDuration"], late: true }],
   "Essence Theft": [{ l: "", k: [], f: { SkullBuildUp: "", ZombieMeleeBuildUp: "" } }],
   "Bounce Pad": [{ l: "On Landing, You and Allies Gain:", k: ["SpeedOnLand", "SpeedOnLandDuration"] }],
   "Crackshot": [{ l: "On Hit:", k: ["FadingSlowPercent", "BulletResistReduction", "DebuffDuration", "BulletResistReductionDuration"] },
@@ -2085,7 +2090,8 @@ function chipsHtml(it) {
   extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" data-tip="' + esc(r.l) + '">' + (pIcon(r.icon) || "") + esc(r.v) + (r.icon ? "" : ' <span class="cl">' + esc(r.l) + "</span>") + "</span>"; }); // no icon: the name says what the number is
   var ch = effP(it, "AbilityCharges"), nch = ch && !isDisabled(ch) ? parseFloat(ch.value) : 0;
   var nch0 = P.AbilityCharges ? parseFloat(P.AbilityCharges.value) || 0 : 0;
-  if ((nch > 1 || (nch >= 1 && nch0 < 1)) && !L.AbilityCharges) { // also when an upgrade turns charges on (Consecrating Grenade T3)
+  var cb0 = effP(it, "AbilityCooldownBetweenCharge"), chargey = cb0 && !isDisabled(cb0) && parseFloat(cb0.value) > 0; // a charged ability even at one charge (Lash's Grapple): Extra Charge gives it a second
+  if ((nch > 1 || (nch >= 1 && nch0 < 1) || (nch >= 1 && chargey)) && !L.AbilityCharges) { // also when an upgrade turns charges on (Consecrating Grenade T3)
     right += chip("AbilityCharges", "⚡", String(nch), "Charges");
     var cb = effP(it, "AbilityCooldownBetweenCharge");
     if (cb && !isDisabled(cb) && parseFloat(cb.value) > 0 && !L.AbilityCooldownBetweenCharge) right += chip("AbilityCooldownBetweenCharge", "↻", fmtVal(cb), "Charge delay");
