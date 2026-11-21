@@ -1483,7 +1483,7 @@ function effP(it, key) {
 // extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
 var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Ava": { OutgoingDamagePercent: "DamageAmpDuration" }, "Serrated Knives": { BleedDPSPerStack: "BleedDuration" }, "Bloodletting": { DamagePctDeferred: "DeferredDamageDuration" }, "Death Slam": { SlowPercent: "SlowDuration" },
   "Threadsap": { MagicDamagePerBullet: "DebuffDuration" }, "Granny Long Legs": { HeavyMeleeSlowPercent: "HeavyMeleeSlowDuration" }, "Baba's Brew": { DamagePerSecond: "BurnDuration", SpiritResistReduction: "BurnDuration" },
-  "Exploding Uppercut": { BonusFireRate: "ExplodeDebuffDuration", BuffBaseWeaponPct: "UppercutBuffOnHit" }, "Telekinesis": { SlowPercent: "AbilityDuration" }, "Arctic Beam": { MaxSlowPercent: "IceBeamBuildupProcDuration", MaxFireRateSlowPercent: "IceBeamBuildupProcDuration", MaxGroundDashReductionPercent: "IceBeamBuildupProcDuration" }, "Grapple Arm": { BulletAmp: "BulletAmpDuration" } };
+  "Exploding Uppercut": { BonusFireRate: "ExplodeDebuffDuration", BuffBaseWeaponPct: "UppercutBuffOnHit" }, "Telekinesis": { SlowPercent: "AbilityDuration" }, "Rising Ram": { WeaponDamageBurst: "WeaponDamageBurstDuration", MaxHealthBuffPct: "MaxHealthBuffDuration" }, "Arctic Beam": { MaxSlowPercent: "IceBeamBuildupProcDuration", MaxFireRateSlowPercent: "IceBeamBuildupProcDuration", MaxGroundDashReductionPercent: "IceBeamBuildupProcDuration" }, "Grapple Arm": { BulletAmp: "BulletAmpDuration" } };
 var DUR_OV = { "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
@@ -1615,7 +1615,7 @@ function propRec(it, key) {
   if (key === "RatSwarmRows" && v != null) { var rc = parseFloat((effP(it, "RatSwarmCols") || {}).value) || 1, rr = parseFloat(v) || 0; v = String(rr * rc); label = "Rats (" + rc + " wide × " + rr + " deep)"; }
   if (key === "RatSwarmWidth" && v != null) { v = Math.round(parseFloat(v) / 39.37 * 10) / 10 + "m"; label = "Swarm Width"; } // game units: 39.37 per meter
   var wpn = (((sk.kind === "weapon" || sk.kind === "melee") && /damage/i.test(label)) || /^(Bonus )?Weapon Damage$/i.test(label)) || !!SPIRIT_WP[it.name + "|" + key];
-  var heal = (p0.css_class === "healing" || /^(Missing HP Heal|Heal Per Shot)$/.test(label)) && !/Bonus|Amp|Reduction|Effectiveness|Penalty|Threshold|Radius|Duration|Cooldown|Lifesteal|Headshot|Max /.test(label) && !/%$/.test(v) || label === "Missing HP Heal"; // a card that heals outright (a heal, health regen): green
+  var heal = (p0.css_class === "healing" || /^(Missing HP Heal|Heal Per Shot)$/.test(label)) && !/Bonus|Amp|Reduction|Effectiveness|Penalty|Threshold|Radius|Duration|Cooldown|Lifesteal|Headshot|Max /.test(label) && !/%$/.test(v) || label === "Missing HP Heal" || /^(Max Health|Bonus Health|Melee Bonus Health)$/.test(label); // a card that heals outright (a heal, health regen) or adds health: green
   return v == null ? null : { heal: heal, icon: p0.icon || "", v: v, l: label, kind: sk.kind, rate: sk.rate, sub: sk.sub, wpn: wpn, tech: !wpn && (sk.kind === "spirit" || p0.css_class === "tech_damage" || /^Spirit Power$/.test(label) || !!TECH_OV[it.name + "|" + key]) };
 }
 
@@ -2281,7 +2281,7 @@ var TIER_OV = { "Bloodscent": [["damage", null]], "Leaping Slash": [["cooldown r
   "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""], ["debuff duration", TIER_RD]], "Granny Long Legs": [["resists", TIER_VT]], "Itani Lo Sahn": [["bonus damage", TIER_SP]], "Death Slam": [["radius", ""]], "Love Bites": [["per bullet", ""]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]],
   "Seismic Impact": [["unstoppable", TIER_BL]], "Feed The Birds": [["max duration", TIER_BL]] };
 // wording fixes for a single tier line: [ability, tier 1-3, from, to]
-var TIER_TXT = [["Project Mind", 2, /for ([\d.]+s)\. Barrier scales with Spirit Power\.?/, "for $1 that scales with Spirit"], ["Light Eater", 3, /\bDamage and /, "Bullet Hit Damage with "], ["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"], ["Exploding Uppercut", 3, /Set (<span[^>]*>)Grapple Arm cooldown to 0<\/span>/, "Resets $1Grapple Arm Cooldown</span>"]];
+var TIER_TXT = [["Rising Ram", 3, /(Max Health)<br>\+([\d.]+s) Duration/, "$1 for $2"], ["Project Mind", 2, /for ([\d.]+s)\. Barrier scales with Spirit Power\.?/, "for $1 that scales with Spirit"], ["Light Eater", 3, /\bDamage and /, "Bullet Hit Damage with "], ["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"], ["Exploding Uppercut", 3, /Set (<span[^>]*>)Grapple Arm cooldown to 0<\/span>/, "Resets $1Grapple Arm Cooldown</span>"]];
 // a bare "Damage" or "DPS" takes the ability's damage type when all its damage is one type
 function tierBase(it) {
   var sp = 0, wp = 0, P = (it && it.properties) || {};
@@ -2350,8 +2350,11 @@ function tierSplit(h) {
 function upgradesHtml(it, sel) {
   var t = upgradeTexts(it), costs = ["1", "2", "5"], cells = "", wts = [];
   for (var i = 0; i < 3; i++) {
-    var raw = String(t[i]).replace(/\bSpirit\s+[Ss]caling\b/g, STAR).replace(/\bHeal Amount\b/g, "Heal"); // the purple star says "Spirit scaling" in far fewer letters
-    var body = tierSplit(tierColor(unitDim(TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, raw)), it, i)).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>')
+    var raw = TIER_TXT.reduce(function (x, f) { return f[0] === it.name && f[1] === i + 1 ? x.replace(f[2], f[3]) : x; }, String(t[i])) // wording fixes first, on the game's own words
+      // scaling on the stat the line names joins it ("+50 Melee Bonus Health with +0.6 ★") instead of breaking onto its own line; only after a damage, health, heal, regen or barrier stat, where the scaling is on that stat
+      .replace(/(Damage|DPS|Second|Health|health|Heal|Regen|Barrier|impact) and ((?:<span class="highlight">)?[+-][\d.]+(?:<\/span>)?) Spirit scaling(?=<br>|$)/g, "$1 with $2 Spirit scaling")
+      .replace(/\bSpirit\s+[Ss]caling\b/g, STAR).replace(/\bHeal Amount\b/g, "Heal"); // the purple star says "Spirit scaling" in far fewer letters
+    var body = tierSplit(tierColor(unitDim(raw), it, i)).replace(/(\s*<br>\s*)+/g, '<span class="pg"></span>')
       .replace(/(<b class="v">(?:[^<]|<span[^>]*>[^<]*<\/span>)*<\/b>)\s+(<span class="ss"[^>]*>★<\/span>)/g, '<span class="nw">$1 $2</span>') // a ★ that wraps takes its number down with it
       .replace(/(<b class="v">(?:[^<]|<span[^>]*>[^<]*<\/span>)*<\/b>)\s+(<span style="color:[^"]*">[A-Za-z]{1,9}<\/span>)(?!\s*<span class="ss")/g, '<span class="nw">$1 $2</span>') // a number and a one-word stat ("+20 DPS", "-30s Cooldown") stay on one line, and set the column's narrowest width
       .replace(/(<span style="color:[^"]*">[^<]{1,16}<\/span>)\s+(<span class="ss"[^>]*>★<\/span>)/g, '<span class="nw">$1 $2</span>');
@@ -5773,7 +5776,7 @@ function snapLayout(card) { // taken from the old card, just before it is swappe
 function chipData(card, clone) { // the header chips, keyed by name, with where each sits inside the chip row
   var row = card.querySelector(".chips"), m = {}, seen = {}; if (!row) return m;
   var cr = row.getBoundingClientRect();
-  Array.prototype.forEach.call(row.querySelectorAll(".chip"), function (el) {
+  Array.prototype.forEach.call(row.querySelectorAll(".chip, .cdsep"), function (el) { // the divider after the cooldown comes and goes with it, so it fades too
     if (el.closest("[data-ghost]")) return;
     var k = el.getAttribute("data-tip") || el.textContent.replace(/[\d.]+/g, "#"), r = el.getBoundingClientRect(); seen[k] = (seen[k] || 0) + 1;
     m[k + "#" + seen[k]] = { el: el, node: clone ? calmClone(el) : null, l: r.left - cr.left, t: r.top - cr.top, w: r.width, h: r.height };
@@ -5911,7 +5914,7 @@ function animateLayout(fresh, snap) {
     Object.keys(nc).forEach(function (k) {
       var n = nc[k], o = oc[k]; if (!o) return;
       var dx = o.l - n.l, dy = o.t - n.t; if (Math.abs(dx) < .5 && Math.abs(dy) < .5) return;
-      slid = true; setS(n.el, "position", "relative");
+      slid = true; setS(n.el, "position", "relative"); setS(n.el, "zIndex", "3"); // a sliding chip passes over chips fading in or out, never under their veils
       run(n.el, [{ left: dx + "px", top: dy + "px" }, { left: "0px", top: "0px" }]);
     });
     Object.keys(nc).forEach(function (k) {
