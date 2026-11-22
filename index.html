@@ -405,7 +405,7 @@ details.notes > summary + *{margin-top:2px} /* content starts the same distance 
 .wtags{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .wdps1{margin:14px 0 4px;font-size:16px;color:var(--dim)}
 .wdps1 b{font-size:20px;color:var(--fg);margin-right:3px}
-.wpb{display:block;font-size:12px;color:var(--dim);margin-top:2px;font-variant-numeric:tabular-nums}.wrank.wgrow{margin-top:2px}.wrank.wgrow .wpb{margin:0 0 3px}.wpc .wph .wpb{text-align:center}
+.wpb{display:block;font-size:12px;color:var(--dim);margin-top:2px;font-variant-numeric:tabular-nums}.wrank.wgrow{margin-top:2px;padding:2px 0}.wrank.wgrow .wpb{margin:0}.wpc .wph .wpb{text-align:center}
 .wrank{display:block;width:100%;max-width:130px;margin:6px auto 0;padding:4px 0;background:none;border:0;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;--c:var(--weapon)}
 .wrank .trk{height:10px}.wrank .trk::before{top:4px;height:1.5px;opacity:.7}.wrank .trk i{top:3.25px;width:3.5px;height:3.5px;margin-left:-1.75px;opacity:.55}.wrank .trk b{top:0;width:10px;height:10px;margin-left:-5px;border-width:1.5px}.wrank .rkl{display:none}
 .wdps1 .si{height:1.3em;width:1.3em;vertical-align:-.3em;margin-right:6px;color:var(--weapon)}
@@ -754,7 +754,7 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 #ssbr::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--weapon);box-shadow:0 1px 4px rgba(0,0,0,.5)}
 #ssbr::-moz-range-track{height:6px;border-radius:3px;background:#3d344c}#ssbr::-moz-range-progress{height:6px;border-radius:3px;background:var(--weapon)}
 #ssbr::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--weapon)}
-.ssb{margin:4px 0 12px}.ssb .gslh b{color:var(--weapon)}
+.ssb{margin:14px 0 12px;padding-bottom:8px}.ssb .gslh b{color:var(--weapon)}
 #gsr{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:6px 0 0;background:transparent;touch-action:none;--p:0%}
 #gsr::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--gold) var(--p),#3d344c var(--p))}
 #gsr::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 1px 4px rgba(0,0,0,.5)}
@@ -2725,7 +2725,7 @@ function ordinal(n) { var t = n % 100, u = n % 10; return n + (t >= 11 && t <= 1
 function dpsPerBoon(h) { // DPS added per boon, with its own comparison line; tap for every hero's growth (the first line's sheet has a boon slider)
   var xs = dpsGrowthPool(), me = xs.filter(function (x) { return x.h === h; })[0]; if (!me || xs.length < 2) return "";
   var place = 1 + xs.filter(function (x) { return x.n > me.n; }).length, r = me.r;
-  return '<button class="wrank wgrow" data-sk="wep|DPS per boon" aria-label="DPS per boon: ' + ordinal(place) + " of " + xs.length + ' heroes. Show every hero"><span class="wpb">+' + fmtNum(Math.round(me.n * 10) / 10) + " DPS per boon</span>" + cardLine(h, xs, me.n, r, function (x) { return sfmt(x, r); }) + "</button>";
+  return '<button class="wrank wgrow" data-sk="wep|DPS per boon" aria-label="DPS per boon: ' + ordinal(place) + " of " + xs.length + ' heroes. Show every hero"><span class="wpb">+' + fmtNum(Math.round(me.n * 10) / 10) + " DPS per boon</span></button>";
 }
 function dpsRank(h) { // where this hero's weapon DPS ranks among every hero (heroes on the same DPS share a place); tap for the full list, as on the stat cards
   var xs = statPool()["wep|Damage per second"] || [], me = xs.filter(function (x) { return x.h === h; })[0]; if (!me || xs.length < 2) return "";
@@ -3127,7 +3127,7 @@ function sameSheet(t) { // a stat every hero shares: the value and a line saying
     slideForward(function () { state.from = null; renderHero(to); showBack(fromHero, fromY, { same: label }); setTimeout(function () { openSameOn(label); }, 200); });
   };
 }
-var BUCKET = { "wep|Damage per second": 10 }; // stats whose ranked list groups heroes by range (this wide) rather than by exact value
+var BUCKET = { "wep|Damage per second": 10, "wep|DPS per boon": 0.5 }; // stats whose ranked list groups heroes by range (this wide) rather than by exact value
 var MAX_BOONS = 35; // one boon at each level from 2 to 36 (level_info)
 function dpsGrowthPool() { // how much DPS each boon adds, per hero: the boon's bullet damage times the gun's rate (DPS / bullet damage counts pellets and bursts)
   if (dpsGrowthPool.sig === state.sig && dpsGrowthPool.p) return dpsGrowthPool.p;
@@ -3155,18 +3155,18 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   var sorted = xs.slice().sort(function (a, b) { return (lowb ? a.n - b.n : b.n - a.n) || (a.h.name < b.h.name ? -1 : 1); });
   var mine = 0; groups = []; // heroes on the same value share one row: the place and value once, then each hero as a chip
   // some stats spread over many values (weapon DPS): one row per range instead ("60–70"), each hero carrying its exact number
-  var gk = function (n) { return bk ? Math.floor(n / bk) * bk : n; };
+  var gk = function (n) { return bk ? Math.round(Math.floor(n / bk + 1e-9) * bk * 100) / 100 : n; };
   sorted.forEach(function (x, i) { var g = groups[groups.length - 1]; if (!g || g.k !== gk(x.n)) groups.push(g = { k: gk(x.n), n: x.n, place: i + 1, xs: [] }); g.xs.push(x); if (x.h === h) mine = g.place; });
   list = groups.map(function (g) {
     var me = g.xs.some(function (x) { return x.h === h; });
-    return '<li' + (me ? ' class="me"' : "") + '><span class="rvv">' + esc(bk ? g.k + "–" + (g.k + bk) : fmt(g.n)) + '</span><span class="rhs">' + g.xs.map(function (x) {
+    return '<li' + (me ? ' class="me"' : "") + '><span class="rvv">' + esc(bk ? fmtNum(g.k) + "–" + fmtNum(Math.round((g.k + bk) * 100) / 100) : fmt(g.n)) + '</span><span class="rhs">' + g.xs.map(function (x) {
       return '<span class="rh' + (x.h === h ? " on" : "") + '" data-rhero="' + esc(x.h.class_name) + '"><img alt="" src="' + esc(heroHead(x.h)) + '">' + esc(x.h.name) + (bk ? '<i class="rhv">' + esc(fmtNum(Math.round(x.n * 10) / 10)) + "</i>" : "") + "</span>";
     }).join("") + "</span></li>";
   }).join("");
   }
   build(xs);
-  function vw() { return Math.min(15, Math.max(6, Math.max.apply(null, groups.map(function (g) { return bk ? (g.k + "–" + (g.k + bk)).length + 1 : fmt(g.n).length; })) * 0.95 + 1)).toFixed(1) + "ch"; }
-  var slider = atBoon ? '<div class="gslide ssb"><div class="gslh"><span>DPS at</span><b id="ssbn">0 boons</b></div><input type="range" id="ssbr" min="0" max="' + MAX_BOONS + '" step="1" value="0" aria-label="Boons"><div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div><div class="gsft">Each boon adds bullet damage, so every hero\u2019s DPS grows by a set amount (their DPS per boon). 35 boons is level 36.</div></div>' : "";
+  function vw() { return Math.min(15, Math.max(6, Math.max.apply(null, groups.map(function (g) { return bk ? (fmtNum(g.k) + "–" + fmtNum(Math.round((g.k + bk) * 100) / 100)).length + 1 : fmt(g.n).length; })) * 0.95 + 1)).toFixed(1) + "ch"; }
+  var slider = atBoon ? '<div class="gslide ssb"><div class="gslh"><span>DPS at</span><b id="ssbn">0 boons</b></div><input type="range" id="ssbr" min="0" max="' + MAX_BOONS + '" step="1" value="0" aria-label="Boons"><div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div></div>' : "";
   var cat = sk.indexOf("spi|") === 0 ? "spi" : sec ? (sec.classList.contains("vit") ? "vit" : sec.classList.contains("spi") ? "spi" : "wep") : "wep";
   if (xs.length < 2) { // only this hero has it
     var one = '<div class="gsh ssh ' + cat + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(boon ? r.l + " per boon" : sk.indexOf("spi|") === 0 && r.l !== "Spirit power" ? r.l + " per Spirit Power" : r.l) + '</h3><div class="ssv"><b>' + esc(fmt(xs[0].n)) + '</b></div><p class="ssame">Only ' + esc(xs[0].h.name) + " has this.</p></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
