@@ -405,6 +405,7 @@ details.notes > summary + *{margin-top:2px} /* content starts the same distance 
 .wtags{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .wdps1{margin:14px 0 4px;font-size:16px;color:var(--dim)}
 .wdps1 b{font-size:20px;color:var(--fg);margin-right:3px}
+.wpb{font-size:12px;color:var(--dim);margin-top:2px;font-variant-numeric:tabular-nums}.wpc .wph .wpb{text-align:center}
 .wrank{display:block;width:100%;max-width:130px;margin:6px auto 0;padding:4px 0;background:none;border:0;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;--c:var(--weapon)}
 .wrank .trk{height:10px}.wrank .trk::before{top:4px;height:1.5px;opacity:.7}.wrank .trk i{top:3.25px;width:3.5px;height:3.5px;margin-left:-1.75px;opacity:.55}.wrank .trk b{top:0;width:10px;height:10px;margin-left:-5px;border-width:1.5px}.wrank .rkl{display:none}
 .wdps1 .si{height:1.3em;width:1.3em;vertical-align:-.3em;margin-right:6px;color:var(--weapon)}
@@ -1586,6 +1587,7 @@ var NO_SIGN = { "Flow State|FadingSlowPercent": 1, "Fixation|SlowPercent": 1, "D
 var PCT_FORCE = { "Healing Needles|BuffExtendPercentPerShot": 1, "Crimson Slash|BuffMeleeDamage": 1 };
 var BONUS_ONLY = { "Mini Turret|AttackSpeedMult": 1 };
 var NO_PLUS = { "Grapple Arm|BulletAmp": 1, "Essence Bomb|BloodSpillDPSPercent": 1 }; // a bonus shown without its "+" sign
+var TOP_MINOR = { "Lil Helpers": ["HelperCount"] }; // stats shown as a small-stat line under the description, above the categories
 var MOVE_TO = { "Sticky Bomb": { FuseTime: "On Hit:" }, "Telekinesis": { Damage: 1 }, "Nox Nostra": { Damage: "On Hit:" }, "Consecrating Grenade": { HealAmpReceivePenaltyPercent: "On Hit:" } }; // a listed stat shown in another of the game's blocks: by that block's heading, or (a number) the first block of that section
 var PCT_ITEM = { "Scorn|DamageBonus": 1 }; // an unlabelled value that is a percentage on just this ability
 var PCT_KEYS = { AttackSpeedMult: 1, ReduceDebuffs: 1, BonusFireRatePerStack: 1 };
@@ -1968,6 +1970,7 @@ function tooltipHtml(it) {
   var GO = GROUP_OV[it.name] || [], moved = {};
   GO.forEach(function (g) { g.k.forEach(function (k) { moved[k] = 1; }); Object.keys(g.f || {}).forEach(function (k) { moved[k] = 1; }); });
   (CHIP_KEYS[it.name] || []).forEach(function (k) { moved[k] = 1; }); // a header chip: no card for it
+  (TOP_MINOR[it.name] || []).forEach(function (k) { moved[k] = 1; }); // said in a small-stat line above the categories
   // each timed effect carries its own duration as a corner tag; the duration's own card or line is then dropped
   var DO = {}, durUsed = {};
   function withDur(k, r) { if (r && DO[k]) { var d = propRec(it, DO[k]); if (d) r.dur = d.v; } if (r && !r.dur && DUR_FIXED[it.name + "|" + k]) r.dur = DUR_FIXED[it.name + "|" + k]; return r; }
@@ -2123,6 +2126,8 @@ function tooltipHtml(it) {
     else if (firstStats >= 0) parts.splice(firstStats + 1, 0, '<div class="minor">' + fl + "</div>");
     else parts.push('<div class="minor">' + fl + "</div>");
   }
+  var tm = (TOP_MINOR[it.name] || []).map(function (k) { var r = propRec(it, k); return r ? "<span><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + "</span>" : ""; }).join("");
+  if (tm) { var fi = -1; for (var pi4 = 0; pi4 < parts.length; pi4++) if (/class="(stats|blk)"/.test(parts[pi4])) { fi = pi4; break; } parts.splice(fi < 0 ? parts.length : fi, 0, '<div class="minor">' + tm + "</div>"); } // e.g. Lil Helpers' helper count, before "Following Hero"
   for (var pc = parts.length - 1; pc > 0; pc--) if (/^<div class="bcell">/.test(parts[pc]) && /^<div class="bcell">/.test(parts[pc - 1])) { parts[pc - 1] += parts[pc]; parts.splice(pc, 1); } // half-width blocks side by side share one grid
   parts = parts.map(function (p) { return /^<div class="bcell">/.test(p) ? '<div class="bgrid">' + p + "</div>" : p; });
   return parts.map(function (p) { return lifestealLast(orderLast(it, descOrderHits(it, p))); }).join("");
@@ -2562,6 +2567,32 @@ function wikiHtml(h, it) {
   return '<div class="wk">' + notesBlock(a, it.name) + interBlock(a, it.name, iw, nChips) + "</div>";
 }
 var ABOPT = {}; // per-card tweaks, e.g. End the Curse borrows Lycan Curse's icon and has no tiers of its own
+// small stats read as sentences: only the first word capitalised, plus names (heroes, abilities, items) and abbreviations (DPS, HP)
+var PROPER = null;
+function properNames() {
+  if (PROPER && PROPER.sig === state.sig) return PROPER;
+  var m = {}; (state.heroes || []).forEach(function (h) { m[String(h.name).toLowerCase()] = h.name; });
+  (state.items || []).forEach(function (x) { var n = String(x.name || "").replace(/[\u2018\u2019]/g, "'"); if (/\s/.test(n) && n.length < 30) { m[n.toLowerCase()] = n; if (/s$/.test(n)) m[n.slice(0, -1).toLowerCase()] = n.slice(0, -1); } }); // "Love Bite" for Love Bites too // multi-word ability and item names only: single words like Flight or Stake are too often plain words
+  PROPER = { sig: state.sig, m: m }; return PROPER;
+}
+function sentenceCase(t) {
+  var M = properNames().m, w = String(t).split(" "), out = [];
+  for (var i = 0; i < w.length; i++) {
+    var hit = 0; for (var k = Math.min(4, w.length - i); k >= 1 && !hit; k--) { var ph = w.slice(i, i + k).join(" ").replace(/[.,:;)]+$/, "").replace(/^\(+/, ""), pl = ph.toLowerCase().replace(/[\u2018\u2019]|&#0?39;|&#x27;/g, "'"); if (M[pl]) { out.push(w.slice(i, i + k).join(" ").replace(ph, M[pl])); i += k - 1; hit = 1; } }
+    if (hit) continue;
+    var x = w[i];
+    if (/[0-9]/.test(x) || /^[A-Z]{2,}s?[.,:]?$/.test(x)) { out.push(x); continue; }
+    out.push(out.length === 0 ? x.charAt(0).toUpperCase() + x.slice(1).toLowerCase() : x.toLowerCase());
+  }
+  return out.join(" ");
+}
+function minorCase(html) { // every small-stat line: its labels and its sentences
+  return String(html).replace(/<div class="minor">([\s\S]*?)<\/div>/g, function (m, body) {
+    body = body.replace(/(<span class="fl">)([^<]+)(<\/span>)/g, function (a, o, t, c) { return o + sentenceCase(t) + c; })
+      .replace(/(<span><b>[^<]*<\/b> )([^<]+)/g, function (a, o, t) { return o + sentenceCase(t).replace(/^./, function (c) { return c.toUpperCase(); }); });
+    return '<div class="minor">' + body + "</div>";
+  });
+}
 function abilityCard(it, h) {
   var sel = SEL[it.class_name] || 0, op = ABOPT[it.class_name] || {};
   CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) };
@@ -2570,7 +2601,7 @@ function abilityCard(it, h) {
     return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       CH +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: abilityDesc(it) } : it.description)) + "</div>" +
-      flagOnes(dropChipDupes(tooltipHtml(it), CH)) + (op.noTiers ? "" : upgradesHtml(it, sel)) + wikiHtml(h, it) + "</section>");
+      minorCase(flagOnes(dropChipDupes(tooltipHtml(it), CH))) + (op.noTiers ? "" : upgradesHtml(it, sel)) + wikiHtml(h, it) + "</section>");
   } finally { CTX = null; }
 }
 // a "1" that is really an on/off switch ("1 Purge Debuffs") reads better as plain text with the small stats
@@ -2685,6 +2716,10 @@ function setForm(on, keepEl) { // keep the tapped switch where it is on screen w
 var NOGUN = { citadel_weapon_werewolf_claws: 1 };
 var WNAME = { citadel_weapon_werewolf_claws: "Loose Muzzle" }; // the game file still calls it Lycan Claws; in game it's Loose Muzzle
 function ordinal(n) { var t = n % 100, u = n % 10; return n + (t >= 11 && t <= 13 ? "th" : u === 1 ? "st" : u === 2 ? "nd" : u === 3 ? "rd" : "th"); }
+function dpsPerBoon(h, dps, bd) { // how much DPS each boon adds: its bullet damage growth times the gun's rate (DPS / bullet damage covers pellets and bursts)
+  var b = (boonPool()["wep|Bullet damage"] || []).filter(function (x) { return x.h === h; })[0]; if (!b || !(bd > 0) || !(b.n > 0)) return "";
+  var per = b.n * dps / bd; return '<div class="wpb">+' + fmtNum(Math.round(per * 10) / 10) + " DPS per boon</div>";
+}
 function dpsRank(h) { // where this hero's weapon DPS ranks among every hero (heroes on the same DPS share a place); tap for the full list, as on the stat cards
   var xs = statPool()["wep|Damage per second"] || [], me = xs.filter(function (x) { return x.h === h; })[0]; if (!me || xs.length < 2) return "";
   var place = 1 + xs.filter(function (x) { return x.n > me.n; }).length, r = me.r; // a lowest-to-highest line like the stat cards' (the rank-as-text version: commit d5b1f3f)
@@ -2757,7 +2792,7 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
     }
     var cl2 = cn ? '<div class="wrow"><span class="wrl2">Clip <b class="wcn">' + cn + '</b></span><span class="wclip wfill" style="grid-template-columns:repeat(' + Math.min(cn, 60) + ',1fr);gap:' + (cn > 40 ? 1 : cn > 20 ? 2 : 3) + 'px">' + new Array(Math.min(cn, 60) + 1).join("<i></i>") + "</span>" + (crl ? "<em><b>" + esc(crl) + "</b> reload</em>" : "") + "</div>" : ""; // the clip size with its label, the reload on its own
     return '<section class="wpn wpc"><div class="wph">' + '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div><div><h3>" + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
-      (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> DPS</div>" + (alt ? "" : dpsRank(h)) : "") + "</div></div>" + fo2 + cl2 + notesBlock(wa) + "</section>" + cmp;
+      (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> DPS</div>" + (alt ? "" : dpsPerBoon(h, dps, i.bullet_damage) + dpsRank(h)) : "") + "</div></div>" + fo2 + cl2 + notesBlock(wa) + "</section>" + cmp;
   }
   return '<section class="wpn"><h3>' + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
     (dps ? '<div class="wdps1">' + siIcon("dmg") + "<b>" + fmtNum(Math.round(dps)) + "</b> Damage per second</div>" + dline : "") +
@@ -4110,7 +4145,7 @@ function itemSecHtml(it, sec, used) {
   });
   if (!desc && !tiles && !mini && !chips) return "";
   var title = type === "innate" ? "Innate" : type === "active" ? "Active" : "Passive";
-  return '<div class="isec ' + type + '"><h4>' + title + chips + "</h4>" + desc + (tiles ? '<div class="stats">' + tiles + "</div>" : "") + (mini ? '<div class="minor">' + mini + "</div>" : "") + "</div>";
+  return '<div class="isec ' + type + '"><h4>' + title + chips + "</h4>" + desc + (tiles ? '<div class="stats">' + tiles + "</div>" : "") + (mini ? minorCase('<div class="minor">' + mini + "</div>") : "") + "</div>";
 }
 function recipeRow(cn, depth, flat) {
   var c = state.byClass[cn]; if (!c) return "";
