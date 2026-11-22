@@ -754,7 +754,13 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 #ssbr::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--weapon);box-shadow:0 1px 4px rgba(0,0,0,.5)}
 #ssbr::-moz-range-track{height:6px;border-radius:3px;background:#3d344c}#ssbr::-moz-range-progress{height:6px;border-radius:3px;background:var(--weapon)}
 #ssbr::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--weapon)}
-.ssb{margin:14px 0 12px;padding-bottom:8px}.ssb .gslh b{color:var(--weapon)}
+.ssb{margin:14px 0 12px;padding-bottom:8px}
+.ssg{position:relative;margin:8px 0 0;cursor:pointer;-webkit-tap-highlight-color:transparent}.ssg svg{display:block;overflow:visible}
+.sgg{stroke:#3d344c;stroke-width:1}.sgt{fill:#7d7290;font-size:9px;font-variant-numeric:tabular-nums}
+.sgl{stroke:#8a7da0;stroke-opacity:.38;stroke-width:1.2}.sgl.pk{stroke:#f1e9d8;stroke-opacity:.9;stroke-width:1.8}.sgl.me{stroke:var(--weapon);stroke-opacity:1;stroke-width:2.6}
+.sgm{stroke:#f1e9d8;stroke-opacity:.35;stroke-width:1;stroke-dasharray:3 3}.sgd{stroke:var(--panel2);stroke-width:2}.sgd.me{fill:var(--weapon)}.sgd.pk{fill:#f1e9d8}
+.sgn{position:absolute;top:0;left:26px;font-size:11px;color:var(--fg);background:rgba(20,16,28,.8);padding:1px 6px;border-radius:4px;pointer-events:none}.sgn b{color:var(--fg);font-weight:600}.sgn.sgh{color:#7d7290;background:none}
+.ssgc{margin:12px 0 4px;font-size:12px;line-height:1.5;color:var(--dim)}.ssgc b{color:var(--fg);font-weight:600}.ssgc span{display:block}.ssgc i{font-style:normal;color:var(--weapon);font-variant-numeric:tabular-nums}.ssgc .sgcn{font-size:11px;color:#7d7290;margin-top:2px}.ssb .gslh b{color:var(--weapon)}
 #gsr{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:6px 0 0;background:transparent;touch-action:none;--p:0%}
 #gsr::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--gold) var(--p),#3d344c var(--p))}
 #gsr::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 1px 4px rgba(0,0,0,.5)}
@@ -3139,6 +3145,43 @@ function dpsGrowthPool() { // how much DPS each boon adds, per hero: the boon's 
   });
   dpsGrowthPool.sig = state.sig; return (dpsGrowthPool.p = out);
 }
+function growthChart(box, h, xs0, per, b, pick, fmt) { // every hero's DPS from 0 to 35 boons as a straight line: where two lines cross, one hero passes the other
+  if (!box) return;
+  var W = box.clientWidth || 300, H = 156, pl = 12, pr = 12, pt = 6, pb = 4, w = W - pl - pr;
+  var L = xs0.map(function (x) { var s = per[x.h.class_name] || 0; return { h: x.h, a: x.n, s: s }; });
+  var lo = Math.min.apply(null, L.map(function (l) { return l.a; })), hi = Math.max.apply(null, L.map(function (l) { return l.a + MAX_BOONS * l.s; }));
+  var st = hi - lo > 150 ? 50 : 25, y0 = Math.floor(lo / 10) * 10, y1 = Math.ceil(hi / 10) * 10; // fitted to the lines; gridlines on round numbers
+  function X(n) { return pl + n / MAX_BOONS * w; }
+  function Y(v) { return pt + (1 - (v - y0) / (y1 - y0)) * (H - pt - pb); }
+  growthChart.geo = { pl: pl, w: w, Y: Y };
+  var o = "";
+  for (var v = Math.ceil(y0 / st) * st; v <= y1; v += st) o += '<line class="sgg" x1="0" x2="' + W + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '"/><text class="sgt" x="0" y="' + (Y(v) - 3).toFixed(1) + '">' + v + "</text>";
+  function ln(l, c) { return '<line class="' + c + '" x1="' + X(0) + '" y1="' + Y(l.a).toFixed(1) + '" x2="' + X(MAX_BOONS) + '" y2="' + Y(l.a + MAX_BOONS * l.s).toFixed(1) + '"/>'; }
+  var meL = null, pkL = null;
+  L.forEach(function (l) { if (l.h === h) meL = l; else if (l.h === pick) pkL = l; else o += ln(l, "sgl"); });
+  o += '<line class="sgm" x1="' + X(b) + '" x2="' + X(b) + '" y1="0" y2="' + H + '"/>';
+  function dot(l, c) { return '<circle class="' + c + '" cx="' + X(b) + '" cy="' + Y(l.a + b * l.s).toFixed(1) + '" r="4"/>'; }
+  if (pkL) o += ln(pkL, "sgl pk") + dot(pkL, "sgd pk");
+  if (meL) o += ln(meL, "sgl me") + dot(meL, "sgd me");
+  var tag = pkL ? '<span class="sgn">' + esc(pkL.h.name) + " <b>" + esc(fmt(Math.round((pkL.a + b * pkL.s) * 10) / 10)) + "</b></span>" : "";
+  box.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '" aria-hidden="true">' + o + "</svg>" + tag;
+}
+function growthCaption(h, xs0, per) { // who this hero passes, and who passes them, on the way to 35 boons
+  var me = xs0.filter(function (x) { return x.h === h; })[0]; if (!me) return "";
+  var ms = per[h.class_name] || 0, up = [], dn = [];
+  xs0.forEach(function (x) {
+    if (x.h === h) return; var s = per[x.h.class_name] || 0; if (s === ms) return;
+    var c = (x.n - me.n) / (ms - s); if (!(c > 0) || c > MAX_BOONS) return; var at = Math.ceil(c - 1e-9);
+    (ms > s ? up : dn).push({ n: x.h.name, at: at });
+  });
+  function rank(b) { var v = me.n + b * ms; return 1 + xs0.filter(function (x) { return x.n + b * (per[x.h.class_name] || 0) > v; }).length; }
+  function names(a) { a.sort(function (p, q) { return p.at - q.at; }); var t = a.slice(0, 4).map(function (p) { return esc(p.n) + " <i>" + p.at + "</i>"; }).join(", "); return t + (a.length > 4 ? ", +" + (a.length - 4) + " more" : ""); }
+  var r0 = rank(0), r1 = rank(MAX_BOONS);
+  if (!up.length && !dn.length) return "Stays <b>" + ordinal(r0) + "</b> from 0 to " + MAX_BOONS + " boons.";
+  return "<b>" + ordinal(r0) + "</b> at 0 boons, <b>" + ordinal(r1) + "</b> at " + MAX_BOONS + "." +
+    (up.length ? '<span class="sgcu">Passes ' + names(up) + "</span>" : "") + (dn.length ? '<span class="sgcd">Passed by ' + names(dn) + "</span>" : "") +
+    (up.length || dn.length ? '<span class="sgcn">Numbers are boons.</span>' : "");
+}
 function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from lowest to highest, then every hero in order, this one picked out
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; if (!h) return;
   var growth = sk === "wep|DPS per boon", boon = sk.indexOf("boon|") === 0, key = boon ? sk.slice(5) : sk, r = growth ? (dpsGrowthPool()[0] || null) : (statPool()[key] || [])[0], xs;
@@ -3166,7 +3209,7 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   }
   build(xs);
   function vw() { return Math.min(15, Math.max(6, Math.max.apply(null, groups.map(function (g) { return bk ? (fmtNum(g.k) + "–" + fmtNum(Math.round((g.k + bk) * 100) / 100)).length + 1 : fmt(g.n).length; })) * 0.95 + 1)).toFixed(1) + "ch"; }
-  var slider = atBoon ? '<div class="gslide ssb"><div class="gslh"><span>DPS at</span><b id="ssbn">0 boons</b></div><input type="range" id="ssbr" min="0" max="' + MAX_BOONS + '" step="1" value="0" aria-label="Boons"><div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div></div>' : "";
+  var slider = atBoon ? '<div class="gslide ssb"><div class="gslh"><span>DPS at</span><b id="ssbn">0 boons</b></div><div class="ssg" id="ssg"></div><input type="range" id="ssbr" min="0" max="' + MAX_BOONS + '" step="1" value="0" aria-label="Boons"><div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div><p class="ssgc" id="ssgc"></p></div>' : "";
   var cat = sk.indexOf("spi|") === 0 ? "spi" : sec ? (sec.classList.contains("vit") ? "vit" : sec.classList.contains("spi") ? "spi" : "wep") : "wep";
   if (xs.length < 2) { // only this hero has it
     var one = '<div class="gsh ssh ' + cat + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(boon ? r.l + " per boon" : sk.indexOf("spi|") === 0 && r.l !== "Spirit power" ? r.l + " per Spirit Power" : r.l) + '</h3><div class="ssv"><b>' + esc(fmt(xs[0].n)) + '</b></div><p class="ssame">Only ' + esc(xs[0].h.name) + " has this.</p></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
@@ -3179,8 +3222,19 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   ISTACK = []; FSTACK = [];
   clearTimeout(SWAPT); resetSwap(); $("sheetin").innerHTML = '<div class="swc">' + html + "</div>"; lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0;
   $("close").onclick = sinkSheet;
+  var gpick = null, gb = 0;
+  function gdraw() { growthChart($("ssg"), h, xs0, per, gb, gpick, fmt); }
+  if (atBoon) {
+    gdraw(); $("ssgc").innerHTML = growthCaption(h, xs0, per);
+    $("ssg").onclick = function (e) { // tap: the line nearest the tap, by height at that point, is named; tap it again to let go
+      var rc = this.getBoundingClientRect(), g = growthChart.geo; if (!g) return;
+      var bx = Math.max(0, Math.min(MAX_BOONS, (e.clientX - rc.left - g.pl) / g.w * MAX_BOONS)), y = e.clientY - rc.top, best = null, bd = 1e9;
+      xs0.forEach(function (x) { var d = Math.abs(g.Y(x.n + bx * (per[x.h.class_name] || 0)) - y); if (d < bd) { bd = d; best = x.h; } });
+      gpick = best && best !== gpick && best !== h && bd < 18 ? best : null; gdraw();
+    };
+  }
   if (atBoon) $("ssbr").oninput = function () { // drag: every hero's DPS after that many boons; the line and the ranking follow
-    var b = +this.value; $("ssbn").textContent = b + (b === 1 ? " boon" : " boons"); this.style.setProperty("--p", (b / MAX_BOONS * 100) + "%");
+    var b = +this.value; gb = b; gdraw(); $("ssbn").textContent = b + (b === 1 ? " boon" : " boons"); this.style.setProperty("--p", (b / MAX_BOONS * 100) + "%");
     var xb = xs0.map(function (x) { return { h: x.h, n: Math.round((x.n + b * (per[x.h.class_name] || 0)) * 10) / 10, r: x.r }; });
     build(xb); $("ssval").textContent = me ? fmt(me.n) : ""; $("ssline").innerHTML = cardLine(h, xb, me ? me.n : 0, { l: "" }, fmt);
     var ol = $("sslist"); ol.innerHTML = list; ol.style.setProperty("--vw", vw()); bindRh();
