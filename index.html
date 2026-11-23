@@ -1574,7 +1574,7 @@ var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageRe
 var SPIRIT_WP = { "Crimson Slash|BuffMeleeDamage": 1, "Shadow Transformation|WeaponDamageBonus": 1, "Assassinate|WeaponDamageBonusPerKill": 1, "Living Ink|BulletDamageMultiplier": 1, "Slam Fire|CurrentHealthDamagePercentage": 1, "Slam Fire|BonusCurrentHealthDamagePercentage": 1, "Borrowed Decree|SummonMeleeDamage": 1, "Grapple Arm|BulletAmp": 1, "Bullet Dance|WeaponDamageBonus": 1, "Time Wall|FriendlyBulletDamageBonus": 1 }; // melee damage (an orange card) that scales with spirit: the card is orange, its ★ tag stays purple
 var FLAG_CARD = {};
 var EXTRA_FLAG = { "Plot Armor|BonusTargets": "Affects {v} extra allies", "Gutshot|BuffDuration": "On wall stun: your next heavy melee is blessed for {v}", "Kingside Knight|RemoveDebuffs": "Self-cast: removes all debuffs after a move" };
-var MOVE_EXTRA = { "Hotel Guest|LateCheckoutStun": "Failure to Check-Out", "Hotel Guest|LateCheckoutCooldown": "Failure to Check-Out", "Hotel Guest|StaminaDrain": "While a Guest" }; // an upgrade switch shown as a card (so it can carry a timer tag) rather than a line of text
+var MOVE_EXTRA = { "Hotel Guest|LateCheckoutStun": "Failure to Check-Out", "Hotel Guest|LateCheckoutCooldown": "Failure to Check-Out", "Hotel Guest|StaminaDrain": "While a Guest", "Screwjab Dagger|CooldownRefundPercent": "On Hit:" }; // an upgrade switch shown as a card (so it can carry a timer tag) rather than a line of text
 var SUIT = function (d, c) { return '<svg class="suit" viewBox="0 0 24 24" aria-hidden="true" style="color:' + c + '"><path fill="currentColor" d="' + d + '"/></svg>'; };
 var PAIR_BLOCKS = { "Card Trick": { // each suit's block, two to a row, with its suit
   Spade: SUIT("M12 2C9 6 4 9 4 13a4 4 0 0 0 7 2.6L10 21h4l-1-5.4A4 4 0 0 0 20 13c0-4-5-7-8-11z", "#d9d0e6"),
@@ -1586,12 +1586,12 @@ var BLK_OV = { "Rend|On Close Range": "Within {RangeForBonusDamage}:", "Napalm|N
   "Hotel Guest|Cost of Stay": "Cost of Stay:", "Hotel Guest|Failure to Check-Out": "Failure to Check-Out:", "Hotel Guest|While a Guest": "While a Guest:", "Rule, Ratannia!|Banner Slam": "Banner Slam:", "Malice|Effect Per Stack:": "Per Stack (Max {MaxStacks}):" }; // a game block heading, reworded
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 }, "Rend": { RangeForBonusDamage: 1, UseHeavyMelee: 1 }, "Bloodscent": { IsolationRange: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Fixation": { ProcDamageStackCount: 1 }, "Entangling Thorns": { TimeToEntangle: 1 }, "Kudzu Connection": { TotalTetherTargets: 1 }, "Malice": { MaxStacks: 1 }, "Soul Exchange": { SilenceRadius: 1 }, "Heavy Barrage": { AbilityDuration: 1 }, "Rallying Charge": { KnightCountInFirstWave: 1 }, "Itani Lo Sahn": { LowHealthEnemyThresholdPct: 1 }, "Screwjab Dagger": { MaxStacks: 1 }, "Puddle Punch": { UseHeavyMelee: 1 }, "Consecrating Grenade": { BurnRadius: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"], "Disengaging Sigil": ["SigilRadius"], "Flawless Advance": ["AttackDashRange", "DashSpeed"], "Hyper Beam": ["BeamLength", "BeamWidth"], "Arctic Beam": ["PathLength"], "Kinetic Pulse": ["StompRange"], "Guided Owl": ["ExplosionRadius"], "Rejuvenating Aurora": ["AbilityChannelTime"], "Singularity": ["VacuumRadius", "AbilityChannelTime"], "Bounce Pad": ["Radius"], "Concussive Combustion": ["ExplodeDelay"], "Air Drop": ["OnLandDamageRadius"], "Life Drain": ["MaxRange"], "Mini Turret": ["TurretLifetime"], "Medicinal Specter": ["HealRadius"], "Heavy Barrage": ["ExplosionRadius"], "Burrow": ["AbilityChannelTime"], "Combo": ["AbilityChannelTime"], "Lurking Terrors": ["AbilityChannelTime"], "Death Slam": ["ImpactRadius"], "Bookwyrm": ["DragonTravelRange"], "Flying Cloak": ["MaxLifetime"], "Lightning Ball": ["ShockRadius", "MaxLifetime"], "Static Charge": ["ShockRadius"], "Storm Cloud": ["AbilityChannelTime"], "Call Bell": ["ProjectileFuse"], "Doorway": ["DoorwayDistance"], "Kingside Knight": ["BonusTargetRadius"], "Stake": ["CaptureRadius"], "Goo Ball": ["BallRadius"], "Power Slash": ["SlashLength"], "Radiant Daggers": ["ExplosionRadius"], "Borrowed Decree": ["ExplosionRadius"] }; // stats shown as a header chip beside the cooldown and range, not as a card
-var PROMOTE = { "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 }, "Naptime": { SleepDuration: 1 }, "Crow Familiar": { BulletResistReduction: 1, TechArmorDamageReduction: 1 }, "Flow State": { FadingSlowPercent: 1 }, "Goo Ball": { TechResist: 1, BulletResist: 1 }, "Last Stand": { BulletResist: 1, TechResist: 1 }, "Shadow Transformation": { BulletResist: 1, TechResist: 1 }, "Shining Wonder": { GroundDashReductionPercent: 1 }, "Bullet Dance": { EvasionPercent: 1, ChannelMoveSpeed: 1 }, "Flame Dash": { SlowResistance: 1 } }; // listed as small text by the game; shown as a card
-var DEMOTE = { "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 }, "Threadsap": { StolenSpiritEffectiveness: 1 }, "Bullet Dance": { TargetsPerTick: 1 }, "Nox Nostra": { BatPerSecond: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Afterburn": { BurnDurationBase: 1, BurnDuration: 1 } }; // listed as cards by the game; shown as small text
+var PROMOTE = { "Petrifying Bola": { SlowPercent: 1 }, "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 }, "Naptime": { SleepDuration: 1 }, "Crow Familiar": { BulletResistReduction: 1, TechArmorDamageReduction: 1 }, "Flow State": { FadingSlowPercent: 1 }, "Goo Ball": { TechResist: 1, BulletResist: 1 }, "Last Stand": { BulletResist: 1, TechResist: 1 }, "Shadow Transformation": { BulletResist: 1, TechResist: 1 }, "Shining Wonder": { GroundDashReductionPercent: 1 }, "Bullet Dance": { EvasionPercent: 1, ChannelMoveSpeed: 1 }, "Flame Dash": { SlowResistance: 1 } }; // listed as small text by the game; shown as a card
+var DEMOTE = { "Shadow Transformation": { AbilitySpeedPct: 1 }, "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 }, "Threadsap": { StolenSpiritEffectiveness: 1 }, "Bullet Dance": { TargetsPerTick: 1 }, "Nox Nostra": { BatPerSecond: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Afterburn": { BurnDurationBase: 1, BurnDuration: 1 } }; // listed as cards by the game; shown as small text
 var NEG_OV = { "Slice and Dice|CooldownReductionOnHit": 1, "Slice and Dice|CooldownReductionOnHitNonHero": 1, "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": 1, "Quantum Entanglement|ReduceDebuffs": 1, "Wretched Vapors|CrashTimeScalePenaltyPercent": 1 }; // shown as a minus ("-50% Cooldown", as the tier text says)
-var VAL_SUB = { "Crow Familiar|DotHealthPercent": [/ DPS$/, "/s"], "Stalker's Mark|DotHealthPercent": [/ DPS$/, "/s"] }; // a value reworded ("2.2% DPS" -> "2.2%/s")
+var VAL_SUB = { "Crimson Slash|HealMaxHealth": [/\s*of Max Health$/i, ""], "Crow Familiar|DotHealthPercent": [/ DPS$/, "/s"], "Stalker's Mark|DotHealthPercent": [/ DPS$/, "/s"] }; // a value reworded ("2.2% DPS" -> "2.2%/s")
 var UNIT_OV = { "Chimera Mk1|HeatDrainRate": "/s", "Slice and Dice|MaxCooldownReductionsFromHits": "s" }; // a rate the game leaves unlabelled (its Heat Gain beside it is per second)
-var MINOR_TXT = { "Smoke Bomb|SpottedRadius": "Enemies within {v} can see you", "Spirit Lasso|BouncePadExtendDuration": "+{v} if you use a Bounce Pad" };
+var MINOR_TXT = { "Lethal Venom|VenomDuration": function (it) { return parseFloat((effP(it, "BuildUpPerShot") || {}).value) > 0 ? "Venom triggers {v} after it's applied, by cast or by bullets" : "Venom triggers {v} after it's applied"; }, "Smoke Bomb|SpottedRadius": "Enemies within {v} can see you", "Spirit Lasso|BouncePadExtendDuration": "+{v} if you use a Bounce Pad" };
 var STATUS_OV = { "Puddle Punch|Displacement": "Knockup", "Powder Keg|Displacement": "Knockup", "Pillow Toss|Displacement": "Knockback" };
 var WP_TECH = { "Kinetic Carbine|MinBonusBulletDamage": 1, "Kinetic Carbine|MaxBonusBulletDamage": 1 };
 var PLAIN_OV = { "Alchemical Flask|WeaponPowerDebuff": 1, "Jumpstart|CurrentHealthPercentDamage": 1, "Rabbit Hex|DamageAmpPercentage": 1, "Ira Domini|BonusDamage": 1,  "Afterburn|OutgoingTechDamagePercent": 1 };
@@ -1624,9 +1624,9 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Royal Pestments|MaxDamagePerHit": "Max Damage Taken per Hit",
   "Pillow Toss|TossDuration": "Knockback",
   "Siphon Life|HealingFactor": "Lifesteal vs Heroes", "Riposte|TargetLifesteal": "Lifesteal vs Target", "Riposte|StunDuration": "Immobilize", "Itani Lo Sahn|BonusDamagePercent": "Bonus Damage vs Half-Health Enemies", "Gloom Bombs|GrenadeCount": "Bombs", "Stalker's Mark|DotHealthPercent": "Current Health as Bleed Damage",
-  "Screwjab Dagger|CooldownRefundPercent": "Charge Cooldown Refund on Hit", "Lethal Venom|BuildUpPerShot": "Venom Buildup per Bullet", "Slither|Stamina": "Bonus Stamina",
-  "Alchemical Flask|WeaponPowerDebuff": "Enemy Weapon Damage", "Alchemical Flask|StaminaReduction": "Stamina Removed", "Willpower|MoveSpeedBonusPct": "Move Speed", "Binding Word|BulletArmorReduction": "Bullet Damage Taken from Warden", "Binding Word|ImmobilizeDuration": "Immobilize",
-  "Last Stand|PulseDPS": "Damage Per Second", "Flying Slash|SpiritBonus": "Spirit Power", "Crimson Slash|BuffMeleeDamage": "Melee Damage", "Shadow Transformation|ShadowFormDurationOnKill": "Duration Added", "Shadow Transformation|MaxHealthRegen": "Max Health Healed",
+  "Screwjab Dagger|CooldownRefundPercent": "Cooldown Refunded", "Lethal Venom|BuildUpPerShot": "Venom Buildup per Bullet", "Slither|Stamina": "Bonus Stamina",
+  "Alchemical Flask|WeaponPowerDebuff": "Enemy Weapon Damage", "Alchemical Flask|StaminaReduction": "Stamina Lost", "Willpower|MoveSpeedBonusPct": "Move Speed", "Binding Word|BulletArmorReduction": "Bullet Damage Taken from Warden", "Binding Word|ImmobilizeDuration": "Immobilize",
+  "Last Stand|PulseDPS": "Damage Per Second", "Flying Slash|SpiritBonus": "Spirit Power", "Crimson Slash|BuffMeleeDamage": "Melee Damage", "Crimson Slash|HealFixedHealth": "Heal", "Crimson Slash|HealMaxHealth": "Max Health Heal", "Shadow Transformation|ShadowFormDurationOnKill": "Duration Added", "Shadow Transformation|MaxHealthRegen": "Max Health Healed",
   "Jumpstart|CurrentHealthPercentDamage": "Current Health as Self Damage", "Aura of Suffering|EnemyDashSlowPercent": "Dash Distance", "Shocking Reanimation|BonusDamagePerBullet": "Spirit Damage per Bullet",
   "Crow Familiar|DotHealthPercent": "Current Health as Bleed Damage", "Flow State|DamageAmpBuildDuration": "Build-up Time", "Assassinate|LowHealthEnemyDamageBonus": "Bonus Damage vs Low Health", "Flow State|ExplosionRadius": "Flick Radius", "Flow State|GroundAuraDuration": "Trail Duration",
   "Flow State|FadingSlowPercent": "Fading Slow", "Flow State|OutgoingDamagePercent": "Damage Amp", "Still Life|OutgoingDamagePercent": "Subject's Damage", "Goo Ball|StunDuration": "Stun", "Rabbit Hex|DamageAmpPercentage": "Damage Taken", "Rabbit Hex|MoveSpeedBonusPct": "Rabbit Move Speed", "Kingside Knight|BonusTargetRadius": "Second Ally Radius",
@@ -1886,7 +1886,7 @@ var GROUP_OV = {
   "Still Life": [{ l: "While Drawing:", k: ["HealthRegen", "BuffDuration", "OutgoingDamagePercent"], late: true }],
   "The Cube": [{ l: "After Leaving the Cube:", k: ["BonusMoveSpeed", "StaminaCooldownReduction", "PostCubeBuffDuration"], f: { PostCubeBuff: "" }, late: true }],
   "Last Stand": [{ l: "While Channeling:", k: ["BulletResist", "TechResist"], f: { UnstoppableCastDelay: "Unstoppable while channeling" }, late: true }],
-  "Crimson Slash": [{ l: "On Hit, You Gain:", k: ["BuffMeleeDamage", "BuffDuration"], late: true }],
+  "Crimson Slash": [{ l: "On Hero Hit:", k: ["HealFixedHealth", "HealMaxHealth"], late: true }, { l: "On Hit, You Gain:", k: ["BuffMeleeDamage", "BuffDuration"], late: true }],
   "Shadow Transformation": [{ l: "On Hero Kill:", k: ["MaxHealthRegen", "ShadowFormDurationOnKill"], late: true }],
   "Shoulder Charge": [{ l: "On Hero Collide, You Gain:", k: ["WeaponDamageBonus", "WeaponPowerIncreaseDuration"], late: true }],
   "Combo": [{ l: "On Kill:", k: ["BonusHealthOnKill"], late: true }],
@@ -2094,7 +2094,7 @@ function tooltipHtml(it) {
       var r = withDur(k, propRec(it, k)); if (!r) return;
       var p0 = (it.properties || {})[k], b0 = p0 ? parseFloat(p0.value) : NaN;
       if (b0 === 0 || (PROMOTE[it.name] || {})[k] || (/damage$/.test(String(p0 && p0.css_class)) && /Damage$/.test(r.l) && !/Bonus|Reduction|Amp|Self|Headshot/.test(r.l) && !/%$/.test(r.v))) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
-      var mt = MINOR_TXT[it.name + "|" + k]; // a small stat said as a sentence ("Enemies within 18m can see you")
+      var mt = MINOR_TXT[it.name + "|" + k]; if (typeof mt === "function") mt = mt(it); // a small stat said as a sentence ("Enemies within 18m can see you")
       minor += "<span>" + (mt ? esc(mt).replace("{v}", "<b>" + esc(unsign(r.v)) + "</b>") : "<b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + (r.dur ? " for " + esc(r.dur) : "")) + scaleBadge(r) + "</span>";
     });
     if (promo) {
@@ -2380,12 +2380,12 @@ function tierDmg(it) {
 // stats whose name reads as a buff but here is done to the enemy (opposite colour)
 var TIER_OV = { "Bloodscent": [["damage", null]], "Leaping Slash": [["cooldown refund", TIER_BL]], "Ava": [["buff duration", TIER_BL]], "Return to Shadows": [["refund all ability cooldowns", TIER_BL]], "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]],
   "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""], ["debuff duration", TIER_RD]], "Granny Long Legs": [["resists", TIER_VT]], "Itani Lo Sahn": [["bonus damage", TIER_SP]], "Death Slam": [["radius", ""]], "Love Bites": [["per bullet", ""]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]],
-  "Seismic Impact": [["unstoppable", TIER_BL]], "Eternal Night": [["max target", TIER_BL]], "Scorn": [["damage to them", null]], "Pulse Grenade": [["damage amp", null]], "Rabbit Hex": [["damage amp", null]], "Kinetic Carbine": [["charge hold duration", TIER_BL], ["damage scaling", TIER_WP]], "Rule, Ratannia!": [["damage reduction", TIER_VT]], "Feed The Birds": [["max duration", TIER_BL]] };
+  "Seismic Impact": [["unstoppable", TIER_BL]], "Eternal Night": [["max target", TIER_BL]], "Scorn": [["damage to them", null]], "Pulse Grenade": [["damage amp", null]], "Rabbit Hex": [["damage amp", null]], "Kinetic Carbine": [["charge hold duration", TIER_BL], ["damage scaling", TIER_WP]], "Rule, Ratannia!": [["damage reduction", TIER_VT]], "Feed The Birds": [["max duration", TIER_BL]], "Telekinesis": [["throw and cast range", TIER_BL], ["debuff duration", TIER_RD]] };
 // wording fixes for a single tier line: [ability, tier 1-3, from, to]
 var TIER_TXT = [["Doorway", 3, /<br>and scales with Spirit Power\.?/, ""], ["Setup Bishop", 3, /by -(\d+%)/, "by $1"], ["Kinetic Carbine", 3, /(<span class="hl">)?\+55%(<\/span>)? Damage Scaling/, "$1+0.55$2 Damage Scaling"], ["Captivating Read", 3, /by ((?:<span[^>]*>)?)-(\d+%)/, "by $1$2"], ["Paradoxical Swap", 1, /for ([\d.]+s)\. Barrier scales with Spirit\.?/, "for $1 that scales with Spirit"], ["Ground Strike", 3, /(<span class="highlight">\+[\d.]+<\/span>) Damage \(after 25m\) (<span class="ss"[^>]*>★<\/span>)/, "$1 $2 (after 25m)"],
   ["Flog", 3, /(<span class="hl">\+[\d.]+)<\/span> Attack angle/, "$1°</span> Angle"],
   ["Traveler", 3, /Barrier gains Spirit Scaling<br><span class="dm">(\+[\d.]+) Spirit scaling on Barrier<\/span>/, "Barrier gains $1 Spirit scaling"],
-  ["Sand Blast", 2, /-(\d+%)/g, "$1"], ["Djinn's Mark", 2, /Multiplier Duration/, "Mark Duration"], ["Ice Path", 3, /<\/span> Spirit and (<span class="hl">\+[\d.]+<\/span>) Spirit for/, "</span> Spirit Power and $1 Spirit Power for"], ["Fixation", 3, /(<span class="hl">\+[\d.]+<\/span>) per Stack[\s\S]*$/, "$1 Weapon Damage per Stack"], ["Rising Ram", 3, /(Max Health)<br>\+([\d.]+s) Duration/, "$1 for $2"], ["Project Mind", 2, /for ([\d.]+s)\. Barrier scales with Spirit Power\.?/, "for $1 that scales with Spirit"], ["Light Eater", 3, /\bDamage and /, "Bullet Hit Damage with "], ["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"], ["Exploding Uppercut", 3, /Set (<span[^>]*>)Grapple Arm cooldown to 0<\/span>/, "Resets $1Grapple Arm Cooldown</span>"]];
+  ["Sand Blast", 2, /-(\d+%)/g, "$1"], ["Djinn's Mark", 2, /Multiplier Duration/, "Mark Duration"], ["Ice Path", 3, /<\/span> Spirit and (<span class="hl">\+[\d.]+<\/span>) Spirit for/, "</span> Spirit Power and $1 Spirit Power for"], ["Fixation", 3, /(<span class="hl">\+[\d.]+<\/span>) per Stack[\s\S]*$/, "$1 Weapon Damage per Stack"], ["Rising Ram", 3, /(Max Health)<br>\+([\d.]+s) Duration/, "$1 for $2"], ["Project Mind", 2, /for ([\d.]+s)\. Barrier scales with Spirit Power\.?/, "for $1 that scales with Spirit"], ["Light Eater", 3, /\bDamage and /, "Bullet Hit Damage with "], ["Bullet Dance", 3, /\bEvasion\b/, "Bullet Evasion"], ["Exploding Uppercut", 3, /Set (<span[^>]*>)Grapple Arm cooldown to 0<\/span>/, "Resets $1Grapple Arm Cooldown</span>"], ["Full Auto", 3, /\s+on Spirit Damage Per Bullet/i, ""], ["Willpower", 3, /(\+[\d.]+(?:<\/span>)?) Spirit Barrier scaling/i, "$1 Barrier Spirit scaling"]];
 // a bare "Damage" or "DPS" takes the ability's damage type when all its damage is one type
 function tierBase(it) {
   var sp = 0, wp = 0, P = (it && it.properties) || {};
@@ -5941,10 +5941,11 @@ function blockList(card) { // the headings and stat blocks sitting directly in t
     if (el.hasAttribute("data-ghost")) return;
     var c = el.classList, sig = null;
     if (c.contains("uu")) { var p2 = "u" + (box++) + ":"; head = ""; Array.prototype.forEach.call(el.children, function (k) { walk(k, p2); }); head = ""; return; } // e.g. "While rage is full"
-    if (c.contains("blk")) { head = el.textContent.trim(); sig = "b:" + head; }
+    if (c.contains("blk")) { head = el.textContent.trim().replace(/\d+(?:\.\d+)?/g, "#"); sig = "b:" + head; } // numbers ignored: "Per Stack (Max 3)" becoming "(Max 5)" is the same block, not one leaving and another arriving
     else if (c.contains("stats")) { sig = "s:" + head; head = ""; }
     else if (c.contains("minor")) { sig = "m"; head = ""; }
-    else if (c.contains("desc") && out.length) { sig = "d:" + el.textContent.replace(/[\d.,%+\-]+/g, "#").replace(/\s+/g, " ").trim().slice(0, 60); head = ""; } // text a tier adds (Essence Bomb's toxic mess) grows in like a stat block; numbers are ignored so a changed number doesn't count as new text
+    else if (c.contains("chips")) { sig = "c"; head = ""; } // the header chips: a row that appears (Slither T3's cooldown) opens downward instead of pushing the card at once
+    else if (c.contains("desc") && out.some(function (o) { return o.sig !== "c"; })) { sig = "d:" + el.textContent.replace(/[\d.,%+\-]+/g, "#").replace(/\s+/g, " ").trim().slice(0, 60); head = ""; } // text a tier adds (Essence Bomb's toxic mess) grows in like a stat block; numbers are ignored so a changed number doesn't count as new text
     else head = "";
     if (sig) out.push({ el: el, sig: pre + sig });
   }
@@ -6037,12 +6038,14 @@ function animateLayout(fresh, snap) {
     var el = nb[op.j].el; prev = el;
     if (op.t === "a") plans.push({ add: el, box: boxOf(el) });
     else if (/^(u\d+:)?s:/.test(nb[op.j].sig)) plans.push(statPlan(snap[op.i], el));
+    else if (/^(u\d+:)?m$/.test(nb[op.j].sig)) plans.push({ minor: el, h0: snap[op.i].box.h, h1: el.getBoundingClientRect().height, old: snap[op.i].node });
   });
   // 2. put blocks that are leaving back where they were, then start every animation
   var tail = null, tailAfter = null; // blocks that leave together go back in their old order
   gone.forEach(function (g) {
     var node = g.s.node, ref = null, k;
-    if (g.after) ref = tail && tailAfter === g.after ? tail.nextSibling : g.after.nextSibling;
+    if (g.s.sig === "c") { var hd = fresh.querySelector(".abh"); ref = hd ? hd.nextSibling : fresh.firstChild; } // the chip row goes back under the title
+    else if (g.after) ref = tail && tailAfter === g.after ? tail.nextSibling : g.after.nextSibling;
     else {
       for (k = g.n + 1; k < ops.length; k++) if (ops[k].t !== "r") { ref = nb[ops[k].j].el; break; }
       if (!ref) ref = Array.prototype.filter.call(fresh.children, function (c) { return c.classList.contains("ups"); })[0] || null;
@@ -6061,6 +6064,18 @@ function animateLayout(fresh, snap) {
     if (p.add) {
       run(p.add, [sized(p.box, p.box.h, true, p.add), sized(p.box, p.box.h, false, p.add)]);
       run(p.add, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 200, easing: "ease-out" });
+      return;
+    }
+    if (p.minor) { // the small-stats line: a phrase a tier adds (Binding Word T3's silence) fades in while the line grows to fit it; one that goes leaves the line to shrink
+      var KEY = function (e) { return e.textContent.replace(/[\d.]+/g, "#").replace(/\s+/g, " ").trim(); }, had = {};
+      Array.prototype.forEach.call(p.old.children, function (e) { had[KEY(e)] = 1; });
+      var fresh2 = Array.prototype.filter.call(p.minor.children, function (e) { return !had[KEY(e)]; });
+      if (Math.abs(p.h0 - p.h1) > 1) {
+        setS(p.minor, "alignContent", "flex-start");
+        var mcl = "inset(-24px -24px 0px -24px)", mop = "inset(-24px -24px -24px -24px)";
+        run(p.minor, p.h1 > p.h0 ? [{ height: p.h0 + "px", clipPath: mcl }, { height: p.h1 + "px", clipPath: mcl, offset: .999 }, { height: p.h1 + "px", clipPath: mop }] : [{ height: p.h0 + "px" }, { height: p.h1 + "px" }]);
+      }
+      fresh2.forEach(function (e) { run(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: Math.abs(p.h0 - p.h1) > 1 ? 200 : 80, easing: "ease-out" }); });
       return;
     }
     var cont = p.cont, dl = p.leave.length ? 120 : 0; // when a tile goes, its neighbours wait for it to fade before widening
