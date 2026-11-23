@@ -8,9 +8,11 @@ the API's rank distribution), each shop item bought in at least MIN_P of the her
   s   sell rate: the share of the matches it was bought in where it was later sold (only when SOLD_MIN or more)
   st  average sell time (s), with s
   w   bought together: up to 3 items bought much more often alongside this one than on the hero in general
+  im  imbued on: for items imbued into an ability, [[ability class_name, share], ...] of the matches it was imbued in,
+      most common first, abilities under IMBUE_MIN left out
 The app splits them into a core build (bought in most matches, in buy order) and situational picks.
 
-Run:  python3 tools/popular.py        (two requests per hero; the API allows 200 a minute)
+Run:  python3 tools/popular.py        (three requests per hero; the API allows 200 a minute)
 """
 import json, os, sys, time, urllib.request
 
@@ -23,6 +25,7 @@ MAX_ITEMS = 40  # most items kept per hero
 SOLD_MIN = 0.3  # an item counts as usually sold when at least this share of buyers sell it
 PAIR_MIN = 0.35 # a partner is listed when at least this share of the item's buyers also buy it...
 LIFT_MIN = 1.3  # ...and that's at least this many times its usual rate on the hero
+IMBUE_MIN = 0.05  # an ability an item is imbued on in less than this share of its matches is left out
 
 
 def get(path):
@@ -43,7 +46,9 @@ def load(name):
 
 def main():
     heroes = [h for h in load("heroes.json") if h.get("id") and not h.get("disabled") and h.get("player_selectable", True)]
-    items = {i["id"]: i for i in load("items.json") if i.get("id") and i.get("type") == "upgrade"}
+    allitems = load("items.json")
+    items = {i["id"]: i for i in allitems if i.get("id") and i.get("type") == "upgrade"}
+    abilities = {i["id"]: i for i in allitems if i.get("id") and i.get("type") == "ability"}
 
     # the lowest rank (badge) at which the matches from there up are still within the top 5%
     dist = sorted(get("/analytics/badge-distribution"), key=lambda x: -x["badge_level"])
@@ -84,6 +89,18 @@ def main():
                 if cond >= PAIR_MIN and lift >= LIFT_MIN: cand.setdefault(a, []).append((lift, rb["c"]))
         for a, lst in cand.items():
             lst.sort(reverse=True); by_id[a][0]["w"] = [c for _, c in lst[:3]]
+        try:  # imbued on: which ability each imbue item was put on
+            imb = get("/analytics/item-stats%s&hero_id=%d&bucket=imbued_ability" % (q, h["id"]))
+        except Exception as e:
+            imb = []; print("  imbues failed for %s: %s" % (h.get("name"), e))
+        per_item = {}
+        for x in imb:
+            ab = abilities.get(x.get("bucket"))
+            if ab and x["item_id"] in by_id and x.get("matches"): per_item.setdefault(x["item_id"], []).append((x["matches"], ab["class_name"]))
+        for iid, lst in per_item.items():
+            tot = sum(m for m, _ in lst); lst.sort(reverse=True)
+            keep = [[c, round(m / tot, 3)] for m, c in lst if m / tot >= IMBUE_MIN]
+            if keep: by_id[iid][0]["im"] = keep
         out[h["class_name"]] = {"matches": n, "items": rows}
         time.sleep(0.4)
     if not out:
