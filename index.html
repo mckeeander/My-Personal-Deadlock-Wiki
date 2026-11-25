@@ -1588,7 +1588,7 @@ var BLK_OV = { "Rend|On Close Range": "Within {RangeForBonusDamage}:", "Napalm|N
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 }, "Rend": { RangeForBonusDamage: 1, UseHeavyMelee: 1 }, "Bloodscent": { IsolationRange: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Fixation": { ProcDamageStackCount: 1 }, "Entangling Thorns": { TimeToEntangle: 1 }, "Kudzu Connection": { TotalTetherTargets: 1 }, "Malice": { MaxStacks: 1 }, "Soul Exchange": { SilenceRadius: 1 }, "Heavy Barrage": { AbilityDuration: 1 }, "Rallying Charge": { KnightCountInFirstWave: 1 }, "Itani Lo Sahn": { LowHealthEnemyThresholdPct: 1 }, "Screwjab Dagger": { MaxStacks: 1 }, "Puddle Punch": { UseHeavyMelee: 1 }, "Consecrating Grenade": { BurnRadius: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"], "Disengaging Sigil": ["SigilRadius"], "Flawless Advance": ["AttackDashRange", "DashSpeed"], "Hyper Beam": ["BeamLength", "BeamWidth"], "Arctic Beam": ["PathLength"], "Kinetic Pulse": ["StompRange"], "Guided Owl": ["ExplosionRadius"], "Rejuvenating Aurora": ["AbilityChannelTime"], "Singularity": ["VacuumRadius", "AbilityChannelTime"], "Bounce Pad": ["Radius"], "Concussive Combustion": ["ExplodeDelay"], "Air Drop": ["OnLandDamageRadius"], "Life Drain": ["MaxRange"], "Mini Turret": ["TurretLifetime"], "Medicinal Specter": ["HealRadius"], "Heavy Barrage": ["ExplosionRadius"], "Burrow": ["AbilityChannelTime"], "Combo": ["AbilityChannelTime"], "Lurking Terrors": ["AbilityChannelTime"], "Death Slam": ["ImpactRadius"], "Bookwyrm": ["DragonTravelRange"], "Flying Cloak": ["MaxLifetime"], "Lightning Ball": ["ShockRadius", "MaxLifetime"], "Static Charge": ["ShockRadius"], "Storm Cloud": ["AbilityChannelTime"], "Call Bell": ["ProjectileFuse"], "Doorway": ["DoorwayDistance"], "Kingside Knight": ["BonusTargetRadius"], "Stake": ["CaptureRadius"], "Goo Ball": ["BallRadius"], "Power Slash": ["SlashLength"], "Radiant Daggers": ["ExplosionRadius"], "Borrowed Decree": ["ExplosionRadius"] }; // stats shown as a header chip beside the cooldown and range, not as a card
 var PROMOTE = { "Petrifying Bola": { SlowPercent: 1 }, "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 }, "Naptime": { SleepDuration: 1 }, "Crow Familiar": { BulletResistReduction: 1, TechArmorDamageReduction: 1 }, "Flow State": { FadingSlowPercent: 1 }, "Goo Ball": { TechResist: 1, BulletResist: 1 }, "Last Stand": { BulletResist: 1, TechResist: 1 }, "Shadow Transformation": { BulletResist: 1, TechResist: 1 }, "Shining Wonder": { GroundDashReductionPercent: 1 }, "Bullet Dance": { EvasionPercent: 1, ChannelMoveSpeed: 1 }, "Flame Dash": { SlowResistance: 1 } }; // listed as small text by the game; shown as a card
-var DEMOTE = { "Shadow Transformation": { AbilitySpeedPct: 1 }, "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 }, "Threadsap": { StolenSpiritEffectiveness: 1 }, "Bullet Dance": { TargetsPerTick: 1 }, "Nox Nostra": { BatPerSecond: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Afterburn": { BurnDurationBase: 1, BurnDuration: 1 } }; // listed as cards by the game; shown as small text
+var DEMOTE = { "Slice and Dice": { MaxCooldownReductionsFromHits: 1 }, "Shadow Transformation": { AbilitySpeedPct: 1 }, "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 }, "Threadsap": { StolenSpiritEffectiveness: 1 }, "Bullet Dance": { TargetsPerTick: 1 }, "Nox Nostra": { BatPerSecond: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Afterburn": { BurnDurationBase: 1, BurnDuration: 1 } }; // listed as cards by the game; shown as small text
 var NEG_OV = { "Slice and Dice|CooldownReductionOnHit": 1, "Slice and Dice|CooldownReductionOnHitNonHero": 1, "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": 1, "Quantum Entanglement|ReduceDebuffs": 1, "Wretched Vapors|CrashTimeScalePenaltyPercent": 1 }; // shown as a minus ("-50% Cooldown", as the tier text says)
 var VAL_SUB = { "Crimson Slash|HealMaxHealth": [/\s*of Max Health$/i, ""], "Crow Familiar|DotHealthPercent": [/ DPS$/, "/s"], "Stalker's Mark|DotHealthPercent": [/ DPS$/, "/s"] }; // a value reworded ("2.2% DPS" -> "2.2%/s")
 var UNIT_OV = { "Chimera Mk1|HeatDrainRate": "/s", "Slice and Dice|MaxCooldownReductionsFromHits": "s" }; // a rate the game leaves unlabelled (its Heat Gain beside it is per second)
@@ -2381,7 +2381,7 @@ function tierDmg(it) {
 // stats whose name reads as a buff but here is done to the enemy (opposite colour)
 var TIER_OV = { "Bloodscent": [["damage", null]], "Leaping Slash": [["cooldown refund", TIER_BL]], "Ava": [["buff duration", TIER_BL]], "Return to Shadows": [["refund all ability cooldowns", TIER_BL]], "Frost Grenade": [["stamina regen", TIER_RD]], "Scrap Grenade": [["move speed", TIER_RD]], "Sleep Dagger": [["move and dash speed", TIER_RD]],
   "Riposte": [["bullet, spirit &amp; melee lifesteal", TIER_VT]], "Threadsap": [["per bullet", ""], ["debuff duration", TIER_RD]], "Granny Long Legs": [["resists", TIER_VT]], "Itani Lo Sahn": [["bonus damage", TIER_SP]], "Death Slam": [["radius", ""]], "Love Bites": [["per bullet", ""]], "Lycan Curse": [["bullet", TIER_WP]], "Exploding Uppercut": [["health", TIER_VT]],
-  "Seismic Impact": [["unstoppable", TIER_BL]], "Eternal Night": [["max target", TIER_BL]], "Scorn": [["damage to them", null]], "Pulse Grenade": [["damage amp", null]], "Rabbit Hex": [["damage amp", null]], "Kinetic Carbine": [["charge hold duration", TIER_BL], ["damage scaling", TIER_WP]], "Rule, Ratannia!": [["damage reduction", TIER_VT]], "Feed The Birds": [["max duration", TIER_BL]], "Telekinesis": [["throw and cast range", TIER_BL], ["debuff duration", TIER_RD]] };
+  "Seismic Impact": [["unstoppable", TIER_BL]], "Eternal Night": [["max target", TIER_BL]], "Scorn": [["damage to them", null]], "Pulse Grenade": [["damage amp", null]], "Rabbit Hex": [["damage amp", null]], "Kinetic Carbine": [["charge hold duration", TIER_BL], ["damage scaling", TIER_WP]], "Rule, Ratannia!": [["damage reduction", TIER_VT]], "Feed The Birds": [["max duration", TIER_BL]], "Telekinesis": [["throw and cast range", TIER_BL], ["debuff duration", TIER_RD]], "Naptime": [["stamina regen", TIER_RD], ["stamina", TIER_RD]] };
 // wording fixes for a single tier line: [ability, tier 1-3, from, to]
 var TIER_TXT = [["Doorway", 3, /<br>and scales with Spirit Power\.?/, ""], ["Setup Bishop", 3, /by -(\d+%)/, "by $1"], ["Kinetic Carbine", 3, /(<span class="hl">)?\+55%(<\/span>)? Damage Scaling/, "$1+0.55$2 Damage Scaling"], ["Captivating Read", 3, /by ((?:<span[^>]*>)?)-(\d+%)/, "by $1$2"], ["Paradoxical Swap", 1, /for ([\d.]+s)\. Barrier scales with Spirit\.?/, "for $1 that scales with Spirit"], ["Ground Strike", 3, /(<span class="highlight">\+[\d.]+<\/span>) Damage \(after 25m\) (<span class="ss"[^>]*>★<\/span>)/, "$1 $2 (after 25m)"],
   ["Flog", 3, /(<span class="hl">\+[\d.]+)<\/span> Attack angle/, "$1°</span> Angle"],
@@ -6076,12 +6076,16 @@ function animateLayout(fresh, snap) {
       var KEY = function (e) { return e.textContent.replace(/[\d.]+/g, "#").replace(/\s+/g, " ").trim(); }, had = {};
       Array.prototype.forEach.call(p.old.children, function (e) { had[KEY(e)] = 1; });
       var fresh2 = Array.prototype.filter.call(p.minor.children, function (e) { return !had[KEY(e)]; });
-      if (Math.abs(p.h0 - p.h1) > 1) {
-        setS(p.minor, "alignContent", "flex-start");
-        var mcl = "inset(-24px -24px 0px -24px)", mop = "inset(-24px -24px -24px -24px)";
-        run(p.minor, p.h1 > p.h0 ? [{ height: p.h0 + "px", clipPath: mcl }, { height: p.h1 + "px", clipPath: mcl, offset: .999 }, { height: p.h1 + "px", clipPath: mop }] : [{ height: p.h0 + "px" }, { height: p.h1 + "px" }]);
-      }
-      fresh2.forEach(function (e) { run(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: Math.abs(p.h0 - p.h1) > 1 ? 200 : 80, easing: "ease-out" }); });
+      if (Math.abs(p.h0 - p.h1) > 1) { setS(p.minor, "alignContent", "flex-start"); setS(p.minor, "overflow", "hidden"); run(p.minor, [{ height: p.h0 + "px" }, { height: p.h1 + "px" }]); }
+      // the new phrase shows through a cover in the line's own colour that fades away, not by fading the phrase: in Safari a fading element is lifted onto its own layer and the whole line hopped a few pixels for two frames
+      var mbg = getComputedStyle(p.minor).backgroundColor, mrgb = (/\d+\s*,\s*\d+\s*,\s*\d+/.exec(mbg) || ["29,25,38"])[0];
+      fresh2.forEach(function (e) {
+        setS(e, "position", "relative");
+        var v = document.createElement("span"); v.setAttribute("aria-hidden", "true");
+        v.style.cssText = "position:absolute;left:-3px;right:-3px;top:-2px;bottom:-2px;pointer-events:none;background:rgb(" + mrgb + ")";
+        e.appendChild(v); undo.push(function () { if (v.parentNode) v.parentNode.removeChild(v); });
+        run(v, [{ backgroundColor: "rgba(" + mrgb + ",1)" }, { backgroundColor: "rgba(" + mrgb + ",0)" }], { duration: 300, delay: Math.abs(p.h0 - p.h1) > 1 ? 200 : 80, easing: "linear" });
+      });
       return;
     }
     var cont = p.cont, dl = p.leave.length ? 120 : 0; // when a tile goes, its neighbours wait for it to fade before widening
@@ -6099,7 +6103,13 @@ function animateLayout(fresh, snap) {
       run(k.el, [a, z], { delay: dl });
     });
     p.enter.forEach(function (n) {
-      if (n.newRow) { Array.prototype.forEach.call(n.el.children, function (c) { run(c, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: dl + 200, easing: "ease-out" }); }); return; }
+      if (n.newRow) { // the row opens with the tile still covered (its empty outline used to show at full strength as the row uncovered it, which read as a jump), then the whole tile fades in under a veil like a sideways one
+        var nv = document.createElement("span"); nv.setAttribute("aria-hidden", "true");
+        var nvc = veilRGB(n.el); nv.style.cssText = "position:absolute;left:-8px;right:-10px;top:-11px;bottom:-12px;z-index:5;pointer-events:none;border-radius:10px;background:rgb(" + nvc + ")";
+        n.el.appendChild(nv); undo.push(function () { if (nv.parentNode) nv.parentNode.removeChild(nv); });
+        run(nv, [{ backgroundColor: "rgba(" + nvc + ",1)" }, { backgroundColor: "rgba(" + nvc + ",0)" }], { duration: 300, delay: dl + 220, easing: "linear" });
+        return;
+      }
       // B, as in the mockup: the slot opens while the new tile is still invisible, then the whole tile (box, text and badge) fades in at nearly full size as its neighbour finishes narrowing. It sits behind its neighbours and grows from the edge facing them, so nothing overlaps while it is faint
       var cs = getComputedStyle(n.el), mw = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0) + (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0); // a box can't be narrower than its padding
       run(n.el, [{ left: ((n.w - mw) * n.f) + "px", width: mw + "px", height: n.h + "px", boxSizing: "border-box" }, { left: "0px", width: n.w + "px", height: n.h + "px", boxSizing: "border-box" }], { delay: dl });
@@ -6298,6 +6308,10 @@ document.addEventListener("click", function (e) {
   var sm = e.target.closest ? e.target.closest("details.gak > summary") : null; if (!sm) return;
   e.preventDefault(); gakFold(sm.parentNode);
 });
+document.addEventListener("pointerdown", function (e) { // a folded section's pictures load lazily, so the opening measured them at no height and the section grew again after: start them loading as the finger goes down
+  var sm = e.target.closest ? e.target.closest("details.notes > summary, details.rpt > summary") : null; if (!sm || sm.parentNode.open) return;
+  Array.prototype.forEach.call(sm.parentNode.querySelectorAll('img[loading="lazy"]'), function (im) { im.loading = "eager"; });
+}, { passive: true });
 document.addEventListener("click", function (e) {
   var sm = e.target.closest ? e.target.closest("details.rpt > summary, details.notes > summary, details.phd > summary") : null; if (!sm) return;
   if (sm.classList.contains("nofold")) { e.preventDefault(); return; } // Base stats, Abilities and Ability order don't fold
@@ -6352,9 +6366,10 @@ function foldDetails(d) {
   if (opening && list) others = Array.prototype.filter.call(d.parentNode.querySelectorAll(":scope > details.rpt[open]"), function (o) { return o !== d && o.offsetParent; }); // one patch open at a time
   others.forEach(function (o) { if (o._stop) o._stop(); });
   var parts = [d].concat(others).map(function (x) {
-    var on = x === d ? opening : false, h0 = x.offsetHeight;
-    x.open = on; var h1 = x.offsetHeight; x.open = true; // measured at both ends; it stays open (visible) until the end
-    return { el: x, on: on, h0: h0, h1: h1, kids: Array.prototype.slice.call(x.querySelectorAll(":scope > :not(summary)")) };
+    var on = x === d ? opening : false, h0 = x.offsetHeight, mb0 = parseFloat(getComputedStyle(x).marginBottom) || 0;
+    x.open = on; var h1 = x.offsetHeight, mb1 = parseFloat(getComputedStyle(x).marginBottom) || 0; x.open = true; // measured at both ends; it stays open (visible) until the end
+    // the space under it can differ shut and open (the weapon card's folded Notes row sits 8px closer to the card's edge): it eases across with the height instead of snapping at the start or end
+    return { el: x, on: on, h0: h0, h1: h1, mb0: mb0, mb1: mb1, kids: Array.prototype.slice.call(x.querySelectorAll(":scope > :not(summary)")) };
   });
   // near the bottom of the page, a patch folding shut would leave nothing to scroll into and the page would snap up.
   // So a spacer under the list takes up whatever the patches give back, keeping the page its length; once they're done
@@ -6370,7 +6385,7 @@ function foldDetails(d) {
   var dist = Math.abs(y1 - y0), dur = opening ? Math.min(760, 420 + dist * 0.3) : 320, id = {}, t0 = 0;
   d._busy = true;
   parts.forEach(function (q) {
-    q.el._fold = id; if (q.el.classList.contains("phd")) q.el.style.clipPath = "inset(-4px -4px 0 -4px)"; else q.el.style.overflow = "hidden"; q.el.style.height = q.h0 + "px"; // a chapter card clips only its bottom, so its edge (drawn just outside it) is never shaved off mid-animation
+    q.el._fold = id; if (q.mb0 !== q.mb1) q.el.style.marginBottom = q.mb0 + "px"; if (q.el.classList.contains("phd")) q.el.style.clipPath = "inset(-4px -4px 0 -4px)"; else q.el.style.overflow = "hidden"; q.el.style.height = q.h0 + "px"; // a chapter card clips only its bottom, so its edge (drawn just outside it) is never shaved off mid-animation
     q.el.classList.toggle("closing", !q.on); // the chevron turns at once
     q.kids.forEach(function (k) {
       k.animate(q.on ? [{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1 }, { opacity: 0 }],
@@ -6385,7 +6400,7 @@ function foldDetails(d) {
     parts.forEach(function (q) {
       if (q.el._fold !== id) return;
       q.el._fold = null; q.el._stop = null; q.el._busy = false;
-      q.el.open = q.on; q.el.style.height = ""; q.el.style.overflow = ""; q.el.style.clipPath = ""; q.el.classList.remove("closing");
+      q.el.open = q.on; q.el.style.height = ""; q.el.style.marginBottom = ""; q.el.style.overflow = ""; q.el.style.clipPath = ""; q.el.classList.remove("closing");
       q.kids.forEach(function (k) { k.getAnimations().forEach(function (x) { x.cancel(); }); });
       if (q.on) settleHeight(q.el, q.h1); // a picture that loaded during or after the opening changes the height: glide to it instead of jumping
     });
@@ -6396,7 +6411,7 @@ function foldDetails(d) {
   requestAnimationFrame(function step(t) {
     if (d._fold !== id) return; if (!t0) t0 = t;
     var p = Math.min(1, (t - t0) / dur), e = easeIO(p);
-    parts.forEach(function (q) { q.el.style.height = (q.h0 + (q.h1 - q.h0) * e) + "px"; }); pad();
+    parts.forEach(function (q) { q.el.style.height = (q.h0 + (q.h1 - q.h0) * e) + "px"; if (q.mb0 !== q.mb1) q.el.style.marginBottom = (q.mb0 + (q.mb1 - q.mb0) * e) + "px"; }); pad();
     if (y1 !== y0 && !cancelled) window.scrollTo(0, y0 + (y1 - y0) * e);
     if (p < 1) requestAnimationFrame(step); else { window.removeEventListener("touchstart", stop); finish(); }
   });
