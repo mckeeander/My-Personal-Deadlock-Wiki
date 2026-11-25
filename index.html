@@ -1175,43 +1175,28 @@ body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
 .v2seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:2px}
 .v2seg button{border:0;background:none;border-radius:7px;padding:5px 11px;font-size:12.5px;font-weight:600;color:var(--dim);-webkit-tap-highlight-color:transparent}
 .v2seg button.on{background:var(--gold);color:#1d1508}
-/* 1. the floating bar and its buttons step aside while you scroll down, and come back when you scroll up */
-body.v2 #jbar,body.v2 #toppill,body.v2 #hsecnav{transition:translate .25s ease,opacity .2s ease}
-body.v2.v2hide #jbar,body.v2.v2hide #toppill,body.v2.v2hide #hsecnav{translate:0 28px;opacity:0;pointer-events:none}
-/* 2 + 3. tier boxes: gold is the colour of what you tap (purple stays for spirit); equal columns, text from the top left, an obvious selected state */
-body.v2 #main .ab .ups{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-body.v2 #main .ab .up{text-align:left;border-color:#352d44}
-body.v2 #main .ab .up>div:first-child{background:#2b2536;color:#a99fba;text-align:center}
-body.v2 #main .ab .up>div:last-child{align-items:flex-start;justify-content:flex-start;padding:9px 8px 10px}
-body.v2 #main .ab .up .ut{color:#bdb3cb}
-body.v2 #main .ab .up .nw{white-space:normal}
-body.v2 #main .ab .up.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
-body.v2 #main .ab .up.on>div:first-child{background:var(--gold);color:#1d1508}
-body.v2 #main .ab .up.on .ut{color:var(--fg)}
-/* 4. headline numbers (damage, heal, barrier: the coloured cards) big; everything else a lighter, smaller card */
-body.v2 #main .ab .stat:not(.big){background:rgba(255,255,255,.025);border-color:#322a3f;padding:6px 8px}
-body.v2 #main .ab .stat:not(.big) b{font-size:17px}
-body.v2 #main .ab .stat.big b{font-size:22px}
-/* 5. labels a step brighter, corner tags a touch bigger (and tappable: they explain themselves) */
+/* 1. the floating bar and its buttons slide down behind the tab bar while you scroll down (no fade: a fading blurred bar stuttered), and back up when you scroll up.
+   They sit under the tab bar (z-index 4 < 5) so it covers them on the way down; shown, they never overlap it */
+body.v2 #jbar,body.v2 #toppill,body.v2 #hsecnav{z-index:4;transition:translate .34s cubic-bezier(.4,0,.2,1)}
+body.v2.v2hide #jbar,body.v2.v2hide #toppill,body.v2.v2hide #hsecnav{translate:0 calc(100% + 96px);pointer-events:none;transition-timing-function:cubic-bezier(.5,0,.75,0)}
+/* 2. tier boxes: unselected ones dim grey, the selected ones keep their purple */
+body.v2 #main .ab .up:not(.on){border-color:#352d44}
+body.v2 #main .ab .up:not(.on)>div:first-child{background:#2b2536;color:#a99fba}
+body.v2 #main .ab .up:not(.on) .ut{color:#bdb3cb}
+/* 3. less important stats (the plain, uncoloured cards) a little smaller; the coloured ones stay as they are */
+body.v2 #main .ab .stat:not(.big) b{font-size:18px}
+/* 4. labels a step brighter, corner tags a touch bigger; scaling tags explain themselves when tapped */
 body.v2 #main .ab .stat i{color:#c6bcd4;font-size:12.5px}
-body.v2 #main .ab .sc,body.v2 #main .ab .stat .dur{font-size:12px;padding:2px 7px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+body.v2 #main .ab .sc,body.v2 #main .ab .stat .dur{font-size:12px;padding:2px 7px}
+body.v2 #main .ab .sc{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .v2tip{position:fixed;z-index:30;max-width:250px;background:#2f2840;color:var(--fg);border:1px solid #5a4d73;border-radius:8px;padding:7px 11px;font-size:12.5px;line-height:1.35;box-shadow:0 6px 16px rgba(0,0,0,.5);pointer-events:none;animation:tipfade .15s ease-out both}
-/* 6. shorter highlight when a tier changes a stat (the numbers no longer count; see pulseChanges) */
-body.v2 #main .stat.pop,body.v2 #main .chips .chip.pop,body.v2 #main .up.pop,body.v2 #main .minor span.pop{animation-duration:.7s}
-/* 7. section breaks about half the height */
-body.v2 #main details.phd > summary.sec{font-size:22px;padding-top:2px;padding-bottom:14px}
-body.v2 #main details.phd > summary.sec .sect::after{bottom:-15px;width:48px;margin-left:-24px;height:3px}
-body.v2 #main details.phd > summary + *{margin-top:16px}
-body.v2.chband #main details.phd.abd{margin-top:6px;padding-top:12px;padding-bottom:16px}
-body.v2.chband #main details.phd.ppd{margin-top:36px;padding-top:12px;padding-bottom:22px}
-body.v2.chband #main #aowrap > details.phd{margin-top:36px}
-body.v2.chband #main #revwrap > details.phd{margin-top:32px}
-body.v2.chband #main details.phd.bsd{padding-bottom:16px}
-/* 8. descriptions a little smaller; header chips say what they are */
+/* 5. a somewhat shorter highlight when a tier changes a stat (the numbers no longer count; see pulseChanges) */
+body.v2 #main .stat.pop,body.v2 #main .chips .chip.pop,body.v2 #main .up.pop,body.v2 #main .minor span.pop{animation-duration:1.1s}
+/* 6. descriptions a little smaller; only the chips whose icon is ambiguous name themselves (the rest still say on tap) */
 body.v2 #main .ab .desc{font-size:14.5px;line-height:1.45}
-body.v2 #main .ab .chip[data-tip]::after,body.v2 #main .ab .chip.tip::after{content:attr(data-tip);position:static;display:inline;background:none;border:0;box-shadow:none;padding:0;margin-left:5px;font-size:11px;font-weight:500;letter-spacing:0;color:var(--dim);animation:none;text-transform:lowercase;white-space:nowrap}
-body.v2 #main .ab .chip.tip::before{display:none}
-body.v2 #main .ab .chip.tip{background:var(--panel2)}
+body.v2 #main .ab .chip[data-l]::after{content:attr(data-l);position:static;display:inline;background:none;border:0;box-shadow:none;padding:0;margin-left:5px;font-size:11px;font-weight:500;letter-spacing:0;color:var(--dim);animation:none;white-space:nowrap}
+body.v2 #main .ab .chip[data-l].tip::before{display:none}
+body.v2 #main .ab .chip[data-l].tip{background:var(--panel2)}
 </style>
 </head>
 <body class="boot">
@@ -2212,7 +2197,8 @@ function chipsHtml(it) {
   // icon + number, like the wiki; the long-press title carries the name
   function chip(key, glyph, text, title) {
     var ic = P[key] && P[key].icon ? pIcon(P[key].icon) : "";
-    return '<span class="chip" data-tip="' + esc(title) + '">' + (ic || glyph + " ") + esc(text) + "</span>";
+    var lb = { Radius: "radius", AbilityCharges: text === "1" ? "charge" : "charges", AbilityCooldownBetweenCharge: "charge delay" }[key]; // a word the trial design shows after an ambiguous icon
+    return '<span class="chip" data-tip="' + esc(title) + '"' + (lb ? ' data-l="' + lb + '"' : "") + '>' + (ic || glyph + " ") + esc(text) + "</span>";
   }
   [["AbilityDuration", "⏳", "Duration"], ["AbilityCastRange", "↔", "Range"]].forEach(function (g) {
     var p = effP(it, g[0]); seen[g[0]] = 1; if ((NO_CHIP[it.name] || {})[g[0]]) return;
@@ -6216,7 +6202,7 @@ function animateLayout(fresh, snap) {
       undo.push(function () { if (g.parentNode) g.parentNode.removeChild(g); });
     });
   }
-  if (v2On()) anims.forEach(function (a) { try { a.playbackRate = 1.5; } catch (e) {} }); // trial design: the same moves, a third quicker
+  if (v2On()) anims.forEach(function (a) { try { a.playbackRate = 1.15; } catch (e) {} }); // trial design: the same moves, a little quicker
   setTimeout(function () { anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); undo.forEach(function (f) { f(); }); }, LAY_MS + 420);
 }
 var GLOW_UP = ["0 0 0 2px rgba(196,160,78,.9),0 0 16px 3px rgba(220,180,70,.4),inset 0 0 12px rgba(220,180,70,.14)", "0 0 0 0 rgba(255,200,60,0),0 0 0 rgba(255,200,60,0)"];
@@ -6224,7 +6210,7 @@ var GLOW_DN = ["0 0 0 2px rgba(84,112,238,.92),0 0 16px 3px rgba(68,104,242,.42)
 function glow(el, down, list) { // the same glow as the .pop class, run as a Web Animation too so it starts on the same frame as the layout animation and a tile that is still growing cannot lose it
   if (!el.animate) return;
   var g = down ? GLOW_DN : GLOW_UP;
-  try { list.push(el.animate([{ boxShadow: g[1], offset: 0 }, { boxShadow: g[0], offset: .4 }, { boxShadow: g[1], offset: 1 }], { duration: v2On() ? 700 : 1500, easing: "ease-in-out", fill: "both" })); } catch (e) {}
+  try { list.push(el.animate([{ boxShadow: g[1], offset: 0 }, { boxShadow: g[0], offset: .4 }, { boxShadow: g[1], offset: 1 }], { duration: v2On() ? 1100 : 1500, easing: "ease-in-out", fill: "both" })); } catch (e) {}
 }
 function pulseChanges(card, before, tier, down) {
   var n = 0, gl = [];
@@ -6634,7 +6620,7 @@ function v2TagText(t) { // what a corner tag means, said in words
 function v2TipOff() { var o = document.querySelector(".v2tip"); if (o) o.remove(); }
 document.addEventListener("click", function (e) {
   v2TipOff(); if (!v2On()) return;
-  var t = e.target.closest ? e.target.closest("#main .ab .sc, #main .ab .stat .dur") : null; if (!t) return;
+  var t = e.target.closest ? e.target.closest("#main .ab .sc") : null; if (!t) return; // scaling tags only: an hourglass duration reads fine
   var msg = v2TagText(t); if (!msg) return;
   var d = document.createElement("div"); d.className = "v2tip"; d.textContent = msg; document.body.appendChild(d);
   var r = t.getBoundingClientRect(), w = d.offsetWidth;
