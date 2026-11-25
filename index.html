@@ -1185,9 +1185,8 @@ body.v2 #main .ab .up:not(.on)>div:first-child{background:#2b2536;color:#a99fba}
 body.v2 #main .ab .up:not(.on) .ut{color:#bdb3cb}
 /* 3. less important stats (the plain, uncoloured cards) a little smaller; the coloured ones stay as they are */
 body.v2 #main .ab .stat:not(.big) b{font-size:18px}
-/* 4. labels a step brighter, corner tags a touch bigger; scaling tags explain themselves when tapped */
+/* 4. labels a step brighter; scaling tags explain themselves when tapped */
 body.v2 #main .ab .stat i{color:#c6bcd4;font-size:12.5px}
-body.v2 #main .ab .sc,body.v2 #main .ab .stat .dur{font-size:12px;padding:2px 7px}
 body.v2 #main .ab .sc{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .v2tip{position:fixed;z-index:30;max-width:250px;background:#2f2840;color:var(--fg);border:1px solid #5a4d73;border-radius:8px;padding:7px 11px;font-size:12.5px;line-height:1.35;box-shadow:0 6px 16px rgba(0,0,0,.5);pointer-events:none;animation:tipfade .15s ease-out both}
 /* 5. a somewhat shorter highlight when a tier changes a stat (the numbers no longer count; see pulseChanges) */
@@ -2197,7 +2196,7 @@ function chipsHtml(it) {
   // icon + number, like the wiki; the long-press title carries the name
   function chip(key, glyph, text, title) {
     var ic = P[key] && P[key].icon ? pIcon(P[key].icon) : "";
-    var lb = { Radius: "radius", AbilityCharges: text === "1" ? "charge" : "charges", AbilityCooldownBetweenCharge: "charge delay" }[key]; // a word the trial design shows after an ambiguous icon
+    var lb = { Radius: "radius" }[key]; // a word the trial design shows after an ambiguous icon
     return '<span class="chip" data-tip="' + esc(title) + '"' + (lb ? ' data-l="' + lb + '"' : "") + '>' + (ic || glyph + " ") + esc(text) + "</span>";
   }
   [["AbilityDuration", "⏳", "Duration"], ["AbilityCastRange", "↔", "Range"]].forEach(function (g) {
