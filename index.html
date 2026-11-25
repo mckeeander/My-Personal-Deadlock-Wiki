@@ -1169,6 +1169,49 @@ body.sbkon #main > #back{display:none}body.sbkon #main .hero-h{margin-top:22px}
 .wvl{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:13px;color:var(--dim)}.wvl b{color:var(--fg);font-size:15px}.wvl .wrl{margin-left:auto}
 .wclip{display:flex;flex-wrap:wrap;gap:4px}.wclip i{width:12px;height:20px;border-radius:3px 3px 2px 2px;background:linear-gradient(var(--c) 70%,#b9892f 70%)}
 .wvsum{font-size:13px;color:var(--dim);padding-top:10px;border-top:1px solid var(--line)}.wvsum b{color:var(--fg)}
+/* ---------- trial redesign (Rem's page, switch at the top): body.v2 ---------- */
+.v2sw{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-8px 0 14px;padding:8px 10px 8px 14px;border:1px dashed #4a4060;border-radius:12px;font-size:13px;color:var(--dim)}
+.v2sw b{color:var(--fg);font-weight:600}
+.v2seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:2px}
+.v2seg button{border:0;background:none;border-radius:7px;padding:5px 11px;font-size:12.5px;font-weight:600;color:var(--dim);-webkit-tap-highlight-color:transparent}
+.v2seg button.on{background:var(--gold);color:#1d1508}
+/* 1. the floating bar and its buttons step aside while you scroll down, and come back when you scroll up */
+body.v2 #jbar,body.v2 #toppill,body.v2 #hsecnav{transition:translate .25s ease,opacity .2s ease}
+body.v2.v2hide #jbar,body.v2.v2hide #toppill,body.v2.v2hide #hsecnav{translate:0 28px;opacity:0;pointer-events:none}
+/* 2 + 3. tier boxes: gold is the colour of what you tap (purple stays for spirit); equal columns, text from the top left, an obvious selected state */
+body.v2 #main .ab .ups{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+body.v2 #main .ab .up{text-align:left;border-color:#352d44}
+body.v2 #main .ab .up>div:first-child{background:#2b2536;color:#a99fba;text-align:center}
+body.v2 #main .ab .up>div:last-child{align-items:flex-start;justify-content:flex-start;padding:9px 8px 10px}
+body.v2 #main .ab .up .ut{color:#bdb3cb}
+body.v2 #main .ab .up .nw{white-space:normal}
+body.v2 #main .ab .up.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+body.v2 #main .ab .up.on>div:first-child{background:var(--gold);color:#1d1508}
+body.v2 #main .ab .up.on .ut{color:var(--fg)}
+/* 4. headline numbers (damage, heal, barrier: the coloured cards) big; everything else a lighter, smaller card */
+body.v2 #main .ab .stat:not(.big){background:rgba(255,255,255,.025);border-color:#322a3f;padding:6px 8px}
+body.v2 #main .ab .stat:not(.big) b{font-size:17px}
+body.v2 #main .ab .stat.big b{font-size:22px}
+/* 5. labels a step brighter, corner tags a touch bigger (and tappable: they explain themselves) */
+body.v2 #main .ab .stat i{color:#c6bcd4;font-size:12.5px}
+body.v2 #main .ab .sc,body.v2 #main .ab .stat .dur{font-size:12px;padding:2px 7px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.v2tip{position:fixed;z-index:30;max-width:250px;background:#2f2840;color:var(--fg);border:1px solid #5a4d73;border-radius:8px;padding:7px 11px;font-size:12.5px;line-height:1.35;box-shadow:0 6px 16px rgba(0,0,0,.5);pointer-events:none;animation:tipfade .15s ease-out both}
+/* 6. shorter highlight when a tier changes a stat (the numbers no longer count; see pulseChanges) */
+body.v2 #main .stat.pop,body.v2 #main .chips .chip.pop,body.v2 #main .up.pop,body.v2 #main .minor span.pop{animation-duration:.7s}
+/* 7. section breaks about half the height */
+body.v2 #main details.phd > summary.sec{font-size:22px;padding-top:2px;padding-bottom:14px}
+body.v2 #main details.phd > summary.sec .sect::after{bottom:-15px;width:48px;margin-left:-24px;height:3px}
+body.v2 #main details.phd > summary + *{margin-top:16px}
+body.v2.chband #main details.phd.abd{margin-top:6px;padding-top:12px;padding-bottom:16px}
+body.v2.chband #main details.phd.ppd{margin-top:36px;padding-top:12px;padding-bottom:22px}
+body.v2.chband #main #aowrap > details.phd{margin-top:36px}
+body.v2.chband #main #revwrap > details.phd{margin-top:32px}
+body.v2.chband #main details.phd.bsd{padding-bottom:16px}
+/* 8. descriptions a little smaller; header chips say what they are */
+body.v2 #main .ab .desc{font-size:14.5px;line-height:1.45}
+body.v2 #main .ab .chip[data-tip]::after,body.v2 #main .ab .chip.tip::after{content:attr(data-tip);position:static;display:inline;background:none;border:0;box-shadow:none;padding:0;margin-left:5px;font-size:11px;font-weight:500;letter-spacing:0;color:var(--dim);animation:none;text-transform:lowercase;white-space:nowrap}
+body.v2 #main .ab .chip.tip::before{display:none}
+body.v2 #main .ab .chip.tip{background:var(--panel2)}
 </style>
 </head>
 <body class="boot">
@@ -3638,6 +3681,10 @@ document.addEventListener("click", function (e) { var b = e.target.closest ? e.t
   EASE_DUR = 0; hnavGo(b.getAttribute("data-sgo"));
   if (b.classList.contains("hlk")) { b.classList.add("on"); clearTimeout(b._t); b._t = setTimeout(function () { b.classList.remove("on"); }, (EASE_DUR || 400) + 250); } // stays gold while the page glides there
 });
+var V2_TRIAL = { "Rem": 1 }; // trying a redesign on one hero page; the switch at the top of the page flips between it and the current design
+function v2Pref() { try { return localStorage.getItem("v2off") !== "1"; } catch (e) { return true; } }
+function v2On() { return document.body.classList.contains("v2"); }
+function v2Switch() { var on = v2Pref(); return '<div class="v2sw"><span><b>Trial design</b> · only on this hero</span><div class="v2seg" role="group" aria-label="Design"><button data-v2="0"' + (on ? "" : ' class="on"') + '>Current</button><button data-v2="1"' + (on ? ' class="on"' : "") + ">Trial</button></div></div>"; }
 var SBK_TRIAL = new Proxy({}, { get: function () { return 1; } }); // every hero page: the back button beside the search bar, no navigation row
 $("sbk").onclick = function () { // back, from a hero, an item page, What's New or the Glossary
   if (state.tab === "glossary" || state.tab === "news") { slideBack(leaveToHome); return; }
@@ -4121,6 +4168,7 @@ function renderHero(cn) {
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h" style="--hbg:url(&quot;' + esc(heroImg(h)) + '&quot;)"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>"; // no complexity tag: it helps pick a first hero, not look one up
   // base stats starts open (it holds the comparison switch); the weapon folds shut like Patch history; each remembers your choice for this hero
+  if (V2_TRIAL[h.name]) html += v2Switch();
   html += '<details class="phd bsd" open><summary class="sec nofold"><span class="sect">Base stats</span>' + '</summary><div class="stats1">' + (CARD_HEROES[h.name] ? "" : smodeSwitch(h)) + '<div id="stats1">' + (CARD_HEROES[h.name] ? statCards(h) : statView(h)) + "</div></div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
@@ -4138,6 +4186,7 @@ function renderHero(cn) {
   html += '<div id="aowrap">' + abilityOrderHtml(h) + "</div>";
   html += '<div id="popwrap">' + popularHtml(h) + "</div>";
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
+  document.body.classList.toggle("v2", !!V2_TRIAL[h.name] && v2Pref()); document.body.classList.remove("v2hide");
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
   document.body.classList.add("chband"); // every hero page: Base stats flat, Abilities and Popular items on raised panels, the shorter chapters in cards
@@ -5617,7 +5666,7 @@ $("backpill").onclick = function (e) {
   });
 };
 function render() {
-  document.body.classList.remove("boot");
+  document.body.classList.remove("boot", "v2", "v2hide"); // the trial design is only on its hero's page (renderHero puts it back)
   if (state.tab === "glossary") return renderGlossary();
   if (state.tab === "news") return renderNews();
   if (state.tab === "item") return renderItemPage();
@@ -6167,6 +6216,7 @@ function animateLayout(fresh, snap) {
       undo.push(function () { if (g.parentNode) g.parentNode.removeChild(g); });
     });
   }
+  if (v2On()) anims.forEach(function (a) { try { a.playbackRate = 1.5; } catch (e) {} }); // trial design: the same moves, a third quicker
   setTimeout(function () { anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); undo.forEach(function (f) { f(); }); }, LAY_MS + 420);
 }
 var GLOW_UP = ["0 0 0 2px rgba(196,160,78,.9),0 0 16px 3px rgba(220,180,70,.4),inset 0 0 12px rgba(220,180,70,.14)", "0 0 0 0 rgba(255,200,60,0),0 0 0 rgba(255,200,60,0)"];
@@ -6174,13 +6224,13 @@ var GLOW_DN = ["0 0 0 2px rgba(84,112,238,.92),0 0 16px 3px rgba(68,104,242,.42)
 function glow(el, down, list) { // the same glow as the .pop class, run as a Web Animation too so it starts on the same frame as the layout animation and a tile that is still growing cannot lose it
   if (!el.animate) return;
   var g = down ? GLOW_DN : GLOW_UP;
-  try { list.push(el.animate([{ boxShadow: g[1], offset: 0 }, { boxShadow: g[0], offset: .4 }, { boxShadow: g[1], offset: 1 }], { duration: 1500, easing: "ease-in-out", fill: "both" })); } catch (e) {}
+  try { list.push(el.animate([{ boxShadow: g[1], offset: 0 }, { boxShadow: g[0], offset: .4 }, { boxShadow: g[1], offset: 1 }], { duration: v2On() ? 700 : 1500, easing: "ease-in-out", fill: "both" })); } catch (e) {}
 }
 function pulseChanges(card, before, tier, down) {
   var n = 0, gl = [];
   statEls(card).forEach(function (x) {
     var el = x[0], now = el.textContent.replace(/\s+/g, " ").trim();
-    if (before[x[1]] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); if (el.classList.contains("stat")) glow(el, down, gl); if (COUNT_TEST) countTo(el, before, x[1]); }
+    if (before[x[1]] !== now) { el.classList.add("pop"); if (down) el.classList.add("dn"); if (el.classList.contains("stat")) glow(el, down, gl); if (COUNT_TEST && !v2On()) countTo(el, before, x[1]); } // trial design: numbers change at once, with a shorter glow
   });
   var box = card.querySelector('.up[data-t="' + tier + '"]'); if (box) { box.classList.add("pop"); if (down) box.classList.add("dn"); glow(box, down, gl); }
   setTimeout(function () { gl.forEach(function (a) { try { a.cancel(); } catch (e) {} }); Array.prototype.forEach.call(card.querySelectorAll(".pop"), function (el) { el.classList.remove("pop"); el.classList.remove("dn"); }); }, 1700);
@@ -6552,6 +6602,46 @@ function refreshNow() {
     if (state.heroes.length) { state.note = "Couldn’t refresh (offline?). Showing saved data."; render(); } else showError(e);
   });
 };
+// ---------- trial redesign: behaviour (styles are under body.v2) ----------
+document.addEventListener("click", function (e) { // the Current / Trial switch: styles flip at once, no re-render
+  var b = e.target.closest ? e.target.closest(".v2seg [data-v2]") : null; if (!b) return;
+  var on = b.getAttribute("data-v2") === "1"; try { if (on) localStorage.removeItem("v2off"); else localStorage.setItem("v2off", "1"); } catch (er) {}
+  document.body.classList.toggle("v2", on); document.body.classList.remove("v2hide");
+  Array.prototype.forEach.call(b.parentNode.children, function (x) { x.classList.toggle("on", x === b); });
+  requestAnimationFrame(function () { aoLayout($("aowrap")); popLayout($("popwrap")); chapterGlints(); chjFill(); updateJbar(); });
+});
+(function () { // the floating bar steps aside while you scroll down and comes back as soon as you scroll up (or reach the top or bottom)
+  var lastY = window.pageYOffset || 0, run = 0;
+  window.addEventListener("scroll", function () {
+    var y = window.pageYOffset || 0, dy = y - lastY; lastY = y;
+    if (!v2On()) return;
+    run = dy > 0 ? Math.max(0, run) + dy : Math.min(0, run) + dy;
+    var nearEnd = y < 160 || y + window.innerHeight > document.documentElement.scrollHeight - 80;
+    if (nearEnd || run < -24) document.body.classList.remove("v2hide");
+    else if (run > 40 && !JLOCK) document.body.classList.add("v2hide");
+  }, { passive: true });
+})();
+function v2TagText(t) { // what a corner tag means, said in words
+  var n = ((t.textContent || "").match(/[\d.]+/) || [""])[0], txt = (t.textContent || "").trim();
+  if (t.classList.contains("dur")) return "Lasts " + txt;
+  var sb = t.closest(".stat") && t.closest(".stat").querySelector("b"), u = sb ? (/^[^\d-]*-?[\d.]+\s*([%a-z/]*)/i.exec(sb.textContent.trim()) || [])[1] || "" : ""; n += u; // the stat's own unit: "+0.03%", "+0.4/s"
+  if (t.classList.contains("sp")) return "Spirit scaling: +" + n + " for each point of Spirit Power you have";
+  if (t.classList.contains("rg")) return "Grows with your Ability Range bonuses (×" + n + ")";
+  if (t.classList.contains("bn")) return "Boon scaling: +" + n + " with each boon (level-up)";
+  if (t.classList.contains("wp")) { var m = /^(.*?)\s*×/.exec(txt); return m && m[1] ? "Grows with your " + m[1].toLowerCase() + " damage (×" + n + ")" : "Weapon scaling: grows with your weapon damage (×" + n + ")"; }
+  return "";
+}
+function v2TipOff() { var o = document.querySelector(".v2tip"); if (o) o.remove(); }
+document.addEventListener("click", function (e) {
+  v2TipOff(); if (!v2On()) return;
+  var t = e.target.closest ? e.target.closest("#main .ab .sc, #main .ab .stat .dur") : null; if (!t) return;
+  var msg = v2TagText(t); if (!msg) return;
+  var d = document.createElement("div"); d.className = "v2tip"; d.textContent = msg; document.body.appendChild(d);
+  var r = t.getBoundingClientRect(), w = d.offsetWidth;
+  d.style.left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)) + "px"; d.style.top = Math.max(8, r.top - d.offsetHeight - 8) + "px";
+  clearTimeout(window._v2t); window._v2t = setTimeout(v2TipOff, 3200);
+});
+window.addEventListener("scroll", v2TipOff, { passive: true });
 if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {} }
 
 setTimeout(function () { document.body.classList.remove("boot"); }, 6000); // failsafe: the credits always appear
