@@ -4,7 +4,7 @@
   "trooper": {
    "health": 300,
    "melee_health": 400,
-   "dps_vs_heroes": 28.0,
+   "dps_vs_heroes": 30.8,
    "wave_first_sec": 16,
    "wave_sec": 30,
    "wave_late_sec": 25,
@@ -52,8 +52,8 @@
    "growth2": 450
   },
   "mid_boss": {
-   "health": 15600,
-   "health_per_min": 234,
+   "health": 12500,
+   "health_per_min": 250,
    "shield_per_sec": 35,
    "shield_per_min": 5,
    "regen": 15.0,
@@ -61,7 +61,7 @@
    "spirit_resist": 0.0,
    "debuff_resist": 35,
    "shred_resist": 50,
-   "dps": 100.0,
+   "dps": 130.0,
    "range": 38.1,
    "respawn_sec": 420,
    "souls": 1500,
@@ -85,21 +85,21 @@
    {
     "tier": 1,
     "health": 142,
-    "souls": 45,
+    "souls": 43,
     "from_sec": 120,
     "souls_pct_per_min": 1.08
    },
    {
     "tier": 2,
     "health": 354,
-    "souls": 75,
+    "souls": 71,
     "from_sec": 300,
     "souls_pct_per_min": 1.08
    },
    {
     "tier": 3,
     "health": 1246,
-    "souls": 199,
+    "souls": 189,
     "from_sec": 480,
     "souls_pct_per_min": 1.08
    }
@@ -109,11 +109,11 @@
    "kill_min": 200,
    "kill_max": 2200,
    "kill_ramp_sec": 2400,
-   "first_kill_bonus": 125,
+   "first_kill_bonus": 175,
    "killer_assist_ratio": 2.2,
    "assist_window_sec": 10,
    "trooper_instant_ratio": 0.5,
-   "comeback_redirect": 0.7,
+   "comeback_redirect": 0.8,
    "tick_start_sec": 480
   },
   "urn": {
