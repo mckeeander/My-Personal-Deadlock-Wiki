@@ -301,6 +301,10 @@ pre{white-space:pre-wrap;word-break:break-all;font-size:11px;background:var(--pa
 details.lore{margin:4px 0 6px;color:var(--dim);font-size:14px;line-height:1.45}
 details.lore summary{cursor:pointer;color:var(--gold);font-size:13px;margin-bottom:6px}
 .stat.plain{border-color:var(--line);background:var(--panel2)}
+/* pure damage (ignores resists): a radiant white card that glows, and the same glow on "pure damage" in the text */
+.stat.big.ptile{border-color:#f3ece0;background:linear-gradient(180deg,#2f2c36,#26242c);box-shadow:0 0 14px rgba(255,246,225,.28),inset 0 0 12px rgba(255,255,255,.05)}
+.stat.big.ptile b{color:#fff;text-shadow:0 0 10px rgba(255,250,235,.55)}
+.desc .pure,.pure{color:#fff;font-weight:700;text-shadow:0 0 8px rgba(255,248,230,.6)}
 .stat.big.wtile{border-color:var(--weapon);background:#3a2814}.stat.big.htile{border-color:var(--vital);background:#1d3320}.stat.big.btile{border-color:#6AA6FF;background:#1c2a44}
 .bgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 8px;margin-bottom:12px}.bgrid .stats{grid-template-columns:1fr;margin-bottom:0;flex:1}.bcell{display:flex;flex-direction:column} /* inside a grid cell the space under the cards and over the next heading would add up instead of overlapping, so the cards drop theirs; side by side they share a height */.blk .suit{width:13px;height:13px;vertical-align:-2px;margin-right:5px}
 .up{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
@@ -1300,6 +1304,7 @@ function rich(s) {
       var c = /highlight/.test(cls) ? "hl" : /diminish/.test(cls) ? "dm" : "", gk = "";
       if (/inline-attribute-label/.test(cls)) gk = GATTR[cls.replace(/inline-attribute-label/, "").trim().split(/\s+/)[0]] || "";
       if (gk) c = c ? c + " gl" : "gl";
+      if (/PureDamage/.test(cls)) { c = c ? c + " pure" : "pure"; col = ""; } // "pure damage" in the text matches its card
       out += "<span" + (c ? ' class="' + c + '"' : "") + (gk ? ' data-g="' + gk + '"' : "") + (col ? ' style="color:' + col + '"' : "") + ">";
       return;
     }
@@ -1505,7 +1510,7 @@ function effP(it, key) {
 }
 // experiment: a duration shown on the card of the effect it times, instead of as its own stat
 // extra effect → duration pairs on top of the automatic ones (the duration becomes a corner tag and its own card goes)
-var DUR_ADD = { "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Ava": { OutgoingDamagePercent: "DamageAmpDuration" }, "Serrated Knives": { BleedDPSPerStack: "BleedDuration" }, "Bloodletting": { DamagePctDeferred: "DeferredDamageDuration" }, "Death Slam": { SlowPercent: "SlowDuration" },
+var DUR_ADD = { "Rook Battery": { FireRateSlow: "DebuffDuration" }, "Infernal Resilience": { RegenIncomingDamagePercent: "RegenIncomingDamageDuration" }, "Flawless Advance": { BulletResist: "DashBuffDuration" }, "Scorn": { DamageBonus: "DebuffDuration" }, "Grapple": { WeaponDamageBonus: "WeaponDamageBonusDuration" }, "Ava": { OutgoingDamagePercent: "DamageAmpDuration" }, "Serrated Knives": { BleedDPSPerStack: "BleedDuration" }, "Bloodletting": { DamagePctDeferred: "DeferredDamageDuration" }, "Death Slam": { SlowPercent: "SlowDuration" },
   "Threadsap": { MagicDamagePerBullet: "DebuffDuration" }, "Granny Long Legs": { HeavyMeleeSlowPercent: "HeavyMeleeSlowDuration" }, "Baba's Brew": { DamagePerSecond: "BurnDuration", SpiritResistReduction: "BurnDuration" },
   "Exploding Uppercut": { BonusFireRate: "ExplodeDebuffDuration", BuffBaseWeaponPct: "UppercutBuffOnHit" }, "Telekinesis": { SlowPercent: "AbilityDuration" }, "Kinetic Pulse": { BulletResistReduction: "SlowDuration" }, "Rejuvenating Aurora": { MovementSpeedBonus: "MovementSpeedBonusDuration" }, "Powder Keg": { DPS: "BurnDuration" }, "Essence Bomb": { BloodSpillDPSPercent: "BloodSpillDuration" }, "Heavy Barrage": { EnemyDashSlowPercent: "MoveSlowDuration" }, "Fire Scarabs": { DPS: "StealDuration", OutgoingDamagePenaltyPercent: "StealDuration" }, "Dust Devil": { WhirlwindEvasionChance: "WhirlwindDuration" }, "Wretched Vapors": { CrashTimeScalePenaltyPercent: "CrashDuration" }, "Burrow": { SpinSlowPercent: "SpinSlowDuration" }, "Bookwyrm": { DPS: "GroundFlameDuration" }, "Pulse Grenade": { DamageAmplificationPerStack: "DebuffDuration" }, "Captivating Read": { TechArmorDamageReduction: "DebuffDuration" },
   "Rallying Charge": { BonusMoveSpeed: "BuffDuration" }, "Pillow Toss": { FadingSlowPercent: "EffectDuration", FireRateSlow: "EffectDuration" }, "Tag Along": { HealingPerSecond: "HealthRegenDuration", BonusSpiritPower: "HopOffEffecDuration", TechPowerPercent: "HopOffEffecDuration" },
@@ -1516,7 +1521,7 @@ var DUR_KEEP = { "Spirit Snare": { TetherDuration: 1 } };
 var DUR_OV = { "Itani Lo Sahn": { IncomingDamageReductionPercent: "DebuffDuration" }, "Still Life": { HealthRegen: "BuffDuration" }, "Entangling Bola": { SlowPercent: "DebuffDuration" }, "Sanguine Retreat": { BonusFireRate: "BuffDuration" }, "Smoke Bomb": { BulletLifesteal: "PostInvisBuffDuration" }, "Spirit Snare": { SlowPercent: "TetherDuration", BulletArmorReduction: "DebuffDuration" }, "Barrage": { MoveSlowPercent: "SlowDuration", AmpPercentPerStack: "AmpDuration" },
   "Soul Exchange": { TechResist: "SelfBuffDuration", BonusFireRate: "SelfBuffDuration", BonusSpirit: "SelfBuffDuration" } };
 // stats the data leaves untyped that are really spirit (Itani Lo Sahn's bonus multiplies its spirit damage)
-var TECH_OV = { "Itani Lo Sahn|BonusDamagePercent": 1 };
+var TECH_OV = { "Itani Lo Sahn|BonusDamagePercent": 1, "Rook Battery|CurrentHealthPercent": 1 }; // spirit damage the game doesn't mark as such (Rook Battery's current-health damage is reduced by Spirit Resist)
 // pairs effect keys with the duration that times them: by name first (SlowDuration → SlowPercent, FireRateSlow),
 // then a lone generic Debuff/Buff Duration covers the rest of its block's effects
 var DUR_SKIP = /^(Ability|Channel|Cast|Stun|Silence|Sleep|Immobilize|Tether|Fear|Invis|Disarm|Lifetime|Hold|Root|Petrify|Turret|Wall|Total|Ultimate|Explosion)/;
@@ -1572,7 +1577,7 @@ function durPairs(it, secs, GO, moved, extra) {
   });
   return out;
 }
-var ORDER_OV = { "Malice": ["Damage", "Health Cost", "Blood Shards", "Spread Angle"], "Infernal Resilience": ["Damage Regenerated", "Max Health", "Debuff Resist", "Melee Lifesteal"], "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Slow"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Slow", "Damage Taken from McGinnis", "Mini Turrets"],
+var ORDER_OV = { "Hotel Guest": ["Check-Out Time", "Stamina Drain per Second"], "Malice": ["Damage", "Health Cost", "Blood Shards", "Spread Angle"], "Infernal Resilience": ["Damage Regenerated", "Max Health", "Debuff Resist", "Melee Lifesteal"], "Barrage": ["Damage Per Projectile", "Damage Amp Per Stack", "Slow"], "Djinn's Mark": ["Base Damage", "Damage Per Mark", "Max Marks", "Fading Slow", "Slow Duration", "Stun at Max Marks"], "Spectral Wall": ["Damage", "Slow", "Damage Taken from McGinnis", "Mini Turrets"],
   "Traveler": ["Barrier", "Move Speed", "Fire Rate", "Buff Duration"], "Crackshot": ["Damage", "Fading Slow", "Slow Duration", "Bullet Resist", "Shred Duration"], "Spirit Lasso": ["Damage", "Stun"], "Sleep Dagger": ["Damage", "Sleep Duration", "Bullet Resist", "Bullet Resist Reduction Duration", "Fixation Stacks"],
   "Smoke Bomb": ["Fade Time", "Invis Sprint Speed", "Bullet Lifesteal", "Buff Duration"],
   "Stalker's Mark": ["Current Health as Bleed Damage", "Bullet Resist", "Incoming Healing"],
@@ -1594,9 +1599,10 @@ var NO_CHIP = { "Call Bell": { AbilityDuration: 1 }, "Hotel Guest": { AbilityDur
 var BLK_OV = { "Rend|On Close Range": "Within {RangeForBonusDamage}:", "Napalm|Napalm Effects:": "Napalmed Enemies:", "Rule, Ratannia!|Banner Aura": "Banner Aura:", "Slice and Dice|On hit": "On Hit:", "Light Eater|On Bullet Hit": "On Bullet Hit:", "Screwjab Dagger|On Stack:": "Per Stack (Max {MaxStacks}):", "Flying Slash|Upon reaching target:": "On Arrival:", "Jumpstart|On Buff:": "You Gain:", "Abstract Landscape|On Buff:": "Allies Inside Gain:", "Abstract Landscape|On Enemy Hit:": "Enemies That Leave:", "Call Bell|On Impact": "On Impact:", "Call Bell|Explosion": "On Explosion:", "Doorway|On Portal": "First Trip Through a Door:", "Luggage Cart|On Wall Hit": "On Wall Hit:",
   "Hotel Guest|Cost of Stay": "Cost of Stay:", "Hotel Guest|Failure to Check-Out": "Failure to Check-Out:", "Hotel Guest|While a Guest": "While a Guest:", "Rule, Ratannia!|Banner Slam": "Banner Slam:", "Malice|Effect Per Stack:": "Per Stack (Max {MaxStacks}):" }; // a game block heading, reworded
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 }, "Rend": { RangeForBonusDamage: 1, UseHeavyMelee: 1 }, "Bloodscent": { IsolationRange: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Fixation": { ProcDamageStackCount: 1 }, "Entangling Thorns": { TimeToEntangle: 1 }, "Kudzu Connection": { TotalTetherTargets: 1 }, "Malice": { MaxStacks: 1 }, "Soul Exchange": { SilenceRadius: 1 }, "Heavy Barrage": { AbilityDuration: 1 }, "Rallying Charge": { KnightCountInFirstWave: 1 }, "Itani Lo Sahn": { LowHealthEnemyThresholdPct: 1 }, "Screwjab Dagger": { MaxStacks: 1 }, "Puddle Punch": { UseHeavyMelee: 1 }, "Consecrating Grenade": { BurnRadius: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
-var CHIP_KEYS = { "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"], "Disengaging Sigil": ["SigilRadius"], "Flawless Advance": ["AttackDashRange", "DashSpeed"], "Hyper Beam": ["BeamLength", "BeamWidth"], "Arctic Beam": ["PathLength"], "Kinetic Pulse": ["StompRange"], "Guided Owl": ["ExplosionRadius"], "Rejuvenating Aurora": ["AbilityChannelTime"], "Singularity": ["VacuumRadius", "AbilityChannelTime"], "Bounce Pad": ["Radius"], "Concussive Combustion": ["ExplodeDelay"], "Air Drop": ["OnLandDamageRadius"], "Life Drain": ["MaxRange"], "Mini Turret": ["TurretLifetime"], "Medicinal Specter": ["HealRadius"], "Heavy Barrage": ["ExplosionRadius"], "Burrow": ["AbilityChannelTime"], "Combo": ["AbilityChannelTime"], "Lurking Terrors": ["AbilityChannelTime"], "Death Slam": ["ImpactRadius"], "Bookwyrm": ["DragonTravelRange"], "Flying Cloak": ["MaxLifetime"], "Lightning Ball": ["ShockRadius", "MaxLifetime"], "Static Charge": ["ShockRadius"], "Storm Cloud": ["AbilityChannelTime"], "Call Bell": ["ProjectileFuse"], "Doorway": ["DoorwayDistance"], "Kingside Knight": ["BonusTargetRadius"], "Stake": ["CaptureRadius"], "Goo Ball": ["BallRadius"], "Power Slash": ["SlashLength"], "Radiant Daggers": ["ExplosionRadius"], "Borrowed Decree": ["ExplosionRadius"] }; // stats shown as a header chip beside the cooldown and range, not as a card
-var PROMOTE = { "Petrifying Bola": { SlowPercent: 1 }, "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 }, "Naptime": { SleepDuration: 1 }, "Crow Familiar": { BulletResistReduction: 1, TechArmorDamageReduction: 1 }, "Flow State": { FadingSlowPercent: 1 }, "Goo Ball": { TechResist: 1, BulletResist: 1 }, "Last Stand": { BulletResist: 1, TechResist: 1 }, "Shadow Transformation": { BulletResist: 1, TechResist: 1 }, "Shining Wonder": { GroundDashReductionPercent: 1 }, "Bullet Dance": { EvasionPercent: 1, ChannelMoveSpeed: 1 }, "Flame Dash": { SlowResistance: 1 } }; // listed as small text by the game; shown as a card
-var DEMOTE = { "Slice and Dice": { MaxCooldownReductionsFromHits: 1 }, "Shadow Transformation": { AbilitySpeedPct: 1 }, "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 }, "Threadsap": { StolenSpiritEffectiveness: 1 }, "Bullet Dance": { TargetsPerTick: 1 }, "Nox Nostra": { BatPerSecond: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Afterburn": { BurnDurationBase: 1, BurnDuration: 1 } }; // listed as cards by the game; shown as small text
+var CHIP_KEYS = { "Rabbit Hex": ["HexDuration"], "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"], "Disengaging Sigil": ["SigilRadius"], "Flawless Advance": ["AttackDashRange", "DashSpeed"], "Hyper Beam": ["BeamLength", "BeamWidth"], "Arctic Beam": ["PathLength"], "Kinetic Pulse": ["StompRange"], "Guided Owl": ["ExplosionRadius"], "Rejuvenating Aurora": ["AbilityChannelTime"], "Singularity": ["VacuumRadius", "AbilityChannelTime"], "Bounce Pad": ["Radius"], "Concussive Combustion": ["ExplodeDelay"], "Air Drop": ["OnLandDamageRadius"], "Life Drain": ["MaxRange"], "Mini Turret": ["TurretLifetime"], "Medicinal Specter": ["HealRadius"], "Heavy Barrage": ["ExplosionRadius"], "Burrow": ["AbilityChannelTime"], "Combo": ["AbilityChannelTime"], "Lurking Terrors": ["AbilityChannelTime"], "Death Slam": ["ImpactRadius"], "Bookwyrm": ["DragonTravelRange"], "Flying Cloak": ["MaxLifetime"], "Lightning Ball": ["ShockRadius", "MaxLifetime"], "Static Charge": ["ShockRadius"], "Storm Cloud": ["AbilityChannelTime"], "Call Bell": ["ProjectileFuse"], "Doorway": ["DoorwayDistance"], "Kingside Knight": ["BonusTargetRadius"], "Stake": ["CaptureRadius"], "Goo Ball": ["BallRadius"], "Power Slash": ["SlashLength"], "Radiant Daggers": ["ExplosionRadius"], "Borrowed Decree": ["ExplosionRadius"] }; // stats shown as a header chip beside the cooldown and range, not as a card
+var PROMOTE = { "Petrifying Bola": { SlowPercent: 1 }, "Rabbit Hex": { MoveSpeedBonusPct: 1 }, "Develop Queen": { SlowPercent: 1 }, "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 }, "Naptime": { SleepDuration: 1 }, "Crow Familiar": { BulletResistReduction: 1, TechArmorDamageReduction: 1 }, "Flow State": { FadingSlowPercent: 1 }, "Goo Ball": { TechResist: 1, BulletResist: 1 }, "Last Stand": { BulletResist: 1, TechResist: 1 }, "Shadow Transformation": { BulletResist: 1, TechResist: 1 }, "Shining Wonder": { GroundDashReductionPercent: 1 }, "Bullet Dance": { EvasionPercent: 1, ChannelMoveSpeed: 1 }, "Flame Dash": { SlowResistance: 1 } }; // listed as small text by the game; shown as a card
+var MINOR_FIRST = { "Setup Bishop": { MoveDistance: 1, MoveCooldown: 1, MaxPieces: 1 } }; // small stats shown under the first block of cards instead of at the end
+var DEMOTE = { "Slice and Dice": { MaxCooldownReductionsFromHits: 1 }, "Setup Bishop": { MaxPieces: 1, MaxStacks: 1 }, "Kingside Knight": { MaxPieces: 1 }, "Shadow Transformation": { AbilitySpeedPct: 1 }, "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 }, "Threadsap": { StolenSpiritEffectiveness: 1 }, "Bullet Dance": { TargetsPerTick: 1 }, "Nox Nostra": { BatPerSecond: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Afterburn": { BurnDurationBase: 1, BurnDuration: 1 } }; // listed as cards by the game; shown as small text
 var NEG_OV = { "Slice and Dice|CooldownReductionOnHit": 1, "Slice and Dice|CooldownReductionOnHitNonHero": 1, "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": 1, "Quantum Entanglement|ReduceDebuffs": 1, "Wretched Vapors|CrashTimeScalePenaltyPercent": 1 }; // shown as a minus ("-50% Cooldown", as the tier text says)
 var VAL_SUB = { "Crimson Slash|HealMaxHealth": [/\s*of Max Health$/i, ""], "Crow Familiar|DotHealthPercent": [/ DPS$/, "/s"], "Stalker's Mark|DotHealthPercent": [/ DPS$/, "/s"] }; // a value reworded ("2.2% DPS" -> "2.2%/s")
 var UNIT_OV = { "Chimera Mk1|HeatDrainRate": "/s", "Slice and Dice|MaxCooldownReductionsFromHits": "s" }; // a rate the game leaves unlabelled (its Heat Gain beside it is per second)
@@ -1607,6 +1613,7 @@ var PLAIN_OV = { "Alchemical Flask|WeaponPowerDebuff": 1, "Jumpstart|CurrentHeal
 var NO_SIGN = { "Flow State|FadingSlowPercent": 1, "Fixation|SlowPercent": 1, "Djinn's Mark|MovementSpeedSlow": 1, "Rule, Ratannia!|SlowPercent": 1 };
 var PCT_FORCE = { "Healing Needles|BuffExtendPercentPerShot": 1, "Crimson Slash|BuffMeleeDamage": 1 };
 var BONUS_ONLY = { "Mini Turret|AttackSpeedMult": 1 };
+var PLUS_OV = { "Rabbit Hex|DamageAmpPercentage": 1 }; // a bonus shown with a "+" the game leaves off
 var NO_PLUS = { "Grapple Arm|BulletAmp": 1, "Essence Bomb|BloodSpillDPSPercent": 1 }; // a bonus shown without its "+" sign
 var TOP_MINOR = { "Lil Helpers": ["HelperCount"] }; // stats shown as a small-stat line under the description, above the categories
 var MOVE_TO = { "Sticky Bomb": { FuseTime: "On Hit:" }, "Telekinesis": { Damage: 1 }, "Nox Nostra": { Damage: "On Hit:" }, "Consecrating Grenade": { HealAmpReceivePenaltyPercent: "On Hit:" } }; // a listed stat shown in another of the game's blocks: by that block's heading, or (a number) the first block of that section
@@ -1638,11 +1645,13 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Last Stand|PulseDPS": "Damage Per Second", "Flying Slash|SpiritBonus": "Spirit Power", "Crimson Slash|BuffMeleeDamage": "Melee Damage", "Crimson Slash|HealFixedHealth": "Heal", "Crimson Slash|HealMaxHealth": "Max Health Heal", "Shadow Transformation|ShadowFormDurationOnKill": "Duration Added", "Shadow Transformation|MaxHealthRegen": "Max Health Healed",
   "Jumpstart|CurrentHealthPercentDamage": "Current Health as Self Damage", "Aura of Suffering|EnemyDashSlowPercent": "Dash Distance", "Shocking Reanimation|BonusDamagePerBullet": "Spirit Damage per Bullet",
   "Crow Familiar|DotHealthPercent": "Current Health as Bleed Damage", "Flow State|DamageAmpBuildDuration": "Build-up Time", "Assassinate|LowHealthEnemyDamageBonus": "Bonus Damage vs Low Health", "Flow State|ExplosionRadius": "Flick Radius", "Flow State|GroundAuraDuration": "Trail Duration",
-  "Flow State|FadingSlowPercent": "Fading Slow", "Flow State|OutgoingDamagePercent": "Damage Amp", "Still Life|OutgoingDamagePercent": "Subject's Damage", "Goo Ball|StunDuration": "Stun", "Rabbit Hex|DamageAmpPercentage": "Damage Taken", "Rabbit Hex|MoveSpeedBonusPct": "Rabbit Move Speed", "Kingside Knight|BonusTargetRadius": "Second Ally Radius",
-  "Hotel Guest|LateCheckoutStun": "Stun", "Hotel Guest|LateCheckoutCooldown": "Cooldown Penalty", "Hotel Guest|StaminaDrain": "Stamina Drain per Second", "Consecrating Grenade|DPS": "Burn DPS", "Hex-Lined Snap Trap|IncomingDamagePercentFromCaster": "Damage vs Revealed Targets", "Tag Along|MissingHealthBurstPct": "Missing Health Healed", "Tag Along|BonusSpiritPower": "Spirit Power", "Lil Helpers|HelperCount": "Helpers", "Lightning Ball|ShockRadius": "Radius", "Static Charge|ShockRadius": "Stun Radius",
-  "Serrated Knives|MovementSlow": "Slow", "Slice and Dice|CooldownReductionOnHit": "Cooldown per Hero Hit", "Slice and Dice|CooldownReductionOnHitNonHero": "Cooldown per Non-Hero Hit", "Slice and Dice|MaxCooldownReductionsFromHits": "Max Cooldown Reduction",
+  "Flow State|FadingSlowPercent": "Fading Slow", "Flow State|OutgoingDamagePercent": "Damage Amp", "Still Life|OutgoingDamagePercent": "Subject's Damage", "Goo Ball|StunDuration": "Stun", "Rabbit Hex|DamageAmpPercentage": "Damage Taken", "Rabbit Hex|MoveSpeedBonusPct": "Rabbit Move Speed", "Rook Battery|CurrentHealthPercent": "Current Health as Damage", "Kingside Knight|BonusTargetRadius": "Second Ally Radius",
+  "Hotel Guest|LateCheckoutStun": "Stun", "Hotel Guest|LateCheckoutCooldown": "Cooldown", "Hotel Guest|StaminaDrain": "Stamina Drain per Second", "Consecrating Grenade|DPS": "Burn DPS", "Hex-Lined Snap Trap|IncomingDamagePercentFromCaster": "Damage vs Revealed Targets", "Tag Along|MissingHealthBurstPct": "Missing Health Healed", "Tag Along|BonusSpiritPower": "Spirit Power", "Lil Helpers|HelperCount": "Helpers", "Lightning Ball|ShockRadius": "Radius", "Static Charge|ShockRadius": "Stun Radius",
+  "Serrated Knives|MovementSlow": "Slow", "Slice and Dice|CooldownReductionOnHit": "Per Hero Hit", "Slice and Dice|CooldownReductionOnHitNonHero": "Per Non-Hero Hit", "Slice and Dice|MaxCooldownReductionsFromHits": "Max Cooldown Reduction",
   "Killing Blow|EnemyHealthPercent": "Execute Threshold", "Boot Kick|OutgoingDamagePercent": "Enemy Damage", "Boot Kick|StaminaRestore": "Stamina Restored on Hero Hit", "Entangling Bola|RicochetCount": "Ricochets", "Entangling Bola|RicochetRange": "Ricochet Range", "Rule, Ratannia!|SlowPercent": "Slow", "Bookwyrm|DragonTravelRange": "Travel Range", "Enchanter's Satchel|AbilityDuration": "Escape Duration", "Granny Long Legs|HeavyMeleeSpiritDamage": "Damage", "Granny Long Legs|HeavyMeleeSlowPercent": "Movement Slow" }; // some game labels need the subject spelled out
-function propRec(it, key) {
+var PURE_OV = { "Consecrating Grenade|DPS": 1, "Ira Domini|BonusDamage": 1 }; // pure damage: no resist reduces it (the only two in the game, both Venator's)
+function propRec(it, key) { var r = propRec0(it, key); if (r && PLUS_OV[it.name + "|" + key]) r.plus = 1; if (r && PURE_OV[it.name + "|" + key]) r.pure = 1; return r; }
+function propRec0(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
   if (isDisabled(p)) return null;
@@ -1675,6 +1684,7 @@ function propRec(it, key) {
   if (LABEL_OV[it.name + "|" + key]) label = LABEL_OV[it.name + "|" + key];
   if (v != null && BONUS_ONLY[it.name + "|" + key]) { var bo = parseFloat(shown.value) - parseFloat(p0.value); if (!(bo > 0)) return null; v = "+" + fmtNum(bo) + (/%$/.test(v) ? "%" : ""); } // only what the tiers add (Mini Turret's fire rate: nothing at 100%, +25% at tier 3)
   if (v != null && NO_PLUS[it.name + "|" + key]) v = v.replace(/^\+/, "");
+  if (v != null && PLUS_OV[it.name + "|" + key] && /^\d/.test(v)) v = "+" + v;
   if (v != null && PCT_FORCE[it.name + "|" + key]) v = v.replace(/[a-z]+$/i, "") + "%"; // a percentage the game sends with the wrong unit (Healing Needles: 6%, not 6s)
   if (v != null && NO_SIGN[it.name + "|" + key]) v = v.replace(/^[+-]/, ""); // "12% Slow", not "-12%"
   if (v != null && NEG_OV[it.name + "|" + key]) v = "-" + v.replace(/^[+-]/, ""); // a reduction the game stores as a positive number
@@ -1869,7 +1879,7 @@ function pIcon(src) { return src ? imgTag(src).replace("<img ", '<img class="pi"
 function isDmgLbl(l) { return /Damage|DPS|Burst|Health Steal/i.test(l) && !/Stolen/i.test(l); }
 function unsign(v) { return String(v).replace(/^\+(?=[\d.])/, ""); } // a card's or small stat's number without a "+": a gain is the default reading; "-" stays because it says something is reduced
 function tile(v, l, r) {
-  v = unsign(v);
+  if (!(r && r.plus)) v = unsign(v);
   if (r && r.kind === "melee" && l === "Damage") l = "Melee Damage"; // the corner tag says light/heavy; the label stays "Melee Damage" at every tier
   var badge = scaleBadge(r);
   var dur = r && r.dur ? '<span class="dur">' + siIcon("hourglass") + esc(r.dur) + "</span>" : ""; // how long this effect lasts, tagged in the corner
@@ -1879,7 +1889,7 @@ function tile(v, l, r) {
   var stealHeal = r && r.heal && /Health Steal|Lifesteal On Hit/.test(l); // damage you heal back one for one (Fire Scarabs, Combo): green
   var tech = r && ((r.tech && isDmgLbl(l)) || sp); // purple boxes are for damage; a spirit-scaling heal, barrier or buff keeps its purple ★ tag on a plain card
   var barrier = r && /Barrier$/.test(l); // a barrier card is blue
-  return '<div class="stat' + (r && r.wpn ? " big wtile" : stealHeal ? " big htile" : tech ? " big" : r && r.heal ? " big htile" : barrier ? " big btile" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
+  return '<div class="stat' + (r && r.pure ? " big ptile" : r && r.wpn ? " big wtile" : stealHeal ? " big htile" : tech ? " big" : r && r.heal ? " big htile" : barrier ? " big btile" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
 }
 // abilities use tooltip_details.info_sections
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
@@ -2050,7 +2060,9 @@ function tooltipHtml(it) {
   Object.keys(DO).forEach(function (k) { if (propRec(it, k) && propRec(it, DO[k])) durUsed[DO[k]] = 1; });
   Object.keys(DUR_KEEP[it.name] || {}).forEach(function (k) { delete durUsed[k]; }); // a duration that also tags a card but keeps its own card (Spirit Snare's curse)
   var allSig = {};
-  function extraHtml(list) { return (list || []).map(function (r) { if (durUsed[r.key]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, withDur(r.key, r)); }).join(""); }
+  var demX = "", minorF = ""; // demX: upgrade-added stats shown as small text; minorF: small stats that sit under the first block of cards (MINOR_FIRST)
+  function mspan(k, html) { if ((MINOR_FIRST[it.name] || {})[k]) { minorF += html; return ""; } return html; }
+  function extraHtml(list) { return (list || []).map(function (r) { if (durUsed[r.key]) return ""; if ((DEMOTE[it.name] || {})[r.key]) { demX += mspan(r.key, "<span><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"); return ""; } allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, withDur(r.key, r)); }).join(""); }
   bi = 0;
   secs.forEach(function (sec, si) {
     var req = sec.property_upgrade_required;
@@ -2086,7 +2098,7 @@ function tooltipHtml(it) {
         }
         var key = pp.important_property || pp.property; if (!key) return;
         var r = withDur(key, propRec(it, key));
-        if (r && (DEMOTE[it.name] || {})[key]) { dem += "<span><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; return; }
+        if (r && (DEMOTE[it.name] || {})[key]) { dem += mspan(key, "<span><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"); return; }
         if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = allSig[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
       });
       tiles += extraHtml(place[bi]);
@@ -2097,14 +2109,14 @@ function tooltipHtml(it) {
       else if (tiles) { parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>"); if (firstStats < 0) firstStats = parts.length - 1; }
       bi++;
     });
-    var minor = dem, promo = "";
+    var minor = dem + demX, promo = ""; demX = "";
     (sec.basic_properties || []).forEach(function (k) {
       if (moved[k] || durUsed[k] || (HIDE_KEYS[it.name] || {})[k] || (k === "Radius" && blockOf.Radius == null)) return; // shown as a header chip, or left off on purpose
       var r = withDur(k, propRec(it, k)); if (!r) return;
       var p0 = (it.properties || {})[k], b0 = p0 ? parseFloat(p0.value) : NaN;
-      if (b0 === 0 || (PROMOTE[it.name] || {})[k] || (/damage$/.test(String(p0 && p0.css_class)) && /Damage$/.test(r.l) && !/Bonus|Reduction|Amp|Self|Headshot/.test(r.l) && !/%$/.test(r.v))) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
+      if ((DEMOTE[it.name] || {})[k]) { /* small text even though an upgrade unlocks it */ } else if (b0 === 0 || (PROMOTE[it.name] || {})[k] || (/damage$/.test(String(p0 && p0.css_class)) && /Damage$/.test(r.l) && !/Bonus|Reduction|Amp|Self|Headshot/.test(r.l) && !/%$/.test(r.v))) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
       var mt = MINOR_TXT[it.name + "|" + k]; if (typeof mt === "function") mt = mt(it); // a small stat said as a sentence ("Enemies within 18m can see you")
-      minor += "<span>" + (mt ? esc(mt).replace("{v}", "<b>" + esc(unsign(r.v)) + "</b>") : "<b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + (r.dur ? " for " + esc(r.dur) : "")) + scaleBadge(r) + "</span>";
+      minor += mspan(k, "<span>" + (mt ? esc(mt).replace("{v}", "<b>" + esc(unsign(r.v)) + "</b>") : "<b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + (r.dur ? " for " + esc(r.dur) : "")) + scaleBadge(r) + "</span>");
     });
     if (promo) {
       var lastStats = -1; for (var pi2 = parts.length - 1; pi2 >= secStart; pi2--) if (/<div class="stats">/.test(parts[pi2])) { lastStats = pi2; break; }
@@ -2114,6 +2126,10 @@ function tooltipHtml(it) {
       if (pFront && firstSt >= 0) { parts[firstSt] = parts[firstSt].replace('<div class="stats">', '<div class="stats">' + pFront); promo = pRest; } // the ability's own hit leads the card
       if (!promo) { /* all placed up front */ } else
       if (lastStats >= 0) parts[lastStats] = parts[lastStats].replace(/<\/div>$/, promo + "</div>"); else parts.push('<div class="stats">' + promo + "</div>");
+    }
+    if (minorF) { // small stats about the first block of cards sit right under it (Setup Bishop: moving the bishop, before what its squares do)
+      for (var pf = secStart; pf < parts.length; pf++) if (/<div class="stats">/.test(parts[pf])) break;
+      parts.splice(pf < parts.length ? pf + 1 : parts.length, 0, '<div class="minor">' + minorF + "</div>"); if (firstMinor < 0) firstMinor = pf + 1; minorF = "";
     }
     if (minor) { parts.push('<div class="minor">' + minor + "</div>"); if (firstMinor < 0) firstMinor = parts.length - 1; }
     if (si === 0) GO.forEach(function (g) {
@@ -2166,12 +2182,14 @@ function listedKeys(it) {
   return s;
 }
 var HEADER_KEYS = { AbilityDuration: 1, AbilityCastRange: 1, AbilityCooldown: 1, Radius: 1, AbilityCharges: 1, AbilityCooldownBetweenCharge: 1 };
+var CD_TIP = { "Audience Participation": "Cooldown if the copy goes unused" }; // what a cooldown chip means when it isn't the usual one
 function cooldownChip(it) { // the cooldown matters on almost every ability, so it gets its own gold chip beside the name
   var cd = effP(it, "AbilityCooldown"), P = it.properties || {};
   if (!cd || isDisabled(cd) || parseFloat(cd.value) === 0) return "";
   var ic = P.AbilityCooldown && P.AbilityCooldown.icon ? pIcon(P.AbilityCooldown.icon) : "⟳ ";
-  return '<span class="chip cd" data-tip="Cooldown">' + ic + esc(fmtVal(cd)) + '</span><span class="cdsep"></span>';
+  return '<span class="chip cd" data-tip="' + esc(CD_TIP[it.name] || "Cooldown") + '">' + ic + esc(fmtVal(cd)) + '</span><span class="cdsep"></span>';
 }
+var CHIP_NAMED = { "Doorway": { DoorwayDistance: 1 } };
 function chipsHtml(it) {
   var left = "", right = "", seen = {}, L = listedKeys(it), P = it.properties || {};
   // icon + number, like the wiki; the long-press title carries the name
@@ -2190,7 +2208,7 @@ function chipsHtml(it) {
     if (rp && !isDisabled(rp) && parseFloat(rp.value) > 0) left += chip("Radius", "◎", fmtVal(rp), "Radius");
   }
   var extra = ((it.tooltip_details && it.tooltip_details.additional_header_properties) || []).concat(CHIP_KEYS[it.name] || []);
-  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" data-tip="' + esc(r.l) + '">' + (pIcon(r.icon) || "") + esc(r.v) + (r.icon ? "" : ' <span class="cl">' + esc(r.l) + "</span>") + "</span>"; }); // no icon: the name says what the number is
+  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" data-tip="' + esc(r.l) + '">' + (pIcon(r.icon) || "") + esc(r.v) + (r.icon && !(CHIP_NAMED[it.name] || {})[k] ? "" : ' <span class="cl">' + esc(r.l) + "</span>") + "</span>"; }); // no icon (or an icon that isn't enough): the name says what the number is
   var ch = effP(it, "AbilityCharges"), nch = ch && !isDisabled(ch) ? parseFloat(ch.value) : 0;
   var nch0 = P.AbilityCharges ? parseFloat(P.AbilityCharges.value) || 0 : 0;
   var cb0 = effP(it, "AbilityCooldownBetweenCharge"), chargey = cb0 && !isDisabled(cb0) && parseFloat(cb0.value) > 0; // a charged ability even at one charge (Lash's Grapple): Extra Charge gives it a second
@@ -2797,6 +2815,7 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
       var M = function (u) { return u / 39.37; }, s0 = M(i.damage_falloff_start_range), e0 = M(i.damage_falloff_end_range), fl = i.damage_falloff_end_scale != null ? i.damage_falloff_end_scale : 0;
       var cut = CUTOFF[h.name], cm = cut && cut.max ? M(cut.max(i)) : null, flat = cut && cut.flat;
       if (flat) { s0 = e0 = cm || s0; fl = 1; } else if (cm && e0 <= s0) { e0 = s0; fl = 1; } // no falloff at all
+      var nofall = !flat && !cm && fl >= 1; // the data gives a falloff window but full damage at both ends (Ira Domini's crossbow, Apollo): there is no falloff, so no start mark
       if (cm && cm > e0 && cm - e0 < 1.5) cm = e0; // a cutoff a metre past the end of falloff is rounding in the data, not a real plateau
       var val = function (m) { return m <= s0 ? 1 : m >= e0 ? fl : 1 + (fl - 1) * (m - s0) / (e0 - s0); };
       var mx = Math.ceil(Math.max(cm || e0, e0) * 1.25 / 5) * 5;
@@ -2806,11 +2825,11 @@ function weaponCard(h, alt) { // alt: a second weapon the hero swaps to (Silver'
       else pts.push([e0, fl], [mx, fl]);
       if (flat && !cm) pts = [[0, 1], [mx, 1]];
       var pth = pts.map(function (q, k) { return (k ? "L" : "M") + X(q[0]) + " " + Y(q[1]); }).join(" ");
-      var mark = flat || (cm && s0 >= cm) ? "" : '<line x1="' + X(s0) + '" y1="0" x2="' + X(s0) + '" y2="52" stroke="#f6e3bf" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>';
-      var endTxt = flat && !cm ? "no falloff · nothing past its max range" : cm ? (s0 >= cm || e0 <= s0 ? "full damage, nothing past " : (cm < e0 ? Math.round(val(cm) * 100) + "%, then nothing past " : fmtNum(Math.round(fl * 100)) + "%, nothing past ")) + Math.round(cm) + "m" : fmtNum(Math.round(fl * 100)) + "% at " + meters(i.damage_falloff_end_range);
-      var showStart = !flat && !(cm && s0 >= cm) && s0 / mx < 0.5;
+      var mark = flat || nofall || (cm && s0 >= cm) ? "" : '<line x1="' + X(s0) + '" y1="0" x2="' + X(s0) + '" y2="52" stroke="#f6e3bf" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>';
+      var endTxt = nofall ? "no falloff · full damage at any range" : flat && !cm ? "no falloff · nothing past its max range" : cm ? (s0 >= cm || e0 <= s0 ? "full damage, nothing past " : (cm < e0 ? Math.round(val(cm) * 100) + "%, then nothing past " : fmtNum(Math.round(fl * 100)) + "%, nothing past ")) + Math.round(cm) + "m" : fmtNum(Math.round(fl * 100)) + "% at " + meters(i.damage_falloff_end_range);
+      var showStart = !flat && !nofall && !(cm && s0 >= cm) && s0 / mx < 0.5;
       fo2 = '<div class="wfch"><span class="wrl2">Damage by distance</span><svg viewBox="0 0 300 52" preserveAspectRatio="none" aria-hidden="true"><path d="' + pth + ' L300 52 L0 52Z" fill="color-mix(in srgb,var(--weapon) 16%,transparent)"/><path d="' + pth + '" fill="none" stroke="var(--weapon)" stroke-width="2.5" vector-effect="non-scaling-stroke"/>' + mark + "</svg>" +
-        '<div class="wfax">' + (showStart ? '<span style="left:' + (s0 / mx * 100).toFixed(1) + '%">full to ' + meters(i.damage_falloff_start_range) + "</span>" : "") + '<span class="fe">' + (!showStart && !flat && !(cm && s0 >= cm) ? "full to " + meters(i.damage_falloff_start_range) + ", " : "") + endTxt + "</span></div></div>";
+        '<div class="wfax">' + (showStart ? '<span style="left:' + (s0 / mx * 100).toFixed(1) + '%">full to ' + meters(i.damage_falloff_start_range) + "</span>" : "") + '<span class="fe">' + (!showStart && !flat && !nofall && !(cm && s0 >= cm) ? "full to " + meters(i.damage_falloff_start_range) + ", " : "") + endTxt + "</span></div></div>";
     }
     var cl2 = cn ? '<div class="wrow"><span class="wrl2">Clip <b class="wcn">' + cn + '</b></span><span class="wclip wfill" style="grid-template-columns:repeat(' + Math.min(cn, 60) + ',1fr);gap:' + (cn > 40 ? 1 : cn > 20 ? 2 : 3) + 'px">' + new Array(Math.min(cn, 60) + 1).join("<i></i>") + "</span>" + (crl ? "<em><b>" + esc(crl) + "</b> reload</em>" : "") + "</div>" : ""; // the clip size with its label, the reload on its own
     return '<section class="wpn wpc"><div class="wph">' + '<div class="wimg">' + imgTag(alt ? itemImg(w) : (gunImg(h) || itemImg(w))) + "</div><div><h3>" + esc(title) + "</h3>" + (attrs ? '<div class="wtags">' + attrs + "</div>" : "") +
@@ -5830,7 +5849,7 @@ function statEls(card) {
 }
 function snapStats(card) {
   var m = {};
-  statEls(card).forEach(function (x) { m[x[1]] = x[0].textContent.replace(/\s+/g, " ").trim(); var dv = x[0].tagName === "DIV", bb = dv ? x[0].querySelector("b") : null;
+  statEls(card).forEach(function (x) { m[x[1]] = x[0].textContent.replace(/\s+/g, " ").trim(); var dv = x[0].tagName === "DIV", bb = dv ? x[0].querySelector("b") : x[0].querySelector(":scope > b"); // a small stat's number is its <b> (its corner tag also has digits)
     m[x[1] + "|b"] = (bb || x[0]).textContent; m[x[1] + "|w"] = x[0].offsetWidth;
     var sc = dv ? x[0].querySelector(".sc") : null; if (sc) { m[x[1] + "|sc"] = sc.textContent; m[x[1] + "|scw"] = sc.offsetWidth; }
     var du = dv ? x[0].querySelector(".dur") : null; if (du) m[x[1] + "|dur"] = du.textContent;
@@ -5933,7 +5952,7 @@ function countTo(el, bef, k) {
   if (!mode) return;
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var isStat = el.tagName === "DIV", go = [];
-  go.push(mode(isStat ? el.querySelector("b") : el, bef[k + "|b"]));
+  go.push(mode(isStat ? el.querySelector("b") : (el.querySelector(":scope > b") || el), bef[k + "|b"])); // a small stat counts its number, not its "×0.23" tag
   if (isStat) { var sc = el.querySelector(".sc"); if (sc) go.push(mode(sc, bef[k + "|sc"])); var du = el.querySelector(".dur"); if (du) go.push(mode(du, bef[k + "|dur"])); // the duration tag in the corner counts too (Threadsap T2)
     var li = el.querySelector("i"), bl = bef[k + "|i"], NR = /-?\d+(?:\.\d+)?/g; // numbers in the label count too, each on its own (Rat Swarm: "Rats (3 wide × 3 deep)")
     if (li && bl != null && li.textContent !== bl && !li.children.length) {
