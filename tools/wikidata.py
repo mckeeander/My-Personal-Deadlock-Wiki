@@ -8,8 +8,12 @@ patchnotes.json: official patch notes since SINCE (newest first), split into gen
                  Inline names are kept as tokens: [[h:Hero]] [[a:Ability]] [[i:Item]].
 powerups.json:   what each map powerup gives (start and full-strength values, duration), from misc-data.json.
 Nothing is written when the input is missing or yields nothing, so the last good copy stays.
+
+The wiki adds a patch's notes by hand, sometimes a day or more after the patch. Until it does, the official notes are
+read from Steam (the game's patch-note announcements) and turned into the same layout; once the wiki has that date,
+its copy is used instead.
 """
-import json, os, re, sys
+import json, os, re, sys, time, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
@@ -56,6 +60,74 @@ def inline(s):
     s = re.sub(r"\{\{[^}]*\}\}", "", s)
     s = re.sub(r"'{2,}", "", s)
     return re.sub(r"\s+", " ", s).strip()
+
+
+STEAM_NEWS = "https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=1422450&count=15&maxlength=0&feeds=steam_community_announcements"
+
+
+def steam_patches(have):
+    """{date: wiki-layout text} for official patch notes on Steam whose date the wiki doesn't have yet."""
+    try:
+        req = urllib.request.Request(STEAM_NEWS, headers={"User-Agent": "personal-deadlock-wiki (data update)"})
+        news = json.load(urllib.request.urlopen(req, timeout=30))["appnews"]["newsitems"]
+    except Exception as e:
+        print("steam news unavailable:", e); return {}
+    out = {}
+    for n in news:
+        title = n.get("title") or ""
+        if "patchnotes" not in (n.get("tags") or []) and not re.search(r"\bupdate\b", title, re.I): continue
+        m = re.search(r"(\d{2})-(\d{2})-(\d{4})", title)  # "Minor Update - 11-26-2026"
+        date = "%s-%s-%s" % (m.group(3), m.group(1), m.group(2)) if m else time.strftime("%Y-%m-%d", time.gmtime(n.get("date") or 0))
+        if date in have or date in out or date < SINCE: continue
+        txt = steam_to_wiki(n.get("contents") or "", title, n.get("url") or "")
+        if txt: out[date] = txt
+    return out
+
+
+def steam_to_wiki(c, title, url):
+    r"""Steam's BBCode notes in the wiki's Update layout. Section headings come as "[b]\[ Heroes ][/b]" or "[b]Heroes:[/b]";
+    changes as "- Abrams: Shoulder Charge - text" and "- Capacitor: text". Lines before the first heading (the flavour text) are left out."""
+    c = re.sub(r"\[/?(p|list|\*)\]", "\n", c).replace("\\[", "[").replace("\\]", "]")
+    secs, sec, its, hs = [], None, {}, {}
+    for raw in c.split("\n"):
+        h = re.match(r"\s*\[(b|h[1-6])\]\s*\[?\s*(.+?)\s*\]?\s*:?\s*\[/\1\]\s*$", raw)
+        if h: sec = h.group(2).strip().rstrip(":").strip(); secs.append((sec, [])); continue
+        ln = re.sub(r"\[/?[a-z0-9]+(=[^\]]*)?\]", "", raw).strip()
+        b = re.match(r"[-•]\s+(.*)", ln)
+        if not b or sec is None: continue
+        t, sl = b.group(1).strip(), sec.lower()
+        if "hero" in sl:
+            m = re.match(r"([^:]{2,30}):\s*(.*)", t)
+            hero = hero_by_name.get(m.group(1).strip().lower()) if m else None
+            if not hero: secs[-1][1].append(t); continue
+            rest = m.group(2)
+            a = re.match(r"(.{2,40}?)\s+-\s+(.*)", rest)
+            ab = a.group(1).strip() if a and (a.group(1).strip().lower() in hero_abilities(hero) or a.group(1).strip().lower() in abil_any) else ""
+            hs.setdefault(hero["name"], {}).setdefault(ab, []).append(a.group(2).strip() if ab else rest)
+        elif "item" in sl:
+            m = re.match(r"([^:]{2,40}):\s*(.*)", t)
+            its.setdefault(m.group(1).strip() if m else "", []).append(m.group(2).strip() if m else t)
+        else:
+            secs[-1][1].append(t)
+    if not (its or hs or any(ls for _, ls in secs)): return ""
+    out = ["| source = " + url, "| source_title = " + title, "| notes ="]
+    for nm, ls in secs:  # general and any other titled section (Street Brawl is dropped by the reader)
+        if ls and "hero" not in nm.lower() and "item" not in nm.lower():
+            out.append("== %s ==" % ("General" if re.search(r"general|gameplay update", nm, re.I) else nm)); out += ["* " + x for x in ls]
+    if its:
+        out.append("== Items ==")
+        for nm, ls in its.items():
+            if nm: out.append("=== {{ItemIcon|%s}} ===" % nm)
+            out += ["* " + x for x in ls]
+    if hs:
+        out.append("== Heroes ==")
+        for nm, groups in hs.items():
+            out += ["{{HeroChanges", "|hero=" + nm, "|changes="]
+            for ab, ls in sorted(groups.items(), key=lambda g: g[0] != ""):  # base stats first
+                out.append("* {{AbilityIcon|%s}}" % ab if ab else "* '''Stats'''")
+                out += ["** " + x for x in ls]
+            out.append("}}")
+    return "\n".join(out) + "\n"
 
 
 def bullets(text):
@@ -336,18 +408,19 @@ def main():
         print("usage: wikidata.py <deadlock-data checkout>"); return 1
     repo = sys.argv[1]
     wdir = os.path.join(repo, "data", "changelogs", "wiki")
+    texts = {f[:-4]: open(os.path.join(wdir, f), encoding="utf-8").read() for f in os.listdir(wdir) if re.fullmatch(r"\d{4}-\d{2}-\d{2}\.txt", f)}
+    fresh = steam_patches(texts)  # notes the wiki hasn't written up yet, straight from Steam
+    if fresh: print("from Steam (not on the wiki yet):", ", ".join(sorted(fresh)))
+    texts.update(fresh)
     patches = []
-    for f in sorted(os.listdir(wdir), reverse=True):
-        d = f[:-4]
-        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", d) or d < SINCE: continue
-        p = parse_patch(d, open(os.path.join(wdir, f), encoding="utf-8").read())
+    for d in sorted(texts, reverse=True):
+        if d < SINCE: continue
+        p = parse_patch(d, texts[d])
         if p["general"] or p["items"] or p["heroes"] or p["brawl"]: patches.append(p)
     # every patch since the first wiki entry, per hero and per item, for the patch history on hero pages (and later item pages)
     hist = {"heroes": {}, "items": {}}
-    for f in sorted(os.listdir(wdir), reverse=True):
-        d = f[:-4]
-        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", d): continue
-        p = parse_patch(d, open(os.path.join(wdir, f), encoding="utf-8").read())
+    for d in sorted(texts, reverse=True):
+        p = parse_patch(d, texts[d])
         gid = re.search(r"steam_community_announcements/(\d+)", p["source"] or "")
         meta = {"date": d, "title": p["title"], "source": ("https://store.steampowered.com/news/app/1422450/view/" + gid.group(1)) if gid else p["source"]}
         for h in p["heroes"]:

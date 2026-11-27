@@ -12,7 +12,7 @@ This site is a personal study reference for Deadlock heroes, abilities and items
 A GitHub Action (`.github/workflows/update-data.yml`) runs once a day:
 
 1. Downloads hero and item data from the Deadlock API, records what changed (`tools/revisions.py`) and trims fields the site never reads (`tools/trim.py`).
-2. Pulls patch notes and powerups from the wiki's data repo (`tools/wikidata.py`) and popular items from match statistics (`tools/popular.py`).
+2. Pulls patch notes and powerups from the wiki's data repo (`tools/wikidata.py`; a patch the wiki hasn't written up yet is read from the official Steam announcement instead) and popular items from match statistics (`tools/popular.py`).
 3. **Safety net:** `tools/check.py` opens the site in a headless browser on the new data and checks that every hero page, item, shop tab, the glossary and search still work.
 4. If the download or the check fails, every data file goes back to the previous day's copy, `data/status.json` records why, the site shows a notice, and the run is marked failed (GitHub emails you).
 
