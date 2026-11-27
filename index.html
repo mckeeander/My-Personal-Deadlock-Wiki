@@ -537,7 +537,7 @@ body.jump #toppill,.hsecnav{bottom:calc(env(safe-area-inset-bottom,0px) + 86.5px
 .gazl{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-height:40px;font-family:var(--disp);font-size:17px;color:var(--fg)}
 .gazl:active{border-color:var(--gold);color:var(--gold)}
 .gh.gla{font-family:var(--disp);font-size:20px;letter-spacing:.04em;color:var(--fg)}
-.gsbtns{display:flex;gap:8px;margin-top:22px}.gsbtns #gall,.gsbtns #ibk,#iph{flex:0 0 52px;display:flex;align-items:center;justify-content:center}.gsbtns #close{flex:1}
+.gsbtns{display:flex;gap:8px;margin-top:22px;margin-bottom:14px} /* room under the buttons: the shade along the card's bottom edge takes up its bottom padding */ .gsbtns #gall,.gsbtns #ibk,#iph{flex:0 0 52px;display:flex;align-items:center;justify-content:center}.gsbtns #close{flex:1}
 .gsbtns .ibtn{border-radius:14px;min-height:46px}
 .sheet .in{position:relative}
 .swc{position:relative}
@@ -1588,7 +1588,7 @@ var FLAG_OV = { RestoreStaminaOnUse: "Restores {v} stamina on use", SelfDamageRe
 var SPIRIT_WP = { "Crimson Slash|BuffMeleeDamage": 1, "Shadow Transformation|WeaponDamageBonus": 1, "Assassinate|WeaponDamageBonusPerKill": 1, "Living Ink|BulletDamageMultiplier": 1, "Slam Fire|CurrentHealthDamagePercentage": 1, "Slam Fire|BonusCurrentHealthDamagePercentage": 1, "Borrowed Decree|SummonMeleeDamage": 1, "Grapple Arm|BulletAmp": 1, "Bullet Dance|WeaponDamageBonus": 1, "Time Wall|FriendlyBulletDamageBonus": 1 }; // melee damage (an orange card) that scales with spirit: the card is orange, its ★ tag stays purple
 var FLAG_CARD = {};
 var EXTRA_FLAG = { "Plot Armor|BonusTargets": "Affects {v} extra allies", "Gutshot|BuffDuration": "On wall stun: your next heavy melee is blessed for {v}", "Kingside Knight|RemoveDebuffs": "Self-cast: removes all debuffs after a move" };
-var MOVE_EXTRA = { "Hotel Guest|LateCheckoutStun": "Failure to Check-Out", "Hotel Guest|LateCheckoutCooldown": "Failure to Check-Out", "Hotel Guest|StaminaDrain": "While a Guest", "Screwjab Dagger|CooldownRefundPercent": "On Hit:" }; // an upgrade switch shown as a card (so it can carry a timer tag) rather than a line of text
+var MOVE_EXTRA = { "Hotel Guest|LateCheckoutStun": "Failure to Check-Out", "Hotel Guest|LateCheckoutCooldown": "Failure to Check-Out", "Hotel Guest|StaminaDrain": "While a Guest", "Screwjab Dagger|CooldownRefundPercent": "On Hit:", "Riposte|TargetLifesteal": "On Pommel Hit:" }; // an upgrade switch shown as a card (so it can carry a timer tag) rather than a line of text
 var SUIT = function (d, c) { return '<svg class="suit" viewBox="0 0 24 24" aria-hidden="true" style="color:' + c + '"><path fill="currentColor" d="' + d + '"/></svg>'; };
 var PAIR_BLOCKS = { "Card Trick": { // each suit's block, two to a row, with its suit
   Spade: SUIT("M12 2C9 6 4 9 4 13a4 4 0 0 0 7 2.6L10 21h4l-1-5.4A4 4 0 0 0 20 13c0-4-5-7-8-11z", "#d9d0e6"),
@@ -1601,8 +1601,8 @@ var BLK_OV = { "Rend|On Close Range": "Within {RangeForBonusDamage}:", "Napalm|N
 var HIDE_KEYS = { "Ground Strike": { TossDuration: 1, StompBounceHeight: 1 }, "Rend": { RangeForBonusDamage: 1, UseHeavyMelee: 1 }, "Bloodscent": { IsolationRange: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Fixation": { ProcDamageStackCount: 1 }, "Entangling Thorns": { TimeToEntangle: 1 }, "Kudzu Connection": { TotalTetherTargets: 1 }, "Malice": { MaxStacks: 1 }, "Soul Exchange": { SilenceRadius: 1 }, "Heavy Barrage": { AbilityDuration: 1 }, "Rallying Charge": { KnightCountInFirstWave: 1 }, "Itani Lo Sahn": { LowHealthEnemyThresholdPct: 1 }, "Screwjab Dagger": { MaxStacks: 1 }, "Puddle Punch": { UseHeavyMelee: 1 }, "Consecrating Grenade": { BurnRadius: 1 } }; // ambiguous upgrade stats that are not shown as cards (the tier text still describes them)
 var CHIP_KEYS = { "Rabbit Hex": ["HexDuration"], "Flog": ["TargetingConeAngle"], "Slice and Dice": ["DashRange"], "Disengaging Sigil": ["SigilRadius"], "Flawless Advance": ["AttackDashRange", "DashSpeed"], "Hyper Beam": ["BeamLength", "BeamWidth"], "Arctic Beam": ["PathLength"], "Kinetic Pulse": ["StompRange"], "Guided Owl": ["ExplosionRadius"], "Rejuvenating Aurora": ["AbilityChannelTime"], "Singularity": ["VacuumRadius", "AbilityChannelTime"], "Bounce Pad": ["Radius"], "Concussive Combustion": ["ExplodeDelay"], "Air Drop": ["OnLandDamageRadius"], "Life Drain": ["MaxRange"], "Mini Turret": ["TurretLifetime"], "Medicinal Specter": ["HealRadius"], "Heavy Barrage": ["ExplosionRadius"], "Burrow": ["AbilityChannelTime"], "Combo": ["AbilityChannelTime"], "Lurking Terrors": ["AbilityChannelTime"], "Death Slam": ["ImpactRadius"], "Bookwyrm": ["DragonTravelRange"], "Flying Cloak": ["MaxLifetime"], "Lightning Ball": ["ShockRadius", "MaxLifetime"], "Static Charge": ["ShockRadius"], "Storm Cloud": ["AbilityChannelTime"], "Call Bell": ["ProjectileFuse"], "Doorway": ["DoorwayDistance"], "Kingside Knight": ["BonusTargetRadius"], "Stake": ["CaptureRadius"], "Goo Ball": ["BallRadius"], "Power Slash": ["SlashLength"], "Radiant Daggers": ["ExplosionRadius"], "Borrowed Decree": ["ExplosionRadius"] }; // stats shown as a header chip beside the cooldown and range, not as a card
 var PROMOTE = { "Petrifying Bola": { SlowPercent: 1 }, "Rabbit Hex": { MoveSpeedBonusPct: 1 }, "Develop Queen": { SlowPercent: 1 }, "Death Slam": { SlowPercent: 1 }, "Life Drain": { LifeDrainHealthMult: 1 }, "Malice": { NumBloodShards: 1 }, "Feed The Birds": { MaxSlow: 1 }, "Naptime": { SleepDuration: 1 }, "Crow Familiar": { BulletResistReduction: 1, TechArmorDamageReduction: 1 }, "Flow State": { FadingSlowPercent: 1 }, "Goo Ball": { TechResist: 1, BulletResist: 1 }, "Last Stand": { BulletResist: 1, TechResist: 1 }, "Shadow Transformation": { BulletResist: 1, TechResist: 1 }, "Shining Wonder": { GroundDashReductionPercent: 1 }, "Bullet Dance": { EvasionPercent: 1, ChannelMoveSpeed: 1 }, "Flame Dash": { SlowResistance: 1 } }; // listed as small text by the game; shown as a card
-var MINOR_FIRST = { "Setup Bishop": { MoveDistance: 1, MoveCooldown: 1, MaxPieces: 1 } }; // small stats shown under the first block of cards instead of at the end
-var DEMOTE = { "Slice and Dice": { MaxCooldownReductionsFromHits: 1 }, "Setup Bishop": { MaxPieces: 1, MaxStacks: 1 }, "Kingside Knight": { MaxPieces: 1 }, "Shadow Transformation": { AbilitySpeedPct: 1 }, "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 }, "Threadsap": { StolenSpiritEffectiveness: 1 }, "Bullet Dance": { TargetsPerTick: 1 }, "Nox Nostra": { BatPerSecond: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Afterburn": { BurnDurationBase: 1, BurnDuration: 1 } }; // listed as cards by the game; shown as small text
+var MINOR_FIRST = { "Setup Bishop": { MoveDistance: 1, MoveCooldown: 1, MaxPieces: 1 }, "Riposte": { ParryWindow: 1 } }; // small stats shown under the first block of cards instead of at the end
+var DEMOTE = { "Riposte": { ParryWindow: 1 }, "Grasping Hands": { SummonCount: 1 }, "Slice and Dice": { MaxCooldownReductionsFromHits: 1 }, "Setup Bishop": { MaxPieces: 1, MaxStacks: 1 }, "Kingside Knight": { MaxPieces: 1 }, "Shadow Transformation": { AbilitySpeedPct: 1 }, "Soul Exchange": { EnemyMinHealthPct: 1, MinHealthTakenPct: 1 }, "Threadsap": { StolenSpiritEffectiveness: 1 }, "Bullet Dance": { TargetsPerTick: 1 }, "Nox Nostra": { BatPerSecond: 1 }, "Plot Armor": { BonusTargetsBarrierPercentage: 1 }, "Afterburn": { BurnDurationBase: 1, BurnDuration: 1 } }; // listed as cards by the game; shown as small text
 var NEG_OV = { "Slice and Dice|CooldownReductionOnHit": 1, "Slice and Dice|CooldownReductionOnHitNonHero": 1, "Chimera Mk1|OverheatLockoutDurationReductionOnPlayerHitPercent": 1, "Quantum Entanglement|ReduceDebuffs": 1, "Wretched Vapors|CrashTimeScalePenaltyPercent": 1 }; // shown as a minus ("-50% Cooldown", as the tier text says)
 var VAL_SUB = { "Crimson Slash|HealMaxHealth": [/\s*of Max Health$/i, ""], "Crow Familiar|DotHealthPercent": [/ DPS$/, "/s"], "Stalker's Mark|DotHealthPercent": [/ DPS$/, "/s"] }; // a value reworded ("2.2% DPS" -> "2.2%/s")
 var UNIT_OV = { "Chimera Mk1|HeatDrainRate": "/s", "Slice and Dice|MaxCooldownReductionsFromHits": "s" }; // a rate the game leaves unlabelled (its Heat Gain beside it is per second)
@@ -1910,7 +1910,7 @@ var GROUP_OV = {
   "Shoulder Charge": [{ l: "On Hero Collide, You Gain:", k: ["WeaponDamageBonus", "WeaponPowerIncreaseDuration"], late: true }],
   "Combo": [{ l: "On Kill:", k: ["BonusHealthOnKill"], late: true }],
   "Scorn": [{ l: "Enemies Hit:", k: ["DamageBonus", "DebuffDuration"] }],
-  "Wretched Vapors": [{ l: "Specter Rush:", k: ["RushTimeScaleBonusPercent"], f: { HealAmpRegenPercent: "" }, late: true }, { l: "Specter Crash:", k: ["CrashTimeScalePenaltyPercent", "CrashDuration", "DeferredDamageBonusPercent"], late: true }],
+  "Wretched Vapors": [{ l: "Specter Rush:", k: ["RushTimeScaleBonusPercent"], f: { HealAmpRegenPercent: "" }, late: true }, { l: "Specter Crash:", k: ["CrashTimeScalePenaltyPercent", "DeferredDamageBonusPercent"], m: ["CrashDuration"], late: true }],
   "Rain of Arrows": [{ l: "On Hit:", k: ["SlowPercent", "SlowDuration"] }],
   "Borrowed Decree": [{ l: "On Explosion:", k: ["Damage", "SlowPercent", "SlowDuration", "CurrentHealthDamagePercentage"], late: true }],
   "Exploding Uppercut": [{ l: "On Hero Hit, You Gain:", k: ["MissingHPHeal", "BuffBaseWeaponPct", "UppercutBuffOnHit"],
@@ -1999,7 +1999,7 @@ function tooltipHtml(it) {
   var secs = it.tooltip_details && it.tooltip_details.info_sections, parts = [], ex = upgradeExtras(it), tilesDone = false, firstMinor = -1;
   if (!secs || !secs.length) secs = [];
   var GO = GROUP_OV[it.name] || [], moved = {};
-  GO.forEach(function (g) { g.k.forEach(function (k) { moved[k] = 1; }); Object.keys(g.f || {}).forEach(function (k) { moved[k] = 1; }); });
+  GO.forEach(function (g) { g.k.forEach(function (k) { moved[k] = 1; }); Object.keys(g.f || {}).forEach(function (k) { moved[k] = 1; }); (g.m || []).forEach(function (k) { moved[k] = 1; }); });
   (CHIP_KEYS[it.name] || []).forEach(function (k) { moved[k] = 1; }); // a header chip: no card for it
   (TOP_MINOR[it.name] || []).forEach(function (k) { moved[k] = 1; }); // said in a small-stat line above the categories
   // each timed effect carries its own duration as a corner tag; the duration's own card or line is then dropped
@@ -2081,6 +2081,7 @@ function tooltipHtml(it) {
     var onlyDim = /^(\s*<br\s*\/?>)*\s*<span class="diminish">([^<]*)<\/span>\s*$/i.exec(locText || "");
     if (si > 0 && onlyDim && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc"><span class="dm">' + esc(onlyDim[2]) + "</span></div>"); // e.g. "Cooldown is increased by +30% if no hero is impacted."
     else if (si > 0 && locText && abilityDesc(it).indexOf(sec.loc_string) < 0) parts.push('<div class="desc">' + rich(locText) + "</div>");
+    var fbEnd = -1; // where the section's first block ends: small stats about it (MINOR_FIRST) go there, even when the block itself ended up empty
     (sec.properties_block || []).forEach(function (blk) {
       var cellOf = (PAIR_BLOCKS[it.name] || {})[blk.loc_string]; // a block shown half width beside its neighbour, with an icon by its name (Card Trick's suits)
       var mv = MOVE_TO[it.name] || {}, here = function (t) { return typeof t === "number" ? t === si && blk === (sec.properties_block || [])[0] : t === blk.loc_string; };
@@ -2107,7 +2108,7 @@ function tooltipHtml(it) {
       var bl0 = BLK_OV[it.name + "|" + blk.loc_string]; if (bl0) blk = Object.assign({}, blk, { loc_string: bl0.replace(/\{(\w+)\}/g, function (m0, k2) { return (propRec(it, k2) || {}).v || ""; }) }); // a heading reworded ("{Key}" is that stat's value)
       if (tiles && cellOf != null) parts.push('<div class="bcell"><div class="blk">' + cellOf + esc(blk.loc_string) + '</div><div class="stats">' + tiles + "</div></div>");
       else if (tiles) { parts.push((blk.loc_string ? '<div class="blk">' + esc(blk.loc_string) + "</div>" : "") + '<div class="stats">' + tiles + "</div>"); if (firstStats < 0) firstStats = parts.length - 1; }
-      bi++;
+      bi++; if (fbEnd < 0) fbEnd = parts.length;
     });
     var minor = dem + demX, promo = ""; demX = "";
     (sec.basic_properties || []).forEach(function (k) {
@@ -2128,8 +2129,8 @@ function tooltipHtml(it) {
       if (lastStats >= 0) parts[lastStats] = parts[lastStats].replace(/<\/div>$/, promo + "</div>"); else parts.push('<div class="stats">' + promo + "</div>");
     }
     if (minorF) { // small stats about the first block of cards sit right under it (Setup Bishop: moving the bishop, before what its squares do)
-      for (var pf = secStart; pf < parts.length; pf++) if (/<div class="stats">/.test(parts[pf])) break;
-      parts.splice(pf < parts.length ? pf + 1 : parts.length, 0, '<div class="minor">' + minorF + "</div>"); if (firstMinor < 0) firstMinor = pf + 1; minorF = "";
+      var pf = fbEnd >= 0 ? fbEnd : parts.length;
+      parts.splice(pf, 0, '<div class="minor">' + minorF + "</div>"); if (firstMinor < 0 || firstMinor >= pf) firstMinor = pf; minorF = "";
     }
     if (minor) { parts.push('<div class="minor">' + minor + "</div>"); if (firstMinor < 0) firstMinor = parts.length - 1; }
     if (si === 0) GO.forEach(function (g) {
@@ -2145,6 +2146,7 @@ function tooltipHtml(it) {
       var t = arrange(front + g.k.map(function (k) { if (durUsed[k]) return ""; var r = withDur(k, g.base && g.base[k] ? baseRec(k) : propRec(it, k)); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join("") + cards);
       var mx = (g.x || []).filter(function (x) { return propRec(it, x.k); }).map(function (x) { return '<span class="fl">' + esc(x.t) + "</span>"; }).join("");
       Object.keys(g.f || {}).forEach(function (k) { var e = effP(it, k); if (g.f[k] && e && parseFloat(e.value) > 0) mx += '<span class="fl">' + esc(g.f[k].replace(/\{(\w+)\}/g, function (m0, k2) { return (propRec(it, k2) || {}).v || ""; })) + "</span>"; }); // "{SlowDuration}" stands for that stat's value
+      (g.m || []).forEach(function (k) { var r = propRec(it, k); if (r) mx += "<span><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; }); // m: small stats under the group's cards (Specter Crash: how long the crash lasts)
       if (!t && !mx) return; if (!g.l) return;
       var html = '<div class="blk">' + esc(g.l.replace(/\{(\w+)\}/g, function (m0, k2) { return (propRec(it, k2) || {}).v || ""; })) + "</div>" + (t ? '<div class="stats">' + t + "</div>" : "") + (mx ? '<div class="minor">' + mx + "</div>" : "");
       if (g.late) late.push(html);
@@ -2189,7 +2191,7 @@ function cooldownChip(it) { // the cooldown matters on almost every ability, so 
   var ic = P.AbilityCooldown && P.AbilityCooldown.icon ? pIcon(P.AbilityCooldown.icon) : "⟳ ";
   return '<span class="chip cd" data-tip="' + esc(CD_TIP[it.name] || "Cooldown") + '">' + ic + esc(fmtVal(cd)) + '</span><span class="cdsep"></span>';
 }
-var CHIP_NAMED = { "Doorway": { DoorwayDistance: 1 } };
+var CHIP_NAMED = { "Doorway": { DoorwayDistance: 1 }, "Jar of Dead": { SkullLifetime: 1 } };
 function chipsHtml(it) {
   var left = "", right = "", seen = {}, L = listedKeys(it), P = it.properties || {};
   // icon + number, like the wiki; the long-press title carries the name
@@ -2208,7 +2210,7 @@ function chipsHtml(it) {
     if (rp && !isDisabled(rp) && parseFloat(rp.value) > 0) left += chip("Radius", "◎", fmtVal(rp), "Radius");
   }
   var extra = ((it.tooltip_details && it.tooltip_details.additional_header_properties) || []).concat(CHIP_KEYS[it.name] || []);
-  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (r) left += '<span class="chip" data-tip="' + esc(r.l) + '">' + (pIcon(r.icon) || "") + esc(r.v) + (r.icon && !(CHIP_NAMED[it.name] || {})[k] ? "" : ' <span class="cl">' + esc(r.l) + "</span>") + "</span>"; }); // no icon (or an icon that isn't enough): the name says what the number is
+  extra.forEach(function (k) { if (seen[k]) return; var r = propRec(it, k); if (!r) return; var nm = sentenceCase(r.l); left += '<span class="chip" data-tip="' + esc(nm) + '">' + (pIcon(r.icon) || "") + esc(r.v) + (r.icon && !(CHIP_NAMED[it.name] || {})[k] ? "" : ' <span class="cl">' + esc(nm) + "</span>") + "</span>"; }); // chip names in sentence case ("Doorway distance", names like Deadhead kept) // no icon (or an icon that isn't enough): the name says what the number is
   var ch = effP(it, "AbilityCharges"), nch = ch && !isDisabled(ch) ? parseFloat(ch.value) : 0;
   var nch0 = P.AbilityCharges ? parseFloat(P.AbilityCharges.value) || 0 : 0;
   var cb0 = effP(it, "AbilityCooldownBetweenCharge"), chargey = cb0 && !isDisabled(cb0) && parseFloat(cb0.value) > 0; // a charged ability even at one charge (Lash's Grapple): Extra Charge gives it a second
@@ -3161,7 +3163,10 @@ function sameSheet(t) { // a stat every hero shares: the value and a line saying
     slideForward(function () { state.from = null; renderHero(to); showBack(fromHero, fromY, { same: label }); setTimeout(function () { openSameOn(label); }, 200); });
   };
 }
-var BUCKET = { "wep|Damage per second": 10, "wep|DPS per boon": 0.5 }; // stats whose ranked list groups heroes by range (this wide) rather than by exact value
+var BUCKET = { "wep|Damage per second": 10, "wep|DPS per boon": 0.5, "boon|vit|Health": 5 }; // stats whose ranked list groups heroes by range (this wide) rather than by exact value
+var BOON_SLIDE = { // stats whose pop-up has a boon slider and every hero's line from 0 to 35 boons: what one boon adds, per hero
+  "wep|Damage per second": { name: "DPS", per: function () { return dpsGrowthPool(); } },
+  "vit|Health": { name: "Health", per: function () { return boonPool()["vit|Health"] || []; } } };
 var MAX_BOONS = 35; // one boon at each level from 2 to 36 (level_info)
 function dpsGrowthPool() { // how much DPS each boon adds, per hero: the boon's bullet damage times the gun's rate (DPS / bullet damage counts pellets and bursts)
   if (dpsGrowthPool.sig === state.sig && dpsGrowthPool.p) return dpsGrowthPool.p;
@@ -3178,7 +3183,8 @@ function growthChart(box, h, xs0, per, b, pick, fmt) { // every hero's DPS from 
   var W = box.clientWidth || 300, H = 260, pl = 26, pr = 6, pt = 6, pb = 20, w = W - pl - pr;
   var L = xs0.map(function (x) { var s = per[x.h.class_name] || 0; return { h: x.h, a: x.n, s: s }; });
   var lo = Math.min.apply(null, L.map(function (l) { return l.a; })), hi = Math.max.apply(null, L.map(function (l) { return l.a + MAX_BOONS * l.s; }));
-  var st = hi - lo > 150 ? 50 : 25, y0 = Math.floor(lo / 10) * 10, y1 = Math.ceil(hi / 10) * 10; // fitted to the lines; gridlines on round numbers
+  pl = Math.max(pl, String(Math.ceil(hi / 10) * 10).length * 7 + 4); w = W - pl - pr; // room for four-digit health labels
+  var st = [25, 50, 100, 250, 500, 1000].filter(function (q) { return (hi - lo) / q <= 7; })[0] || 1000, y0 = Math.floor(lo / 10) * 10, y1 = Math.ceil(hi / 10) * 10; // fitted to the lines; gridlines on round numbers, at most about 7 (DPS in 25s or 50s, health in 250s)
   function X(n) { return pl + n / MAX_BOONS * w; }
   function Y(v) { return pt + (1 - (v - y0) / (y1 - y0)) * (H - pt - pb); }
   growthChart.geo = { pl: pl, w: w, Y: Y };
@@ -3200,8 +3206,8 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   var growth = sk === "wep|DPS per boon", boon = sk.indexOf("boon|") === 0, key = boon ? sk.slice(5) : sk, r = growth ? (dpsGrowthPool()[0] || null) : (statPool()[key] || [])[0], xs;
   if (!r) return; r = r.r;
   xs = (growth ? dpsGrowthPool() : boon ? boonPool()[key] : statPool()[key]) || []; if (!xs.length) return;
-  var atBoon = sk === "wep|Damage per second"; // DPS: a slider shows every hero's DPS after that many boons
-  var per = {}; if (atBoon) dpsGrowthPool().forEach(function (g) { per[g.h.class_name] = g.n; });
+  var slide = BOON_SLIDE[sk], atBoon = !!slide; // DPS and health: a slider shows every hero's value after that many boons
+  var per = {}; if (atBoon) slide.per().forEach(function (g) { per[g.h.class_name] = g.n; });
   var xs0 = xs;
   var fmt = boon ? function (x) { return "+" + fmtNum(x) + " / boon"; } : function (x) { return sfmt(x, r); };
   if (!boon && sk.indexOf("spi|") === 0 && r.l !== "Spirit power") fmt = function (x) { return "+" + String(Number(Number(x).toPrecision(3))) + (r.unit === "%" || r.unit === "/s" ? r.unit : r.unit ? " " + r.unit : ""); }; // growth per Spirit Power: exact, small numbers kept
@@ -3222,8 +3228,8 @@ function statSheet(sk, title, sec) { // a pop-up for one stat: a big line from l
   }
   build(xs);
   function vw() { return Math.min(15, Math.max(6, Math.max.apply(null, groups.map(function (g) { return bk ? (fmtNum(g.k) + "–" + fmtNum(Math.round((g.k + bk) * 100) / 100)).length + 1 : fmt(g.n).length; })) * 0.95 + 1)).toFixed(1) + "ch"; }
-  var chart = atBoon ? '<div class="gslide ssc"><div class="gslh"><span>DPS by boons</span><b id="ssgn"></b></div><div class="ssg" id="ssg"></div></div>' : "";
-  var slider = atBoon ? '<div class="gslide ssb"><div class="gslh"><span>DPS at</span><b id="ssbn">0 boons</b></div><input type="range" id="ssbr" min="0" max="' + MAX_BOONS + '" step="1" value="0" aria-label="Boons"><div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div></div>' : "";
+  var chart = atBoon ? '<div class="gslide ssc"><div class="gslh"><span>' + esc(slide.name) + ' by boons</span><b id="ssgn"></b></div><div class="ssg" id="ssg"></div></div>' : "";
+  var slider = atBoon ? '<div class="gslide ssb"><div class="gslh"><span>' + esc(slide.name) + ' at</span><b id="ssbn">0 boons</b></div><input type="range" id="ssbr" min="0" max="' + MAX_BOONS + '" step="1" value="0" aria-label="Boons"><div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div></div>' : "";
   var cat = sk.indexOf("spi|") === 0 ? "spi" : sec ? (sec.classList.contains("vit") ? "vit" : sec.classList.contains("spi") ? "spi" : "wep") : "wep";
   if (xs.length < 2) { // only this hero has it
     var one = '<div class="gsh ssh ' + cat + '"><div class="gcat2">' + esc(h.name) + "</div><h3>" + esc(boon ? r.l + " per boon" : sk.indexOf("spi|") === 0 && r.l !== "Spirit power" ? r.l + " per Spirit Power" : r.l) + '</h3><div class="ssv"><b>' + esc(fmt(xs[0].n)) + '</b></div><p class="ssame">Only ' + esc(xs[0].h.name) + " has this.</p></div>" + '<div class="gsbtns"><button class="ibtn" id="close">Close</button></div>';
@@ -6078,6 +6084,7 @@ function animateLayout(fresh, snap) {
   var tail = null, tailAfter = null; // blocks that leave together go back in their old order
   gone.forEach(function (g) {
     var node = g.s.node, ref = null, k;
+    if (g.after && g.after.classList.contains("chips")) g.after = null; // the description sits between the chip row and the first block (and isn't in the list): a block leaving from there goes back before the next block, not above the description
     if (g.s.sig === "c") { var hd = fresh.querySelector(".abh"); ref = hd ? hd.nextSibling : fresh.firstChild; } // the chip row goes back under the title
     else if (g.after) ref = tail && tailAfter === g.after ? tail.nextSibling : g.after.nextSibling;
     else {
