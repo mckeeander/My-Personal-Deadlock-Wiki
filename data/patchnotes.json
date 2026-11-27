@@ -6,8 +6,9 @@
    "title": "Minor Update - 11-26-2026",
    "source": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1850460852986472",
    "general": [
+    "For one day a year, the people of New York gather beneath their floating idols to give thanks at Crowley’s Thanksgiving Day Parade.",
     "Hero base health reduced by 8%. The health is redistributed into boons, so total health at max boons is roughly the same.",
-    "Bullet damage growth per boon increased for all heroes by 5% (except for Haze, Holliday, Venator, Vindicta, Warden, Wraith)",
+    "Bullet damage growth per boon increased for all heroes by 5% (except for [[h:Haze]], [[h:Holliday]], [[h:Venator]], [[h:Vindicta]], [[h:Warden]], [[h:Wraith]])",
     "First kill bonus for each player increased from 125 to 175 souls",
     "Comeback souls from all sources reduced by ~5%",
     "Players above their own team's average net worth have a portion of their comeback souls redirected to the two poorest teammates. The redirected portion scales from 0% at the team average up to 80% at 20% above it (previously a flat 70% for players above the enemy team's average net worth)",
@@ -41,24 +42,24 @@
     "Failed air jumps will make your next ground jump have increasing air drag for each consecutive failed jump (combating macro usage for bunnyhops)",
     "Heavy Melee: Becoming immobilized during the attack now resolves the punch immediately",
     "Heavy Melee: Being knocked up during the attack now resolves the punch immediately",
-    "Damage amps and damage penalties on the attacker (Rebuttal, Inhibitor, Cheat Death, Curse, Eldritch Shot, etc) now apply to all of their Weapon, Melee and Spirit damage. Previously they missed flat Weapon Damage bonuses, flat damage from items and abilities, the base damage of melee abilities, and abilities that scale with Weapon Damage",
+    "Damage amps and damage penalties on the attacker ([[i:Rebuttal]], [[i:Inhibitor]], [[a:Cheat Death]], Curse, Eldritch Shot, etc) now apply to all of their Weapon, Melee and Spirit damage. Previously they missed flat Weapon Damage bonuses, flat damage from items and abilities, the base damage of melee abilities, and abilities that scale with Weapon Damage",
     "Multiple damage amps now stack diminishingly for all damage types (previously only for abilities)",
     "Multiple damage penalties now stack diminishingly for all damage types (previously only for abilities)",
     "Summons now use their owner's current damage amps and penalties rather than the ones active when they were spawned",
-    "Outgoing Spirit Damage Reductions now stack diminishingly with each other (e.g. Silencer and Afterburn's T2)",
-    "Outgoing Spirit Damage Reductions (Silencer, Afterburn's T2) now apply to all Spirit Damage, including flat damage from items",
-    "Fixed Weapon Damage reductions (e.g. Warden's Alchemical Flask) not lowering the damage of abilities that scale with Weapon Damage when the attacker's total Weapon Damage bonus was negative",
+    "Outgoing Spirit Damage Reductions now stack diminishingly with each other (e.g. [[i:Silencer]] and [[a:Afterburn]]'s T2)",
+    "Outgoing Spirit Damage Reductions ([[i:Silencer]], [[a:Afterburn]]'s T2) now apply to all Spirit Damage, including flat damage from items",
+    "Fixed Weapon Damage reductions (e.g. [[h:Warden]]'s [[a:Alchemical Flask]]) not lowering the damage of abilities that scale with Weapon Damage when the attacker's total Weapon Damage bonus was negative",
     "Fixed teleport abilities sometimes failing to cast when standing too close to a wall",
     "Fixed knockbacks slowing, stopping or pulling back targets that were already moving away from the source",
     "Fixed heroes hiding in steam vents staying untargetable after an enemy hero entered the vent",
     "Fixed damage over time effects repeatedly revealing you inside Steam Vents",
     "Fixed a short delay before hopping onto the roof at the top of a rope when grabbing the rope mid-air (e.g. after dropping off a zipline)",
-    "Fixed Quick Cast and Confirm Cast abilities not casting while holding fire when the gun can't shoot (reloading, Viscous Goo Ball, etc.)",
-    "Fixed movement time slows such as Paradox's Kinetic Carbine causing a dash-slide to fail and waste the stamina if slide was pressed during the slow",
-    "Fixed upgrading an ability with Tab + its ability key triggering the ability's recast when one was available (Solomon's pieces, Sinclair's Assistant, etc)",
+    "Fixed Quick Cast and Confirm Cast abilities not casting while holding fire when the gun can't shoot (reloading, [[h:Viscous]] [[a:Goo Ball]], etc.)",
+    "Fixed movement time slows such as [[h:Paradox]]'s [[a:Kinetic Carbine]] causing a dash-slide to fail and waste the stamina if slide was pressed during the slow",
+    "Fixed upgrading an ability with Tab + its ability key triggering the ability's recast when one was available ([[h:Solomon]]'s pieces, [[h:Sinclair]]'s Assistant, etc)",
     "Fixed some camera issues when near dying Walkers",
     "Abilities and items that launch a target into the air now break their ledge grab first, instead of the launch being delayed or lost",
-    "Fixed heroes getting stuck in the rope climbing animation after being pulled off a rope (such as by Threadsap or Rescue Beam)",
+    "Fixed heroes getting stuck in the rope climbing animation after being pulled off a rope (such as by [[a:Threadsap]] or [[i:Rescue Beam]])",
     "Added an indicator next to the stamina meter that shows your remaining air jumps and air dashes once you've used one (turns red when you're out)",
     "Holding the Extra Info key (Alt) now shows your Zipline Boost cooldown next to the minimap",
     "Unstable Rift: The HUD now shows the trailing team's bonus while the Rift is active",
@@ -68,36 +69,45 @@
     "Fixed the Rejuvenator timer ring being wrong after reconnecting",
     "Fixed the Rejuvenator timer ring restarting whenever another Rejuvenator was picked up",
     "Weapon Stats panel now shows Bullets per shot for guns that fire multiple pellets",
-    "Weapon Stats panel now shows Secondary Fire stats for Shiv, Yamato and Viscous: bullet damage, bullets per sec, bullets per shot, ammo per shot and explosion radius where applicable",
-    "Weapon Stats panel now shows Charged Shot stats for Deadman Danny: bullet damage, charge time, explosion radius and ammo per shot",
-    "Boon rewards now list Secondary Fire Damage (or Charged Shot Damage) gained per Boon for Shiv, Yamato, Viscous and Deadman Danny",
-    "Item tooltips now show the change to Secondary Fire or Charged Shot damage in the stat preview for Shiv, Yamato, Viscous and Deadman Danny",
+    "Weapon Stats panel now shows Secondary Fire stats for [[h:Shiv]], [[h:Yamato]] and [[h:Viscous]]: bullet damage, bullets per sec, bullets per shot, ammo per shot and explosion radius where applicable",
+    "Weapon Stats panel now shows [[a:Charged Shot]] stats for [[h:Deadman Danny]]: bullet damage, charge time, explosion radius and ammo per shot",
+    "Boon rewards now list Secondary Fire Damage (or [[a:Charged Shot]] Damage) gained per Boon for [[h:Shiv]], [[h:Yamato]], [[h:Viscous]] and [[h:Deadman Danny]]",
+    "Item tooltips now show the change to Secondary Fire or [[a:Charged Shot]] damage in the stat preview for [[h:Shiv]], [[h:Yamato]], [[h:Viscous]] and [[h:Deadman Danny]]",
     "Added a few new graphs to the post-match player graph list:",
+    "- Crowd Control Dealt: time you crowd-controlled enemy heroes split by type",
+    "- Crowd Control Received: time enemy heroes crowd-controlled you split by type",
+    "- Damage Mitigated By Source: damage you prevented split by type",
     "Swapping heroes now loads the incoming hero's saved build and next ability upgrade immediately",
     "Some minor visual updates to the Custom Match UI",
     "Sandbox: Added a \"Bot Drills\" section to the Bots++ tab of the Testing Tools, with a \"Select Drill\" dropdown that spawns an enemy bot in front of you to practice against for certain sequences.",
-    "Sandbox: Added an \"Abrams - Bull Rush\" bot drill, where Abrams uses Shoulder Charge at you and follows up with light and heavy melee attacks. Has Superior Duration.",
-    "Sandbox: Added a \"Baba - Granny Rampage\" bot drill, where Baba chases you in Granny Long Legs form while using light and heavy melees at random",
-    "Sandbox: Added a \"Baba - Threadsap Tag\" bot drill, where Baba moves and jumps around while using Threadsap on you",
-    "Sandbox: Added a \"Bebop - Hook Dodge\" bot drill, where Bebop moves and jumps around while repeatedly trying to hook you",
-    "Sandbox: Added a \"Billy - Chain Beatdown\" bot drill, where Billy uses Chain Gang into Bashdown and Rising Ram, then a light and a heavy melee. He has Melee Charge",
+    "Sandbox: Added an \"[[h:Abrams]] - Bull Rush\" bot drill, where [[h:Abrams]] uses [[a:Shoulder Charge]] at you and follows up with light and heavy melee attacks. Has [[i:Superior Duration]].",
+    "Sandbox: Added a \"[[h:Baba]] - Granny Rampage\" bot drill, where [[h:Baba]] chases you in [[a:Granny Long Legs]] form while using light and heavy melees at random",
+    "Sandbox: Added a \"[[h:Baba]] - [[a:Threadsap]] Tag\" bot drill, where [[h:Baba]] moves and jumps around while using [[a:Threadsap]] on you",
+    "Sandbox: Added a \"[[h:Bebop]] - Hook Dodge\" bot drill, where [[h:Bebop]] moves and jumps around while repeatedly trying to hook you",
+    "Sandbox: Added a \"[[h:Billy]] - Chain Beatdown\" bot drill, where [[h:Billy]] uses [[a:Chain Gang]] into [[a:Bashdown]] and [[a:Rising Ram]], then a light and a heavy melee. He has [[i:Melee Charge]]",
     "Sandbox: Added a \"Danny - Dive Bomb\" bot drill, where Danny takes off in front of you, overheats and then dives at you and repeats.",
-    "Sandbox: Added a \"Graves - Parry Bait\" bot drill, where Graves summons a gravestone and stands in it ready to parry. Bait out her parry, then destroy the gravestone with heavy melees. She has Rebuttal",
-    "Sandbox: Added a \"Grey Talon - Air Raid\" bot drill, where Grey Talon takes to the air with Rain of Arrows and shoots at you, sometimes firing a Charged Shot",
-    "Sandbox: Added a \"Holliday - Keg Drop\" bot drill, where Holliday places a Bounce Pad, launches off it and throws a Powder Keg at you. She has Greater Expansion",
-    "Sandbox: Added a \"Lash - Sky Slam\" bot drill, where Lash uses Grapple to get high, then Death Slam into Ground Strike. He has Stamina Mastery",
-    "Sandbox: Added a \"McGinnis - Wall Barrage\" bot drill, where McGinnis fires a Spectral Wall that deploys behind you, then uses Heavy Barrage on you. She dashes away when you come within 10m of her",
-    "Sandbox: Added a \"Paradox - Carbine Swap\" bot drill, where Paradox moves and jumps around while charging Kinetic Carbine, hitting you and then using Paradoxical Swap",
-    "Sandbox: Added a \"Silver - Wolf Hunt\" bot drill, where Silver chases you in wolf form using her claws, Mauling Leap, Go For The Throat and Tail Whack",
-    "Sandbox: Added a \"Vindicta - Sky Strafe\" bot drill, where Vindicta takes Flight in front of you and strafes side to side.",
-    "Sandbox: Added a \"Viscous - Rolling Goo\" bot drill, where Viscous moves and jumps around, then rolls after you with Goo Ball. He has Superior Duration.",
-    "Sandbox: Added a \"Viscous - Sucker Punch\" bot drill, where Viscous moves and jumps around while using Puddle Punch under you at random intervals",
+    "Sandbox: Added a \"[[h:Graves]] - Parry Bait\" bot drill, where [[h:Graves]] summons a gravestone and stands in it ready to parry. Bait out her parry, then destroy the gravestone with heavy melees. She has [[i:Rebuttal]]",
+    "Sandbox: Added a \"[[h:Grey Talon]] - Air Raid\" bot drill, where [[h:Grey Talon]] takes to the air with [[a:Rain of Arrows]] and shoots at you, sometimes firing a [[a:Charged Shot]]",
+    "Sandbox: Added a \"[[h:Holliday]] - Keg Drop\" bot drill, where [[h:Holliday]] places a [[a:Bounce Pad]], launches off it and throws a [[a:Powder Keg]] at you. She has [[i:Greater Expansion]]",
+    "Sandbox: Added a \"[[h:Lash]] - Sky Slam\" bot drill, where [[h:Lash]] uses [[a:Grapple]] to get high, then [[a:Death Slam]] into [[a:Ground Strike]]. He has [[i:Stamina Mastery]]",
+    "Sandbox: Added a \"[[h:McGinnis]] - Wall [[a:Barrage]]\" bot drill, where [[h:McGinnis]] fires a [[a:Spectral Wall]] that deploys behind you, then uses [[a:Heavy Barrage]] on you. She dashes away when you come within 10m of her",
+    "Sandbox: Added a \"[[h:Paradox]] - Carbine Swap\" bot drill, where [[h:Paradox]] moves and jumps around while charging [[a:Kinetic Carbine]], hitting you and then using [[a:Paradoxical Swap]]",
+    "Sandbox: Added a \"[[h:Silver]] - Wolf Hunt\" bot drill, where [[h:Silver]] chases you in wolf form using her claws, [[a:Mauling Leap]], [[a:Go For The Throat]] and [[a:Tail Whack]]",
+    "Sandbox: Added a \"[[h:Vindicta]] - Sky Strafe\" bot drill, where [[h:Vindicta]] takes [[a:Flight]] in front of you and strafes side to side.",
+    "Sandbox: Added a \"[[h:Viscous]] - Rolling Goo\" bot drill, where [[h:Viscous]] moves and jumps around, then rolls after you with [[a:Goo Ball]]. He has [[i:Superior Duration]].",
+    "Sandbox: Added a \"[[h:Viscous]] - Sucker Punch\" bot drill, where [[h:Viscous]] moves and jumps around while using [[a:Puddle Punch]] under you at random intervals",
     "Sandbox: Fixed No Death, Unlimited Ammo, No Cooldown, Fast Stamina, Legendary Items and Corrupted Variance not working when in a sandbox with a party",
     "Sandbox: Fixed the Hero Testing bot ability and item cast buttons not working on abilities with charges while they were recharging",
-    "Street Brawl: Final round now reaches the max 35 boons instead of 34",
-    "Street Brawl: Cloak of Opportunity now also blocks Fear",
-    "Street Brawl: The list of items for your hero are now updated dynamically based on the current popular items used, rather than using older item lists system that tends to get outdated (this was released a couple days ago)",
-    "Street Brawl: Fixed Omnicharge Signet preventing Victor's Pain Battery from charging when imbued on it"
+    "- Danny [[a:Jettison Fuel]] now grants a charge",
+    "- Danny [[a:Strix Salvo]] now grants a charge",
+    "- Doorman Door Recall no longer grants a charge",
+    "- [[h:Mina]] [[a:Sanguine Retreat]] recast now grants charges",
+    "- [[h:Nurse Harrow]] [[a:Healing Needles]] no longer grants a charge",
+    "- [[h:Solomon]] Move King now grants a charge",
+    "- [[h:Solomon]] Move Piece (Bishop, Knight and Queen moves) now grants a charge",
+    "- [[h:Venator]] [[a:Ira Domini]] now grants a charge",
+    "- [[h:Violet]] [[a:Living Ink]] (draw) now grants a charge",
+    "Applied similar fixes to [[i:Spellslinger]] and [[i:Radiant Regeneration]] for the above list"
    ],
    "items": [
     {
@@ -154,21 +164,21 @@
      "item": "Witchmail",
      "ic": "upgrade_absorbing_armor",
      "lines": [
-      "Fixed the cooldown reduction being wasted on Ivy's Air Drop and Calico's Ava while they are locked out from taking damage"
+      "Fixed the cooldown reduction being wasted on [[h:Ivy]]'s [[a:Air Drop]] and [[h:Calico]]'s [[a:Ava]] while they are locked out from taking damage"
      ]
     },
     {
      "item": "Indomitable",
      "ic": "upgrade_auto_cleanse",
      "lines": [
-      "Now blocks the pigeon transformation from Feed The Birds"
+      "Now blocks the pigeon transformation from [[a:Feed The Birds]]"
      ]
     },
     {
      "item": "Rebuttal",
      "ic": "upgrade_melee_rebuttal",
      "lines": [
-      "Fixed blocking an ability with Counterspell granting Rebuttal's damage buff"
+      "Fixed blocking an ability with [[i:Counterspell]] granting [[i:Rebuttal]]'s damage buff"
      ]
     },
     {
@@ -203,7 +213,7 @@
      "item": "Mystic Reverb",
      "ic": "upgrade_mystic_reverb",
      "lines": [
-      "Now correctly accounts for abilities reduced by Spellbreaker (currently reverbs the damage as if it was never reduced by the item)"
+      "Now correctly accounts for abilities reduced by [[i:Spellbreaker]] (currently reverbs the damage as if it was never reduced by the item)"
      ]
     },
     {
@@ -224,8 +234,7 @@
      "item": "Restorative Locket",
      "ic": "upgrade_restorative_locket",
      "lines": [
-      "Fixed interaction with the following abilities:",
-      "Applied similar fixes to Spellslinger and Radiant Regeneration for the above list"
+      "Fixed interaction with the following abilities:"
      ]
     }
    ],
@@ -239,15 +248,15 @@
        "ac": "citadel_ability_bull_charge",
        "lines": [
         "Fixed enemies stunned by the charge not being slowed",
-        "Fixed targets being pulled out of the charge by Hex-Lined Snap Trap"
+        "Fixed targets being pulled out of the charge by [[a:Hex-Lined Snap Trap]]"
        ]
       },
       {
        "ability": "Seismic Impact",
        "ac": "citadel_ability_bull_leap",
        "lines": [
-        "Fixed Paradox's Kinetic Carbine causing the slam to go off in mid-air",
-        "Fixed Bebop's Grapple Arm causing the slam to go off in mid-air when hooked during the dive"
+        "Fixed [[h:Paradox]]'s [[a:Kinetic Carbine]] causing the slam to go off in mid-air",
+        "Fixed [[h:Bebop]]'s [[a:Grapple Arm]] causing the slam to go off in mid-air when hooked during the dive"
        ]
       }
      ]
@@ -268,7 +277,7 @@
        "ability": "Riposte",
        "ac": "ability_fencer_riposte",
        "lines": [
-        "Can now be cast during Flawless Advance (cancels the dash, like parrying)",
+        "Can now be cast during [[a:Flawless Advance]] (cancels the dash, like parrying)",
         "Pommel Hit on enemy will now knock them up and backwards slightly, applying a 50% slow and preventing stamina usage for 2s (no longer immobilizes, disarms or has any effect on parry state)",
         "Pommel Hit now does bonus spirit damage on impact (100 + 1.5 spirit scaling)",
         "Pommel Hit no longer reduces melee resist",
@@ -276,7 +285,7 @@
         "Now reflects all bullets to the attackers during the duration (doesn't trigger riposte)",
         "Bullets from troopers, haunts and objective bullets now reflect again",
         "Now deflects all ability damage during the window and lets you target any enemy that hit you to do a Pommel Hit on them (and only them, can no longer pommel hit someone that didn't hit you)",
-        "Enemies who triggered it are now highlighted for Apollo",
+        "Enemies who triggered it are now highlighted for [[h:Apollo]]",
         "T1 increased from -8s Cooldown to -9s",
         "T2 changed from \"-25% Melee Resist and +0.7s Immobilize Duration\" to \"+100 Damage and +1s debuff duration\""
        ]
@@ -345,8 +354,8 @@
         "Range increased from 18m to 20m",
         "Max Damage increased from 450 to 650",
         "Time To Max Stacks increased from 3.5s to 4s",
-        "The pigeon transformation is now blocked if the target is invulnerable or unstoppable when the final pigeon lands (e.g. during Yamato's Shadow Transformation)",
-        "Baba now sees which individual lock-ons are losing line of sight during the channel",
+        "The pigeon transformation is now blocked if the target is invulnerable or unstoppable when the final pigeon lands (e.g. during [[h:Yamato]]'s [[a:Shadow Transformation]])",
+        "[[h:Baba]] now sees which individual lock-ons are losing line of sight during the channel",
         "Now shows its range indicator while channeling",
         "Fixed enemies killed as a pigeon sometimes respawning as a pigeon"
        ]
@@ -361,7 +370,7 @@
        "ability": "Grapple Arm",
        "ac": "citadel_ability_hook",
        "lines": [
-        "Fixed not counting as a Light Melee for items like Spirit Strike, Spirit Snatch, Melee Lifesteal and Lifestrike (it was getting their full Heavy Melee value)"
+        "Fixed not counting as a Light Melee for items like [[i:Spirit Strike]], [[i:Spirit Snatch]], [[i:Melee Lifesteal]] and [[i:Lifestrike]] (it was getting their full Heavy Melee value)"
        ]
       }
      ]
@@ -374,7 +383,7 @@
        "ability": "Rising Ram",
        "ac": "ability_punkgoat_goatflip",
        "lines": [
-        "Fixed Paradox's Kinetic Carbine stopping the charge in place (it now resumes once the Time-Stop ends)"
+        "Fixed [[h:Paradox]]'s [[a:Kinetic Carbine]] stopping the charge in place (it now resumes once the Time-Stop ends)"
        ]
       },
       {
@@ -424,7 +433,7 @@
        "ability": "Radiant Daggers",
        "ac": "ability_unicorn_luminousstrike",
        "lines": [
-        "Fixed Spirit Damage amp not applying to flat Spirit Damage (Stalker, etc)"
+        "Fixed Spirit Damage amp not applying to flat Spirit Damage ([[i:Stalker]], etc)"
        ]
       }
      ]
@@ -460,7 +469,7 @@
        "ability": "Jettison Fuel",
        "ac": "ability_deadpack_flamethrower",
        "lines": [
-        "Fixed it not triggering Spellslinger and Radiant Regeneration"
+        "Fixed it not triggering [[i:Spellslinger]] and [[i:Radiant Regeneration]]"
        ]
       },
       {
@@ -487,7 +496,7 @@
        "ability": "Luggage Cart",
        "ac": "ability_doorman_luggage_cart",
        "lines": [
-        "Fixed the cart being removed from the world when contacting Paradox Time Wall"
+        "Fixed the cart being removed from the world when contacting [[h:Paradox]] [[a:Time Wall]]"
        ]
       }
      ]
@@ -499,7 +508,7 @@
       {
        "label": "Stats",
        "lines": [
-        "Fixed not gaining the Split Shot weapon damage bonus when hitting multiple heroes",
+        "Fixed not gaining the [[i:Split Shot]] weapon damage bonus when hitting multiple heroes",
         "Cycle rate increased by 5% (means fire rate is 5% less)",
         "Move speed reduced from 6.7m to 6.5m",
         "Ghouls now do 25% less damage to objectives"
@@ -515,8 +524,14 @@
        "label": "Stats",
        "lines": [
         "Ammo reduced from 10 to 8",
-        "Bullet damage per boon reduced from 1.144 to 1.05",
-        "Crackshot spirit scaling reduced from 1.116 to 0.9"
+        "Bullet damage per boon reduced from 1.144 to 1.05"
+       ]
+      },
+      {
+       "ability": "Crackshot",
+       "ac": "ability_crackshot",
+       "lines": [
+        "Spirit scaling reduced from 1.116 to 0.9"
        ]
       }
      ]
@@ -557,8 +572,8 @@
        "ability": "Air Drop",
        "ac": "citadel_ability_tengu_airlift",
        "lines": [
-        "T1 changed from \"300 Barrier to Ivy\" to \"+32% Slow for 3s on enemies hit\"",
-        "T2 changed from \"+32% Slow for 3s on enemies hit\" to \"300 Barrier to Ivy\""
+        "T1 changed from \"300 Barrier to [[h:Ivy]]\" to \"+32% Slow for 3s on enemies hit\"",
+        "T2 changed from \"+32% Slow for 3s on enemies hit\" to \"300 Barrier to [[h:Ivy]]\""
        ]
       }
      ]
@@ -590,7 +605,7 @@
        "ability": "Frozen Shelter",
        "ac": "ability_ice_dome",
        "lines": [
-        "Fixed Ricochet triggering when shooting the dome or sloped ground inside it"
+        "Fixed [[i:Ricochet]] triggering when shooting the dome or sloped ground inside it"
        ]
       }
      ]
@@ -627,7 +642,7 @@
        "ability": "Death Slam",
        "ac": "citadel_ability_lash_ultimate",
        "lines": [
-        "Lash now sees which individual latches are losing line of sight during the channel",
+        "[[h:Lash]] now sees which individual latches are losing line of sight during the channel",
         "Fixed enemies standing on certain surfaces (e.g. the bridge in the Patron base) not being lifted",
         "Fixed enemies near ledges, signs and cliff edges getting caught on geometry during the lift and being slammed in place"
        ]
@@ -692,7 +707,7 @@
        "ability": "Dust Devil",
        "ac": "mirage_tornado",
        "lines": [
-        "Fixed Paradox's Kinetic Carbine stopping the tornado in place (it now resumes once the Time-Stop ends)",
+        "Fixed [[h:Paradox]]'s [[a:Kinetic Carbine]] stopping the tornado in place (it now resumes once the Time-Stop ends)",
         "Fixed the cooldown not starting until the T3 recast was used or expired"
        ]
       },
@@ -726,14 +741,14 @@
        "ability": "Burrow",
        "ac": "ability_burrow",
        "lines": [
-        "Now passes under Doorman's Luggage Cart"
+        "Now passes under Doorman's [[a:Luggage Cart]]"
        ]
       },
       {
        "ability": "Combo",
        "ac": "ability_ult_combo",
        "lines": [
-        "Fixed Mo & Krill being flung away when using Combo on a tethered enemy or an enemy on a rope"
+        "Fixed [[h:Mo & Krill]] being flung away when using Combo on a tethered enemy or an enemy on a rope"
        ]
       }
      ]
@@ -801,7 +816,7 @@
        "ability": "Slice and Dice",
        "ac": "citadel_ability_shiv_dash",
        "lines": [
-        "Fixed Paradox's Kinetic Carbine ending the dash early",
+        "Fixed [[h:Paradox]]'s [[a:Kinetic Carbine]] ending the dash early",
         "T2's \"-4% Spirit Resist\" and T3's \"+50 Impact Damage\" have been swapped"
        ]
       },
@@ -809,7 +824,7 @@
        "ability": "Bloodletting",
        "ac": "citadel_ability_shiv_defer_damage",
        "lines": [
-        "Fixed bug allowing damage blocked by both Plated Armor and Spellbreaker being added to deferred damage on block"
+        "Fixed bug allowing damage blocked by both [[i:Plated Armor]] and [[i:Spellbreaker]] being added to deferred damage on block"
        ]
       },
       {
@@ -835,7 +850,7 @@
        "ability": "Boot Kick",
        "ac": "ability_werewolf_kickflip",
        "lines": [
-        "Fixed Paradox's Kinetic Carbine stopping the leap in place (it now resumes once the Time-Stop ends)"
+        "Fixed [[h:Paradox]]'s [[a:Kinetic Carbine]] stopping the leap in place (it now resumes once the Time-Stop ends)"
        ]
       },
       {
@@ -889,7 +904,7 @@
        "ability": "Rook Battery",
        "ac": "ability_chessmaster_forkpiece",
        "lines": [
-        "Fixed being removed from the world when contacting Violet Living Ink (Draw) or Paradox Time Wall",
+        "Fixed being removed from the world when contacting [[h:Violet]] [[a:Living Ink]] (Draw) or [[h:Paradox]] [[a:Time Wall]]",
         "Fixed rooks being destroyed when hitting a heavy crate instead of reflecting"
        ]
       }
