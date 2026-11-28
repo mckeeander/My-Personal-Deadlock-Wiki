@@ -1184,10 +1184,10 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .ab .up:not(.on) .ut{color:#bdb3cb}
 
 /* ---------- boon preview trial (Rem): a box at the top of the Abilities section: boons, and weapon / spirit investment ---------- */
-.bpvbox{margin:0 0 16px}
+.bpvbox{margin:0 0 16px;background:#1a1622;border-color:#2b2537;box-shadow:inset 0 3px 10px rgba(0,0,0,.55),inset 0 1px 2px rgba(0,0,0,.4),0 1px 0 rgba(255,255,255,.04)} /* sunk into the page: a darker panel, shaded at its top edge inside, a faint light line under it */
+.bpvbox .gsticks{padding:0 6px 0 8px} /* the numbers under the boon slider line up with its notches (the track starts and ends half a thumb in) */
+.bpvbox .bpvpick .seg{background:#14111a}.bpvbox .bpvpick .seg button.on{background:var(--panel2)}
 .bpvr{--ssc:#6AA6FF}
-.bpvn{color:#6AA6FF!important}
-.bpvnote{font-size:12px;color:var(--dim);margin:6px 2px 2px;line-height:1.45}.bpvnote b{font-weight:600}.bpvnote .bn{color:var(--spirit)}.bpvnote .sp{color:var(--spirit)}.bpvnote .wp{color:var(--weapon)}
 .bpvpick{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 2px 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
 .bpvpick .seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:2px;text-transform:none;letter-spacing:0}
 .bpvpick .seg button{border:0;background:none;border-radius:6px;padding:3px 9px;font-size:11.5px;font-weight:600;color:var(--dim);-webkit-tap-highlight-color:transparent}.bpvpick .seg button.on{background:var(--panel2);color:var(--fg)}
@@ -1196,8 +1196,8 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .bpvs .gslh b{font-weight:600}.bpvs.wp .gslh b{color:var(--weapon)}.bpvs.sp .gslh b{color:var(--spirit)}
 .bpvsw{position:relative;height:40px;margin-top:2px}
 .bpvsw .trk2{position:absolute;left:11px;right:11px;top:23px;height:6px;border-radius:3px;background:linear-gradient(to right,var(--ic) var(--p),#3d344c var(--p))}
-.bpvsw .dt{position:absolute;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:var(--dr,#2e2838)}.bpvsw .dt.got{background:var(--dl,#5b3f86)} /* subtle: a darker shade of the fill behind it, and darker than the empty track ahead */
-.bpvsw .dt.spk{width:8px;height:8px;margin:-4px 0 0 -4px;background:#14111a;border:1.5px solid var(--ic)}.bpvsw .dt.spk.got{background:var(--dl,#5b3f86);border-color:var(--ic)}
+.bpvsw .dt{position:absolute;width:1.5px;height:10px;margin:-5px 0 0 -.75px;border-radius:1px;background:var(--dr,#2a2533)}.bpvsw .dt.got{background:var(--dl,#5b3f86)} /* thin notches, subtle: a darker shade of the fill behind the thumb, darker than the empty track ahead */
+.bpvsw .dt.spk{width:2px;height:16px;margin:-8px 0 0 -1px;background:var(--ic);opacity:.75}.bpvsw .dt.spk.got{background:var(--dl,#5b3f86);opacity:1}
 .bpvsw .spl{position:absolute;top:0;transform:translateX(-50%);font-size:8.5px;font-weight:700;letter-spacing:.1em;color:var(--ic)}
 .bpvs input{position:relative;-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:12px 0 0;background:transparent;touch-action:none}
 .bpvs input::-webkit-slider-runnable-track{height:6px;background:transparent}
@@ -1206,7 +1206,7 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .bpvs.wp{--ic:var(--weapon);--dl:#8a5a22}.bpvs.sp{--ic:var(--spirit);--dl:#5b3f86}
 .bpvs.bn{--ic:#6AA6FF;--dl:#3a5f9c;--dr:#2e2a38;margin-top:0}
 .bpvs.bn .bpvsw{height:30px;margin-top:4px}.bpvs.bn .trk2{top:13px}.bpvs.bn input{margin-top:2px}
-.bpvs .gslh .lb{display:flex;gap:5px;align-items:baseline}.bpvs .gslh .lb .pr{color:var(--fg)}.bpvs .gslh .lb .bn2{color:#6AA6FF}.bpvs .gslh .lb .s2{color:var(--spirit)}.bpvs .gslh .lb .w2{color:var(--weapon)}.bpvs .gslh .lb .dv{color:var(--dim);font-weight:400}.bpvs .gslh .bn2{color:#6AA6FF}
+.bpvs .gslh .lb{display:flex;gap:5px;align-items:baseline}.bpvs .gslh .lb .pr{color:var(--fg)}.bpvs .gslh .lb .bn2{color:var(--fg)}.bpvs .gslh .lb .s2{color:var(--spirit)}.bpvs .gslh .lb .w2{color:var(--weapon)}.bpvs .gslh .lb .dv{color:var(--dim);font-weight:400}.bpvs .gslh .bn2{color:var(--fg)}
 </style>
 </head>
 <body class="boot">
@@ -6646,7 +6646,7 @@ function refreshNow() {
 var BPV_TRIAL = { "Rem": 1 }, BPV_HERO = null, BOONS_PAGE = 0, BPV_INV = { weapon: -1, spirit: -1 }; // INV: index into the hero's cost_bonuses (-1: none)
 function curHero() { return state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; }
 function bpvInv(h, slot) { var L = ((h && h.cost_bonuses) || {})[slot] || [], i = BPV_INV[slot]; return i >= 0 && L[i] ? L[i] : null; } // the threshold picked: { gold_threshold, bonus (total so far) }
-var BPV_VER = (function () { try { return localStorage.getItem("bpvver") || "a"; } catch (e) { return "a"; } })(); // a: hint line under; b: numbers above each slider; c: b with notches spaced by price
+var BPV_VER = (function () { try { return localStorage.getItem("bpvver") === "c" ? "c" : "b"; } catch (e) { return "b"; } })(); // b: even stops; c: stops spaced by price (softened)
 function bpvSlots(h) { // the categories whose investment changes this hero's abilities: spirit when anything scales with Spirit Power, weapon when anything scales with weapon damage
   var it = h.items || {}, out = { spirit: false, weapon: false };
   ["signature1", "signature2", "signature3", "signature4"].forEach(function (k) { var a = state.byClass[it[k]]; if (!a) return; var all = [a].concat(Object.keys(a.dependent_abilities || {}).map(function (c) { return state.byClass[c]; }).filter(Boolean));
@@ -6654,34 +6654,26 @@ function bpvSlots(h) { // the categories whose investment changes this hero's ab
       (x.upgrades || []).forEach(function (u) { ((u && u.property_upgrades) || []).forEach(function (pu) { if (pu.scale_stat_filter === "ETechPower") out.spirit = true; if (pu.scale_stat_filter === "EWeaponPower") out.weapon = true; }); }); }); });
   return ["weapon", "spirit"].filter(function (s) { return out[s]; });
 }
-function bpvNote(h) {
-  var b = BOONS_PAGE, w = bpvInv(h, "weapon"), sp = bpvInv(h, "spirit"), bits = [];
-  if (b) bits.push('<b class="bn">+' + fmtNum(Math.round(b * spPerBoon(h) * 10) / 10) + "</b> Spirit from boons");
-  if (sp) bits.push('<b class="sp">+' + fmtNum(sp.bonus) + "</b> Spirit from investment");
-  if (w) bits.push('<b class="wp">+' + fmtNum(w.bonus) + "%</b> weapon damage from investment");
-  return bits.join(" · ");
-}
 function bpvCur(h, slot) { // what a slider's label says: the price (a), or the price and what it gives (b, c)
   var t = bpvInv(h, slot); if (!t) return "None";
   var pr = "$" + Number(t.gold_threshold).toLocaleString();
-  if (BPV_VER === "a") return pr;
   return '<span class="lb"><span class="pr">' + pr + '</span><span class="dv">·</span>' + (slot === "weapon" ? '<span class="w2">+' + fmtNum(t.bonus) + "% weapon damage</span>" : '<span class="s2">+' + fmtNum(t.bonus) + " Spirit</span>") + "</span>";
 }
 function bpvBoonLbl(h) { var b = BOONS_PAGE, n = b + (b === 1 ? " boon" : " boons");
-  if (BPV_VER === "a" || !b || bpvSlots(h).indexOf("spirit") < 0) return '<span class="bn2">' + n + "</span>";
+  if (!b || bpvSlots(h).indexOf("spirit") < 0) return '<span class="bn2">' + n + "</span>";
   return '<span class="lb"><span class="bn2">' + n + '</span><span class="dv">·</span><span class="s2">+' + fmtNum(Math.round(b * spPerBoon(h) * 10) / 10) + " Spirit</span></span>"; }
 function bpvPos(x) { return "calc(11px + (100% - 22px) * " + x.toFixed(4) + ")"; }
 function bpvTrack(cls, nm, lbl, key, vals, v, spike, input) { // a slider on its own track: a dot at each stop after the start (vals: positions 0-1), the spike ringed
   var dots = "", spk = "", top = cls === "bn" ? 16 : 26;
-  vals.forEach(function (x, i) { if (!i) return; var sp0 = i === spike, got = cls === "bn" ? i < v : i <= v; dots += '<i class="dt' + (sp0 ? " spk" : "") + (got ? " got" : "") + '" data-dk="' + i + '" style="top:' + top + "px;left:" + bpvPos(x) + '"></i>'; if (sp0) spk = '<span class="spl" style="left:' + bpvPos(x) + '">SPIKE</span>'; });
+  vals.forEach(function (x, i) { if (!i || (cls === "bn" && i % 5)) return; var sp0 = i === spike, got = cls === "bn" ? i < v : i <= v; dots += '<i class="dt' + (sp0 ? " spk" : "") + (got ? " got" : "") + '" data-dk="' + i + '" style="top:' + top + "px;left:" + bpvPos(x) + '"></i>'; if (sp0) spk = '<span class="spl" style="left:' + bpvPos(x) + '">SPIKE</span>'; });
   return '<div class="bpvs ' + cls + '"><div class="gslh"><span>' + nm + '</span><b data-' + key + ">" + lbl + '</b></div><div class="bpvsw" style="--p:' + (vals[v] * 100).toFixed(2) + '%">' + spk + '<div class="trk2"></div>' + dots + "<input " + input + "></div></div>";
 }
 function bpvStops(h, slot) { // where each stop sits: evenly, or (version c) by price
   var L = (h.cost_bonuses || {})[slot] || [], mx = L.length ? Number(L[L.length - 1].gold_threshold) : 1;
-  return [0].concat(L.map(function (r, i) { return BPV_VER === "c" ? Number(r.gold_threshold) / mx : (i + 1) / L.length; }));
+  return [0].concat(L.map(function (r, i) { return BPV_VER === "c" ? Math.sqrt(Number(r.gold_threshold) / mx) : (i + 1) / L.length; })); // by price, softened (square root): the last gap ($6,400) takes about half the room it would, the early ones get more
 }
 function bpvInvHtml(h) {
-  var head = '<div class="bpvpick"><span>Investment</span><span class="seg" role="group" aria-label="Version">' + ["a", "b", "c"].map(function (k) { return '<button data-bpvv="' + k + '"' + (BPV_VER === k ? ' class="on"' : "") + ">" + k.toUpperCase() + "</button>"; }).join("") + "</span></div>";
+  var head = '<div class="bpvpick"><span>Investment</span><span class="seg" role="group" aria-label="Version">' + ["b", "c"].map(function (k) { return '<button data-bpvv="' + k + '"' + (BPV_VER === k ? ' class="on"' : "") + ">" + (k === "b" ? "Even" : "By price") + "</button>"; }).join("") + "</span></div>";
   return head + bpvSlots(h).map(function (slot) {
     var L = (h.cost_bonuses || {})[slot] || [], v = BPV_INV[slot] + 1, st = bpvStops(h, slot), spike = -1;
     L.forEach(function (r, i) { if (Number(r.gold_threshold) === 4800) spike = i + 1; });
@@ -6693,7 +6685,7 @@ function bpvInvHtml(h) {
 function bpvSlider(h) {
   var b = BOONS_PAGE, st = []; for (var i = 0; i <= MAX_BOONS; i++) st.push(i / MAX_BOONS);
   return '<div class="gslide bpvbox" id="bpvbox">' + bpvTrack("bn", "Abilities at", bpvBoonLbl(h), "bpvbl", st, b, -1, 'type="range" class="bpvr" id="bpvtr" min="0" max="' + MAX_BOONS + '" step="1" value="' + b + '" aria-label="Boons"') + '<div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div>' +
-    '<div id="bpvinv">' + bpvInvHtml(h) + "</div>" + (BPV_VER === "a" ? '<p class="bpvnote">' + bpvNote(h) + "</p>" : "") + "</div>";
+    '<div id="bpvinv">' + bpvInvHtml(h) + "</div></div>";
 }
 function bpvCtx(h) { var w = bpvInv(h, "weapon"), sp = bpvInv(h, "spirit"); return { boons: BOONS_PAGE, wpp: w ? w.bonus : 0, spx: sp ? sp.bonus : 0 }; }
 var BPV_RAF = 0;
@@ -6712,11 +6704,10 @@ function bpvPage() { // the page's cards at the slider's boons and the picked in
     Array.prototype.forEach.call(box.querySelectorAll("[data-bpvsl]"), function (e) { var slot = e.getAttribute("data-bpvsl"), v = BPV_INV[slot] + 1, st = bpvStops(h, slot), w = e.parentNode;
       if (BPV_VER !== "c") e.value = v; w.style.setProperty("--p", (st[v] * 100).toFixed(2) + "%");
       Array.prototype.forEach.call(w.querySelectorAll(".dt"), function (d) { d.classList.toggle("got", +d.getAttribute("data-dk") <= v); }); });
-    var nt = box.querySelector(".bpvnote"); if (nt) nt.innerHTML = bpvNote(h);
   });
 }
 document.addEventListener("input", function (e) { var sl = e.target.getAttribute && e.target.getAttribute("data-bpvsl"); if (!sl) return; var h = curHero(); if (!h) return;
-  if (BPV_VER === "c") { var x = +e.target.value / 1000, st = bpvStops(h, sl), best = 0; st.forEach(function (q, i) { if (Math.abs(q - x) < Math.abs(st[best] - x)) best = i; }); BPV_INV[sl] = best - 1; } // by price: snap to the nearest stop
+  if (BPV_VER === "c") { var x = +e.target.value / 1000, st = bpvStops(h, sl), best = 0; st.forEach(function (q, i) { if (Math.abs(q - x) < Math.abs(st[best] - x)) best = i; }); BPV_INV[sl] = best - 1; e.target.value = Math.round(st[best] * 1000); } // by price: the thumb jumps from stop to stop, never in between
   else BPV_INV[sl] = +e.target.value - 1;
   bpvPage(); });
 document.addEventListener("change", function (e) { var sl = e.target.getAttribute && e.target.getAttribute("data-bpvsl"); if (sl && BPV_VER === "c") { var h = curHero(), st = bpvStops(h, sl); e.target.value = Math.round(st[BPV_INV[sl] + 1] * 1000); } }); // let go: the thumb settles on its stop
