@@ -1184,8 +1184,19 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .ab .up:not(.on) .ut{color:#bdb3cb}
 
 /* ---------- boon preview: a box at the top of every hero's Abilities section: boons, and weapon / spirit investment ---------- */
-.bpvbox{margin:8px 0 16px;padding:24px 15px 18px;background:#191520;border-color:#2b2537;box-shadow:inset 0 6px 18px rgba(0,0,0,.62),inset 0 2px 5px rgba(0,0,0,.45),inset 0 -2px 8px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.045)} /* sunk into the page: a darker panel, shaded deep along its top edge inside and lightly at its bottom, a faint light line under it */
-.bpvbox .gsticks{padding:0 6px 0 8px} /* the numbers under the boon slider line up with its notches (the track starts and ends half a thumb in) */
+.bpvbox{margin:8px 0 16px;padding:20px 15px 18px;background:#191520;border-color:#2b2537;box-shadow:inset 0 5px 14px rgba(0,0,0,.5),inset 0 2px 4px rgba(0,0,0,.36),inset 0 -2px 8px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.045)} /* sunk into the page: a darker panel, shaded along its top edge inside and lightly at its bottom, a faint light line under it */
+.bpvlb{position:relative;height:16px;margin-top:-2px;font-size:11px;color:#7d7290}.bpvlb span{position:absolute;top:0;transform:translateX(-50%)} /* the numbers under the boon slider, each centred on its notch */
+.mkpick{display:flex;align-items:center;justify-content:space-between;margin:12px 2px 0;font-size:11px;color:var(--dim)}.mkpick .seg{display:flex;background:#14111a;border:1px solid var(--line);border-radius:8px;padding:2px}.mkpick .seg button{border:0;background:none;border-radius:6px;padding:3px 10px;font-size:11.5px;font-weight:600;color:var(--dim)}.mkpick .seg button.on{background:var(--panel2);color:var(--fg)}
+/* a value the boon preview raised: four mock-ups (Celeste). Elsewhere the marks stay hidden */
+.dlt,.bse{display:none;font-style:normal}.dlt.sp{color:var(--spirit)}.dlt.wp{color:var(--weapon)}.dlt.bn{color:#6AA6FF}
+body.mk1 .stat .dlt{display:block;font-size:12px;font-weight:600;margin-top:1px} /* 1: what it added, under the label */
+body.mk1 .minor .dlt{display:inline;font-size:12px;font-weight:600;margin-left:5px}
+body.mk2 .stat .dlt{display:block;position:absolute;top:-9px;left:-3px;font-size:11px;font-weight:700;padding:1px 6px;border-radius:6px;border:1px solid currentColor;background:#231c33} /* 2: what it added, a tag in the top-left corner */
+body.mk2 .stat .dlt.wp{background:#2c2216}body.mk2 .minor .dlt{display:inline-block;font-size:11px;font-weight:700;padding:0 5px;margin-left:6px;border-radius:5px;border:1px solid currentColor;vertical-align:1px}
+body.mk3 .stat .bse{display:block;order:-1;font-size:11.5px;color:#7d7290;text-decoration:line-through;margin-bottom:-1px} /* 3: the base value, struck through, above the new one */
+body.mk3 .minor .bse{display:inline;font-size:12px;color:#7d7290;text-decoration:line-through;margin-left:6px}
+body.mk4 .stat.scaled b,body.mk4 .minor .scaled > b{color:#d6c2ff} /* 4: the number itself tinted, with a soft glow along the card's bottom edge */
+body.mk4 .stat.scaled{background-image:linear-gradient(to top,rgba(181,131,240,.16),transparent 60%)}
 .bpvsep{height:1px;margin:18px -2px 2px;background:rgba(255,255,255,.07)} /* between the boon slider and the investment sliders (none between two investment sliders) */
 .bpvr{--ssc:#6AA6FF}
 /* slider picker: one notched slider per category, from none through every threshold */
@@ -1676,13 +1687,15 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Serrated Knives|MovementSlow": "Slow", "Slice and Dice|CooldownReductionOnHit": "Per Hero Hit", "Slice and Dice|CooldownReductionOnHitNonHero": "Per Non-Hero Hit", "Slice and Dice|MaxCooldownReductionsFromHits": "Max Cooldown Reduction",
   "Killing Blow|EnemyHealthPercent": "Execute Threshold", "Boot Kick|OutgoingDamagePercent": "Enemy Damage", "Boot Kick|StaminaRestore": "Stamina Restored on Hero Hit", "Entangling Bola|RicochetCount": "Ricochets", "Entangling Bola|RicochetRange": "Ricochet Range", "Rule, Ratannia!|SlowPercent": "Slow", "Bookwyrm|DragonTravelRange": "Travel Range", "Enchanter's Satchel|AbilityDuration": "Escape Duration", "Granny Long Legs|HeavyMeleeSpiritDamage": "Damage", "Granny Long Legs|HeavyMeleeSlowPercent": "Movement Slow" }; // some game labels need the subject spelled out
 var PURE_OV = { "Consecrating Grenade|DPS": 1, "Ira Domini|BonusDamage": 1 }; // pure damage: no resist reduces it (the only two in the game, both Venator's)
-function propRec(it, key) { var r = propRec0(it, key); if (r && PLUS_OV[it.name + "|" + key]) r.plus = 1; if (r && PURE_OV[it.name + "|" + key]) r.pure = 1; return r; }
+function propRec(it, key) { var r = propRec0(it, key); if (r && LAST_D && Math.abs(LAST_D.d) >= 0.05) { r.d = LAST_D.d; r.dk = LAST_D.kind; } if (r && PLUS_OV[it.name + "|" + key]) r.plus = 1; if (r && PURE_OV[it.name + "|" + key]) r.pure = 1; return r; }
 // boon preview: each hero's growth per boon (standard_level_up_upgrades)
 function spPerBoon(h) { return Number(((h && h.standard_level_up_upgrades) || {}).MODIFIER_VALUE_TECH_POWER) || 0; }
 function meleePerBoon(h, heavy) { var u = (h && h.standard_level_up_upgrades) || {}, l = Number(u.MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL) || 0, ss = (h && h.starting_stats) || {};
   if (!heavy) return l; var lm = (ss.light_melee_damage || {}).value, hm = (ss.heavy_melee_damage || {}).value; return lm ? l * hm / lm : l; } // heavy melee grows in proportion
 function bulletPerBoon(h) { return Number(((h && h.standard_level_up_upgrades) || {}).MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL) || 0; }
+var LAST_D = null; // what the boon preview added to the stat propRec0 last worked out: { d: amount, kind }
 function propRec0(it, key) {
+  LAST_D = null;
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
   if (isDisabled(p)) return null;
@@ -1691,12 +1704,12 @@ function propRec0(it, key) {
     var nv = null;
     if (sk.kind === "melee" && Math.abs(parseFloat(p0.value)) < 0.05) { // pure melee scaling: the game shows hero melee damage x rate (plus any flat damage a tier adds)
       var ss = CTX.hero.starting_stats || {}, mm = ss[/Heavy/.test(sk.sub) ? "heavy_melee_damage" : "light_melee_damage"];
-      if (mm && mm.value != null) nv = (mm.value + (CTX.boons || 0) * meleePerBoon(CTX.hero, /Heavy/.test(sk.sub))) * sk.rate + (n >= 0.05 ? n : 0);
-    } else if (cn === "scale_function_kinetic_carbine_damage" && CTX.bullet && sk.kind === "weapon") nv = n * CTX.bullet * sk.rate;
+      if (mm && mm.value != null) { nv = (mm.value + (CTX.boons || 0) * meleePerBoon(CTX.hero, /Heavy/.test(sk.sub))) * sk.rate + (n >= 0.05 ? n : 0); if (CTX.boons) LAST_D = { d: (CTX.boons * meleePerBoon(CTX.hero, /Heavy/.test(sk.sub))) * sk.rate, kind: "weapon" }; }
+    } else if (cn === "scale_function_kinetic_carbine_damage" && CTX.bullet && sk.kind === "weapon") { nv = n * CTX.bullet * sk.rate; var b0 = bulletOf(CTX.hero); if (CTX.bullet !== b0) LAST_D = { d: n * (CTX.bullet - b0) * sk.rate, kind: "weapon" }; }
     else if ((CTX.boons || CTX.spx || CTX.wpp) && n !== 0 && (sk.kind === "spirit" || sk.kind === "boons" || (sk.kind === "weapon" && CTX.wpp))) { // boon preview: what boons and investment add (spirit power from boons and spirit investment; weapon damage % on weapon-scaled stats)
       var unit = String(p.value).replace(/^\s*[-+]?[\d.]+/, "");
       nv = sk.kind === "weapon" ? n * (1 + sk.rate * CTX.wpp / 100) : n + sk.rate * (sk.kind === "spirit" ? CTX.boons * spPerBoon(CTX.hero) + CTX.spx : CTX.boons);
-      shown = {}; for (var k0 in p) shown[k0] = p[k0]; shown.value = String(Math.round(nv * 10) / 10) + unit; nv = null;
+      shown = {}; for (var k0 in p) shown[k0] = p[k0]; shown.value = String(Math.round(nv * 10) / 10) + unit; LAST_D = { d: nv - n, kind: sk.kind }; nv = null;
     }
     if (nv != null) { shown = {}; for (var k in p) shown[k] = p[k]; shown.value = String(Math.round(nv * 10) / 10); }
   }
@@ -1914,6 +1927,10 @@ function statTiles(it) {
 function pIcon(src) { return src ? imgTag(src).replace("<img ", '<img class="pi" ') : ""; }
 function isDmgLbl(l) { return /Damage|DPS|Burst|Health Steal/i.test(l) && !/Stolen/i.test(l); }
 function unsign(v) { return String(v).replace(/^\+(?=[\d.])/, ""); } // a card's or small stat's number without a "+": a gain is the default reading; "-" stays because it says something is reduced
+function markD(r, v) { // a stat the boon preview raised: what it added, and what it was
+  if (!r || !r.d) return ""; var u = String(v != null ? v : r.v).replace(/^[-+]?[\d.]+/, ""), c = r.dk === "weapon" ? "wp" : r.dk === "boons" ? "bn" : "sp", nv = parseFloat(String(v != null ? v : r.v).replace(/^\+/, ""));
+  return '<em class="dlt ' + c + '">+' + fmtNum(Math.round(r.d * 10) / 10) + u + '</em><s class="bse">' + fmtNum(Math.round((nv - r.d) * 10) / 10) + u + "</s>";
+}
 function tile(v, l, r) {
   if (!(r && r.plus)) v = unsign(v);
   if (r && r.kind === "melee" && l === "Damage") l = "Melee Damage"; // the corner tag says light/heavy; the label stays "Melee Damage" at every tier
@@ -1925,7 +1942,7 @@ function tile(v, l, r) {
   var stealHeal = r && r.heal && /Health Steal|Lifesteal On Hit/.test(l); // damage you heal back one for one (Fire Scarabs, Combo): green
   var tech = r && ((r.tech && isDmgLbl(l)) || sp); // purple boxes are for damage; a spirit-scaling heal, barrier or buff keeps its purple ★ tag on a plain card
   var barrier = r && /Barrier$/.test(l); // a barrier card is blue
-  return '<div class="stat' + (r && r.pure ? " big ptile" : r && r.wpn ? " big wtile" : stealHeal ? " big htile" : tech ? " big" : r && r.heal ? " big htile" : barrier ? " big btile" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i></div>";
+  return '<div class="stat' + (r && r.d ? " scaled" : "") + (r && r.pure ? " big ptile" : r && r.wpn ? " big wtile" : stealHeal ? " big htile" : tech ? " big" : r && r.heal ? " big htile" : barrier ? " big btile" : "") + '">' + corner + "<b>" + (r ? pIcon(r.icon) : "") + esc(v) + "</b><i>" + esc(l) + "</i>" + markD(r, v) + "</div>";
 }
 // abilities use tooltip_details.info_sections
 // stats the game lumps in with the caster's own buffs but which land on the enemy get their own heading
@@ -2098,7 +2115,7 @@ function tooltipHtml(it) {
   var allSig = {};
   var demX = "", minorF = ""; // demX: upgrade-added stats shown as small text; minorF: small stats that sit under the first block of cards (MINOR_FIRST)
   function mspan(k, html) { if ((MINOR_FIRST[it.name] || {})[k]) { minorF += html; return ""; } return html; }
-  function extraHtml(list) { return (list || []).map(function (r) { if (durUsed[r.key]) return ""; if ((DEMOTE[it.name] || {})[r.key]) { demX += mspan(r.key, "<span><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"); return ""; } allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, withDur(r.key, r)); }).join(""); }
+  function extraHtml(list) { return (list || []).map(function (r) { if (durUsed[r.key]) return ""; if ((DEMOTE[it.name] || {})[r.key]) { demX += mspan(r.key, "<span" + (r.d ? ' class="scaled"' : "") + "><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + markD(r) + "</span>"); return ""; } allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, withDur(r.key, r)); }).join(""); }
   bi = 0;
   secs.forEach(function (sec, si) {
     var req = sec.property_upgrade_required;
@@ -2135,7 +2152,7 @@ function tooltipHtml(it) {
         }
         var key = pp.important_property || pp.property; if (!key) return;
         var r = withDur(key, propRec(it, key));
-        if (r && (DEMOTE[it.name] || {})[key]) { dem += mspan(key, "<span><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"); return; }
+        if (r && (DEMOTE[it.name] || {})[key]) { dem += mspan(key, "<span" + (r.d ? ' class="scaled"' : "") + "><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + markD(r) + "</span>"); return; }
         if (r && !seen[sig(r.v, r.l)]) { seen[sig(r.v, r.l)] = allSig[sig(r.v, r.l)] = 1; tiles += tile(r.v, r.l, r); }
       });
       tiles += extraHtml(place[bi]);
@@ -2153,7 +2170,7 @@ function tooltipHtml(it) {
       var p0 = (it.properties || {})[k], b0 = p0 ? parseFloat(p0.value) : NaN;
       if ((DEMOTE[it.name] || {})[k]) { /* small text even though an upgrade unlocks it */ } else if (b0 === 0 || (PROMOTE[it.name] || {})[k] || (/damage$/.test(String(p0 && p0.css_class)) && /Damage$/.test(r.l) && !/Bonus|Reduction|Amp|Self|Headshot/.test(r.l) && !/%$/.test(r.v))) { if (!allSig[sig(r.v, r.l)]) { allSig[sig(r.v, r.l)] = 1; promo += tile(r.v, r.l, r); } return; } // only exists once an upgrade unlocks it: show it as a card
       var mt = MINOR_TXT[it.name + "|" + k]; if (typeof mt === "function") mt = mt(it); // a small stat said as a sentence ("Enemies within 18m can see you")
-      minor += mspan(k, "<span>" + (mt ? esc(mt).replace("{v}", "<b>" + esc(unsign(r.v)) + "</b>") : "<b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + (r.dur ? " for " + esc(r.dur) : "")) + scaleBadge(r) + "</span>");
+      minor += mspan(k, "<span" + (r.d ? ' class="scaled"' : "") + ">" + (mt ? esc(mt).replace("{v}", "<b>" + esc(unsign(r.v)) + "</b>") : "<b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + (r.dur ? " for " + esc(r.dur) : "")) + scaleBadge(r) + markD(r) + "</span>");
     });
     if (promo) {
       var lastStats = -1; for (var pi2 = parts.length - 1; pi2 >= secStart; pi2--) if (/<div class="stats">/.test(parts[pi2])) { lastStats = pi2; break; }
@@ -2182,7 +2199,7 @@ function tooltipHtml(it) {
       var t = arrange(front + g.k.map(function (k) { if (durUsed[k]) return ""; var r = withDur(k, g.base && g.base[k] ? baseRec(k) : propRec(it, k)); if (!r || allSig[sig(r.v, r.l)]) return ""; allSig[sig(r.v, r.l)] = 1; return tile(r.v, r.l, r); }).join("") + cards);
       var mx = (g.x || []).filter(function (x) { return propRec(it, x.k); }).map(function (x) { return '<span class="fl">' + esc(x.t) + "</span>"; }).join("");
       Object.keys(g.f || {}).forEach(function (k) { var e = effP(it, k); if (g.f[k] && e && parseFloat(e.value) > 0) mx += '<span class="fl">' + esc(g.f[k].replace(/\{(\w+)\}/g, function (m0, k2) { return (propRec(it, k2) || {}).v || ""; })) + "</span>"; }); // "{SlowDuration}" stands for that stat's value
-      (g.m || []).forEach(function (k) { var r = propRec(it, k); if (r) mx += "<span><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>"; }); // m: small stats under the group's cards (Specter Crash: how long the crash lasts)
+      (g.m || []).forEach(function (k) { var r = propRec(it, k); if (r) mx += "<span" + (r.d ? ' class="scaled"' : "") + "><b>" + esc(unsign(r.v)) + "</b> " + esc(r.l) + scaleBadge(r) + markD(r) + "</span>"; }); // m: small stats under the group's cards (Specter Crash: how long the crash lasts)
       if (!t && !mx) return; if (!g.l) return;
       var html = '<div class="blk">' + esc(g.l.replace(/\{(\w+)\}/g, function (m0, k2) { return (propRec(it, k2) || {}).v || ""; })) + "</div>" + (t ? '<div class="stats">' + t + "</div>" : "") + (mx ? '<div class="minor">' + mx + "</div>" : "");
       if (g.late) late.push(html);
@@ -4191,6 +4208,7 @@ function renderHero(cn) {
   var h = state.heroes.filter(function (x) { return x.class_name === cn; })[0];
   if (!h) { state.hero = null; return renderHeroes(); }
   state.hero = cn; HERO_NAME = h.name; SEL = SELS[cn] || (SELS[cn] = {});
+  ["1", "2", "3", "4"].forEach(function (k) { document.body.classList.toggle("mk" + k, !!MARK_TRIAL[h.name] && k === MARK_V); });
   if (BPV_HERO !== cn) { BOONS_PAGE = 0; BPV_INV = { weapon: -1, spirit: -1 }; BPV_HERO = cn; } // boon preview: a new hero starts at base values (a re-render of the same hero keeps them)
   var tags = (h.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("");
   var cxn = Math.max(0, Math.min(3, Number(h.complexity) || 0)), dots = "";
@@ -4301,7 +4319,7 @@ function itemSecHtml(it, sec, used) {
       var r = propRec(it, k); if (!r) return; used[k] = 1;
       if (k === "AbilityCooldown") chips = '<span class="chip" data-tip="Cooldown">' + (pIcon(r.icon) || "⟳ ") + esc(r.v) + "</span>" + chips; // the cooldown always leads, as on ability cards
       else if (k === "AbilityDuration") chips += '<span class="chip" data-tip="Duration">' + (pIcon(r.icon) || "⏳ ") + esc(r.v) + "</span>";
-      else mini += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + "</span>";
+      else mini += "<span><b>" + esc(r.v) + "</b> " + esc(r.l) + scaleBadge(r) + markD(r) + "</span>";
     });
   });
   if (!desc && !tiles && !mini && !chips) return "";
@@ -5696,7 +5714,7 @@ $("backpill").onclick = function (e) {
   });
 };
 function render() {
-  document.body.classList.remove("boot", "barhide");
+  document.body.classList.remove("boot", "barhide", "mk1", "mk2", "mk3", "mk4");
   if (state.tab === "glossary") return renderGlossary();
   if (state.tab === "news") return renderNews();
   if (state.tab === "item") return renderItemPage();
@@ -6682,9 +6700,13 @@ function bpvInvHtml(h) {
     return bpvTrack(slot === "weapon" ? "wp" : "sp", slot === "weapon" ? "Weapon" : "Spirit", 'bpvc="' + slot + '" data-bpv', bpvCur(h, slot), bpvGain(h, slot), st, v, spike, input);
   }).join("");
 }
+var MARK_TRIAL = { "Celeste": 1 }, MARK_V = (function () { try { return localStorage.getItem("mkv") || "1"; } catch (e) { return "1"; } })(); // mock-ups for marking a value the boon preview raised (Celeste only)
+document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-mk]") : null; if (!b) return; MARK_V = b.getAttribute("data-mk"); try { localStorage.setItem("mkv", MARK_V); } catch (er) {}
+  ["1", "2", "3", "4"].forEach(function (k) { document.body.classList.toggle("mk" + k, k === MARK_V); }); Array.prototype.forEach.call(document.querySelectorAll("[data-mk]"), function (x) { x.classList.toggle("on", x === b); }); });
 function bpvSlider(h) {
   var b = BOONS_PAGE, st = []; for (var i = 0; i <= MAX_BOONS; i++) st.push(i / MAX_BOONS);
-  return '<div class="gslide bpvbox" id="bpvbox">' + bpvTrack("bn", "Abilities at", "bpvb", bpvBoonLbl(h), bpvBoonGain(h), st, b, -1, 'type="range" class="bpvr" id="bpvtr" min="0" max="' + MAX_BOONS + '" step="1" value="' + b + '" aria-label="Boons"') + '<div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div>' +
+  return '<div class="gslide bpvbox" id="bpvbox">' + bpvTrack("bn", "Abilities at", "bpvb", bpvBoonLbl(h), bpvBoonGain(h), st, b, -1, 'type="range" class="bpvr" id="bpvtr" min="0" max="' + MAX_BOONS + '" step="1" value="' + b + '" aria-label="Boons"') + '<div class="bpvlb">' + [0, 5, 10, 15, 20, 25, 30, 35].map(function (n) { return '<span style="left:' + bpvPos(n / MAX_BOONS) + '">' + n + "</span>"; }).join("") + "</div>" + // each number centred under its notch
+    (MARK_TRIAL[h.name] ? '<div class="mkpick"><span>Scaled values</span><span class="seg">' + ["1", "2", "3", "4"].map(function (k) { return '<button data-mk="' + k + '"' + (MARK_V === k ? ' class="on"' : "") + ">" + k + "</button>"; }).join("") + "</span></div>" : "") +
     '<div id="bpvinv">' + bpvInvHtml(h) + "</div></div>";
 }
 function bpvCtx(h) { var w = bpvInv(h, "weapon"), sp = bpvInv(h, "spirit"); return { boons: BOONS_PAGE, wpp: w ? w.bonus : 0, spx: sp ? sp.bonus : 0 }; }
