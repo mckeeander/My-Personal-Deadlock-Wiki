@@ -1187,7 +1187,7 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .bpvbox{margin:0 0 16px}
 .bpvr{--ssc:#6AA6FF}
 .bpvn{color:#6AA6FF!important}
-.bpvnote{font-size:12px;color:var(--dim);margin:6px 2px 2px;line-height:1.45}.bpvnote b{font-weight:600}.bpvnote .bn{color:#6AA6FF}.bpvnote .sp{color:var(--spirit)}.bpvnote .wp{color:var(--weapon)}
+.bpvnote{font-size:12px;color:var(--dim);margin:6px 2px 2px;line-height:1.45}.bpvnote b{font-weight:600}.bpvnote .bn{color:var(--spirit)}.bpvnote .sp{color:var(--spirit)}.bpvnote .wp{color:var(--weapon)}
 .bpvpick{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 2px 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
 .bpvpick .seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:2px;text-transform:none;letter-spacing:0}
 .bpvpick .seg button{border:0;background:none;border-radius:6px;padding:3px 9px;font-size:11.5px;font-weight:600;color:var(--dim);-webkit-tap-highlight-color:transparent}.bpvpick .seg button.on{background:var(--panel2);color:var(--fg)}
@@ -1197,18 +1197,23 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .bpvd > summary .nm{font-weight:700}.bpvd.wp > summary .nm{color:var(--weapon)}.bpvd.sp > summary .nm{color:var(--spirit)}
 .bpvd > summary .cur{margin-left:auto;color:var(--fg);font-weight:600}.bpvd > summary .chev{width:14px;height:14px;opacity:.6;transition:transform .2s ease}.bpvd[open] > summary .chev{transform:rotate(90deg)}
 .bpvg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 9px 10px}
-.bpvt{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;border:1px solid transparent;border-radius:7px;background:var(--panel2);color:var(--dim);font:inherit;font-size:12px;-webkit-tap-highlight-color:transparent}
-.bpvt b{font-size:15px;color:var(--fg)}.bpvt i{font-style:normal;font-size:10.5px}
-.bpvt.spike{border-color:#5a4d73}
-.bpvd.wp .bpvt.on{border-color:var(--weapon);background:#3a2814}.bpvd.wp .bpvt.on b{color:var(--weapon)}
-.bpvd.sp .bpvt.on{border-color:var(--spirit);background:#2d2145}.bpvd.sp .bpvt.on b{color:var(--spirit)}
+.bpvt{display:flex;align-items:baseline;justify-content:center;gap:5px;padding:8px 2px;border:1px solid transparent;border-radius:7px;background:#1a1622;color:#6f6680;font:inherit;font-size:11.5px;-webkit-tap-highlight-color:transparent;transition:background-color .2s ease,color .2s ease,border-color .2s ease}
+.bpvt b{font-size:15px;font-weight:700;color:#8a8199;transition:color .2s ease} /* dark until reached: the picked tier lights up in the category colour, the ones before it to normal, the ones after stay dark */
+.bpvt.got{background:var(--panel2);color:var(--dim)}.bpvt.got b{color:var(--fg)}
+.bpvd.wp .bpvt.on{border-color:var(--weapon);background:#3a2814;color:var(--fg)}.bpvd.wp .bpvt.on b{color:var(--weapon)}
+.bpvd.sp .bpvt.on{border-color:var(--spirit);background:#2d2145;color:var(--fg)}.bpvd.sp .bpvt.on b{color:var(--spirit)}
 /* slider picker: one notched slider per category, from none through every threshold */
 .bpvs{margin-top:8px}
 .bpvs .gslh b{font-weight:600}.bpvs.wp .gslh b{color:var(--weapon)}.bpvs.sp .gslh b{color:var(--spirit)}
-.bpvs input{-webkit-appearance:none;appearance:none;width:100%;height:26px;margin:4px 0 0;background:transparent;touch-action:none}
-.bpvs input::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--ic) var(--p),#3d344c var(--p))}
-.bpvs input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:#fff;border:3px solid var(--ic)}
-.bpvs input::-moz-range-track{height:6px;border-radius:3px;background:#3d344c}.bpvs input::-moz-range-progress{height:6px;border-radius:3px;background:var(--ic)}.bpvs input::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--ic)}
+.bpvsw{position:relative;height:40px;margin-top:2px}
+.bpvsw .trk2{position:absolute;left:11px;right:11px;top:23px;height:6px;border-radius:3px;background:linear-gradient(to right,var(--ic) var(--p),#3d344c var(--p))}
+.bpvsw .dt{position:absolute;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#7d7290}.bpvsw .dt.got{background:#fff}
+.bpvsw .dt.spk{width:10px;height:10px;margin:-5px 0 0 -5px;background:#14111a;border:2px solid var(--ic)}.bpvsw .dt.spk.got{background:var(--ic);border-color:#fff}
+.bpvsw .spl{position:absolute;top:0;transform:translateX(-50%);font-size:8.5px;font-weight:700;letter-spacing:.1em;color:var(--ic)}
+.bpvs input{position:relative;-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:12px 0 0;background:transparent;touch-action:none}
+.bpvs input::-webkit-slider-runnable-track{height:6px;background:transparent}
+.bpvs input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:#fff;border:3px solid var(--ic);box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.bpvs input::-moz-range-track{height:6px;background:transparent}.bpvs input::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--ic)}
 .bpvs.wp{--ic:var(--weapon)}.bpvs.sp{--ic:var(--spirit)}
 </style>
 </head>
@@ -6659,9 +6664,9 @@ function bpvSlots(h) { // the categories whose investment changes this hero's ab
 }
 function bpvNote(h) {
   var b = BOONS_PAGE, w = bpvInv(h, "weapon"), sp = bpvInv(h, "spirit"), bits = [];
-  if (b) bits.push('<b class="bn">+' + fmtNum(Math.round(b * spPerBoon(h) * 10) / 10) + "</b> Spirit Power from boons");
-  if (sp) bits.push('<b class="sp">+' + fmtNum(sp.bonus) + "</b> Spirit Power from spirit investment");
-  if (w) bits.push('<b class="wp">+' + fmtNum(w.bonus) + "%</b> weapon damage from weapon investment");
+  if (b) bits.push('<b class="bn">+' + fmtNum(Math.round(b * spPerBoon(h) * 10) / 10) + "</b> Spirit from boons");
+  if (sp) bits.push('<b class="sp">+' + fmtNum(sp.bonus) + "</b> Spirit from investment");
+  if (w) bits.push('<b class="wp">+' + fmtNum(w.bonus) + "%</b> weapon damage from investment");
   return bits.join(" · ");
 }
 function bpvCur(h, slot) { var t = bpvInv(h, slot); return t ? "$" + Number(t.gold_threshold).toLocaleString() + " · +" + fmtNum(t.bonus) + (slot === "weapon" ? "%" : "") : "None"; }
@@ -6671,10 +6676,11 @@ function bpvInvHtml(h) { // the investment pickers for this hero's categories
   return head + slots.map(function (slot) {
     var L = (h.cost_bonuses || {})[slot] || [], cls = slot === "weapon" ? "wp" : "sp", nm = slot === "weapon" ? "Weapon" : "Spirit", unit = slot === "weapon" ? "%" : "";
     if (BPV_PICK === "slider") { var v = BPV_INV[slot] + 1;
-      return '<div class="bpvs ' + cls + '"><div class="gslh"><span>' + nm + '</span><b data-bpvc="' + slot + '">' + bpvCur(h, slot) + '</b></div><input type="range" min="0" max="' + L.length + '" step="1" value="' + v + '" data-bpvsl="' + slot + '" aria-label="' + nm + ' investment" style="--p:' + (v / L.length * 100) + '%"></div>'; }
-    var prev = 0;
+      var pos = function (k) { return "calc(11px + (100% - 22px) * " + (k / L.length).toFixed(4) + ")"; }, dots = "", spk = "";
+      L.forEach(function (r, i) { var sp0 = Number(r.gold_threshold) === 4800; dots += '<i class="dt' + (sp0 ? " spk" : "") + (i < v ? " got" : "") + '" data-dk="' + (i + 1) + '" style="left:' + pos(i + 1) + '"></i>'; if (sp0) spk = '<span class="spl" style="left:' + pos(i + 1) + '">SPIKE</span>'; }); // a dot per threshold, filled once reached; the $4,800 spike marked
+      return '<div class="bpvs ' + cls + '"><div class="gslh"><span>' + nm + '</span><b data-bpvc="' + slot + '">' + bpvCur(h, slot) + '</b></div><div class="bpvsw" style="--p:' + (v / L.length * 100) + '%">' + spk + '<div class="trk2">' + "</div>" + dots.replace(/style="left:/g, 'style="top:26px;left:') + '<input type="range" min="0" max="' + L.length + '" step="1" value="' + v + '" data-bpvsl="' + slot + '" aria-label="' + nm + ' investment"></div></div>'; }
     return '<details class="bpvd ' + cls + '"' + (BPV_OPEN[slot] ? " open" : "") + ' data-bpvd="' + slot + '"><summary><span class="nm">' + nm + '</span> investment<span class="cur" data-bpvc="' + slot + '">' + bpvCur(h, slot) + "</span>" + rowSvg('<path d="M9 6l6 6-6 6"/>', "chev") + '</summary><div class="bpvg">' +
-      L.map(function (r, i) { var step = r.bonus - prev; prev = r.bonus; return '<button class="bpvt' + (Number(r.gold_threshold) === 4800 ? " spike" : "") + (i === BPV_INV[slot] ? " on" : "") + '" data-bpvt="' + slot + "|" + i + '"><span>$' + Number(r.gold_threshold).toLocaleString() + "</span><b>+" + fmtNum(r.bonus) + unit + "</b><i>+" + fmtNum(Math.round(step * 100) / 100) + unit + " here</i></button>"; }).join("") + "</div></details>";
+      L.map(function (r, i) { return '<button class="bpvt' + (i === BPV_INV[slot] ? " on" : i < BPV_INV[slot] ? " got" : "") + '" data-bpvt="' + slot + "|" + i + '"><span>$' + Number(r.gold_threshold).toLocaleString() + "</span><b>+" + fmtNum(r.bonus) + unit + "</b></button>"; }).join("") + "</div></details>"; // the price small, the total bonus beside it
   }).join("");
 }
 var BPV_OPEN = {}; // which investment folds are open
@@ -6692,8 +6698,9 @@ function bpvPage() { // the page's cards at the slider's boons and the picked in
     var box = $("bpvbox"); if (!box) return;
     var tr = $("bpvtr"); tr.value = BOONS_PAGE; tr.style.setProperty("--p", (BOONS_PAGE / MAX_BOONS * 100) + "%"); box.querySelector(".bpvn").textContent = BOONS_PAGE + (BOONS_PAGE === 1 ? " boon" : " boons");
     Array.prototype.forEach.call(box.querySelectorAll("[data-bpvc]"), function (e) { e.textContent = bpvCur(h, e.getAttribute("data-bpvc")); });
-    Array.prototype.forEach.call(box.querySelectorAll("[data-bpvt]"), function (e) { var q = e.getAttribute("data-bpvt").split("|"); e.classList.toggle("on", +q[1] === BPV_INV[q[0]]); });
-    Array.prototype.forEach.call(box.querySelectorAll("[data-bpvsl]"), function (e) { var v = BPV_INV[e.getAttribute("data-bpvsl")] + 1; e.value = v; e.style.setProperty("--p", (v / +e.max * 100) + "%"); });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-bpvt]"), function (e) { var q = e.getAttribute("data-bpvt").split("|"), cur = BPV_INV[q[0]]; e.classList.toggle("on", +q[1] === cur); e.classList.toggle("got", +q[1] < cur); });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-bpvsl]"), function (e) { var v = BPV_INV[e.getAttribute("data-bpvsl")] + 1, w = e.parentNode; e.value = v; w.style.setProperty("--p", (v / +e.max * 100) + "%");
+      Array.prototype.forEach.call(w.querySelectorAll(".dt"), function (d) { d.classList.toggle("got", +d.getAttribute("data-dk") <= v); }); });
     box.querySelector(".bpvnote").innerHTML = bpvNote(h);
   });
 }
