@@ -1183,33 +1183,17 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .ab .up:not(.on)>div:first-child{background:#2b2536;color:#a99fba}
 .ab .up:not(.on) .ut{color:#bdb3cb}
 
-/* ---------- boon preview trial (Rem): three ways to see ability values at more boons; switch at the top of the page ---------- */
-.bpvsw{display:flex;flex-direction:column;gap:8px;margin:-8px 0 14px;padding:10px 12px;border:1px dashed #4a4060;border-radius:12px;font-size:13px;color:var(--dim)}
-.bpvsw b{color:var(--fg);font-weight:600}
-.bpvseg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:2px}
-.bpvseg button{border:0;background:none;border-radius:7px;padding:6px 4px;font-size:12.5px;font-weight:600;color:var(--dim);-webkit-tap-highlight-color:transparent}
-.bpvseg button.on{background:#2e3a2c;color:var(--vital)}
+/* ---------- boon preview trial (Rem): one slider at the top of the Abilities section, with weapon and spirit investment ---------- */
 .bpvr{--ssc:var(--vital)}
-.bpvnote{font-size:12px;color:var(--dim);margin:6px 2px 2px}.bpvnote b{color:var(--vital);font-weight:600}
-/* A: a boon button on each card opens the card in a pop-up with a slider */
-.bpvb{display:none;margin-left:auto;flex:none;width:34px;height:34px;align-items:center;justify-content:center;border:1px solid #3c5a3a;border-radius:10px;background:#1f2a1f;color:var(--vital);padding:0;-webkit-tap-highlight-color:transparent}
-.bpvb .wsi{width:16px;height:18px;margin:0}
-body.bpv-pop #main .ab .bpvb{display:flex}
-.bpvsheet .ab{margin:10px 0 0;box-shadow:none}
-.bpvsheet .ab .bpvb,.bpvsheet .ab details{display:none!important}
-.bpvsheet .gslide{position:sticky;top:-14px;z-index:3;margin:0 -2px;background:var(--panel2)}
-/* B: a dial on the right edge, in the upper half, while the abilities are on screen */
-#bpvside{position:fixed;right:max(6px,calc((100% - 600px)/2 + 6px));top:15vh;height:38vh;width:46px;z-index:4;display:none;flex-direction:column;align-items:center;gap:6px;padding:8px 0;border:1px solid #3c5a3a;border-radius:23px;background:rgba(20,17,26,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 6px 18px rgba(0,0,0,.45);touch-action:none;user-select:none;-webkit-user-select:none;transition:opacity .2s ease,translate .25s ease}
-body.bpv-side.bpv-inab #bpvside{display:flex}
-#bpvside .bsv{font-size:15px;font-weight:700;color:var(--vital);font-variant-numeric:tabular-nums;line-height:1}
-#bpvside .bsl{font-size:9.5px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin-top:-3px}
-#bpvside .bst{position:relative;flex:1;width:6px;border-radius:3px;background:#3d344c;margin:4px 0}
-#bpvside .bsf{position:absolute;left:0;right:0;bottom:0;border-radius:3px;background:var(--vital)}
-#bpvside .bsk{position:absolute;left:50%;width:22px;height:22px;margin:0 0 -11px -11px;border-radius:50%;background:#fff;border:3px solid var(--vital);box-shadow:0 1px 4px rgba(0,0,0,.5)}
-#bpvside .wsi{width:14px;height:16px;color:var(--vital)}
-/* C: one slider for all four abilities, at the top of the Abilities section, staying in view while you scroll through them */
-.bpvtop{display:none;position:sticky;top:8px;z-index:4;margin:0 0 14px;box-shadow:0 8px 18px rgba(0,0,0,.45)}
-body.bpv-top #main .bpvtop{display:block}
+.bpvnote{font-size:12px;color:var(--dim);margin:6px 2px 2px;line-height:1.45}.bpvnote b{font-weight:600}.bpvnote .bn{color:var(--vital)}.bpvnote .sp{color:var(--spirit)}.bpvnote .wp{color:var(--weapon)}
+.bpvtop{position:sticky;top:calc(env(safe-area-inset-top,0px) + 14px);z-index:4;margin:0 0 14px;box-shadow:0 8px 18px rgba(0,0,0,.45)} /* below the status bar, which the page scrolls under */
+.bpvinv{display:flex;gap:6px;margin:8px 0 4px}
+.bpvi{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;padding:6px 9px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--dim);font:inherit;font-size:11.5px;text-align:left;-webkit-tap-highlight-color:transparent}
+.bpvi b{font-size:13px;font-weight:700;color:var(--fg)}
+.bpvi.wp.on{border-color:var(--weapon);background:#2c2216}.bpvi.wp.on b{color:var(--weapon)}
+.bpvi.sp.on{border-color:var(--spirit);background:#271f36}.bpvi.sp.on b{color:var(--spirit)}
+.bpvx{flex:none;width:40px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--dim);font-size:18px;padding:0;-webkit-tap-highlight-color:transparent}
+.bpvx:disabled{opacity:.35}
 </style>
 </head>
 <body class="boot">
@@ -1696,9 +1680,9 @@ function propRec0(it, key) {
       var ss = CTX.hero.starting_stats || {}, mm = ss[/Heavy/.test(sk.sub) ? "heavy_melee_damage" : "light_melee_damage"];
       if (mm && mm.value != null) nv = (mm.value + (CTX.boons || 0) * meleePerBoon(CTX.hero, /Heavy/.test(sk.sub))) * sk.rate + (n >= 0.05 ? n : 0);
     } else if (cn === "scale_function_kinetic_carbine_damage" && CTX.bullet && sk.kind === "weapon") nv = n * CTX.bullet * sk.rate;
-    else if (CTX.boons && n !== 0 && (sk.kind === "spirit" || sk.kind === "boons")) { // boon preview: what the hero's boons alone add (spirit power from boons, or the boons themselves)
+    else if ((CTX.boons || CTX.spx || CTX.wpp) && n !== 0 && (sk.kind === "spirit" || sk.kind === "boons" || (sk.kind === "weapon" && CTX.wpp))) { // boon preview: what boons and investment add (spirit power from boons and spirit investment; weapon damage % on weapon-scaled stats)
       var unit = String(p.value).replace(/^\s*[-+]?[\d.]+/, "");
-      nv = n + sk.rate * (sk.kind === "spirit" ? CTX.boons * spPerBoon(CTX.hero) : CTX.boons);
+      nv = sk.kind === "weapon" ? n * (1 + sk.rate * CTX.wpp / 100) : n + sk.rate * (sk.kind === "spirit" ? CTX.boons * spPerBoon(CTX.hero) + CTX.spx : CTX.boons);
       shown = {}; for (var k0 in p) shown[k0] = p[k0]; shown.value = String(Math.round(nv * 10) / 10) + unit; nv = null;
     }
     if (nv != null) { shown = {}; for (var k in p) shown[k] = p[k]; shown.value = String(Math.round(nv * 10) / 10); }
@@ -2673,13 +2657,13 @@ function minorCase(html) { // every small-stat line: its labels and its sentence
     return '<div class="minor">' + body + "</div>";
   });
 }
-var BOONS = 0; // boon preview: ability cards show their values at this many boons (0: the base values)
 function abilityCard(it, h) {
   var sel = SEL[it.class_name] || 0, op = ABOPT[it.class_name] || {};
-  CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) + BOONS * bulletPerBoon(h), boons: BOONS };
+  var bx = h && BPV_TRIAL[h.name] && state.hero === h.class_name ? bpvCtx(h) : { boons: 0, wpp: 0, spx: 0 }; // boon preview: the slider's boons and the picked investment (Rem only, for now)
+  CTX = { hero: h || null, mods: modsFor(it, sel), bullet: (bulletOf(h) + bx.boons * bulletPerBoon(h)) * (1 + bx.wpp / 100), boons: bx.boons, wpp: bx.wpp, spx: bx.spx };
   try {
     var CH = chipsHtml(it);
-    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3>" + (BPV_TRIAL[HERO_NAME] ? '<button class="bpvb" data-bpv="' + esc(it.class_name) + '" aria-label="' + esc(nameOf(it)) + ' at more boons">' + BSCALE + "</button>" : "") + "</div>" +
+    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
       CH +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: abilityDesc(it) } : it.description)) + "</div>" +
       minorCase(flagOnes(dropChipDupes(tooltipHtml(it), CH))) + (op.noTiers ? "" : upgradesHtml(it, sel)) + wikiHtml(h, it) + "</section>");
@@ -4199,7 +4183,6 @@ function renderHero(cn) {
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h" style="--hbg:url(&quot;' + esc(heroImg(h)) + '&quot;)"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>"; // no complexity tag: it helps pick a first hero, not look one up
   // base stats starts open (it holds the comparison switch); the weapon folds shut like Patch history; each remembers your choice for this hero
-  if (BPV_TRIAL[h.name]) html += bpvSwitch();
   html += '<details class="phd bsd" open><summary class="sec nofold"><span class="sect">Base stats</span>' + '</summary><div class="stats1">' + (CARD_HEROES[h.name] ? "" : smodeSwitch(h)) + '<div id="stats1">' + (CARD_HEROES[h.name] ? statCards(h) : statView(h)) + "</div></div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
@@ -4207,7 +4190,7 @@ function renderHero(cn) {
   var wc = ""; // the weapon now lives inside Base stats
   if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec"><span class="sect">Weapon</span>' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
   // the abilities fold like the sections above, but start open
-  html += '<details class="phd abd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Abilities</span>' + "</summary><div>" + (BPV_TRIAL[h.name] ? bpvSlider("bpvtr", 0) : "") + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
+  html += '<details class="phd abd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Abilities</span>' + "</summary><div>" + (BPV_TRIAL[h.name] ? bpvSlider(h) : "") + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
   abs.forEach(function (a) {
     var alt = fp && fp.swap[a.class_name];
@@ -4217,8 +4200,7 @@ function renderHero(cn) {
   html += '<div id="aowrap">' + abilityOrderHtml(h) + "</div>";
   html += '<div id="popwrap">' + popularHtml(h) + "</div>";
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
-  document.body.classList.remove("barhide"); BOONS_PAGE = 0;
-  ["pop", "side", "top"].forEach(function (x) { document.body.classList.toggle("bpv-" + x, !!BPV_TRIAL[h.name] && x === BPV_MODE); });
+  document.body.classList.remove("barhide"); BOONS_PAGE = 0; BPV_INV = { weapon: -1, spirit: -1 };
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
   document.body.classList.add("chband"); // every hero page: Base stats flat, Abilities and Popular items on raised panels, the shorter chapters in cards
@@ -5698,7 +5680,7 @@ $("backpill").onclick = function (e) {
   });
 };
 function render() {
-  document.body.classList.remove("boot", "barhide", "bpv-pop", "bpv-side", "bpv-top", "bpv-inab");
+  document.body.classList.remove("boot", "barhide");
   if (state.tab === "glossary") return renderGlossary();
   if (state.tab === "news") return renderNews();
   if (state.tab === "item") return renderItemPage();
@@ -6344,7 +6326,7 @@ $("main").addEventListener("click", function (e) {
   SEL[key] = cur === t ? t - 1 : t; // tapping the top selected tier steps back one
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], tmp = document.createElement("div");
   var before = snapStats(card), lay = snapLayout(card);
-  BOONS = BOONS_PAGE; try { tmp.innerHTML = abilityCard(it, h); } finally { BOONS = 0; } // at the boons the boon preview is showing (0 normally)
+  tmp.innerHTML = abilityCard(it, h);
   var fresh = tmp.firstChild;
   var openState = Array.prototype.map.call(card.querySelectorAll("details"), function (d) { return d.open; });
   Array.prototype.forEach.call(fresh.querySelectorAll("details"), function (d, i) { if (i < openState.length) d.open = openState[i]; });
@@ -6646,63 +6628,40 @@ function refreshNow() {
     else if (run > 40 && !JLOCK) document.body.classList.add("barhide");
   }, { passive: true });
 })();
-// ---------- boon preview trial (Rem) ----------
-var BPV_TRIAL = { "Rem": 1 }, BPV_MODE = (function () { try { return localStorage.getItem("bpv") || "pop"; } catch (e) { return "pop"; } })();
-function bpvSwitch() { var M = [["pop", "Card pop-up"], ["side", "Side dial"], ["top", "Top slider"]]; return '<div class="bpvsw"><span><b>Boon preview</b> · trial, only on this hero</span><div class="bpvseg" role="group" aria-label="Boon preview">' + M.map(function (m) { return '<button data-bpvm="' + m[0] + '"' + (m[0] === BPV_MODE ? ' class="on"' : "") + ">" + m[1] + "</button>"; }).join("") + "</div></div>"; }
-function bpvSlider(id, b) { var h = curHero(); return '<div class="gslide' + (id === "bpvtr" ? " bpvtop" : "") + '"><div class="gslh"><span>Abilities at</span><b class="bpvn" style="color:var(--vital)">' + b + (b === 1 ? " boon" : " boons") + '</b></div><input type="range" class="bpvr" id="' + id + '" min="0" max="' + MAX_BOONS + '" step="1" value="' + b + '" aria-label="Boons" style="--p:' + (b / MAX_BOONS * 100) + '%"><div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div>' +
-  '<p class="bpvnote">From boons: <b>+' + fmtNum(Math.round(b * spPerBoon(h) * 10) / 10) + "</b> Spirit Power · no items</p></div>"; }
+// ---------- boon preview trial (Rem): one slider for boons, plus the next weapon / spirit investment threshold per tap ----------
+var BPV_TRIAL = { "Rem": 1 }, BOONS_PAGE = 0, BPV_INV = { weapon: -1, spirit: -1 }; // INV: index into the hero's cost_bonuses (-1: none)
 function curHero() { return state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; }
-function bpvOn() { return !!(state.tab === "heroes" && state.hero && BPV_TRIAL[HERO_NAME]); }
-function bpvSetMode(m) {
-  BPV_MODE = m; try { localStorage.setItem("bpv", m); } catch (e) {}
-  ["pop", "side", "top"].forEach(function (x) { document.body.classList.toggle("bpv-" + x, bpvOn() && x === m); });
-  Array.prototype.forEach.call(document.querySelectorAll("[data-bpvm]"), function (b) { b.classList.toggle("on", b.getAttribute("data-bpvm") === m); });
-  bpvPage(0); bpvSideSync();
+function bpvInv(h, slot) { var L = ((h && h.cost_bonuses) || {})[slot] || [], i = BPV_INV[slot]; return i >= 0 && L[i] ? L[i] : null; } // the threshold picked: { gold_threshold, bonus (total so far) }
+function bpvNote(h) {
+  var b = BOONS_PAGE, w = bpvInv(h, "weapon"), sp = bpvInv(h, "spirit"), bits = [];
+  if (b) bits.push('<b class="bn">+' + fmtNum(Math.round(b * spPerBoon(h) * 10) / 10) + "</b> Spirit Power from boons");
+  if (sp) bits.push('<b class="sp">+' + fmtNum(sp.bonus) + "</b> Spirit Power from spirit investment");
+  if (w) bits.push('<b class="wp">+' + fmtNum(w.bonus) + "%</b> weapon damage from weapon investment");
+  return bits.length ? bits.join(" · ") : "Base values: drag for boons, tap Weapon or Spirit to add investment";
 }
-var BPV_RAF = 0, BPV_WANT = 0;
-function bpvPage(b) { // the page's own cards at b boons (side dial and top slider)
-  BPV_WANT = b; if (BPV_RAF) return;
+function bpvBtn(h, slot) { var t = bpvInv(h, slot), nm = slot === "weapon" ? "Weapon" : "Spirit";
+  return '<button class="bpvi ' + (slot === "weapon" ? "wp" : "sp") + (t ? " on" : "") + '" data-bpvi="' + slot + '" aria-label="' + nm + ' investment: next threshold">' + nm + "<b>" + (t ? "$" + Number(t.gold_threshold).toLocaleString() + " · +" + fmtNum(t.bonus) + (slot === "weapon" ? "%" : "") : "None") + "</b></button>"; }
+function bpvSlider(h) { var b = BOONS_PAGE; return '<div class="gslide bpvtop" id="bpvbox"><div class="gslh"><span>Abilities at</span><b class="bpvn" style="color:var(--vital)">' + b + (b === 1 ? " boon" : " boons") + '</b></div><input type="range" class="bpvr" id="bpvtr" min="0" max="' + MAX_BOONS + '" step="1" value="' + b + '" aria-label="Boons" style="--p:' + (b / MAX_BOONS * 100) + '%"><div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div>' +
+  '<div class="bpvinv">' + bpvBtn(h, "weapon") + bpvBtn(h, "spirit") + '<button class="bpvx" data-bpvx aria-label="Clear investment"' + (BPV_INV.weapon < 0 && BPV_INV.spirit < 0 ? " disabled" : "") + '>×</button></div><p class="bpvnote">' + bpvNote(h) + "</p></div>"; }
+function bpvCtx(h) { var w = bpvInv(h, "weapon"), sp = bpvInv(h, "spirit"); return { boons: BOONS_PAGE, wpp: w ? w.bonus : 0, spx: sp ? sp.bonus : 0 }; }
+var BPV_RAF = 0;
+function bpvPage() { // the page's cards at the slider's boons and the picked investment
+  if (BPV_RAF) return;
   BPV_RAF = requestAnimationFrame(function () {
-    BPV_RAF = 0; var h = curHero(); if (!h) return; BOONS = BPV_WANT;
-    try { Array.prototype.forEach.call(document.querySelectorAll("#main .ab[data-ab]"), function (c) { var it = state.byClass[c.getAttribute("data-ab")]; if (!it) return;
+    BPV_RAF = 0; var h = curHero(); if (!h) return;
+    Array.prototype.forEach.call(document.querySelectorAll("#main .ab[data-ab]"), function (c) { var it = state.byClass[c.getAttribute("data-ab")]; if (!it) return;
       var open = Array.prototype.map.call(c.querySelectorAll("details"), function (d) { return d.open; }), t = document.createElement("div"); t.innerHTML = abilityCard(it, h); var f = t.firstChild;
-      Array.prototype.forEach.call(f.querySelectorAll("details"), function (d, i) { if (i < open.length) d.open = open[i]; }); c.parentNode.replaceChild(f, c); }); }
-    finally { BOONS = 0; }
-    BOONS_PAGE = BPV_WANT;
-    var tr = $("bpvtr"); if (tr) { tr.value = BPV_WANT; tr.style.setProperty("--p", (BPV_WANT / MAX_BOONS * 100) + "%"); var bx = tr.closest(".gslide"); bx.querySelector(".bpvn").textContent = BPV_WANT + (BPV_WANT === 1 ? " boon" : " boons"); bx.querySelector(".bpvnote b").textContent = "+" + fmtNum(Math.round(BPV_WANT * spPerBoon(h) * 10) / 10); }
-    bpvSideSync();
+      Array.prototype.forEach.call(f.querySelectorAll("details"), function (d, i) { if (i < open.length) d.open = open[i]; }); c.parentNode.replaceChild(f, c); });
+    var box = $("bpvbox"); if (box) { var tr = $("bpvtr"); tr.value = BOONS_PAGE; tr.style.setProperty("--p", (BOONS_PAGE / MAX_BOONS * 100) + "%"); box.querySelector(".bpvn").textContent = BOONS_PAGE + (BOONS_PAGE === 1 ? " boon" : " boons");
+      var inv = box.querySelector(".bpvinv"); inv.innerHTML = bpvBtn(h, "weapon") + bpvBtn(h, "spirit") + '<button class="bpvx" data-bpvx aria-label="Clear investment"' + (BPV_INV.weapon < 0 && BPV_INV.spirit < 0 ? " disabled" : "") + ">×</button>"; box.querySelector(".bpvnote").innerHTML = bpvNote(h); }
   });
 }
-var BOONS_PAGE = 0; // what the page's cards currently show (a tier tap re-renders a card at this many boons)
-function bpvSideSync() { var sd = $("bpvside"); if (!sd) return; var b = BOONS_PAGE; sd.querySelector(".bsv").textContent = b; sd.querySelector(".bsf").style.height = (b / MAX_BOONS * 100) + "%"; sd.querySelector(".bsk").style.bottom = (b / MAX_BOONS * 100) + "%"; }
-(function () { // the side dial: drag up for more boons
-  var sd = document.createElement("div"); sd.id = "bpvside"; sd.setAttribute("aria-label", "Boons");
-  sd.innerHTML = '<span class="bsv">0</span><span class="bsl">boons</span><div class="bst"><div class="bsf"></div><div class="bsk"></div></div>' + BSCALE; document.body.appendChild(sd);
-  function at(e) { var t = sd.querySelector(".bst").getBoundingClientRect(), y = (e.touches ? e.touches[0].clientY : e.clientY); return Math.max(0, Math.min(MAX_BOONS, Math.round((1 - (y - t.top) / t.height) * MAX_BOONS))); }
-  var drag = false;
-  sd.addEventListener("pointerdown", function (e) { drag = true; sd.setPointerCapture(e.pointerId); BOONS_PAGE = at(e); bpvSideSync(); bpvPage(BOONS_PAGE); e.preventDefault(); });
-  sd.addEventListener("pointermove", function (e) { if (!drag) return; var b = at(e); if (b !== BOONS_PAGE) { BOONS_PAGE = b; bpvSideSync(); bpvPage(b); } });
-  sd.addEventListener("pointerup", function () { drag = false; }); sd.addEventListener("pointercancel", function () { drag = false; });
-  window.addEventListener("scroll", function () { // shown while the abilities are on screen
-    var abd = document.querySelector("#main details.abd"), r = abd && abd.getBoundingClientRect();
-    document.body.classList.toggle("bpv-inab", !!(r && bpvOn() && r.top < window.innerHeight * .5 && r.bottom > window.innerHeight * .3));
-  }, { passive: true });
-})();
+document.addEventListener("input", function (e) { if (e.target.id === "bpvtr") { BOONS_PAGE = +e.target.value; bpvPage(); } });
 document.addEventListener("click", function (e) {
-  var m = e.target.closest ? e.target.closest("[data-bpvm]") : null; if (m) { bpvSetMode(m.getAttribute("data-bpvm")); return; }
-  var bb = e.target.closest ? e.target.closest(".bpvb[data-bpv]") : null; if (bb) { e.stopPropagation(); bpvSheet(bb.getAttribute("data-bpv")); }
-}, true);
-document.addEventListener("input", function (e) { if (e.target.id === "bpvtr") bpvPage(+e.target.value); });
-function bpvSheet(cn) { // A: the card in a pop-up, with a slider
-  var h = curHero(), it = state.byClass[cn]; if (!h || !it) return; var b = 0;
-  function card() { BOONS = b; try { return abilityCard(it, h); } finally { BOONS = 0; } }
-  ISTACK = []; FSTACK = []; clearTimeout(SWAPT); resetSwap();
-  $("sheetin").innerHTML = '<div class="swc bpvsheet">' + bpvSlider("bpvpr", 0) + '<div id="bpvcard">' + card() + '</div><div class="gsbtns"><button class="ibtn" id="close">Close</button></div></div>';
-  lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; $("close").onclick = sinkSheet;
-  var r = $("bpvpr"), box = r.closest(".gslide");
-  r.oninput = function () { b = +r.value; r.style.setProperty("--p", (b / MAX_BOONS * 100) + "%"); box.querySelector(".bpvn").textContent = b + (b === 1 ? " boon" : " boons"); box.querySelector(".bpvnote b").textContent = "+" + fmtNum(Math.round(b * spPerBoon(h) * 10) / 10); $("bpvcard").innerHTML = card(); };
-  $("bpvcard").onclick = function (e) { var u = e.target.closest(".up[data-t]"); if (!u) return; var t = +u.getAttribute("data-t"), cur = SEL[cn] || 0; SEL[cn] = cur === t ? t - 1 : t; $("bpvcard").innerHTML = card(); }; // tiers work in the pop-up too
-}
+  var bi = e.target.closest ? e.target.closest("[data-bpvi]") : null, h = curHero();
+  if (bi && h) { var slot = bi.getAttribute("data-bpvi"), L = (h.cost_bonuses || {})[slot] || []; BPV_INV[slot] = Math.min(L.length - 1, BPV_INV[slot] + 1); bpvPage(); return; } // each tap: the next threshold (stops at the last)
+  if (e.target.closest && e.target.closest("[data-bpvx]")) { BPV_INV = { weapon: -1, spirit: -1 }; bpvPage(); }
+});
 if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {} }
 
 setTimeout(function () { document.body.classList.remove("boot"); }, 6000); // failsafe: the credits always appear
