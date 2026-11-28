@@ -754,11 +754,11 @@ details.phd > summary.nofold{cursor:default} /* the core chapters are always ope
 .mrow span{color:var(--fg)}.mrow b{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}.mrh{background:var(--panel);font-size:11px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}.mrh b{font-weight:600;color:var(--dim)}
 .gslide{margin-top:14px;padding:10px 12px 4px;background:var(--panel2);border:1px solid #3d344c;border-radius:8px}
 .gslh{display:flex;justify-content:space-between;font-size:13px;color:var(--dim)}.gslh b{color:var(--gold);font-weight:600}
-#ssbr{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:6px 0 0;background:transparent;touch-action:none;--p:0%}
-#ssbr::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--ssc,var(--weapon)) var(--p),#3d344c var(--p))}
-#ssbr::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--ssc,var(--weapon));box-shadow:0 1px 4px rgba(0,0,0,.5)}
-#ssbr::-moz-range-track{height:6px;border-radius:3px;background:#3d344c}#ssbr::-moz-range-progress{height:6px;border-radius:3px;background:var(--ssc,var(--weapon))}
-#ssbr::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--ssc,var(--weapon))}
+#ssbr,.bpvr{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:6px 0 0;background:transparent;touch-action:none;--p:0%}
+#ssbr::-webkit-slider-runnable-track,.bpvr::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--ssc,var(--weapon)) var(--p),#3d344c var(--p))}
+#ssbr::-webkit-slider-thumb,.bpvr::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--ssc,var(--weapon));box-shadow:0 1px 4px rgba(0,0,0,.5)}
+#ssbr::-moz-range-track,.bpvr::-moz-range-track{height:6px;border-radius:3px;background:#3d344c}#ssbr::-moz-range-progress,.bpvr::-moz-range-progress{height:6px;border-radius:3px;background:var(--ssc,var(--weapon))}
+#ssbr::-moz-range-thumb,.bpvr::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--ssc,var(--weapon))}
 .ssb{margin:10px 0 12px;padding-bottom:8px}
 .ssg{position:relative;margin:8px 0 0;cursor:pointer;-webkit-tap-highlight-color:transparent}.ssg svg{display:block;overflow:visible}
 .sgg{stroke:#3d344c;stroke-width:1}.sgt{fill:#7d7290;font-size:9px;font-variant-numeric:tabular-nums}
@@ -1182,6 +1182,34 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .ab .up:not(.on){border-color:#352d44}
 .ab .up:not(.on)>div:first-child{background:#2b2536;color:#a99fba}
 .ab .up:not(.on) .ut{color:#bdb3cb}
+
+/* ---------- boon preview trial (Rem): three ways to see ability values at more boons; switch at the top of the page ---------- */
+.bpvsw{display:flex;flex-direction:column;gap:8px;margin:-8px 0 14px;padding:10px 12px;border:1px dashed #4a4060;border-radius:12px;font-size:13px;color:var(--dim)}
+.bpvsw b{color:var(--fg);font-weight:600}
+.bpvseg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:2px}
+.bpvseg button{border:0;background:none;border-radius:7px;padding:6px 4px;font-size:12.5px;font-weight:600;color:var(--dim);-webkit-tap-highlight-color:transparent}
+.bpvseg button.on{background:#2e3a2c;color:var(--vital)}
+.bpvr{--ssc:var(--vital)}
+.bpvnote{font-size:12px;color:var(--dim);margin:6px 2px 2px}.bpvnote b{color:var(--vital);font-weight:600}
+/* A: a boon button on each card opens the card in a pop-up with a slider */
+.bpvb{display:none;margin-left:auto;flex:none;width:34px;height:34px;align-items:center;justify-content:center;border:1px solid #3c5a3a;border-radius:10px;background:#1f2a1f;color:var(--vital);padding:0;-webkit-tap-highlight-color:transparent}
+.bpvb .wsi{width:16px;height:18px;margin:0}
+body.bpv-pop #main .ab .bpvb{display:flex}
+.bpvsheet .ab{margin:10px 0 0;box-shadow:none}
+.bpvsheet .ab .bpvb,.bpvsheet .ab details{display:none!important}
+.bpvsheet .gslide{position:sticky;top:-14px;z-index:3;margin:0 -2px;background:var(--panel2)}
+/* B: a dial on the right edge, in the upper half, while the abilities are on screen */
+#bpvside{position:fixed;right:max(6px,calc((100% - 600px)/2 + 6px));top:15vh;height:38vh;width:46px;z-index:4;display:none;flex-direction:column;align-items:center;gap:6px;padding:8px 0;border:1px solid #3c5a3a;border-radius:23px;background:rgba(20,17,26,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 6px 18px rgba(0,0,0,.45);touch-action:none;user-select:none;-webkit-user-select:none;transition:opacity .2s ease,translate .25s ease}
+body.bpv-side.bpv-inab #bpvside{display:flex}
+#bpvside .bsv{font-size:15px;font-weight:700;color:var(--vital);font-variant-numeric:tabular-nums;line-height:1}
+#bpvside .bsl{font-size:9.5px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin-top:-3px}
+#bpvside .bst{position:relative;flex:1;width:6px;border-radius:3px;background:#3d344c;margin:4px 0}
+#bpvside .bsf{position:absolute;left:0;right:0;bottom:0;border-radius:3px;background:var(--vital)}
+#bpvside .bsk{position:absolute;left:50%;width:22px;height:22px;margin:0 0 -11px -11px;border-radius:50%;background:#fff;border:3px solid var(--vital);box-shadow:0 1px 4px rgba(0,0,0,.5)}
+#bpvside .wsi{width:14px;height:16px;color:var(--vital)}
+/* C: one slider for all four abilities, at the top of the Abilities section, staying in view while you scroll through them */
+.bpvtop{display:none;position:sticky;top:8px;z-index:4;margin:0 0 14px;box-shadow:0 8px 18px rgba(0,0,0,.45)}
+body.bpv-top #main .bpvtop{display:block}
 </style>
 </head>
 <body class="boot">
@@ -1652,6 +1680,11 @@ var LABEL_OV = { "Barrage|AmpPercentPerStack": "Damage Amp Per Stack", "Mini Tur
   "Killing Blow|EnemyHealthPercent": "Execute Threshold", "Boot Kick|OutgoingDamagePercent": "Enemy Damage", "Boot Kick|StaminaRestore": "Stamina Restored on Hero Hit", "Entangling Bola|RicochetCount": "Ricochets", "Entangling Bola|RicochetRange": "Ricochet Range", "Rule, Ratannia!|SlowPercent": "Slow", "Bookwyrm|DragonTravelRange": "Travel Range", "Enchanter's Satchel|AbilityDuration": "Escape Duration", "Granny Long Legs|HeavyMeleeSpiritDamage": "Damage", "Granny Long Legs|HeavyMeleeSlowPercent": "Movement Slow" }; // some game labels need the subject spelled out
 var PURE_OV = { "Consecrating Grenade|DPS": 1, "Ira Domini|BonusDamage": 1 }; // pure damage: no resist reduces it (the only two in the game, both Venator's)
 function propRec(it, key) { var r = propRec0(it, key); if (r && PLUS_OV[it.name + "|" + key]) r.plus = 1; if (r && PURE_OV[it.name + "|" + key]) r.pure = 1; return r; }
+// boon preview: each hero's growth per boon (standard_level_up_upgrades)
+function spPerBoon(h) { return Number(((h && h.standard_level_up_upgrades) || {}).MODIFIER_VALUE_TECH_POWER) || 0; }
+function meleePerBoon(h, heavy) { var u = (h && h.standard_level_up_upgrades) || {}, l = Number(u.MODIFIER_VALUE_BASE_MELEE_DAMAGE_FROM_LEVEL) || 0, ss = (h && h.starting_stats) || {};
+  if (!heavy) return l; var lm = (ss.light_melee_damage || {}).value, hm = (ss.heavy_melee_damage || {}).value; return lm ? l * hm / lm : l; } // heavy melee grows in proportion
+function bulletPerBoon(h) { return Number(((h && h.standard_level_up_upgrades) || {}).MODIFIER_VALUE_BASE_BULLET_DAMAGE_FROM_LEVEL) || 0; }
 function propRec0(it, key) {
   var p0 = (it.properties || {})[key]; if (!p0) return null;
   var m = CTX && CTX.mods ? CTX.mods[key] : null, p = effP(it, key);
@@ -1661,8 +1694,13 @@ function propRec0(it, key) {
     var nv = null;
     if (sk.kind === "melee" && Math.abs(parseFloat(p0.value)) < 0.05) { // pure melee scaling: the game shows hero melee damage x rate (plus any flat damage a tier adds)
       var ss = CTX.hero.starting_stats || {}, mm = ss[/Heavy/.test(sk.sub) ? "heavy_melee_damage" : "light_melee_damage"];
-      if (mm && mm.value != null) nv = mm.value * sk.rate + (n >= 0.05 ? n : 0);
+      if (mm && mm.value != null) nv = (mm.value + (CTX.boons || 0) * meleePerBoon(CTX.hero, /Heavy/.test(sk.sub))) * sk.rate + (n >= 0.05 ? n : 0);
     } else if (cn === "scale_function_kinetic_carbine_damage" && CTX.bullet && sk.kind === "weapon") nv = n * CTX.bullet * sk.rate;
+    else if (CTX.boons && n !== 0 && (sk.kind === "spirit" || sk.kind === "boons")) { // boon preview: what the hero's boons alone add (spirit power from boons, or the boons themselves)
+      var unit = String(p.value).replace(/^\s*[-+]?[\d.]+/, "");
+      nv = n + sk.rate * (sk.kind === "spirit" ? CTX.boons * spPerBoon(CTX.hero) : CTX.boons);
+      shown = {}; for (var k0 in p) shown[k0] = p[k0]; shown.value = String(Math.round(nv * 10) / 10) + unit; nv = null;
+    }
     if (nv != null) { shown = {}; for (var k in p) shown[k] = p[k]; shown.value = String(Math.round(nv * 10) / 10); }
   }
   var n2 = parseFloat(shown.value);
@@ -2635,12 +2673,13 @@ function minorCase(html) { // every small-stat line: its labels and its sentence
     return '<div class="minor">' + body + "</div>";
   });
 }
+var BOONS = 0; // boon preview: ability cards show their values at this many boons (0: the base values)
 function abilityCard(it, h) {
   var sel = SEL[it.class_name] || 0, op = ABOPT[it.class_name] || {};
-  CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) };
+  CTX = { hero: h || null, mods: modsFor(it, sel), bullet: bulletOf(h) + BOONS * bulletPerBoon(h), boons: BOONS };
   try {
     var CH = chipsHtml(it);
-    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3></div>" +
+    return glossOnce('<section class="ab" data-ab="' + esc(it.class_name) + '"><div class="abh">' + imgTag(op.img || itemImg(it)) + "<h3>" + esc(nameOf(it)) + "</h3>" + (BPV_TRIAL[HERO_NAME] ? '<button class="bpvb" data-bpv="' + esc(it.class_name) + '" aria-label="' + esc(nameOf(it)) + ' at more boons">' + BSCALE + "</button>" : "") + "</div>" +
       CH +
       '<div class="desc">' + rich(descText(it.description && typeof it.description === "object" ? { desc: abilityDesc(it) } : it.description)) + "</div>" +
       minorCase(flagOnes(dropChipDupes(tooltipHtml(it), CH))) + (op.noTiers ? "" : upgradesHtml(it, sel)) + wikiHtml(h, it) + "</section>");
@@ -4160,6 +4199,7 @@ function renderHero(cn) {
   var html = '<button class="back" id="back"><span class="bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' + (NEWSFROM && NEWSFROM.hero === cn ? "What\u2019s New" : "All heroes") + '</span></button><div class="hero-h" style="--hbg:url(&quot;' + esc(heroImg(h)) + '&quot;)"><img alt="" src="' + esc(heroImg(h)) + '"><div>' + heroNameHtml(h) +
     (tags ? '<div class="tags">' + tags + "</div>" : "") + "</div></div>"; // no complexity tag: it helps pick a first hero, not look one up
   // base stats starts open (it holds the comparison switch); the weapon folds shut like Patch history; each remembers your choice for this hero
+  if (BPV_TRIAL[h.name]) html += bpvSwitch();
   html += '<details class="phd bsd" open><summary class="sec nofold"><span class="sect">Base stats</span>' + '</summary><div class="stats1">' + (CARD_HEROES[h.name] ? "" : smodeSwitch(h)) + '<div id="stats1">' + (CARD_HEROES[h.name] ? statCards(h) : statView(h)) + "</div></div></details>";
   var it = h.items || {}, abs = ["signature1", "signature2", "signature3", "signature4"].map(function (k) { return state.byClass[it[k]]; }).filter(Boolean);
   var fp = formParts(h, abs);
@@ -4167,7 +4207,7 @@ function renderHero(cn) {
   var wc = ""; // the weapon now lives inside Base stats
   if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec"><span class="sect">Weapon</span>' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
   // the abilities fold like the sections above, but start open
-  html += '<details class="phd abd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Abilities</span>' + "</summary><div>" + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
+  html += '<details class="phd abd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Abilities</span>' + "</summary><div>" + (BPV_TRIAL[h.name] ? bpvSlider("bpvtr", 0) : "") + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
   abs.forEach(function (a) {
     var alt = fp && fp.swap[a.class_name];
@@ -4177,7 +4217,8 @@ function renderHero(cn) {
   html += '<div id="aowrap">' + abilityOrderHtml(h) + "</div>";
   html += '<div id="popwrap">' + popularHtml(h) + "</div>";
   html += '<div id="revwrap">' + revisionsHtml(h) + "</div>";
-  document.body.classList.remove("barhide");
+  document.body.classList.remove("barhide"); BOONS_PAGE = 0;
+  ["pop", "side", "top"].forEach(function (x) { document.body.classList.toggle("bpv-" + x, !!BPV_TRIAL[h.name] && x === BPV_MODE); });
   $("main").innerHTML = html; hydrateName(); restoreOpens(); setForm(state.alt);
   var trialBack = SBK_TRIAL[h.name]; // trying it on one hero: no row, a back button beside the search bar
   document.body.classList.add("chband"); // every hero page: Base stats flat, Abilities and Popular items on raised panels, the shorter chapters in cards
@@ -5657,7 +5698,7 @@ $("backpill").onclick = function (e) {
   });
 };
 function render() {
-  document.body.classList.remove("boot", "barhide");
+  document.body.classList.remove("boot", "barhide", "bpv-pop", "bpv-side", "bpv-top", "bpv-inab");
   if (state.tab === "glossary") return renderGlossary();
   if (state.tab === "news") return renderNews();
   if (state.tab === "item") return renderItemPage();
@@ -6303,7 +6344,7 @@ $("main").addEventListener("click", function (e) {
   SEL[key] = cur === t ? t - 1 : t; // tapping the top selected tier steps back one
   var h = state.heroes.filter(function (x) { return x.class_name === state.hero; })[0], tmp = document.createElement("div");
   var before = snapStats(card), lay = snapLayout(card);
-  tmp.innerHTML = abilityCard(it, h);
+  BOONS = BOONS_PAGE; try { tmp.innerHTML = abilityCard(it, h); } finally { BOONS = 0; } // at the boons the boon preview is showing (0 normally)
   var fresh = tmp.firstChild;
   var openState = Array.prototype.map.call(card.querySelectorAll("details"), function (d) { return d.open; });
   Array.prototype.forEach.call(fresh.querySelectorAll("details"), function (d, i) { if (i < openState.length) d.open = openState[i]; });
@@ -6605,6 +6646,63 @@ function refreshNow() {
     else if (run > 40 && !JLOCK) document.body.classList.add("barhide");
   }, { passive: true });
 })();
+// ---------- boon preview trial (Rem) ----------
+var BPV_TRIAL = { "Rem": 1 }, BPV_MODE = (function () { try { return localStorage.getItem("bpv") || "pop"; } catch (e) { return "pop"; } })();
+function bpvSwitch() { var M = [["pop", "Card pop-up"], ["side", "Side dial"], ["top", "Top slider"]]; return '<div class="bpvsw"><span><b>Boon preview</b> · trial, only on this hero</span><div class="bpvseg" role="group" aria-label="Boon preview">' + M.map(function (m) { return '<button data-bpvm="' + m[0] + '"' + (m[0] === BPV_MODE ? ' class="on"' : "") + ">" + m[1] + "</button>"; }).join("") + "</div></div>"; }
+function bpvSlider(id, b) { var h = curHero(); return '<div class="gslide' + (id === "bpvtr" ? " bpvtop" : "") + '"><div class="gslh"><span>Abilities at</span><b class="bpvn" style="color:var(--vital)">' + b + (b === 1 ? " boon" : " boons") + '</b></div><input type="range" class="bpvr" id="' + id + '" min="0" max="' + MAX_BOONS + '" step="1" value="' + b + '" aria-label="Boons" style="--p:' + (b / MAX_BOONS * 100) + '%"><div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div>' +
+  '<p class="bpvnote">From boons: <b>+' + fmtNum(Math.round(b * spPerBoon(h) * 10) / 10) + "</b> Spirit Power · no items</p></div>"; }
+function curHero() { return state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; }
+function bpvOn() { return !!(state.tab === "heroes" && state.hero && BPV_TRIAL[HERO_NAME]); }
+function bpvSetMode(m) {
+  BPV_MODE = m; try { localStorage.setItem("bpv", m); } catch (e) {}
+  ["pop", "side", "top"].forEach(function (x) { document.body.classList.toggle("bpv-" + x, bpvOn() && x === m); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-bpvm]"), function (b) { b.classList.toggle("on", b.getAttribute("data-bpvm") === m); });
+  bpvPage(0); bpvSideSync();
+}
+var BPV_RAF = 0, BPV_WANT = 0;
+function bpvPage(b) { // the page's own cards at b boons (side dial and top slider)
+  BPV_WANT = b; if (BPV_RAF) return;
+  BPV_RAF = requestAnimationFrame(function () {
+    BPV_RAF = 0; var h = curHero(); if (!h) return; BOONS = BPV_WANT;
+    try { Array.prototype.forEach.call(document.querySelectorAll("#main .ab[data-ab]"), function (c) { var it = state.byClass[c.getAttribute("data-ab")]; if (!it) return;
+      var open = Array.prototype.map.call(c.querySelectorAll("details"), function (d) { return d.open; }), t = document.createElement("div"); t.innerHTML = abilityCard(it, h); var f = t.firstChild;
+      Array.prototype.forEach.call(f.querySelectorAll("details"), function (d, i) { if (i < open.length) d.open = open[i]; }); c.parentNode.replaceChild(f, c); }); }
+    finally { BOONS = 0; }
+    BOONS_PAGE = BPV_WANT;
+    var tr = $("bpvtr"); if (tr) { tr.value = BPV_WANT; tr.style.setProperty("--p", (BPV_WANT / MAX_BOONS * 100) + "%"); var bx = tr.closest(".gslide"); bx.querySelector(".bpvn").textContent = BPV_WANT + (BPV_WANT === 1 ? " boon" : " boons"); bx.querySelector(".bpvnote b").textContent = "+" + fmtNum(Math.round(BPV_WANT * spPerBoon(h) * 10) / 10); }
+    bpvSideSync();
+  });
+}
+var BOONS_PAGE = 0; // what the page's cards currently show (a tier tap re-renders a card at this many boons)
+function bpvSideSync() { var sd = $("bpvside"); if (!sd) return; var b = BOONS_PAGE; sd.querySelector(".bsv").textContent = b; sd.querySelector(".bsf").style.height = (b / MAX_BOONS * 100) + "%"; sd.querySelector(".bsk").style.bottom = (b / MAX_BOONS * 100) + "%"; }
+(function () { // the side dial: drag up for more boons
+  var sd = document.createElement("div"); sd.id = "bpvside"; sd.setAttribute("aria-label", "Boons");
+  sd.innerHTML = '<span class="bsv">0</span><span class="bsl">boons</span><div class="bst"><div class="bsf"></div><div class="bsk"></div></div>' + BSCALE; document.body.appendChild(sd);
+  function at(e) { var t = sd.querySelector(".bst").getBoundingClientRect(), y = (e.touches ? e.touches[0].clientY : e.clientY); return Math.max(0, Math.min(MAX_BOONS, Math.round((1 - (y - t.top) / t.height) * MAX_BOONS))); }
+  var drag = false;
+  sd.addEventListener("pointerdown", function (e) { drag = true; sd.setPointerCapture(e.pointerId); BOONS_PAGE = at(e); bpvSideSync(); bpvPage(BOONS_PAGE); e.preventDefault(); });
+  sd.addEventListener("pointermove", function (e) { if (!drag) return; var b = at(e); if (b !== BOONS_PAGE) { BOONS_PAGE = b; bpvSideSync(); bpvPage(b); } });
+  sd.addEventListener("pointerup", function () { drag = false; }); sd.addEventListener("pointercancel", function () { drag = false; });
+  window.addEventListener("scroll", function () { // shown while the abilities are on screen
+    var abd = document.querySelector("#main details.abd"), r = abd && abd.getBoundingClientRect();
+    document.body.classList.toggle("bpv-inab", !!(r && bpvOn() && r.top < window.innerHeight * .5 && r.bottom > window.innerHeight * .3));
+  }, { passive: true });
+})();
+document.addEventListener("click", function (e) {
+  var m = e.target.closest ? e.target.closest("[data-bpvm]") : null; if (m) { bpvSetMode(m.getAttribute("data-bpvm")); return; }
+  var bb = e.target.closest ? e.target.closest(".bpvb[data-bpv]") : null; if (bb) { e.stopPropagation(); bpvSheet(bb.getAttribute("data-bpv")); }
+}, true);
+document.addEventListener("input", function (e) { if (e.target.id === "bpvtr") bpvPage(+e.target.value); });
+function bpvSheet(cn) { // A: the card in a pop-up, with a slider
+  var h = curHero(), it = state.byClass[cn]; if (!h || !it) return; var b = 0;
+  function card() { BOONS = b; try { return abilityCard(it, h); } finally { BOONS = 0; } }
+  ISTACK = []; FSTACK = []; clearTimeout(SWAPT); resetSwap();
+  $("sheetin").innerHTML = '<div class="swc bpvsheet">' + bpvSlider("bpvpr", 0) + '<div id="bpvcard">' + card() + '</div><div class="gsbtns"><button class="ibtn" id="close">Close</button></div></div>';
+  lockBody(); $("sheet").hidden = false; $("sheetin").scrollTop = 0; $("close").onclick = sinkSheet;
+  var r = $("bpvpr"), box = r.closest(".gslide");
+  r.oninput = function () { b = +r.value; r.style.setProperty("--p", (b / MAX_BOONS * 100) + "%"); box.querySelector(".bpvn").textContent = b + (b === 1 ? " boon" : " boons"); box.querySelector(".bpvnote b").textContent = "+" + fmtNum(Math.round(b * spPerBoon(h) * 10) / 10); $("bpvcard").innerHTML = card(); };
+  $("bpvcard").onclick = function (e) { var u = e.target.closest(".up[data-t]"); if (!u) return; var t = +u.getAttribute("data-t"), cur = SEL[cn] || 0; SEL[cn] = cur === t ? t - 1 : t; $("bpvcard").innerHTML = card(); }; // tiers work in the pop-up too
+}
 if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {} }
 
 setTimeout(function () { document.body.classList.remove("boot"); }, 6000); // failsafe: the credits always appear
