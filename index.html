@@ -1183,34 +1183,29 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .ab .up:not(.on)>div:first-child{background:#2b2536;color:#a99fba}
 .ab .up:not(.on) .ut{color:#bdb3cb}
 
-/* ---------- boon preview trial (Rem): a box at the top of the Abilities section: boons, and weapon / spirit investment ---------- */
-.bpvbox{margin:0 0 16px;padding:18px 15px 18px;background:#191520;border-color:#2b2537;box-shadow:inset 0 6px 18px rgba(0,0,0,.62),inset 0 2px 5px rgba(0,0,0,.45),inset 0 -2px 8px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.045)} /* sunk into the page: a darker panel, shaded deep along its top edge inside and lightly at its bottom, a faint light line under it */
+/* ---------- boon preview: a box at the top of every hero's Abilities section: boons, and weapon / spirit investment ---------- */
+.bpvbox{margin:8px 0 16px;padding:24px 15px 18px;background:#191520;border-color:#2b2537;box-shadow:inset 0 6px 18px rgba(0,0,0,.62),inset 0 2px 5px rgba(0,0,0,.45),inset 0 -2px 8px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.045)} /* sunk into the page: a darker panel, shaded deep along its top edge inside and lightly at its bottom, a faint light line under it */
 .bpvbox .gsticks{padding:0 6px 0 8px} /* the numbers under the boon slider line up with its notches (the track starts and ends half a thumb in) */
-.bpvbox .bpvpick .seg{background:#14111a}.bpvbox .bpvpick .seg button.on{background:var(--panel2)}
+.bpvsep{height:1px;margin:18px -2px 2px;background:rgba(255,255,255,.07)} /* between the boon slider and the investment sliders (none between two investment sliders) */
 .bpvr{--ssc:#6AA6FF}
-.bpvpick{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 2px 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
-.bpvpick .seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:2px;text-transform:none;letter-spacing:0}
-.bpvpick .seg button{border:0;background:none;border-radius:6px;padding:3px 9px;font-size:11.5px;font-weight:600;color:var(--dim);-webkit-tap-highlight-color:transparent}.bpvpick .seg button.on{background:var(--panel2);color:var(--fg)}
 /* slider picker: one notched slider per category, from none through every threshold */
-.bpvs{margin-top:10px}.bpvbox .bpvpick{margin-top:18px}
+.bpvs{margin-top:10px}
 .bpvs .gslh b{font-weight:600}.bpvs.wp .gslh b{color:var(--weapon)}.bpvs.sp .gslh b{color:var(--spirit)}
 .bpvsw{position:relative;height:40px;margin-top:2px}
 .bpvsw .trk2{position:absolute;left:11px;right:11px;top:23px;height:6px;border-radius:3px;overflow:hidden;background:linear-gradient(to right,var(--ic) var(--p),#3d344c var(--p))} /* the notches sit inside the track, cut to it */
 .bpvsw .dt{position:absolute;top:0;bottom:0;width:1.5px;margin-left:-.75px}
 .bpvsw .dt.spk{width:2px;margin-left:-1px}
-/* notch styles being tried: 1 shaded (darker cuts on both sides), 2 light (pale on the fill, faint on the empty track), 3 gaps (the track cut through, like segments) */
-.tk1 .bpvsw .dt{background:rgba(0,0,0,.34)}.tk1 .bpvsw .dt.got{background:rgba(0,0,0,.3)}.tk1 .bpvsw .dt.spk{background:var(--ic)}.tk1 .bpvsw .dt.spk.got{background:rgba(255,255,255,.75)}
-.tk2 .bpvsw .dt{background:rgba(255,255,255,.13)}.tk2 .bpvsw .dt.got{background:rgba(255,255,255,.42)}.tk2 .bpvsw .dt.spk{background:var(--ic)}.tk2 .bpvsw .dt.spk.got{background:#fff}
-.tk3 .bpvsw .dt{width:2px;margin-left:-1px;background:#191520}.tk3 .bpvsw .dt.spk{width:3px;margin-left:-1.5px;background:#191520}
+/* notches: darker cuts on both sides of the thumb; the spike's notch in the category colour, white once passed */
+.bpvsw .dt{background:rgba(0,0,0,.34)}.bpvsw .dt.got{background:rgba(0,0,0,.3)}.bpvsw .dt.spk{background:var(--ic)}.bpvsw .dt.spk.got{background:rgba(255,255,255,.75)}
 .bpvsw .spl{position:absolute;top:0;transform:translateX(-50%);font-size:8.5px;font-weight:700;letter-spacing:.1em;color:var(--ic)}
-.bpvs input{position:relative;-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:12px 0 0;background:transparent;touch-action:none}
+.bpvs input{position:relative;-webkit-appearance:none;appearance:none;width:100%;height:44px;margin:4px 0 -8px;background:transparent;touch-action:none} /* a taller grab area than the track: easier to catch with a finger */
 .bpvs input::-webkit-slider-runnable-track{height:6px;background:transparent}
 .bpvs input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:#fff;border:3px solid var(--ic);box-shadow:0 1px 4px rgba(0,0,0,.5)}
 .bpvs input::-moz-range-track{height:6px;background:transparent}.bpvs input::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--ic)}
 .bpvs.wp{--ic:var(--weapon);--dl:#8a5a22}.bpvs.sp{--ic:var(--spirit);--dl:#5b3f86}
 .bpvs.bn{--ic:#6AA6FF;--dl:#3a5f9c;--dr:#2e2a38;margin-top:0}
-.bpvs.bn .bpvsw{height:30px;margin-top:4px}.bpvs.bn .trk2{top:13px}.bpvs.bn input{margin-top:2px}
-.bpvs .gslh .lft b{color:var(--fg)!important;font-weight:600;margin-left:3px}.bpvs .gslh .rgt{font-weight:600}.bpvs .gslh .rgt .s2{color:var(--spirit)}.bpvs .gslh .rgt .w2{color:var(--weapon)}.bpvpick .tkl{align-self:center;padding:0 6px 0 4px;color:var(--dim);font-size:11px}
+.bpvs.bn .bpvsw{height:30px;margin-top:4px}.bpvs.bn .trk2{top:13px}.bpvs.bn input{margin:-6px 0 -8px}
+.bpvs .gslh .lft b{color:var(--fg)!important;font-weight:600;margin-left:3px}.bpvs .gslh .rgt{font-weight:600}.bpvs .gslh .rgt .s2{color:var(--spirit)}.bpvs .gslh .rgt .w2{color:var(--weapon)}
 .bpvs .gslh .lb{display:flex;gap:5px;align-items:baseline}.bpvs .gslh .lb .pr{color:var(--fg)}.bpvs .gslh .lb .bn2{color:var(--fg)}.bpvs .gslh .lb .s2{color:var(--spirit)}.bpvs .gslh .lb .w2{color:var(--weapon)}.bpvs .gslh .lb .dv{color:var(--dim);font-weight:400}.bpvs .gslh .bn2{color:var(--fg)}
 </style>
 </head>
@@ -2677,7 +2672,7 @@ function minorCase(html) { // every small-stat line: its labels and its sentence
 }
 function abilityCard(it, h) {
   var sel = SEL[it.class_name] || 0, op = ABOPT[it.class_name] || {};
-  var bx = h && BPV_TRIAL[h.name] && state.hero === h.class_name ? bpvCtx(h) : { boons: 0, wpp: 0, spx: 0 }; // boon preview: the slider's boons and the picked investment (Rem only, for now)
+  var bx = h && state.hero === h.class_name ? bpvCtx(h) : { boons: 0, wpp: 0, spx: 0 }; // boon preview: the slider's boons and the picked investment
   CTX = { hero: h || null, mods: modsFor(it, sel), bullet: (bulletOf(h) + bx.boons * bulletPerBoon(h)) * (1 + bx.wpp / 100), boons: bx.boons, wpp: bx.wpp, spx: bx.spx };
   try {
     var CH = chipsHtml(it);
@@ -3484,6 +3479,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
   document.addEventListener("touchstart", function (e) {
     on = false; if (!ok() || e.touches.length !== 1) return;
     var t = e.touches[0]; if (t.clientX > 36) return;
+    if (e.target.closest && e.target.closest(".bpvbox")) return; // the boon preview's sliders, not a back swipe
     on = true; horiz = null; x0 = t.clientX; y0 = t.clientY; t0 = Date.now(); dx = 0;
   }, { passive: true });
   document.addEventListener("touchmove", function (e) {
@@ -3522,6 +3518,7 @@ function slideForward(fn, back) { // opening a page (back=true: returning from i
   function sideScroller(el) { // a row that scrolls sideways owns horizontal drags
     for (; el && el !== document.body && el.nodeType === 1; el = el.parentElement) {
       if (el.classList.contains("mb")) return true; // a Mid Boss chart owns sideways drags
+      if (el.classList.contains("bpvbox")) return true; // so does the boon preview box: its sliders are dragged sideways
       var o = getComputedStyle(el).overflowX;
       if ((o === "auto" || o === "scroll") && el.scrollWidth > el.clientWidth + 1) return true;
     }
@@ -4209,7 +4206,7 @@ function renderHero(cn) {
   var wc = ""; // the weapon now lives inside Base stats
   if (wc) html += '<details class="phd wpd"' + (WP_OPEN === cn ? " open" : "") + '><summary class="sec"><span class="sect">Weapon</span>' + rowSvg('<path d="M9 6l6 6-6 6"/>', "ncv") + "</summary><div>" + (fp ? formSwitch(fp) + '<div class="f0">' + wc + '</div><div class="f1">' + weaponCard(h, fp.wpn) + "</div>" : wc) + "</div></details>";
   // the abilities fold like the sections above, but start open
-  html += '<details class="phd abd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Abilities</span>' + "</summary><div>" + (BPV_TRIAL[h.name] ? bpvSlider(h) : "") + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
+  html += '<details class="phd abd" open><span class="chpanel" aria-hidden="true"><i></i></span><summary class="sec nofold"><span class="sect">Abilities</span>' + "</summary><div>" + bpvSlider(h) + (fp && Object.keys(fp.swap).length ? formSwitch(fp) : "");
   if (!abs.length) html += '<div class="err">No abilities found for this hero.</div>';
   abs.forEach(function (a) {
     var alt = fp && fp.swap[a.class_name];
@@ -6647,8 +6644,8 @@ function refreshNow() {
     else if (run > 40 && !JLOCK) document.body.classList.add("barhide");
   }, { passive: true });
 })();
-// ---------- boon preview trial (Rem): one slider for boons, plus the next weapon / spirit investment threshold per tap ----------
-var BPV_TRIAL = { "Rem": 1 }, BPV_HERO = null, BOONS_PAGE = 0, BPV_INV = { weapon: -1, spirit: -1 }; // INV: index into the hero's cost_bonuses (-1: none)
+// ---------- boon preview (every hero page): a slider for boons, one per investment category that changes the hero's abilities ----------
+var BPV_HERO = null, BOONS_PAGE = 0, BPV_INV = { weapon: -1, spirit: -1 }; // INV: index into the hero's cost_bonuses (-1: none)
 function curHero() { return state.heroes.filter(function (x) { return x.class_name === state.hero; })[0]; }
 function bpvInv(h, slot) { var L = ((h && h.cost_bonuses) || {})[slot] || [], i = BPV_INV[slot]; return i >= 0 && L[i] ? L[i] : null; } // the threshold picked: { gold_threshold, bonus (total so far) }
 function bpvSlots(h) { // the categories whose investment changes this hero's abilities: spirit when anything scales with Spirit Power, weapon when anything scales with weapon damage
@@ -6677,10 +6674,8 @@ function bpvStops(h, slot) { // where each stop sits along the slider, 0-1
   var prev = 0, seg = L.map(function (r) { var d = Math.sqrt(Math.max(0, Number(r.gold_threshold) - prev)); prev = Number(r.gold_threshold); return d; }), tot = seg.reduce(function (a, b) { return a + b; }, 0) || 1, run = 0;
   return [0].concat(seg.map(function (d) { run += d; return run / tot; }));
 }
-var BPV_TK = (function () { try { return localStorage.getItem("bpvtk") || "1"; } catch (e) { return "1"; } })(); // notch style being tried: 1 shaded, 2 light, 3 gaps
 function bpvInvHtml(h) {
-  var head = '<div class="bpvpick"><span>Investment</span><span class="seg" role="group" aria-label="Notch style"><span class="tkl">Notches</span>' + ["1", "2", "3"].map(function (k) { return '<button data-bpvk="' + k + '"' + (BPV_TK === k ? ' class="on"' : "") + ">" + k + "</button>"; }).join("") + "</span></div>";
-  return head + bpvSlots(h).map(function (slot) {
+  var slots = bpvSlots(h); return (slots.length ? '<div class="bpvsep"></div>' : "") + slots.map(function (slot) {
     var L = (h.cost_bonuses || {})[slot] || [], v = BPV_INV[slot] + 1, st = bpvStops(h, slot), spike = -1;
     L.forEach(function (r, i) { if (Number(r.gold_threshold) === 4800) spike = i + 1; });
     var input = 'type="range" min="0" max="1000" step="1" value="' + Math.round(st[v] * 1000) + '" data-bpvsl="' + slot + '" aria-label="' + slot + ' investment"'; // moves freely, snaps to the nearest stop as you drag
@@ -6689,7 +6684,7 @@ function bpvInvHtml(h) {
 }
 function bpvSlider(h) {
   var b = BOONS_PAGE, st = []; for (var i = 0; i <= MAX_BOONS; i++) st.push(i / MAX_BOONS);
-  return '<div class="gslide bpvbox tk' + BPV_TK + '" id="bpvbox">' + bpvTrack("bn", "Abilities at", "bpvb", bpvBoonLbl(h), bpvBoonGain(h), st, b, -1, 'type="range" class="bpvr" id="bpvtr" min="0" max="' + MAX_BOONS + '" step="1" value="' + b + '" aria-label="Boons"') + '<div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div>' +
+  return '<div class="gslide bpvbox" id="bpvbox">' + bpvTrack("bn", "Abilities at", "bpvb", bpvBoonLbl(h), bpvBoonGain(h), st, b, -1, 'type="range" class="bpvr" id="bpvtr" min="0" max="' + MAX_BOONS + '" step="1" value="' + b + '" aria-label="Boons"') + '<div class="gsticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span></div>' +
     '<div id="bpvinv">' + bpvInvHtml(h) + "</div></div>";
 }
 function bpvCtx(h) { var w = bpvInv(h, "weapon"), sp = bpvInv(h, "spirit"); return { boons: BOONS_PAGE, wpp: w ? w.bonus : 0, spx: sp ? sp.bonus : 0 }; }
@@ -6716,10 +6711,6 @@ document.addEventListener("input", function (e) { var sl = e.target.getAttribute
   bpvPage(); });
 document.addEventListener("change", function (e) { var sl = e.target.getAttribute && e.target.getAttribute("data-bpvsl"); if (sl) { var h = curHero(), st = bpvStops(h, sl); e.target.value = Math.round(st[BPV_INV[sl] + 1] * 1000); } }); // let go: the thumb settles on its stop
 document.addEventListener("input", function (e) { if (e.target.id === "bpvtr") { BOONS_PAGE = +e.target.value; bpvPage(); } });
-document.addEventListener("click", function (e) {
-  var kk = e.target.closest ? e.target.closest("[data-bpvk]") : null;
-  if (kk) { BPV_TK = kk.getAttribute("data-bpvk"); try { localStorage.setItem("bpvtk", BPV_TK); } catch (er) {} var bx = $("bpvbox"); bx.className = bx.className.replace(/\btk\d\b/, "tk" + BPV_TK); Array.prototype.forEach.call(bx.querySelectorAll("[data-bpvk]"), function (b) { b.classList.toggle("on", b === kk); }); }
-});
 if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {} }
 
 setTimeout(function () { document.body.classList.remove("boot"); }, 6000); // failsafe: the credits always appear
