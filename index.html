@@ -1192,6 +1192,9 @@ body.jump.barhide #jbar,body.jump.barhide #toppill,body.jump.barhide #hsecnav{tr
 .stat.scaled.s-sp b,.minor .scaled.s-sp > b{color:#d6c2ff}.stat.scaled.s-sp{background-image:linear-gradient(to top,rgba(181,131,240,.16),transparent 60%)}
 .stat.scaled.s-wp b,.minor .scaled.s-wp > b{color:#ffd9a8}.stat.scaled.s-wp{background-image:linear-gradient(to top,rgba(232,162,74,.16),transparent 60%)}
 .stat.scaled.s-bn b,.minor .scaled.s-bn > b{color:#c4dcff}.stat.scaled.s-bn{background-image:linear-gradient(to top,rgba(106,166,255,.16),transparent 60%)}
+.stat.scaled.btile b{color:#c4dcff}.stat.scaled.btile{background-image:linear-gradient(to top,rgba(106,166,255,.2),transparent 60%)} /* the glow follows the card's own colour when it has one: a barrier stays blue, a heal green, weapon damage orange, whatever it scales with */
+.stat.scaled.htile b{color:#cdf2c9}.stat.scaled.htile{background-image:linear-gradient(to top,rgba(111,197,109,.2),transparent 60%)}
+.stat.scaled.wtile b{color:#ffd9a8}.stat.scaled.wtile{background-image:linear-gradient(to top,rgba(232,162,74,.2),transparent 60%)}
 .minor .scaled.s-sp > b{color:#c4a2ff}.minor .scaled.s-wp > b{color:#ffc985}.minor .scaled.s-bn > b{color:#9fc4ff} /* small stats: a stronger shade, their numbers are cream rather than white */
 .bstip{position:fixed;z-index:30;background:#2f2840;color:var(--fg);border:1px solid #5a4d73;border-radius:8px;padding:6px 11px;font-size:12.5px;line-height:1.35;white-space:nowrap;box-shadow:0 6px 16px rgba(0,0,0,.5);pointer-events:none;animation:tipfade .15s ease-out both}
 .bstip b{font-weight:700}.bstip .sp{color:var(--spirit)}.bstip .wp{color:var(--weapon)}.bstip .bn{color:#6AA6FF}.bstip .dv{color:var(--dim);margin:0 5px}
@@ -6698,12 +6701,12 @@ function bpvInvHtml(h) {
     return bpvTrack(slot === "weapon" ? "wp" : "sp", slot === "weapon" ? "Weapon" : "Spirit", 'bpvc="' + slot + '" data-bpv', bpvCur(h, slot), bpvGain(h, slot), st, v, spike, input);
   }).join("");
 }
-function bsTipOff() { var o = document.querySelector(".bstip"); if (o) o.remove(); }
-document.addEventListener("click", function (e) { // tap a tinted value: its base value, and what the boon preview added
-  bsTipOff(); var el = e.target.closest ? e.target.closest("#main .stat.scaled, #main .minor .scaled") : null; if (!el) return;
-  var bse = el.querySelector(".bse"), dlt = el.querySelector(".dlt"); if (!bse || !dlt) return;
-  var src = el.classList.contains("s-wp") ? ["wp", "from weapon investment"] : el.classList.contains("s-bn") ? ["bn", "from boons"] : ["sp", "from Spirit"];
-  var d = document.createElement("div"); d.className = "bstip"; d.innerHTML = "Base <b>" + esc(bse.textContent) + '</b><span class="dv">·</span><b class="' + src[0] + '">' + esc(dlt.textContent) + "</b> " + src[1]; document.body.appendChild(d);
+function bsTipOff() { var o = document.querySelector(".bstip"); if (o) o.remove(); window._bsEl = null; }
+document.addEventListener("click", function (e) { // tap a tinted value: its base value; tap it again to close
+  var el = e.target.closest ? e.target.closest("#main .stat.scaled, #main .minor .scaled") : null, was = window._bsEl;
+  bsTipOff(); if (!el || el === was) return;
+  var bse = el.querySelector(".bse"); if (!bse) return;
+  var d = document.createElement("div"); d.className = "bstip"; d.innerHTML = "Base <b>" + esc(bse.textContent) + "</b>"; document.body.appendChild(d); window._bsEl = el;
   var r = (el.querySelector("b") || el).getBoundingClientRect(), w = d.offsetWidth;
   d.style.left = Math.max(8, Math.min((r.left + r.right) / 2 - w / 2, window.innerWidth - w - 8)) + "px"; d.style.top = Math.max(8, r.top - d.offsetHeight - 10) + "px";
   clearTimeout(window._bsT); window._bsT = setTimeout(bsTipOff, 3200);
